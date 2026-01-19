@@ -103,47 +103,6 @@ export function WorkflowSteps() {
                     <p className="text-sm text-text-secondary flex-1">
                       {step.description}
                     </p>
-
-                    {/* Visual Aid */}
-                    {step.codeExample && (
-                      <div className="p-3 rounded bg-[#0d0d0d] text-left font-mono text-xs text-text-secondary">
-                        {step.codeExample.split("\n").map((line, i) => (
-                          <div key={i} className="whitespace-pre">
-                            {line}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {step.metric && (
-                      <div className="p-3 rounded bg-amber-dim border border-amber/20">
-                        <span className="text-sm font-semibold text-amber">
-                          {step.metric}
-                        </span>
-                      </div>
-                    )}
-
-                    {step.recommendations && (
-                      <div className="space-y-1">
-                        {step.recommendations.map((rec, i) => (
-                          <div 
-                            key={i}
-                            className="flex items-center justify-between p-2 rounded bg-elevated/30 text-sm"
-                          >
-                            <span className="text-text-secondary truncate pr-2">
-                              {rec.action}
-                            </span>
-                            <span className={`font-semibold shrink-0 ${
-                              rec.risk < -60 ? "text-emerald-400" : 
-                              rec.risk < -30 ? "text-amber" : 
-                              "text-orange-400"
-                            }`}>
-                              {rec.risk}%
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </GlassCard>
                 </motion.div>
               );
