@@ -1,65 +1,152 @@
-import Image from "next/image";
+import { Hero } from "@/components/Hero";
+import { DemoSection } from "@/components/DemoSection";
+import { TheProblem } from "@/components/TheProblem";
+import { WorkflowSteps } from "@/components/WorkflowSteps";
+import { Pricing } from "@/components/Pricing";
+import { FAQ } from "@/components/FAQ";
+import { FinalCTA } from "@/components/FinalCTA";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="relative min-h-screen bg-deep">
+      {/* Hero Section */}
+      <Hero />
+
+      {/* Demo Section */}
+      <DemoSection />
+
+      {/* The Problem */}
+      <TheProblem />
+
+      {/* Workflow Steps - Three Steps to Bulletproof Decisions */}
+      <WorkflowSteps />
+
+      {/* Pricing */}
+      <Pricing />
+
+      {/* FAQ */}
+      <FAQ />
+
+      {/* Final CTA */}
+      <FinalCTA />
+
+      {/* Footer */}
+      <footer className="py-16 border-t border-border-subtle">
+        <div className="max-w-[1280px] mx-auto px-6 md:px-16">
+          <div className="grid md:grid-cols-4 gap-8 mb-12">
+            {/* Brand */}
+            <div className="md:col-span-1">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-lg font-semibold text-text-primary">Apriori</span>
+                <span className="text-tiny text-text-tertiary">The Simulation Layer</span>
+              </div>
+              <p className="text-sm text-text-tertiary mb-4">
+                Preventing failure before you build. Join 200+ teams who've saved $50M+ in failed launches.
+              </p>
+              <div className="text-tiny text-text-tertiary">
+                © {new Date().getFullYear()} Apriori. Building Pre-Build Conviction.
+              </div>
+            </div>
+
+            {/* Free Tools */}
+            <div>
+              <h4 className="text-sm font-semibold text-text-primary mb-4">Free Tools</h4>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
+                    Belief Collapse Calculator
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
+                    Risk Assessment Quiz
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
+                    Persona Generator
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
+                    Sample Simulation Report
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Comparisons */}
+            <div>
+              <h4 className="text-sm font-semibold text-text-primary mb-4">Comparisons</h4>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
+                    vs UserTesting
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
+                    vs Analytics Platforms
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
+                    vs A/B Testing Tools
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
+                    vs Traditional Consulting
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Legal & Support */}
+            <div>
+              <h4 className="text-sm font-semibold text-text-primary mb-4">Legal & Support</h4>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
+                    Terms of Service
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
+                    Privacy Policy
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
+                    Security
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
+                    Contact Support
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom Section */}
+          <div className="pt-8 border-t border-border-subtle">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-6 text-sm text-text-tertiary">
+                <span>SOC 2 Compliant</span>
+                <span>•</span>
+                <span>GDPR Ready</span>
+                <span>•</span>
+                <span>Enterprise Security</span>
+              </div>
+              <div className="text-sm text-text-tertiary">
+                Built for founders who refuse to fail
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </footer>
+    </main>
   );
 }
