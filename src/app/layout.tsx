@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
+import { AuditModalProvider } from "@/contexts/AuditModalContext";
+import { ConditionalSiteHeader } from "@/components/ConditionalSiteHeader";
+import { HideClerkKeylessIndicator } from "@/components/HideClerkKeylessIndicator";
 import "./globals.css";
 
 const inter = Inter({
@@ -45,12 +49,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body
-        className={`${inter.variable} ${geistMono.variable} antialiased bg-deep text-text-primary`}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+      signInFallbackRedirectUrl="/"
+      signUpFallbackRedirectUrl="/"
+      disableKeyless
+      appearance={{
+        layout: {
+          unsafe_disableDevelopmentModeWarnings: true,
+        },
+      }}
+    >
+      <html lang="en" className="dark">
+        <body
+          className={`${inter.variable} ${geistMono.variable} antialiased bg-deep text-text-primary`}
+        >
+          <HideClerkKeylessIndicator />
+          <AuditModalProvider>
+            <ConditionalSiteHeader />
+            {children}
+          </AuditModalProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

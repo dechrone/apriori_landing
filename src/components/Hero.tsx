@@ -5,6 +5,7 @@ import { ChevronRight } from "lucide-react";
 import { Button } from "./ui/Button";
 import { CubeVisualization } from "./CubeVisualization";
 import { CONTENT } from "@/config/content";
+import { useAuditModal } from "@/contexts/AuditModalContext";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -30,6 +31,8 @@ const itemVariants = {
 };
 
 export function Hero() {
+  const { openAuditModal } = useAuditModal();
+
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
       {/* Background gradient */}
@@ -102,19 +105,14 @@ export function Hero() {
             variants={itemVariants}
             className="mt-4"
           >
-            <a
-              href="https://calendly.com/rahulbissa-credigo/30min"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Button
+              variant="primary"
+              size="lg"
+              rightIcon={<ChevronRight size={20} />}
+              onClick={openAuditModal}
             >
-              <Button
-                variant="primary"
-                size="lg"
-                rightIcon={<ChevronRight size={20} />}
-              >
-                {CONTENT.hero.primaryCTA}
-              </Button>
-            </a>
+              {CONTENT.hero.primaryCTA}
+            </Button>
           </motion.div>
         </motion.div>
       </div>

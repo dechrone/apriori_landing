@@ -88,6 +88,36 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
 Button.displayName = "Button";
 
-export { Button };
-export type { ButtonProps };
+// IconButton component
+interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  icon: ReactNode;
+  label: string;
+}
+
+const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
+  ({ icon, label, className = "", ...props }, ref) => {
+    return (
+      <button
+        ref={ref}
+        className={`
+          w-10 h-10 flex items-center justify-center
+          rounded-md bg-transparent text-text-tertiary
+          hover:bg-bg-elevated hover:text-text-primary
+          transition-all duration-200
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-deep
+          ${className}
+        `}
+        aria-label={label}
+        {...props}
+      >
+        {icon}
+      </button>
+    );
+  }
+);
+
+IconButton.displayName = "IconButton";
+
+export { Button, IconButton };
+export type { ButtonProps, IconButtonProps };
 

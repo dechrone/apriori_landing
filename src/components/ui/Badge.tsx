@@ -37,6 +37,40 @@ function Badge({ children, variant = "default", icon, className = "" }: BadgePro
   );
 }
 
-export { Badge };
-export type { BadgeProps };
+interface TagProps {
+  children: ReactNode;
+  onRemove?: () => void;
+  className?: string;
+}
+
+function Tag({ children, onRemove, className = "" }: TagProps) {
+  return (
+    <span
+      className={`
+        inline-flex items-center gap-2
+        px-3 py-1.5
+        bg-bg-elevated border border-border-subtle
+        rounded-full text-body-sm text-text-secondary
+        ${className}
+      `}
+    >
+      {children}
+      {onRemove && (
+        <button
+          type="button"
+          onClick={onRemove}
+          className="hover:text-accent-red transition-colors"
+          aria-label="Remove"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      )}
+    </span>
+  );
+}
+
+export { Badge, Tag };
+export type { BadgeProps, TagProps };
 

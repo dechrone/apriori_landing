@@ -5,6 +5,7 @@ import { motion, useInView } from "framer-motion";
 import { ArrowRight, Shield, Lock, Clock } from "lucide-react";
 import { Button } from "./ui/Button";
 import { CONTENT } from "@/config/content";
+import { useAuditModal } from "@/contexts/AuditModalContext";
 
 const iconMap: Record<string, typeof Shield> = {
   Shield,
@@ -15,6 +16,7 @@ const iconMap: Record<string, typeof Shield> = {
 export function FinalCTA() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+  const { openAuditModal } = useAuditModal();
 
   return (
     <section 
@@ -62,20 +64,15 @@ export function FinalCTA() {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <a
-              href="https://calendly.com/rahulbissa-credigo/30min"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Button
+              variant="primary"
+              size="lg"
+              rightIcon={<ArrowRight size={20} />}
+              className="min-w-[280px] text-lg px-10 py-5"
+              onClick={openAuditModal}
             >
-              <Button
-                variant="primary"
-                size="lg"
-                rightIcon={<ArrowRight size={20} />}
-                className="min-w-[280px] text-lg px-10 py-5"
-              >
-                {CONTENT.finalCTA.primaryCTA}
-              </Button>
-            </a>
+              {CONTENT.finalCTA.primaryCTA}
+            </Button>
           </motion.div>
 
           {/* Secondary CTA */}
