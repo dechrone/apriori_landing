@@ -15,6 +15,9 @@ import {
   ChevronRight,
   Download,
   ExternalLink,
+  TrendingUp,
+  Users,
+  MapPin,
 } from 'lucide-react';
 
 type TabId = 'results' | 'deep-dive';
@@ -43,10 +46,158 @@ const MOCK_ARCHETYPES = [
 ];
 
 const MOCK_ADS = [
-  { id: 'ad_1', name: 'Ad #1', desc: 'Trust Signals + Local Language', ctr: 71.4, ctrCi: 4.2, clicks: 5, highIntent: 5, trust: 7.4, trustCi: 0.6, relevance: 6.9, sims: 70000, rec: 'scale' as const, actions: [['Scale Budget +15%', 'scale'], ['View Segment Breakdown', 'view']] },
-  { id: 'ad_2', name: 'Ad #2', desc: 'Standard Professional Layout', ctr: 60, ctrCi: 3.8, clicks: 6, highIntent: 6, trust: 4.2, trustCi: 0.7, relevance: 6.3, sims: 100000, rec: 'maintain' as const, actions: [['Maintain Budget', 'maintain'], ['Optimize Trust Signals', 'optimize']] },
-  { id: 'ad_3', name: 'Ad #3', desc: 'Minimal Creative', ctr: 50, ctrCi: 4.1, clicks: 5, highIntent: 4, trust: 4.6, trustCi: 0.7, relevance: 5.8, sims: 100000, rec: 'optimize' as const, actions: [['Optimize Creative', 'optimize'], ['View Details', 'view']] },
-  { id: 'ad_4', name: 'Ad #4', desc: 'Promotional Focus', ctr: 50, ctrCi: 4.0, clicks: 5, highIntent: 4, trust: 4.4, trustCi: 0.7, relevance: 5.7, sims: 100000, rec: 'replace' as const, actions: [['Review Messaging', 'review'], ['View Details', 'view']] },
+  { 
+    id: 'ad_1', 
+    name: 'Ad #1', 
+    desc: 'Trust Signals + Local Language', 
+    ctr: 71.4, 
+    ctrCi: 4.2, 
+    clicks: 5, 
+    highIntent: 5, 
+    trust: 7.4, 
+    trustCi: 0.6, 
+    relevance: 6.9, 
+    sims: 70000, 
+    rec: 'scale' as const, 
+    actions: [['Scale Budget +15%', 'scale'], ['View Segment Breakdown', 'view']],
+    performance: {
+      impressions: 98000,
+      clicks: 69972,
+      conversions: 3498,
+      conversionRate: 5.0,
+      costPerClick: 8.5,
+      costPerConversion: 170,
+      roas: 8.8,
+      topSegments: ['Trust-Driven Professionals (68% CTR)', 'Pragmatic Mid-Tier (45% CTR)']
+    },
+    targeting: {
+      demographics: {
+        age: '30-55',
+        gender: 'All',
+        locations: ['India - Hindi speaking regions', 'India - Marathi speaking regions'],
+        languages: ['Hindi', 'Marathi', 'English']
+      },
+      interests: ['Export/Import Business', 'Small Business Management', 'Financial Services', 'Trade & Commerce'],
+      behaviors: ['Small Business Owners', 'Frequent International Travelers', 'Online Banking Users'],
+      customAudiences: ['High Trust Personas', 'Local Language Preferrers'],
+      budgetRecommendation: '+15% (₹15,000 additional per ₹1L spend)',
+      expectedLift: '+12% conversions, +18% high-intent leads'
+    }
+  },
+  { 
+    id: 'ad_2', 
+    name: 'Ad #2', 
+    desc: 'Standard Professional Layout', 
+    ctr: 60, 
+    ctrCi: 3.8, 
+    clicks: 6, 
+    highIntent: 6, 
+    trust: 4.2, 
+    trustCi: 0.7, 
+    relevance: 6.3, 
+    sims: 100000, 
+    rec: 'maintain' as const, 
+    actions: [['Maintain Budget', 'maintain'], ['Optimize Trust Signals', 'optimize']],
+    performance: {
+      impressions: 100000,
+      clicks: 60000,
+      conversions: 3600,
+      conversionRate: 6.0,
+      costPerClick: 8.3,
+      costPerConversion: 138,
+      roas: 7.2,
+      topSegments: ['Trust-Driven Professionals (70% CTR)', 'Pragmatic Mid-Tier (38% CTR)']
+    },
+    targeting: {
+      demographics: {
+        age: '28-50',
+        gender: 'All',
+        locations: ['India - All regions'],
+        languages: ['English', 'Hindi']
+      },
+      interests: ['Business & Finance', 'Professional Services', 'Management'],
+      behaviors: ['Business Decision Makers', 'Professional Network Users'],
+      customAudiences: ['Professional Personas'],
+      budgetRecommendation: 'Maintain current (₹25,000 per ₹1L spend)',
+      expectedLift: 'Stable performance, optimize trust signals for +8% improvement'
+    }
+  },
+  { 
+    id: 'ad_3', 
+    name: 'Ad #3', 
+    desc: 'Minimal Creative', 
+    ctr: 50, 
+    ctrCi: 4.1, 
+    clicks: 5, 
+    highIntent: 4, 
+    trust: 4.6, 
+    trustCi: 0.7, 
+    relevance: 5.8, 
+    sims: 100000, 
+    rec: 'optimize' as const, 
+    actions: [['Optimize Creative', 'optimize'], ['View Details', 'view']],
+    performance: {
+      impressions: 100000,
+      clicks: 50000,
+      conversions: 2000,
+      conversionRate: 4.0,
+      costPerClick: 8.0,
+      costPerConversion: 200,
+      roas: 5.0,
+      topSegments: ['Pragmatic Mid-Tier (35% CTR)']
+    },
+    targeting: {
+      demographics: {
+        age: '25-45',
+        gender: 'All',
+        locations: ['India - Urban areas'],
+        languages: ['English']
+      },
+      interests: ['Business', 'Finance', 'Technology'],
+      behaviors: ['Online Shoppers', 'Mobile App Users'],
+      customAudiences: ['Tech-Savvy Personas'],
+      budgetRecommendation: '-10% (Reduce to ₹22,500 per ₹1L spend)',
+      expectedLift: 'Optimize creative for +15% CTR potential'
+    }
+  },
+  { 
+    id: 'ad_4', 
+    name: 'Ad #4', 
+    desc: 'Promotional Focus', 
+    ctr: 50, 
+    ctrCi: 4.0, 
+    clicks: 5, 
+    highIntent: 4, 
+    trust: 4.4, 
+    trustCi: 0.7, 
+    relevance: 5.7, 
+    sims: 100000, 
+    rec: 'replace' as const, 
+    actions: [['Review Messaging', 'review'], ['View Details', 'view']],
+    performance: {
+      impressions: 100000,
+      clicks: 50000,
+      conversions: 1800,
+      conversionRate: 3.6,
+      costPerClick: 8.0,
+      costPerConversion: 222,
+      roas: 4.5,
+      topSegments: ['Pragmatic Mid-Tier (32% CTR)']
+    },
+    targeting: {
+      demographics: {
+        age: '25-40',
+        gender: 'All',
+        locations: ['India - All regions'],
+        languages: ['English', 'Hindi']
+      },
+      interests: ['Deals & Offers', 'Shopping', 'Business'],
+      behaviors: ['Price-Conscious Shoppers', 'Deal Seekers'],
+      customAudiences: ['Price-Sensitive Personas'],
+      budgetRecommendation: '-20% (Reduce to ₹20,000 per ₹1L spend) or Replace',
+      expectedLift: 'Replace with trust-focused variant for +25% improvement'
+    }
+  },
 ];
 
 const MOCK_INSIGHTS = [
@@ -82,6 +233,7 @@ export default function AdPortfolioResultsPage() {
   const [activeTab, setActiveTab] = useState<TabId>('results');
   const [expandedArchetype, setExpandedArchetype] = useState<string | null>(null);
   const [expandedAd, setExpandedAd] = useState<string | null>(MOCK_ADS[0]?.id ?? null);
+  const [expandedActionItems, setExpandedActionItems] = useState<string | null>(null);
 
   // Interactive revenue model
   const [aov, setAov] = useState(15000);
@@ -154,16 +306,16 @@ export default function AdPortfolioResultsPage() {
         }
       />
 
-      <div className="max-w-[1200px] mx-auto pb-24">
+      <div className="max-w-[1600px] mx-auto pb-24">
         {/* Tab Navigation */}
-        <div className="border-b-2 border-border-subtle mb-10">
+        <div className="border-b-2 border-border-subtle mb-16">
           <div className="flex gap-1">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`
-                  flex items-center gap-2 px-8 py-4 text-body font-semibold border-b-[3px] transition-colors
+                  flex items-center gap-3 px-10 py-5 text-h4 font-semibold border-b-[3px] transition-colors
                   ${activeTab === tab.id ? 'border-accent-gold text-text-primary' : 'border-transparent text-text-tertiary hover:text-text-primary'}
                 `}
               >
@@ -175,48 +327,65 @@ export default function AdPortfolioResultsPage() {
         </div>
 
         {activeTab === 'results' && (
-          <div className="space-y-12">
+          <div className="space-y-20">
             {/* Section 1: Simulation Context */}
             <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Simulation Overview</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <h2 className="text-h1 text-text-primary font-bold mb-10 tracking-tight">Simulation Overview</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
                 <Card className="text-center">
                   <CardContent className="py-8">
-                    <p className="text-[2.25rem] font-bold text-text-primary tracking-tight">{MOCK_META.archetypeCount} Archetypes</p>
-                    <p className="text-caption text-text-tertiary mt-2 max-w-[140px] mx-auto leading-relaxed">Each represents ~100K real users</p>
+                    <p className="text-[1.875rem] font-bold text-text-primary tracking-tight leading-none mb-2">{MOCK_META.archetypeCount}</p>
+                    <p className="text-h4 font-semibold text-text-primary mb-3">Archetypes</p>
+                    <p className="text-body text-text-tertiary max-w-[200px] mx-auto leading-relaxed">Each represents ~100K real users</p>
                   </CardContent>
                 </Card>
                 <Card className="text-center">
                   <CardContent className="py-8">
-                    <p className="text-[2.25rem] font-bold text-text-primary tracking-tight">{MOCK_META.adCount} Creatives</p>
-                    <p className="text-caption text-text-tertiary mt-2 max-w-[140px] mx-auto leading-relaxed">Tested across all segments</p>
+                    <p className="text-[1.875rem] font-bold text-text-primary tracking-tight leading-none mb-2">{MOCK_META.adCount}</p>
+                    <p className="text-h4 font-semibold text-text-primary mb-3">Creatives</p>
+                    <p className="text-body text-text-tertiary max-w-[200px] mx-auto leading-relaxed">Tested across all segments</p>
                   </CardContent>
                 </Card>
                 <Card className="text-center">
                   <CardContent className="py-8">
-                    <p className="text-[2.25rem] font-bold text-text-primary tracking-tight">10,000 Runs</p>
-                    <p className="text-caption text-text-tertiary mt-2 max-w-[140px] mx-auto leading-relaxed">Per persona combination</p>
+                    <p className="text-[1.875rem] font-bold text-text-primary tracking-tight leading-none mb-2">10,000</p>
+                    <p className="text-h4 font-semibold text-text-primary mb-3">Runs</p>
+                    <p className="text-body text-text-tertiary max-w-[200px] mx-auto leading-relaxed">Per persona combination</p>
                   </CardContent>
                 </Card>
               </div>
-              <p className="text-body-sm text-text-secondary mb-4">
-                Target Audience: Exporters, Freelancers & SMEs · Geography: India (Multi-region, Multi-language) · Confidence Level: 95% (p &lt; 0.05)
-              </p>
-              <Card>
-                <CardContent className="py-6">
-                  <h3 className="text-label text-text-tertiary uppercase tracking-wider mb-4">Persona Archetype Distribution</h3>
+              <h2 className="text-h1 text-text-primary font-bold mb-10 mt-20 tracking-tight">Target Group</h2>
+              <Card className="mb-8">
+                <CardContent className="py-8">
+                  <div className="space-y-4 mb-6">
+                    <div>
+                      <p className="text-body font-semibold text-text-secondary mb-1">Target Audience</p>
+                      <p className="text-body-lg text-text-primary">Exporters, Freelancers & SMEs</p>
+                    </div>
+                    <div>
+                      <p className="text-body font-semibold text-text-secondary mb-1">Geography</p>
+                      <p className="text-body-lg text-text-primary">India (Multi-region, Multi-language)</p>
+                    </div>
+                    <div>
+                      <p className="text-body font-semibold text-text-secondary mb-1">Confidence Level</p>
+                      <p className="text-body-lg text-text-primary">95% (p &lt; 0.05)</p>
+                    </div>
+                  </div>
+                  <div className="border-t border-border-subtle pt-6">
+                    <h3 className="text-h2 text-text-primary font-semibold mb-6">Persona Archetype Distribution</h3>
                   {MOCK_ARCHETYPES.map((arch) => (
                     <div key={arch.name} className="mb-6 last:mb-0">
-                      <div className="flex items-center gap-4 mb-2">
-                        <div className="w-48 h-2 bg-bg-elevated rounded-full overflow-hidden">
+                        <div className="flex items-center gap-6 mb-3">
+                          <div className="w-64 h-3 bg-bg-elevated rounded-full overflow-hidden">
                           <div className="h-full bg-accent-gold rounded-full" style={{ width: `${arch.pct}%` }} />
+                          </div>
+                          <span className="text-h4 font-semibold text-text-primary">{arch.pct}% {arch.name}</span>
                         </div>
-                        <span className="text-body font-semibold text-text-primary">{arch.pct}% {arch.name}</span>
+                        <p className="text-body text-text-tertiary ml-[280px]">({arch.personas} personas, {arch.users} represented users)</p>
                       </div>
-                      <p className="text-caption text-text-tertiary ml-52">({arch.personas} personas, {arch.users} represented users)</p>
+                    ))}
                     </div>
-                  ))}
-                  <div className="mt-6 p-4 rounded-lg bg-bg-elevated border-l-[3px] border-accent-blue italic text-caption text-text-tertiary">
+                  <div className="mt-6 p-6 rounded-lg bg-bg-elevated border-l-[4px] border-accent-blue italic text-body text-text-tertiary leading-relaxed">
                     Methodology: Each archetype ran through 10,000 Monte Carlo simulations to generate statistically robust confidence intervals.
                   </div>
                 </CardContent>
@@ -225,38 +394,38 @@ export default function AdPortfolioResultsPage() {
 
             {/* Section 2: Executive Summary */}
             <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Key Findings</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <h2 className="text-h1 text-text-primary font-bold mb-10 tracking-tight">Key Findings</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
                 <Card>
-                  <CardContent className="py-6 text-center">
-                    <p className="text-[2.25rem] font-bold text-text-primary tracking-tight">58%</p>
-                    <p className="text-caption text-text-tertiary mt-1">±3.2% (95% CI)</p>
-                    <p className="text-body font-semibold text-text-secondary mt-3">Average CTR</p>
-                    <p className="text-caption text-text-tertiary">vs 2.1% industry</p>
+                  <CardContent className="py-8 text-center">
+                    <p className="text-[2rem] font-bold text-text-primary tracking-tight leading-none">58%</p>
+                    <p className="text-body text-text-tertiary mt-2">±3.2% (95% CI)</p>
+                    <p className="text-h4 font-semibold text-text-secondary mt-4">Average CTR</p>
+                    <p className="text-body text-text-tertiary mt-2">vs 2.1% industry</p>
                   </CardContent>
                 </Card>
                 <Card>
-                  <CardContent className="py-6 text-center">
-                    <p className="text-[2.25rem] font-bold text-text-primary tracking-tight">22</p>
-                    <p className="text-caption text-text-tertiary mt-1">±4 leads (95% CI)</p>
-                    <p className="text-body font-semibold text-text-secondary mt-3">High-Intent Leads</p>
+                  <CardContent className="py-8 text-center">
+                    <p className="text-[2rem] font-bold text-text-primary tracking-tight leading-none">22</p>
+                    <p className="text-body text-text-tertiary mt-2">±4 leads (95% CI)</p>
+                    <p className="text-h4 font-semibold text-text-secondary mt-4">High-Intent Leads</p>
                   </CardContent>
                 </Card>
                 <Card>
-                  <CardContent className="py-6 text-center">
-                    <p className="text-[2.25rem] font-bold text-accent-green tracking-tight">+144%</p>
-                    <p className="text-caption text-text-tertiary mt-1">Revenue Lift</p>
-                    <p className="text-body font-semibold text-text-secondary mt-3">Potential</p>
+                  <CardContent className="py-8 text-center">
+                    <p className="text-[2rem] font-bold text-accent-green tracking-tight leading-none">+144%</p>
+                    <p className="text-body text-text-tertiary mt-2">Revenue Lift</p>
+                    <p className="text-h4 font-semibold text-text-secondary mt-4">Potential</p>
                   </CardContent>
                 </Card>
               </div>
               <Card className="border-l-4 border-l-accent-gold">
-                <CardContent className="py-6">
-                  <h3 className="text-h4 text-text-primary font-semibold mb-3">Synthesis</h3>
-                  <p className="text-body-lg text-text-secondary leading-relaxed">
+                <CardContent className="py-8">
+                  <h3 className="text-h2 text-text-primary font-semibold mb-6">Synthesis</h3>
+                  <p className="text-body-lg text-text-secondary leading-relaxed text-[1.125rem]">
                     Your portfolio demonstrates exceptional performance among high-income export managers (68% CTR ±4.1%) but reveals significant trust barriers with rural segments (33% CTR ±5.8%). Ad #1 outperforms by 43% through trust signals and localized language.
                   </p>
-                  <p className="text-body text-text-secondary mt-4">
+                  <p className="text-body-lg text-text-secondary mt-6 leading-relaxed">
                     Primary opportunity: Reallocating 15% of budget from underperforming ads to Ad #1 projects +₹4.2L ±₹0.8L incremental revenue per ₹1L spend.
                   </p>
                 </CardContent>
@@ -265,36 +434,149 @@ export default function AdPortfolioResultsPage() {
 
             {/* Section 3: Performance Hierarchy */}
             <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Creative Performance Ranking</h2>
-              <div className="space-y-4">
+              <h2 className="text-h1 text-text-primary font-bold mb-10 tracking-tight">Creative Performance Ranking</h2>
+              <div className="space-y-6">
                 {MOCK_ADS.map((ad, i) => (
                   <Card key={ad.id} className="border border-border-subtle">
-                    <CardContent className="py-6">
-                      <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-h4 shrink-0 ${i === 0 ? 'bg-accent-gold/20 text-accent-gold' : 'bg-bg-elevated text-text-primary'}`}>
+                    <CardContent className="py-8">
+                      <div className="flex flex-col sm:flex-row sm:items-start gap-6">
+                        <div className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-h2 shrink-0 ${i === 0 ? 'bg-accent-gold/20 text-accent-gold' : 'bg-bg-elevated text-text-primary'}`}>
                           #{i + 1}
                         </div>
-                        <div className="w-20 h-20 rounded-lg bg-bg-elevated flex items-center justify-center shrink-0">
-                          <ImageIcon className="w-10 h-10 text-text-tertiary" />
+                        <div className="w-24 h-24 rounded-lg bg-bg-elevated flex items-center justify-center shrink-0">
+                          <ImageIcon className="w-12 h-12 text-text-tertiary" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
                             <div>
-                              <p className="text-h4 text-text-primary font-semibold">{ad.name}</p>
-                              <p className="text-body-sm text-text-tertiary">&quot;{ad.desc}&quot;</p>
+                              <p className="text-h2 text-text-primary font-semibold mb-1">{ad.name}</p>
+                              <p className="text-body-lg text-text-tertiary">&quot;{ad.desc}&quot;</p>
                             </div>
-                            <p className="text-h4 font-bold text-accent-gold">{ad.ctr}% ±{ad.ctrCi}%</p>
+                            <p className="text-h2 font-bold text-accent-gold">{ad.ctr}% <span className="text-body-lg text-text-tertiary">±{ad.ctrCi}%</span></p>
                           </div>
-                          <div className="mt-3 h-2 bg-bg-elevated rounded-full overflow-hidden max-w-xs">
+                          <div className="mt-4 h-3 bg-bg-elevated rounded-full overflow-hidden max-w-md">
                             <div className="h-full bg-accent-gold rounded-full" style={{ width: `${ad.ctr}%` }} />
                           </div>
-                          <p className="text-body-sm text-text-tertiary mt-2">
+                          <p className="text-body text-text-tertiary mt-4">
                             High-Intent: {ad.highIntent} | Trust: {ad.trust}/10 ±{ad.trustCi} | Relevance: {ad.relevance}
                           </p>
-                          <p className="text-caption text-text-tertiary mt-1">Sample: {ad.sims.toLocaleString()} simulations</p>
-                          <div className="flex flex-wrap gap-2 mt-4">
-                            <Button size="sm">{ad.actions[0][0]}</Button>
-                            <Button variant="secondary" size="sm">{ad.actions[1][0]}</Button>
+                          <p className="text-body-sm text-text-tertiary mt-2">Sample: {ad.sims.toLocaleString()} simulations</p>
+                          
+                          {/* Performance Metrics */}
+                          <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-bg-elevated rounded-lg">
+                            <div>
+                              <p className="text-caption text-text-tertiary mb-1">Impressions</p>
+                              <p className="text-body font-semibold text-text-primary">{ad.performance.impressions.toLocaleString()}</p>
+                            </div>
+                            <div>
+                              <p className="text-caption text-text-tertiary mb-1">Clicks</p>
+                              <p className="text-body font-semibold text-text-primary">{ad.performance.clicks.toLocaleString()}</p>
+                            </div>
+                            <div>
+                              <p className="text-caption text-text-tertiary mb-1">Conversions</p>
+                              <p className="text-body font-semibold text-accent-green">{ad.performance.conversions.toLocaleString()}</p>
+                            </div>
+                            <div>
+                              <p className="text-caption text-text-tertiary mb-1">ROAS</p>
+                              <p className="text-body font-semibold text-accent-gold">{ad.performance.roas}x</p>
+                            </div>
+                          </div>
+
+                          {/* Target Persona Breakdown Dropdown */}
+                          <div className="mt-6 border-t border-border-subtle pt-6">
+                            <button
+                              onClick={() => setExpandedActionItems(expandedActionItems === ad.id ? null : ad.id)}
+                              className="w-full flex items-center justify-between text-left"
+                            >
+                              <div className="flex items-center gap-3">
+                                <Users className="w-5 h-5 text-accent-gold" />
+                                <span className="text-h4 font-semibold text-text-primary">Target Persona Breakdown</span>
+                              </div>
+                              {expandedActionItems === ad.id ? (
+                                <ChevronDown className="w-5 h-5 text-text-tertiary" />
+                              ) : (
+                                <ChevronRight className="w-5 h-5 text-text-tertiary" />
+                              )}
+                            </button>
+
+                            {expandedActionItems === ad.id && (
+                              <div className="mt-6 space-y-6">
+                                {/* Targeting Recommendations */}
+                                <div>
+                                  <h4 className="text-h3 font-semibold text-text-primary mb-4 flex items-center gap-2">
+                                    <Users className="w-5 h-5 text-accent-blue" />
+                                    Targeting Recommendations
+                                  </h4>
+                                  <div className="space-y-4">
+                                    <div className="p-4 bg-bg-elevated rounded-lg">
+                                      <p className="text-body font-semibold text-text-secondary mb-2">Demographics</p>
+                                      <div className="space-y-1 text-body text-text-tertiary">
+                                        <p><span className="font-medium text-text-primary">Age:</span> {ad.targeting.demographics.age}</p>
+                                        <p><span className="font-medium text-text-primary">Gender:</span> {ad.targeting.demographics.gender}</p>
+                                        <p className="flex items-start gap-2">
+                                          <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-accent-blue" />
+                                          <span><span className="font-medium text-text-primary">Locations:</span> {ad.targeting.demographics.locations.join(', ')}</span>
+                                        </p>
+                                        <p><span className="font-medium text-text-primary">Languages:</span> {ad.targeting.demographics.languages.join(', ')}</p>
+                                      </div>
+                                    </div>
+                                    <div className="p-4 bg-bg-elevated rounded-lg">
+                                      <p className="text-body font-semibold text-text-secondary mb-2">Interests</p>
+                                      <div className="flex flex-wrap gap-2">
+                                        {ad.targeting.interests.map((interest, idx) => (
+                                          <span key={idx} className="px-3 py-1 bg-accent-blue-bg text-accent-blue rounded-md text-body-sm">
+                                            {interest}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                    <div className="p-4 bg-bg-elevated rounded-lg">
+                                      <p className="text-body font-semibold text-text-secondary mb-2">Behaviors</p>
+                                      <div className="flex flex-wrap gap-2">
+                                        {ad.targeting.behaviors.map((behavior, idx) => (
+                                          <span key={idx} className="px-3 py-1 bg-accent-purple-bg text-accent-purple rounded-md text-body-sm">
+                                            {behavior}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                    <div className="p-4 bg-bg-elevated rounded-lg">
+                                      <p className="text-body font-semibold text-text-secondary mb-2">Custom Audiences</p>
+                                      <div className="flex flex-wrap gap-2">
+                                        {ad.targeting.customAudiences.map((audience, idx) => (
+                                          <span key={idx} className="px-3 py-1 bg-accent-green-bg text-accent-green rounded-md text-body-sm">
+                                            {audience}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+
+                                {/* Top Performing Segments */}
+                                <div>
+                                  <h4 className="text-h3 font-semibold text-text-primary mb-4 flex items-center gap-2">
+                                    <TrendingUp className="w-5 h-5 text-accent-green" />
+                                    Top Performing Segments
+                                  </h4>
+                                  <div className="space-y-2">
+                                    {ad.performance.topSegments.map((segment, idx) => (
+                                      <div key={idx} className="p-3 bg-bg-elevated rounded-lg">
+                                        <p className="text-body text-text-primary">{segment}</p>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Budget Recommendation (Outcome, not action) */}
+                          <div className="mt-6 p-4 bg-accent-gold/10 border-l-4 border-accent-gold rounded-lg">
+                            <p className="text-body font-semibold text-text-secondary mb-1">Budget Recommendation</p>
+                            <p className="text-h4 font-bold text-accent-gold">{ad.targeting.budgetRecommendation}</p>
+                            <p className="text-body text-text-tertiary mt-2">{ad.targeting.expectedLift}</p>
                           </div>
                         </div>
                       </div>
@@ -306,27 +588,27 @@ export default function AdPortfolioResultsPage() {
 
             {/* Section 4: Strategic Insights */}
             <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Data-Backed Insights</h2>
-              <div className="space-y-6">
+              <h2 className="text-h1 text-text-primary font-bold mb-10 tracking-tight">Data-Backed Insights</h2>
+              <div className="space-y-8">
                 {MOCK_INSIGHTS.map((insight) => (
                   <Card key={insight.num} className="border-l-4 border-l-accent-gold">
-                    <CardContent className="py-6">
-                      <p className="text-h4 text-text-primary font-semibold">{insight.num}. {insight.title}</p>
-                      <p className="text-body text-text-secondary leading-relaxed mt-3">{insight.description}</p>
-                      <div className="flex flex-wrap items-center gap-4 mt-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-24 h-1.5 bg-bg-elevated rounded-full overflow-hidden">
+                    <CardContent className="py-8">
+                      <p className="text-h2 text-text-primary font-semibold mb-4">{insight.num}. {insight.title}</p>
+                      <p className="text-body-lg text-text-secondary leading-relaxed mt-4">{insight.description}</p>
+                      <div className="flex flex-wrap items-center gap-6 mt-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-32 h-2 bg-bg-elevated rounded-full overflow-hidden">
                             <div className="h-full bg-accent-gold rounded-full" style={{ width: `${insight.confidence}%` }} />
                           </div>
-                          <span className="text-caption text-text-tertiary">Confidence: {insight.confidence}% (95% CI: {insight.ci[0]}-{insight.ci[1]}%)</span>
+                          <span className="text-body text-text-tertiary">Confidence: {insight.confidence}% (95% CI: {insight.ci[0]}-{insight.ci[1]}%)</span>
                         </div>
-                        <span className="text-caption text-text-tertiary">Sample: {insight.sample.toLocaleString()} simulations</span>
-                        {insight.effectSize && <span className="text-caption text-text-tertiary">Effect size: Cohen&apos;s d = {insight.effectSize} (Large)</span>}
+                        <span className="text-body text-text-tertiary">Sample: {insight.sample.toLocaleString()} simulations</span>
+                        {insight.effectSize && <span className="text-body text-text-tertiary">Effect size: Cohen&apos;s d = {insight.effectSize} (Large)</span>}
                       </div>
-                      <p className="text-body-sm font-semibold text-accent-gold mt-4">→ Recommendation: {insight.rec}</p>
-                      <div className="flex gap-2 mt-4">
-                        <Button size="sm">{insight.actions[0][0]}</Button>
-                        <Button variant="secondary" size="sm">{insight.actions[1][0]}</Button>
+                      <p className="text-body-lg font-semibold text-accent-gold mt-6">→ Recommendation: {insight.rec}</p>
+                      <div className="flex gap-3 mt-6">
+                        <Button size="md">{insight.actions[0][0]}</Button>
+                        <Button variant="secondary" size="md">{insight.actions[1][0]}</Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -336,10 +618,10 @@ export default function AdPortfolioResultsPage() {
 
             {/* Section 5: Revenue Impact Model */}
             <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Projected Revenue Impact</h2>
-              <Card className="mb-6">
-                <CardContent className="py-6">
-                  <h3 className="text-h4 text-text-primary font-semibold mb-4">Model Assumptions</h3>
+              <h2 className="text-h1 text-text-primary font-bold mb-10 tracking-tight">Projected Revenue Impact</h2>
+              <Card className="mb-8">
+                <CardContent className="py-8">
+                  <h3 className="text-h2 text-text-primary font-semibold mb-6">Model Assumptions</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <Input label="Average Order Value (₹)" type="number" value={String(aov)} onChange={(e) => setAov(Number(e.target.value) || 0)} />
                     <Input label="Lead-to-Sale Rate (%)" type="number" value={String(conversionRate)} onChange={(e) => setConversionRate(Number(e.target.value) || 0)} />
@@ -352,39 +634,39 @@ export default function AdPortfolioResultsPage() {
                   </div>
                 </CardContent>
               </Card>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 <Card>
-                  <CardContent className="py-6">
-                    <h4 className="text-label text-text-tertiary uppercase tracking-wider mb-4">Current Allocation</h4>
-                    <p className="text-[2rem] font-bold text-text-primary">₹{(currentRevenue / 100000).toFixed(1)}L</p>
-                    <p className="text-caption text-text-tertiary">±₹0.5L (95% CI) per ₹1L spend</p>
-                    <div className="mt-4 space-y-2">
+                  <CardContent className="py-8">
+                    <h4 className="text-h3 text-text-primary font-semibold mb-6">Current Allocation</h4>
+                    <p className="text-[2rem] font-bold text-text-primary leading-none">₹{(currentRevenue / 100000).toFixed(1)}L</p>
+                    <p className="text-body text-text-tertiary mt-2">±₹0.5L (95% CI) per ₹1L spend</p>
+                    <div className="mt-6 space-y-3">
                       {MOCK_ADS.map((ad) => (
-                        <p key={ad.id} className="text-body-sm text-text-secondary">{ad.name}: 25%</p>
+                        <p key={ad.id} className="text-body-lg text-text-secondary">{ad.name}: 25%</p>
                       ))}
                     </div>
                   </CardContent>
                 </Card>
                 <Card>
-                  <CardContent className="py-6">
-                    <h4 className="text-label text-text-tertiary uppercase tracking-wider mb-4">Recommended Allocation</h4>
-                    <p className="text-[2rem] font-bold text-accent-green">₹{(projectedRevenue / 100000).toFixed(1)}L</p>
-                    <p className="text-caption text-text-tertiary">±₹1.1L (95% CI) per ₹1L spend</p>
-                    <div className="mt-4 space-y-2">
+                  <CardContent className="py-8">
+                    <h4 className="text-h3 text-text-primary font-semibold mb-6">Recommended Allocation</h4>
+                    <p className="text-[2rem] font-bold text-accent-green leading-none">₹{(projectedRevenue / 100000).toFixed(1)}L</p>
+                    <p className="text-body text-text-tertiary mt-2">±₹1.1L (95% CI) per ₹1L spend</p>
+                    <div className="mt-6 space-y-3">
                       {MOCK_ADS.map((ad, i) => {
                         const pct = allocation[ad.id] ?? 25;
                         const diff = pct - 25;
                         return (
-                          <p key={ad.id} className="text-body-sm text-text-secondary">{ad.name}: {pct}% ({diff >= 0 ? '+' : ''}{diff}%)</p>
+                          <p key={ad.id} className="text-body-lg text-text-secondary">{ad.name}: {pct}% ({diff >= 0 ? '+' : ''}{diff}%)</p>
                         );
                       })}
                     </div>
                   </CardContent>
                 </Card>
               </div>
-              <Card className="mb-6">
-                <CardContent className="py-6">
-                  <h4 className="text-h4 text-text-primary font-semibold mb-4">Budget Allocation</h4>
+              <Card className="mb-8">
+                <CardContent className="py-8">
+                  <h4 className="text-h2 text-text-primary font-semibold mb-6">Budget Allocation</h4>
                   {MOCK_ADS.map((ad) => (
                     <div key={ad.id} className="mb-4 last:mb-0">
                       <div className="flex justify-between mb-2">
@@ -403,34 +685,34 @@ export default function AdPortfolioResultsPage() {
                   ))}
                 </CardContent>
               </Card>
-              <Card className="mb-6">
-                <CardContent className="py-6">
-                  <h4 className="text-label text-text-tertiary uppercase tracking-wider mb-4">Expected Outcomes</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card className="mb-8">
+                <CardContent className="py-8">
+                  <h4 className="text-h2 text-text-primary font-semibold mb-8">Expected Outcomes</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     <div>
-                      <p className="text-h3 font-bold text-accent-green">+₹4.2L</p>
-                      <p className="text-caption text-text-tertiary">±₹0.8L</p>
-                      <p className="text-body-sm text-text-secondary">Revenue Lift</p>
+                      <p className="text-[1.875rem] font-bold text-accent-green leading-none">+₹4.2L</p>
+                      <p className="text-body text-text-tertiary mt-2">±₹0.8L</p>
+                      <p className="text-body-lg text-text-secondary mt-4">Revenue Lift</p>
                     </div>
                     <div>
-                      <p className="text-h3 font-bold text-accent-green">+18</p>
-                      <p className="text-caption text-text-tertiary">±4 leads</p>
-                      <p className="text-body-sm text-text-secondary">High-Intent Leads</p>
+                      <p className="text-[1.875rem] font-bold text-accent-green leading-none">+18</p>
+                      <p className="text-body text-text-tertiary mt-2">±4 leads</p>
+                      <p className="text-body-lg text-text-secondary mt-4">High-Intent Leads</p>
                     </div>
                     <div>
-                      <p className="text-h3 font-bold text-accent-green">-12%</p>
-                      <p className="text-caption text-text-tertiary">±3%</p>
-                      <p className="text-body-sm text-text-secondary">Cost per Lead</p>
+                      <p className="text-[1.875rem] font-bold text-accent-green leading-none">-12%</p>
+                      <p className="text-body text-text-tertiary mt-2">±3%</p>
+                      <p className="text-body-lg text-text-secondary mt-4">Cost per Lead</p>
                     </div>
                     <div>
-                      <p className="text-h3 font-bold text-accent-green">+144%</p>
-                      <p className="text-caption text-text-tertiary">±28%</p>
-                      <p className="text-body-sm text-text-secondary">Revenue per Rupee</p>
+                      <p className="text-[1.875rem] font-bold text-accent-green leading-none">+144%</p>
+                      <p className="text-body text-text-tertiary mt-2">±28%</p>
+                      <p className="text-body-lg text-text-secondary mt-4">Revenue per Rupee</p>
                     </div>
                   </div>
-                  <div className="flex gap-3 mt-6">
-                    <Button>Apply Recommended Allocation</Button>
-                    <Button variant="secondary" rightIcon={<Download className="w-4 h-4" />}>Download Financial Model</Button>
+                  <div className="flex gap-4 mt-8">
+                    <Button size="lg">Apply Recommended Allocation</Button>
+                    <Button variant="secondary" size="lg" rightIcon={<Download className="w-5 h-5" />}>Download Financial Model</Button>
                   </div>
                 </CardContent>
               </Card>
@@ -438,26 +720,26 @@ export default function AdPortfolioResultsPage() {
 
             {/* Section 6: Recommended Action Plan */}
             <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Prioritized Next Steps</h2>
-              <div className="space-y-4">
+              <h2 className="text-h1 text-text-primary font-bold mb-10 tracking-tight">Prioritized Next Steps</h2>
+              <div className="space-y-8">
                 {(['immediate', 'short-term', 'long-term'] as const).map((priority) => {
                   const items = MOCK_ACTION_PLAN.filter((a) => a.priority === priority);
                   if (items.length === 0) return null;
                   return (
                     <div key={priority}>
-                      <h3 className="text-h4 text-text-primary font-semibold mb-3 uppercase">{priority.replace('-', ' ')}</h3>
+                      <h3 className="text-h2 text-text-primary font-semibold mb-6 uppercase">{priority.replace('-', ' ')}</h3>
                       {items.map((item) => (
-                        <Card key={item.num} className="mb-4 border-l-4 border-l-accent-gold">
-                          <CardContent className="py-5">
-                            <p className="text-h4 text-text-primary font-semibold">{item.num}. {item.title}</p>
-                            <p className="text-body-sm text-text-secondary mt-1">Expected Impact: {item.impact}</p>
-                            <p className="text-caption text-text-tertiary mt-1">Effort: {item.effort} · Risk: {item.risk}</p>
+                        <Card key={item.num} className="mb-6 border-l-4 border-l-accent-gold">
+                          <CardContent className="py-6">
+                            <p className="text-h3 text-text-primary font-semibold mb-3">{item.num}. {item.title}</p>
+                            <p className="text-body-lg text-text-secondary mt-2">Expected Impact: {item.impact}</p>
+                            <p className="text-body text-text-tertiary mt-2">Effort: {item.effort} · Risk: {item.risk}</p>
                             {item.aiNote && (
-                              <p className="text-caption text-text-tertiary mt-2 italic">AI will auto-translate copy and generate preview. You can review and edit before publishing.</p>
+                              <p className="text-body text-text-tertiary mt-3 italic">AI will auto-translate copy and generate preview. You can review and edit before publishing.</p>
                             )}
-                            <div className="flex gap-2 mt-4">
-                              <Button size="sm">{item.actions[0][0]}</Button>
-                              <Button variant="secondary" size="sm">{item.actions[1][0]}</Button>
+                            <div className="flex gap-3 mt-6">
+                              <Button size="md">{item.actions[0][0]}</Button>
+                              <Button variant="secondary" size="md">{item.actions[1][0]}</Button>
                             </div>
                           </CardContent>
                         </Card>
@@ -470,51 +752,51 @@ export default function AdPortfolioResultsPage() {
 
             {/* Section 7: Risk Assessment */}
             <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Simulation Quality Report</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <h2 className="text-h1 text-text-primary font-bold mb-10 tracking-tight">Simulation Quality Report</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 <Card>
-                  <CardContent className="py-6 text-center">
-                    <p className="text-[3rem] font-bold text-text-primary">92.5</p>
-                    <p className="text-body font-semibold text-text-secondary mt-1">Quality Score (Excellent)</p>
-                    <p className="text-caption text-text-tertiary">95% CI: 90.2–94.8</p>
+                  <CardContent className="py-8 text-center">
+                    <p className="text-[2rem] font-bold text-text-primary leading-none">92.5</p>
+                    <p className="text-h4 font-semibold text-text-secondary mt-3">Quality Score (Excellent)</p>
+                    <p className="text-body text-text-tertiary mt-2">95% CI: 90.2–94.8</p>
                   </CardContent>
                 </Card>
                 <Card>
-                  <CardContent className="py-6 text-center">
-                    <p className="text-[3rem] font-bold text-accent-green">37/40</p>
-                    <p className="text-body font-semibold text-text-secondary mt-1">Valid Reactions</p>
-                    <p className="text-caption text-text-tertiary">3 flagged & removed · Flagged rate: 7.5%</p>
+                  <CardContent className="py-8 text-center">
+                    <p className="text-[2rem] font-bold text-accent-green leading-none">37/40</p>
+                    <p className="text-h4 font-semibold text-text-secondary mt-3">Valid Reactions</p>
+                    <p className="text-body text-text-tertiary mt-2">3 flagged & removed · Flagged rate: 7.5%</p>
                   </CardContent>
                 </Card>
               </div>
-              <Card className="mb-6">
-                <CardContent className="py-6">
-                  <h3 className="text-h4 text-text-primary font-semibold mb-4">Validation Checks Performed</h3>
-                  <ul className="space-y-2">
+              <Card className="mb-8">
+                <CardContent className="py-8">
+                  <h3 className="text-h2 text-text-primary font-semibold mb-6">Validation Checks Performed</h3>
+                  <ul className="space-y-3">
                     {VALIDATION_CHECKS.map((check, i) => (
-                      <li key={i} className="flex items-center gap-2 text-body text-text-secondary">
-                        <span className="text-accent-green">✓</span> {check}
+                      <li key={i} className="flex items-center gap-3 text-body-lg text-text-secondary">
+                        <span className="text-accent-green text-xl">✓</span> {check}
                       </li>
                     ))}
                   </ul>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="py-6">
-                  <h3 className="text-h4 text-text-primary font-semibold mb-4">Flagged Reactions (Removed from Analysis)</h3>
-                  <p className="text-body text-text-secondary">
+                <CardContent className="py-8">
+                  <h3 className="text-h2 text-text-primary font-semibold mb-6">Flagged Reactions (Removed from Analysis)</h3>
+                  <p className="text-body-lg text-text-secondary leading-relaxed">
                     3 reactions showed unrealistic trust (&gt;8/10) with high-vulnerability personas (scam indicators: Yes).
                   </p>
-                  <p className="text-body-sm text-text-tertiary mt-2">
+                  <p className="text-body text-text-tertiary mt-4 leading-relaxed">
                     These reactions were automatically excluded to maintain result accuracy and prevent false positives.
                   </p>
-                  <div className="flex gap-2 mt-4">
-                    <Button variant="ghost" size="sm">View Flagged Details</Button>
-                    <Button variant="ghost" size="sm">Download Validation Report</Button>
+                  <div className="flex gap-3 mt-6">
+                    <Button variant="ghost" size="md">View Flagged Details</Button>
+                    <Button variant="ghost" size="md">Download Validation Report</Button>
                   </div>
                 </CardContent>
               </Card>
-              <p className="text-caption text-text-tertiary mt-6">
+              <p className="text-body text-text-tertiary mt-8 leading-relaxed">
                 Statistical Rigor: All insights include 95% confidence intervals and effect sizes. Minimum 10,000 simulations per archetype. P-values reported for all correlations.
               </p>
             </section>
@@ -522,10 +804,10 @@ export default function AdPortfolioResultsPage() {
         )}
 
         {activeTab === 'deep-dive' && (
-          <div className="space-y-10">
+          <div className="space-y-16">
             {/* Persona Matrix */}
             <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Reaction Matrix</h2>
+              <h2 className="text-h1 text-text-primary font-bold mb-10 tracking-tight">Reaction Matrix</h2>
               <div className="flex flex-wrap gap-4 mb-4">
                 <div className="flex items-center gap-2">
                   <input type="radio" id="arch" name="view" defaultChecked className="accent-accent-gold" />
@@ -546,81 +828,81 @@ export default function AdPortfolioResultsPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-border-subtle">
-                        <th className="text-left py-4 px-4 text-label text-text-tertiary">Archetype</th>
-                        <th className="text-center py-4 px-4 text-label text-text-tertiary">Ad #1</th>
-                        <th className="text-center py-4 px-4 text-label text-text-tertiary">Ad #2</th>
-                        <th className="text-center py-4 px-4 text-label text-text-tertiary">Ad #3</th>
-                        <th className="text-center py-4 px-4 text-label text-text-tertiary">Ad #4</th>
+                      <tr className="border-b-2 border-border-subtle">
+                        <th className="text-left py-6 px-6 text-h4 text-text-primary font-semibold">Archetype</th>
+                        <th className="text-center py-6 px-6 text-h4 text-text-primary font-semibold">Ad #1</th>
+                        <th className="text-center py-6 px-6 text-h4 text-text-primary font-semibold">Ad #2</th>
+                        <th className="text-center py-6 px-6 text-h4 text-text-primary font-semibold">Ad #3</th>
+                        <th className="text-center py-6 px-6 text-h4 text-text-primary font-semibold">Ad #4</th>
                       </tr>
                     </thead>
                     <tbody>
                       {MOCK_MATRIX.map((row) => (
                         <tr key={row.archetype} className="border-b border-border-subtle">
-                          <td className="py-4 px-4">
+                          <td className="py-5 px-6">
                             <button
                               onClick={() => setExpandedArchetype(expandedArchetype === row.archetype ? null : row.archetype)}
-                              className="flex items-center gap-2 text-body font-medium text-text-primary hover:text-accent-gold"
+                              className="flex items-center gap-3 text-body-lg font-medium text-text-primary hover:text-accent-gold"
                             >
-                              {expandedArchetype === row.archetype ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                              {expandedArchetype === row.archetype ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
                               {row.archetype} ({row.personas} personas)
                             </button>
                           </td>
-                          <td className="py-4 px-4 text-center">
-                            <span className={`inline-block w-4 h-4 rounded-full ${row.ad1 === 'high' ? 'bg-accent-green' : row.ad1 === 'mid' ? 'bg-accent-gold' : 'bg-border-medium'}`} title={row.ad1} />
-                            <p className="text-caption text-text-tertiary mt-1">{row.cr1}%</p>
+                          <td className="py-5 px-6 text-center">
+                            <span className={`inline-block w-5 h-5 rounded-full ${row.ad1 === 'high' ? 'bg-accent-green' : row.ad1 === 'mid' ? 'bg-accent-gold' : 'bg-border-medium'}`} title={row.ad1} />
+                            <p className="text-body text-text-tertiary mt-2">{row.cr1}%</p>
                           </td>
-                          <td className="py-4 px-4 text-center">
-                            <span className={`inline-block w-4 h-4 rounded-full ${row.ad2 === 'high' ? 'bg-accent-green' : row.ad2 === 'mid' ? 'bg-accent-gold' : 'bg-border-medium'}`} />
-                            <p className="text-caption text-text-tertiary mt-1">{row.cr2}%</p>
+                          <td className="py-5 px-6 text-center">
+                            <span className={`inline-block w-5 h-5 rounded-full ${row.ad2 === 'high' ? 'bg-accent-green' : row.ad2 === 'mid' ? 'bg-accent-gold' : 'bg-border-medium'}`} />
+                            <p className="text-body text-text-tertiary mt-2">{row.cr2}%</p>
                           </td>
-                          <td className="py-4 px-4 text-center">
-                            <span className={`inline-block w-4 h-4 rounded-full ${row.ad3 === 'high' ? 'bg-accent-green' : row.ad3 === 'mid' ? 'bg-accent-gold' : 'bg-border-medium'}`} />
-                            <p className="text-caption text-text-tertiary mt-1">{row.cr3}%</p>
+                          <td className="py-5 px-6 text-center">
+                            <span className={`inline-block w-5 h-5 rounded-full ${row.ad3 === 'high' ? 'bg-accent-green' : row.ad3 === 'mid' ? 'bg-accent-gold' : 'bg-border-medium'}`} />
+                            <p className="text-body text-text-tertiary mt-2">{row.cr3}%</p>
                           </td>
-                          <td className="py-4 px-4 text-center">
-                            <span className={`inline-block w-4 h-4 rounded-full ${row.ad4 === 'high' ? 'bg-accent-green' : row.ad4 === 'mid' ? 'bg-accent-gold' : 'bg-border-medium'}`} />
-                            <p className="text-caption text-text-tertiary mt-1">{row.cr4}%</p>
+                          <td className="py-5 px-6 text-center">
+                            <span className={`inline-block w-5 h-5 rounded-full ${row.ad4 === 'high' ? 'bg-accent-green' : row.ad4 === 'mid' ? 'bg-accent-gold' : 'bg-border-medium'}`} />
+                            <p className="text-body text-text-tertiary mt-2">{row.cr4}%</p>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-                <CardContent className="border-t border-border-subtle">
-                  <p className="text-caption text-text-tertiary mb-2">Legend: Green = Clicked + High Intent · Gold = Clicked + Mixed · Gray = Did Not Click</p>
-                  <p className="text-caption text-text-tertiary">Quick Insights: Trust-Driven Professionals show 5x engagement vs Rural · Ad #1 has highest cross-archetype performance (58% avg)</p>
+                <CardContent className="border-t border-border-subtle py-6 px-6">
+                  <p className="text-body text-text-tertiary mb-3">Legend: Green = Clicked + High Intent · Gold = Clicked + Mixed · Gray = Did Not Click</p>
+                  <p className="text-body text-text-tertiary">Quick Insights: Trust-Driven Professionals show 5x engagement vs Rural · Ad #1 has highest cross-archetype performance (58% avg)</p>
                 </CardContent>
               </Card>
             </section>
 
             {/* Ad-by-Ad Breakdown */}
             <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Ad-Level Persona Reactions</h2>
+              <h2 className="text-h1 text-text-primary font-bold mb-10 tracking-tight">Ad-Level Persona Reactions</h2>
               {MOCK_ADS.map((ad) => (
-                <Card key={ad.id} className="mb-4">
+                <Card key={ad.id} className="mb-6">
                   <button
                     onClick={() => setExpandedAd(expandedAd === ad.id ? null : ad.id)}
-                    className="w-full py-4 px-6 flex items-center justify-between text-left"
+                    className="w-full py-6 px-8 flex items-center justify-between text-left"
                   >
-                    <div className="flex items-center gap-3">
-                      {expandedAd === ad.id ? <ChevronDown className="w-5 h-5 text-text-tertiary" /> : <ChevronRight className="w-5 h-5 text-text-tertiary" />}
-                      <span className="text-h4 font-semibold text-text-primary">{ad.name}: &quot;{ad.desc}&quot;</span>
+                    <div className="flex items-center gap-4">
+                      {expandedAd === ad.id ? <ChevronDown className="w-6 h-6 text-text-tertiary" /> : <ChevronRight className="w-6 h-6 text-text-tertiary" />}
+                      <span className="text-h3 font-semibold text-text-primary">{ad.name}: &quot;{ad.desc}&quot;</span>
                     </div>
-                    <span className="text-body-sm text-text-tertiary">Performance: {ad.ctr}% ±{ad.ctrCi}% | Trust: {ad.trust}/10 ±{ad.trustCi}</span>
+                    <span className="text-body-lg text-text-tertiary">Performance: {ad.ctr}% ±{ad.ctrCi}% | Trust: {ad.trust}/10 ±{ad.trustCi}</span>
                   </button>
                   {expandedAd === ad.id && (
-                    <CardContent className="pt-0 px-6 pb-6 border-t border-border-subtle">
-                      <p className="text-caption text-text-tertiary mb-4">Sample: {ad.sims.toLocaleString()} simulations across {ad.highIntent > 4 ? 7 : 6} personas</p>
-                      <div className="p-4 rounded-lg bg-bg-elevated border border-border-subtle">
-                        <p className="text-body font-semibold text-text-primary">Persona 1: Manager, Import & Export</p>
-                        <p className="text-caption text-text-tertiary mt-1">25F · Chandigarh · Hindi · ₹75K/month · High digital</p>
-                        <p className="text-body-sm text-accent-green mt-2">Decision: Clicked (High Intent)</p>
-                        <p className="text-body-sm text-text-secondary mt-1">Trust: 8/10 ±0.4 | Relevance: 7/10 ±0.5</p>
-                        <p className="text-body-sm text-text-secondary mt-3 italic">&quot;The ad immediately caught my attention because it&apos;s in Hindi, which feels more trustworthy. The certification badge gives me confidence this is legitimate.&quot;</p>
-                        <p className="text-caption text-text-tertiary mt-2">Key Triggers: Local language (Hindi) · Trust signals (certification) · Relevant pain point addressed</p>
+                    <CardContent className="pt-0 px-8 pb-8 border-t border-border-subtle">
+                      <p className="text-body text-text-tertiary mb-6">Sample: {ad.sims.toLocaleString()} simulations across {ad.highIntent > 4 ? 7 : 6} personas</p>
+                      <div className="p-6 rounded-lg bg-bg-elevated border border-border-subtle">
+                        <p className="text-h4 font-semibold text-text-primary mb-2">Persona 1: Manager, Import & Export</p>
+                        <p className="text-body text-text-tertiary mt-2">25F · Chandigarh · Hindi · ₹75K/month · High digital</p>
+                        <p className="text-body-lg text-accent-green mt-4 font-semibold">Decision: Clicked (High Intent)</p>
+                        <p className="text-body text-text-secondary mt-2">Trust: 8/10 ±0.4 | Relevance: 7/10 ±0.5</p>
+                        <p className="text-body-lg text-text-secondary mt-4 italic leading-relaxed">&quot;The ad immediately caught my attention because it&apos;s in Hindi, which feels more trustworthy. The certification badge gives me confidence this is legitimate.&quot;</p>
+                        <p className="text-body text-text-tertiary mt-4">Key Triggers: Local language (Hindi) · Trust signals (certification) · Relevant pain point addressed</p>
                       </div>
-                      <Button variant="ghost" size="sm" className="mt-4">Show 6 more personas</Button>
+                      <Button variant="ghost" size="md" className="mt-6">Show 6 more personas</Button>
                     </CardContent>
                   )}
                 </Card>
@@ -629,7 +911,7 @@ export default function AdPortfolioResultsPage() {
 
             {/* Export Options */}
             <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Export Options</h2>
+              <h2 className="text-h1 text-text-primary font-bold mb-10 tracking-tight">Export Options</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Card hover className="cursor-pointer">
                   <CardContent className="py-8 text-center">

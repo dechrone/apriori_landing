@@ -3,6 +3,7 @@
 import { Bell, Menu } from 'lucide-react';
 import { UserButton } from '@clerk/nextjs';
 import { IconButton } from '@/components/ui/Button';
+import { useAppShell } from '@/components/app/AppShell';
 
 interface TopBarProps {
   title: string;
@@ -12,8 +13,12 @@ interface TopBarProps {
 }
 
 export function TopBar({ title, breadcrumb, actions, onMenuClick }: TopBarProps) {
+  const { desktopSidebarOpen } = useAppShell();
+  
   return (
-    <header className="fixed top-0 left-0 lg:left-[260px] right-0 h-[72px] bg-bg-primary border-b border-border-subtle px-4 lg:px-8 flex items-center justify-between z-40">
+    <header className={`fixed top-0 left-0 right-0 h-[72px] bg-bg-primary border-b border-border-subtle px-4 lg:px-8 flex items-center justify-between z-40 transition-all duration-300 ${
+      desktopSidebarOpen ? 'lg:left-[260px]' : 'lg:left-[80px]'
+    }`}>
       {/* Left Section */}
       <div className="flex items-center gap-4">
         {/* Mobile menu button */}

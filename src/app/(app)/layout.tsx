@@ -5,15 +5,19 @@ import { ToastProvider } from '@/components/ui/Toast';
 import { AppShellProvider, useAppShell } from '@/components/app/AppShell';
 
 function AppLayoutInner({ children }: { children: React.ReactNode }) {
-  const { mobileMenuOpen, setMobileMenuOpen } = useAppShell();
+  const { mobileMenuOpen, setMobileMenuOpen, desktopSidebarOpen, toggleDesktopSidebar } = useAppShell();
 
   return (
     <div className="min-h-screen bg-bg-primary">
       <Sidebar 
         mobileOpen={mobileMenuOpen} 
-        onMobileClose={() => setMobileMenuOpen(false)} 
+        onMobileClose={() => setMobileMenuOpen(false)}
+        desktopOpen={desktopSidebarOpen}
+        onDesktopToggle={toggleDesktopSidebar}
       />
-      <main className="lg:ml-[260px] mt-[72px] p-5 sm:p-8 lg:p-10 min-h-[calc(100vh-72px)]">
+      <main className={`mt-[72px] p-5 sm:p-8 lg:p-10 min-h-[calc(100vh-72px)] transition-all duration-300 ${
+        desktopSidebarOpen ? 'lg:ml-[260px]' : 'lg:ml-[80px]'
+      }`}>
         {children}
       </main>
     </div>

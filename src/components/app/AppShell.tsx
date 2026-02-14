@@ -6,6 +6,9 @@ interface AppShellContextType {
   mobileMenuOpen: boolean;
   setMobileMenuOpen: (open: boolean) => void;
   toggleMobileMenu: () => void;
+  desktopSidebarOpen: boolean;
+  setDesktopSidebarOpen: (open: boolean) => void;
+  toggleDesktopSidebar: () => void;
 }
 
 const AppShellContext = createContext<AppShellContextType | undefined>(undefined);
@@ -20,11 +23,20 @@ export function useAppShell() {
 
 export function AppShellProvider({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true);
 
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
+  const toggleDesktopSidebar = () => setDesktopSidebarOpen(!desktopSidebarOpen);
 
   return (
-    <AppShellContext.Provider value={{ mobileMenuOpen, setMobileMenuOpen, toggleMobileMenu }}>
+    <AppShellContext.Provider value={{ 
+      mobileMenuOpen, 
+      setMobileMenuOpen, 
+      toggleMobileMenu,
+      desktopSidebarOpen,
+      setDesktopSidebarOpen,
+      toggleDesktopSidebar
+    }}>
       {children}
     </AppShellContext.Provider>
   );

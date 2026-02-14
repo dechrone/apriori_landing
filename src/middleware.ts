@@ -23,6 +23,13 @@ export default clerkMiddleware(
     const { userId } = await auth();
     const { pathname } = req.nextUrl;
 
+    // Bypass authentication in development mode for local setup
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    if (isDevelopment) {
+      // Allow access to all routes without authentication in development
+      return NextResponse.next();
+    }
+
     // Redirect authenticated users from landing page to dashboard
     if (userId && pathname === "/") {
       return NextResponse.redirect(new URL("/dashboard", req.url));
