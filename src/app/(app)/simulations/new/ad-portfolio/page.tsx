@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { TopBar } from '@/components/app/TopBar';
 import { Button } from '@/components/ui/Button';
@@ -8,64 +8,60 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { useAppShell } from '@/components/app/AppShell';
-import { ArrowLeft, ArrowRight, CheckCircle2, FolderOpen } from 'lucide-react';
+import { useToast } from '@/components/ui/Toast';
+import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
+import { ArrowLeft, ArrowRight, CheckCircle2, FolderOpen, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { AssetFolder } from '@/types/asset';
 import { getAssetTypeLabel } from '@/types/asset';
+import { triggerAdPortfolioSimulation } from '@/lib/backend-simulation';
+import { getAudiences, getAssetFolders, saveSimulation } from '@/lib/firestore';
+import type { AudienceDoc } from '@/lib/firestore';
+import type { AdSimulationResponse } from '@/types/simulation-result';
 
 type Step = 1 | 2;
 
-const MOCK_FOLDERS: AssetFolder[] = [
-  {
-    id: '1',
-    name: 'Onboarding Flow',
-    assetType: 'product-flow',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    assetCount: 5,
-    usedInSimulations: 1,
-    status: 'ready',
-  },
-  {
-    id: '4',
-    name: 'Q1 Ad Creatives',
-    assetType: 'ad-creative',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    assetCount: 8,
-    usedInSimulations: 2,
-    status: 'ready',
-  },
-  {
-    id: '5',
-    name: 'Summer Campaign Creatives',
-    assetType: 'ad-creative',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    assetCount: 12,
-    usedInSimulations: 0,
-    status: 'ready',
-  },
-  {
-    id: '6',
-    name: 'Draft Ad Set',
-    assetType: 'ad-creative',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    assetCount: 4,
-    usedInSimulations: 0,
-    status: 'missing-metadata',
-  },
-];
-
-const READY_AD_CREATIVE_FOLDERS = MOCK_FOLDERS.filter(
-  (folder) => folder.assetType === 'ad-creative' && folder.status === 'ready'
-);
-
 export default function AdPortfolioSimulationPage() {
   const { toggleMobileMenu } = useAppShell();
+  const { showToast } = useToast();
+  const { clerkId, profileReady } = useFirebaseUser();
   const [currentStep, setCurrentStep] = useState<Step>(1);
+  const [running, setRunning] = useState(false);
+  const [audiences, setAudiences] = useState<AudienceDoc[]>([]);
+  const [folders, setFolders] = useState<AssetFolder[]>([]);
   const router = useRouter();
+
+  const loadAudiences = useCallback(async () => {
+    if (!clerkId || !profileReady) return;
+    try {
+      const list = await getAudiences(clerkId);
+      setAudiences(list);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [clerkId, profileReady]);
+
+  const loadFolders = useCallback(async () => {
+    if (!clerkId || !profileReady) return;
+    try {
+      const list = await getAssetFolders(clerkId);
+      setFolders(list);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [clerkId, profileReady]);
+
+  useEffect(() => {
+    loadAudiences();
+  }, [loadAudiences]);
+
+  useEffect(() => {
+    loadFolders();
+  }, [loadFolders]);
+
+  const adCreativeReadyFolders = folders.filter(
+    (f) => f.assetType === 'ad-creative' && f.status === 'ready'
+  );
 
   const [formData, setFormData] = useState({
     name: '',
@@ -73,11 +69,52 @@ export default function AdPortfolioSimulationPage() {
     selectedFolderId: '',
   });
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < 2) {
       setCurrentStep(2);
-    } else {
-      router.push('/simulations/ad-portfolio/1'); // Mock ID for ad portfolio results
+      return;
+    }
+    if (!clerkId) {
+      showToast('error', 'Not signed in', 'Please sign in to run a simulation.');
+      return;
+    }
+    setRunning(true);
+    try {
+      const res = await triggerAdPortfolioSimulation(clerkId, {
+        name: formData.name,
+        audience: formData.audience,
+        selectedFolderId: formData.selectedFolderId,
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        showToast('error', 'Backend error', text || `Request failed (${res.status}).`);
+        return;
+      }
+      const data = (await res.json()) as AdSimulationResponse;
+      const result = data?.result;
+      const validation = result?.validation_summary;
+      const meta = result?.metadata;
+      const metric =
+        validation != null
+          ? `${validation.valid}/${validation.total} valid · ${meta?.num_personas ?? 0} personas`
+          : meta != null
+            ? `${meta.num_personas} personas · ${meta.num_ads} ads`
+            : 'Ad portfolio run';
+      const docId = await saveSimulation(clerkId, {
+        type: 'Ad Portfolio',
+        status: 'completed',
+        name: meta?.simulation_name ?? (formData.name || 'Ad Portfolio Run'),
+        metric,
+        timestamp: new Date().toLocaleDateString(undefined, { dateStyle: 'medium' }),
+        simulationId: data?.simulation_id,
+        result: result ?? data,
+      });
+      showToast('success', 'Simulation complete', 'Redirecting to results.');
+      router.push(`/simulations/ad-portfolio/${docId}`);
+    } catch (err) {
+      showToast('error', 'Failed to run simulation', err instanceof Error ? err.message : 'Check backend at localhost:8080.');
+    } finally {
+      setRunning(false);
     }
   };
 
@@ -104,10 +141,10 @@ export default function AdPortfolioSimulationPage() {
 
       <div className="max-w-[960px] mx-auto pt-16 pb-24 px-4">
         {currentStep === 1 && (
-          <SetupStep formData={formData} setFormData={setFormData} />
+          <SetupStep formData={formData} setFormData={setFormData} audiences={audiences} />
         )}
         {currentStep === 2 && (
-          <FolderSelectionStep formData={formData} setFormData={setFormData} />
+          <FolderSelectionStep formData={formData} setFormData={setFormData} folders={adCreativeReadyFolders} />
         )}
 
         <div className="flex items-center justify-between mt-14 gap-6">
@@ -124,10 +161,11 @@ export default function AdPortfolioSimulationPage() {
             size="lg"
             onClick={handleNext}
             className="min-h-[48px] px-8"
-            disabled={!canProceed}
+            disabled={!canProceed || running}
           >
+            {running ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
             {currentStep === 2 ? 'Run Simulation' : 'Next Step'}
-            <ArrowRight className="w-5 h-5" />
+            {!running && <ArrowRight className="w-5 h-5" />}
           </Button>
         </div>
       </div>
@@ -155,9 +193,15 @@ interface FormData {
 interface SetupStepProps {
   formData: FormData;
   setFormData: (data: FormData) => void;
+  audiences: AudienceDoc[];
 }
 
-function SetupStep({ formData, setFormData }: SetupStepProps) {
+function SetupStep({ formData, setFormData, audiences }: SetupStepProps) {
+  const audienceOptions = [
+    { value: '', label: 'Select an audience' },
+    ...audiences.map((a) => ({ value: a.id, label: a.name })),
+  ];
+
   return (
     <div className="space-y-12 [&_label]:text-body [&_label]:mb-3">
       <div>
@@ -177,12 +221,7 @@ function SetupStep({ formData, setFormData }: SetupStepProps) {
           required
           value={formData.audience}
           onChange={(e) => setFormData({ ...formData, audience: e.target.value })}
-          options={[
-            { value: '', label: 'Select an audience' },
-            { value: 'us-smb-founders', label: 'US SMB Founders' },
-            { value: 'enterprise-buyers', label: 'Enterprise IT Buyers' },
-            { value: 'tier1-metro', label: 'Tier 1 Metro · ₹50K–1L' },
-          ]}
+          options={audienceOptions}
           className="py-4 px-5 text-body-lg min-h-[52px]"
         />
         <div className="mt-4 p-5 rounded-[var(--radius-sm)] bg-bg-elevated">
@@ -206,9 +245,10 @@ function SetupStep({ formData, setFormData }: SetupStepProps) {
 interface FolderSelectionStepProps {
   formData: FormData;
   setFormData: (data: FormData) => void;
+  folders: AssetFolder[];
 }
 
-function FolderSelectionStep({ formData, setFormData }: FolderSelectionStepProps) {
+function FolderSelectionStep({ formData, setFormData, folders }: FolderSelectionStepProps) {
   return (
     <Card>
       <CardContent className="py-8">
@@ -220,14 +260,14 @@ function FolderSelectionStep({ formData, setFormData }: FolderSelectionStepProps
           </p>
         </div>
 
-        {READY_AD_CREATIVE_FOLDERS.length === 0 ? (
+        {folders.length === 0 ? (
           <p className="text-body text-text-secondary">
             No completed ad creative folders available. Create an ad creatives folder in Assets,
             upload creatives, and complete metadata first.
           </p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {READY_AD_CREATIVE_FOLDERS.map((folder) => {
+            {folders.map((folder) => {
               const isSelected = formData.selectedFolderId === folder.id;
               return (
                 <button

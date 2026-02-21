@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { TopBar } from '@/components/app/TopBar';
 import { Button } from '@/components/ui/Button';
@@ -8,79 +8,114 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { useAppShell } from '@/components/app/AppShell';
-import { ArrowLeft, ArrowRight, CheckCircle2, FolderOpen } from 'lucide-react';
+import { useToast } from '@/components/ui/Toast';
+import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
+import { ArrowLeft, ArrowRight, CheckCircle2, FolderOpen, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { AssetFolder } from '@/types/asset';
 import { getAssetTypeLabel } from '@/types/asset';
+import { triggerProductFlowSimulation } from '@/lib/backend-simulation';
+import { getAudiences, getAssetFolders, saveSimulation } from '@/lib/firestore';
+import type { AudienceDoc } from '@/lib/firestore';
+import type { ProductFlowSimulationResponse } from '@/types/simulation-result';
 
 type Step = 1 | 2 | 3;
 
-const MOCK_FOLDERS: AssetFolder[] = [
-  {
-    id: '1',
-    name: 'Onboarding Flow',
-    assetType: 'product-flow',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    assetCount: 5,
-    usedInSimulations: 1,
-    status: 'ready',
-  },
-  {
-    id: '2',
-    name: 'Checkout Flow',
-    assetType: 'product-flow',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    assetCount: 3,
-    usedInSimulations: 0,
-    status: 'ready',
-  },
-  {
-    id: '3',
-    name: 'Pricing Page Screens',
-    assetType: 'product-flow',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    assetCount: 4,
-    usedInSimulations: 0,
-    status: 'missing-metadata',
-  },
-  {
-    id: '4',
-    name: 'Q1 Ad Creatives',
-    assetType: 'ad-creative',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    assetCount: 8,
-    usedInSimulations: 2,
-    status: 'ready',
-  },
-];
-
-const COMPLETED_PRODUCT_FLOW_FOLDERS = MOCK_FOLDERS.filter(
-  (folder) => folder.assetType === 'product-flow' && folder.status === 'ready'
-);
-
 export default function ProductFlowSimulationPage() {
   const { toggleMobileMenu } = useAppShell();
+  const { showToast } = useToast();
+  const { clerkId, profileReady } = useFirebaseUser();
   const [currentStep, setCurrentStep] = useState<Step>(1);
+  const [running, setRunning] = useState(false);
+  const [audiences, setAudiences] = useState<AudienceDoc[]>([]);
+  const [folders, setFolders] = useState<AssetFolder[]>([]);
   const router = useRouter();
+
+  const loadAudiences = useCallback(async () => {
+    if (!clerkId || !profileReady) return;
+    try {
+      const list = await getAudiences(clerkId);
+      setAudiences(list);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [clerkId, profileReady]);
+
+  const loadFolders = useCallback(async () => {
+    if (!clerkId || !profileReady) return;
+    try {
+      const list = await getAssetFolders(clerkId);
+      setFolders(list);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [clerkId, profileReady]);
+
+  useEffect(() => {
+    loadAudiences();
+  }, [loadAudiences]);
+
+  useEffect(() => {
+    loadFolders();
+  }, [loadFolders]);
+
+  const productFlowReadyFolders = folders.filter(
+    (f) => f.assetType === 'product-flow' && f.status === 'ready'
+  );
 
   const [formData, setFormData] = useState({
     name: '',
     audience: '',
-    personaDepth: 'medium',
+    personaDepth: 'medium' as 'low' | 'medium' | 'high',
     optimizeMetric: 'checkout-conversion',
     selectedFolderIds: [] as string[],
   });
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < 3) {
       setCurrentStep((currentStep + 1) as Step);
-    } else {
-      // Start simulation
-      router.push('/simulations/1'); // Mock ID
+      return;
+    }
+    if (!clerkId) {
+      showToast('error', 'Not signed in', 'Please sign in to run a simulation.');
+      return;
+    }
+    setRunning(true);
+    try {
+      const res = await triggerProductFlowSimulation(clerkId, {
+        name: formData.name,
+        audience: formData.audience,
+        personaDepth: formData.personaDepth,
+        optimizeMetric: formData.optimizeMetric,
+        selectedFolderIds: formData.selectedFolderIds,
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        showToast('error', 'Backend error', text || `Request failed (${res.status}).`);
+        return;
+      }
+      const data = (await res.json()) as ProductFlowSimulationResponse;
+      const result = data?.result;
+      const meta = result?.metadata;
+      const metric =
+        meta != null
+          ? `${meta.completion_rate_pct ?? 0}% completion · ${meta.avg_time_seconds ?? 0}s avg`
+          : 'Product flow run';
+      const docId = await saveSimulation(clerkId, {
+        type: 'Product Flow',
+        status: 'completed',
+        name: meta?.simulation_name ?? (formData.name || 'Product Flow Run'),
+        metric,
+        timestamp: new Date().toLocaleDateString(undefined, { dateStyle: 'medium' }),
+        simulationId: data?.simulation_id,
+        result: result ?? data,
+      });
+      showToast('success', 'Simulation complete', 'Redirecting to results.');
+      router.push(`/simulations/${docId}`);
+    } catch (err) {
+      showToast('error', 'Failed to run simulation', err instanceof Error ? err.message : 'Check backend at localhost:8080.');
+    } finally {
+      setRunning(false);
     }
   };
 
@@ -103,10 +138,10 @@ export default function ProductFlowSimulationPage() {
 
       <div className="max-w-[960px] mx-auto pt-16 pb-24 px-4">
         {currentStep === 1 && (
-          <SetupStep formData={formData} setFormData={setFormData} />
+          <SetupStep formData={formData} setFormData={setFormData} audiences={audiences} />
         )}
         {currentStep === 2 && (
-          <AssetSelectionStep formData={formData} setFormData={setFormData} />
+          <AssetSelectionStep formData={formData} setFormData={setFormData} folders={productFlowReadyFolders} />
         )}
         {currentStep === 3 && (
           <ParametersStep formData={formData} setFormData={setFormData} />
@@ -118,9 +153,10 @@ export default function ProductFlowSimulationPage() {
             <ArrowLeft className="w-5 h-5" />
             {currentStep === 1 ? 'Cancel' : 'Back'}
           </Button>
-          <Button size="lg" onClick={handleNext} className="min-h-[48px] px-8">
+          <Button size="lg" onClick={handleNext} className="min-h-[48px] px-8" disabled={running}>
+            {running ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
             {currentStep === 3 ? 'Run Simulation' : 'Next Step'}
-            <ArrowRight className="w-5 h-5" />
+            {!running && <ArrowRight className="w-5 h-5" />}
           </Button>
         </div>
       </div>
@@ -148,9 +184,15 @@ interface FormData {
 interface SetupStepProps {
   formData: FormData;
   setFormData: (data: FormData) => void;
+  audiences: AudienceDoc[];
 }
 
-function SetupStep({ formData, setFormData }: SetupStepProps) {
+function SetupStep({ formData, setFormData, audiences }: SetupStepProps) {
+  const audienceOptions = [
+    { value: '', label: 'Select an audience' },
+    ...audiences.map((a) => ({ value: a.id, label: a.name })),
+  ];
+
   return (
     <div className="space-y-12 [&_label]:text-body [&_label]:mb-3">
       <div>
@@ -170,11 +212,7 @@ function SetupStep({ formData, setFormData }: SetupStepProps) {
           required
           value={formData.audience}
           onChange={(e) => setFormData({ ...formData, audience: e.target.value })}
-          options={[
-            { value: '', label: 'Select an audience' },
-            { value: 'us-smb-founders', label: 'US SMB Founders' },
-            { value: 'enterprise-buyers', label: 'Enterprise IT Buyers' },
-          ]}
+          options={audienceOptions}
           className="py-4 px-5 text-body-lg min-h-[52px]"
         />
         <div className="mt-4 p-5 rounded-[var(--radius-sm)] bg-bg-elevated">
@@ -197,9 +235,10 @@ function SetupStep({ formData, setFormData }: SetupStepProps) {
 interface AssetSelectionStepProps {
   formData: FormData;
   setFormData: (data: FormData) => void;
+  folders: AssetFolder[];
 }
 
-function AssetSelectionStep({ formData, setFormData }: AssetSelectionStepProps) {
+function AssetSelectionStep({ formData, setFormData, folders }: AssetSelectionStepProps) {
   const handleToggle = (id: string) => {
     const exists = formData.selectedFolderIds.includes(id);
     setFormData({
@@ -221,14 +260,14 @@ function AssetSelectionStep({ formData, setFormData }: AssetSelectionStepProps) 
           </p>
         </div>
 
-        {COMPLETED_PRODUCT_FLOW_FOLDERS.length === 0 ? (
+        {folders.length === 0 ? (
           <p className="text-body text-text-secondary">
             No completed product flow folders available yet. Create folders in the Assets section,
             upload product flow screens, and mark them as ready first.
           </p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {COMPLETED_PRODUCT_FLOW_FOLDERS.map((folder) => {
+            {folders.map((folder) => {
               const isSelected = formData.selectedFolderIds.includes(folder.id);
               return (
                 <button
@@ -289,7 +328,7 @@ function ParametersStep({ formData, setFormData }: SetupStepProps) {
             <button
               key={depth}
               type="button"
-              onClick={() => setFormData({ ...formData, personaDepth: depth })}
+              onClick={() => setFormData({ ...formData, personaDepth: depth as 'low' | 'medium' | 'high' })}
               className={`
                 flex-1 px-6 py-5 rounded-[var(--radius-sm)] border-2 transition-standard capitalize text-body
                 ${formData.personaDepth === depth 

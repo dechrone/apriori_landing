@@ -17,13 +17,7 @@ import {
   query,
   orderBy,
 } from "firebase/firestore";
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
-} from "firebase/storage";
-import { db, storage } from "./firebase";
+import { db } from "./firebase";
 import type { AssetFolder, Asset } from "@/types/asset";
 
 /** Firestore does not allow `undefined`; strip those keys before writing. */
@@ -186,6 +180,10 @@ export type SimulationDoc = {
   name: string;
   metric: string;
   timestamp: string;
+  /** Backend simulation id from API response */
+  simulationId?: string;
+  /** Full result from backend (ad or product_flow) */
+  result?: unknown;
   createdAt: unknown;
   updatedAt: unknown;
 };
@@ -229,6 +227,14 @@ export async function getSimulations(clerkId: string): Promise<SimulationDoc[]> 
   return snap.docs.map((d) => ({ id: d.id, ...d.data() } as SimulationDoc));
 }
 
+export async function getSimulation(
+  clerkId: string,
+  simulationDocId: string
+): Promise<SimulationDoc | null> {
+  const snap = await getDoc(doc(db, "apriori_users", clerkId, "simulations", simulationDocId));
+  return snap.exists() ? ({ id: snap.id, ...snap.data() } as SimulationDoc) : null;
+}
+
 // ─── Asset Folders ────────────────────────────────────────────────────────────
 
 export async function saveAssetFolder(
@@ -266,39 +272,7 @@ export async function getAssetFolders(clerkId: string): Promise<AssetFolder[]> {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() } as AssetFolder));
 }
 
-// ─── Assets (images stored in Firebase Storage) ───────────────────────────────
-
-export interface AssetUploadResult {
-  storageUrl: string;
-  storagePath: string;
-}
-
-export async function uploadAssetFile(
-  clerkId: string,
-  folderId: string,
-  file: File
-): Promise<AssetUploadResult> {
-  const storagePath = `users/${clerkId}/assetFolders/${folderId}/${Date.now()}_${file.name}`;
-  const storageRef = ref(storage, storagePath);
-  const metadata = { contentType: file.type || "application/octet-stream" };
-  try {
-    await uploadBytes(storageRef, file, metadata);
-    const storageUrl = await getDownloadURL(storageRef);
-    return { storageUrl, storagePath };
-  } catch (err: unknown) {
-    const code = err && typeof err === "object" && "code" in err ? (err as { code: string }).code : "";
-    const msg = err instanceof Error ? err.message : String(err);
-    throw new Error(code ? `[${code}] ${msg}` : msg);
-  }
-}
-
-export async function deleteAssetFile(storagePath: string): Promise<void> {
-  try {
-    await deleteObject(ref(storage, storagePath));
-  } catch {
-    // file may already be deleted
-  }
-}
+// ─── Assets (images: upload via Cloudinary; URL + public_id stored in Firestore) ─
 
 export async function saveAssetMetadata(
   clerkId: string,

@@ -28,11 +28,11 @@ import { getAssetTypeLabel } from '@/types/asset';
 import { AssetSidePanel } from '@/components/assets/AssetSidePanel';
 import {
   getAssetsInFolder,
-  uploadAssetFile,
   addAssetDocument,
   deleteAssetMetadata,
   updateAssetFolder,
 } from '@/lib/firestore';
+import { uploadAssetToCloudinary } from '@/lib/cloudinary-upload';
 
 interface PendingUpload {
   localId: string;
@@ -167,7 +167,7 @@ export default function FolderDetailPage() {
             () =>
               reject(
                 new Error(
-                  `${label} timed out. Check: 1) Storage rules for users/.../assetFolders/ (allow write), 2) CORS on the bucket (PUT, POST, OPTIONS from your origin), 3) Network.`
+                  `${label} timed out. Check your network and that Cloudinary env vars are set (CLOUDINARY_CLOUD_NAME, API_KEY, API_SECRET).`
                 )
               ),
             UPLOAD_TIMEOUT_MS
@@ -179,17 +179,17 @@ export default function FolderDetailPage() {
     try {
       for (const pending of pendingUploads) {
         try {
-          const { storageUrl, storagePath } = await withTimeout(
-            uploadAssetFile(clerkId, folderId, pending.file),
+          const { url, public_id } = await withTimeout(
+            uploadAssetToCloudinary(pending.file, clerkId, folderId),
             'Upload'
           );
           const finalAsset: Asset = {
             ...pending.asset,
-            url: storageUrl,
+            url,
           };
 
           const savedId = await withTimeout(
-            addAssetDocument(clerkId, folderId, { ...finalAsset }, storagePath),
+            addAssetDocument(clerkId, folderId, { ...finalAsset }, public_id),
             'Save to Firestore'
           );
 

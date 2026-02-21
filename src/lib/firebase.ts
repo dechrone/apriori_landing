@@ -1,6 +1,5 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD97Y0ClXxM62lI-_9shw8ZZGydzcTp9KA",
@@ -15,6 +14,4 @@ const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
 export const db = getFirestore(app);
-// Use explicit bucket URL so uploads resolve to the correct bucket
-export const storage = getStorage(app, `gs://${firebaseConfig.storageBucket}`);
 export default app;
