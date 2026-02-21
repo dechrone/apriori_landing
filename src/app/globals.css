@@ -208,6 +208,21 @@ body {
   background: var(--text-tertiary);
 }
 
+/* Thin scrollbar for explorer panels */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
 /* ===== TYPOGRAPHY SCALE ===== */
 
 /* Display - Large hero text */
@@ -284,6 +299,29 @@ body {
   font-weight: 500;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+/* Report / Simulation Results – section hierarchy (desktop) */
+.text-report-section {
+  font-size: 1.75rem;        /* 28px – clear section start */
+  line-height: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+.text-report-subsection {
+  font-size: 1.25rem;        /* 20px – sub-section */
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.text-report-label {
+  font-size: 0.875rem;      /* 14px – card/small headings, was label */
+  line-height: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 /* Legacy support - Landing page typography */
