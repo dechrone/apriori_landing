@@ -23,7 +23,7 @@ export function AssetSidePanel({ asset, onClose, onSave }: AssetSidePanelProps) 
         aria-hidden="true"
       />
       <aside
-        className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-bg-secondary border-l border-border-subtle shadow-xl z-50 flex flex-col animate-slideInRight"
+        className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-bg-secondary shadow-[var(--shadow-xl)] z-50 flex flex-col animate-slideInRight"
         role="dialog"
         aria-modal="true"
         aria-labelledby="asset-panel-title"

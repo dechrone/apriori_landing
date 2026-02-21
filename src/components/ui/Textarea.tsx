@@ -19,14 +19,14 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         <textarea
           ref={ref}
           className={`
-            w-full bg-bg-input border border-border-subtle rounded-md
+            w-full bg-bg-input border border-border-subtle rounded-[var(--radius-sm)]
             px-4 py-3 text-body text-text-primary
             placeholder:text-text-quaternary
             transition-standard resize-y
             min-h-[100px]
-            focus:outline-none focus:border-accent-gold focus:ring-3 focus:ring-accent-gold/10
+            focus:outline-none focus:border-accent-gold focus:ring-2 focus:ring-accent-gold/15
             disabled:bg-bg-elevated disabled:text-text-quaternary disabled:cursor-not-allowed
-            ${error ? 'border-accent-red focus:border-accent-red focus:ring-accent-red/10' : ''}
+            ${error ? 'border-accent-red focus:border-accent-red focus:ring-accent-red/15' : ''}
             ${className}
           `}
           {...props}

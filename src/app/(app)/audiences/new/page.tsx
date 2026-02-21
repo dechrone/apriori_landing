@@ -16,7 +16,7 @@ import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { saveAudience } from "@/lib/firestore";
 
 export default function NewAudiencePage() {
-  const { toggleMobileMenu } = useAppShell();
+  const { toggleMobileMenu, sidebarCollapsed } = useAppShell();
   const router = useRouter();
   const { showToast } = useToast();
   const { clerkId } = useFirebaseUser();
@@ -183,7 +183,7 @@ export default function NewAudiencePage() {
               </div>
             </div>
 
-            <footer className="fixed bottom-0 left-0 right-0 lg:left-[260px] bg-bg-primary/95 backdrop-blur-sm border-t border-border-subtle px-4 lg:px-8 py-4 z-20">
+            <footer className={`fixed bottom-0 left-0 right-0 bg-bg-secondary/95 backdrop-blur-sm shadow-[0_-1px_3px_rgba(0,0,0,0.06)] px-4 lg:px-8 py-4 z-20 transition-[left] duration-200 ease-out ${sidebarCollapsed ? 'lg:left-[72px]' : 'lg:left-[260px]'}`}>
               <div className="max-w-[1600px] mx-auto flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <Button

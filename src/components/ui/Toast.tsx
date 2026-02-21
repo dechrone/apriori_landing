@@ -71,7 +71,7 @@ function ToastItem({ toast, onClose }: ToastItemProps) {
   };
 
   return (
-    <div className="bg-bg-elevated border border-border-medium rounded-lg shadow-xl p-4 flex gap-3 animate-slideInRight">
+    <div className="bg-bg-secondary rounded-[var(--radius-md)] shadow-[var(--shadow-xl)] p-4 flex gap-3 animate-slideInRight">
       <div className="flex-shrink-0 mt-0.5">
         {icons[toast.type]}
       </div>

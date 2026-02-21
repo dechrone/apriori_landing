@@ -26,7 +26,7 @@ export default function SimulationDetailsPage() {
       <div className="max-w-[1600px] mx-auto">
         <div className="mb-6">
           <p className="text-body-sm text-text-tertiary mb-2">Run on Feb 6, 2026</p>
-          <div className="inline-flex items-center px-4 py-2 bg-accent-green-bg text-accent-green rounded-lg text-h4 font-bold">
+          <div className="inline-flex items-center px-4 py-2 bg-accent-green-bg text-accent-green rounded-[var(--radius-sm)] text-h4 font-bold">
             +18% retention predicted
           </div>
         </div>
@@ -143,12 +143,12 @@ interface MetricCardProps {
 function MetricCard({ label, value, change, positive }: MetricCardProps) {
   return (
     <Card>
-      <CardContent className="text-center">
+      <CardContent className="text-center py-6">
+        <p className="text-h2 text-text-primary mb-1">{value}</p>
         <p className="text-caption text-text-tertiary uppercase mb-2">{label}</p>
-        <p className="text-h2 text-text-primary mb-2">{value}</p>
-        <p className={`text-body-sm font-semibold ${positive ? 'text-accent-green' : 'text-accent-red'}`}>
+        <span className={`inline-flex items-center px-2 py-0.5 rounded-[var(--radius-sm)] text-body-sm font-semibold ${positive ? 'text-accent-green bg-accent-green-bg' : 'text-accent-red bg-accent-red-bg'}`}>
           {positive ? '↑' : '↓'} {change}
-        </p>
+        </span>
       </CardContent>
     </Card>
   );

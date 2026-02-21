@@ -31,7 +31,7 @@ export function DeleteFolderModal({
           Are you sure you want to delete &quot;{folder.name}&quot;? All assets in it will be removed.
         </p>
         {usedCount > 0 && (
-          <div className="p-4 rounded-lg bg-accent-orange-bg border border-accent-orange/30">
+          <div className="p-4 rounded-[var(--radius-sm)] bg-accent-orange-bg">
             <p className="text-body text-text-primary font-medium">
               This folder is used in {usedCount} simulation{usedCount !== 1 ? 's' : ''}.
             </p>

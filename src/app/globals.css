@@ -208,6 +208,21 @@ body {
   background: var(--text-tertiary);
 }
 
+/* Thin scrollbar for explorer panels */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
 /* ===== TYPOGRAPHY SCALE ===== */
 
 /* Display - Large hero text */
@@ -284,6 +299,29 @@ body {
   font-weight: 500;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+/* Report / Simulation Results – section hierarchy (desktop) */
+.text-report-section {
+  font-size: 1.75rem;        /* 28px – clear section start */
+  line-height: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+.text-report-subsection {
+  font-size: 1.25rem;        /* 20px – sub-section */
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.text-report-label {
+  font-size: 0.875rem;      /* 14px – card/small headings, was label */
+  line-height: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 /* Legacy support - Landing page typography */
@@ -402,6 +440,39 @@ body {
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animation utility classes */
+.animate-in {
+  animation-fill-mode: both;
+}
+
+.fade-in-0 {
+  animation-name: fadeIn;
+}
+
+.slide-in-from-top-1 {
+  animation-name: slideInFromTop;
+}
+
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
@@ -479,6 +550,38 @@ body {
   display: none !important;
 }
 
+/* Force visible text in Clerk auth (sign-up/sign-in) on dark background */
+.clerk-auth-wrapper {
+  --clerk-color-foreground: #F9FAFB;
+  --clerk-color-muted-foreground: #D1D5DB;
+  --clerk-color-input-foreground: #FAFAFA;
+  --clerk-color-primary-foreground: #0A0E1A;
+}
+.clerk-auth-wrapper [class^="cl-"] .cl-formFieldLabel,
+.clerk-auth-wrapper [class^="cl-"] [class*="formFieldLabel"] {
+  color: #D1D5DB !important;
+}
+.clerk-auth-wrapper [class^="cl-"] .cl-footerAction,
+.clerk-auth-wrapper [class^="cl-"] [class*="footerAction"] {
+  color: #D1D5DB !important;
+}
+.clerk-auth-wrapper [class^="cl-"] [class*="socialButtonsBlockButton"] span {
+  color: #F9FAFB !important;
+}
+.clerk-auth-wrapper [class^="cl-"] [class*="optional"],
+.clerk-auth-wrapper [class^="cl-"] .cl-formFieldOptionalLabel {
+  color: #9CA3AF !important;
+}
+.clerk-auth-wrapper [class^="cl-"] [class*="footer"] {
+  color: #D1D5DB !important;
+}
+.clerk-auth-wrapper a[class*="footerActionLink"] {
+  color: var(--accent-amber) !important;
+}
+.clerk-auth-wrapper [class^="cl-"] [class*="dividerText"] {
+  color: #9CA3AF !important;
+}
+
 /* ===== UTILITY CLASSES ===== */
 
 /* Standard transition */
@@ -492,6 +595,95 @@ body {
 
 .transition-slow {
   transition: all var(--transition-slow) var(--ease-in-out);
+}
+
+/* ===== DASHBOARD LIGHT THEME ===== */
+.dashboard-theme {
+  /* Backgrounds */
+  --bg-primary: #F5F5F5;
+  --bg-secondary: #FFFFFF;
+  --bg-elevated: #F9FAFB;
+  --bg-hover: #F3F4F6;
+  --bg-input: #FFFFFF;
+  --bg-deep: #F5F5F5;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+
+  /* Text */
+  --text-primary: #1A1A1A;
+  --text-secondary: #4B5563;
+  --text-tertiary: #6B7280;
+  --text-quaternary: #9CA3AF;
+  --text-inverse: #FFFFFF;
+
+  /* Borders */
+  --border-subtle: #E5E7EB;
+  --border-medium: #D1D5DB;
+  --border-strong: #9CA3AF;
+  --border-emphasis: #D1D5DB;
+
+  /* Accent — single warm orange (unchanged hue) */
+  --accent-gold: #F59E0B;
+  --accent-gold-hover: #D97706;
+  --accent-gold-dim: rgba(245, 158, 11, 0.08);
+  --accent-amber: #F59E0B;
+  --accent-amber-glow: rgba(245, 158, 11, 0.12);
+  --accent-amber-dim: rgba(245, 158, 11, 0.08);
+
+  /* Semantic status colors */
+  --accent-green: #059669;
+  --accent-green-bg: rgba(5, 150, 105, 0.08);
+  --accent-red: #DC2626;
+  --accent-red-bg: rgba(220, 38, 38, 0.08);
+  --accent-orange: #EA580C;
+  --accent-orange-bg: rgba(234, 88, 12, 0.08);
+  --accent-blue: #2563EB;
+  --accent-blue-bg: rgba(37, 99, 235, 0.08);
+  --accent-purple: #7C3AED;
+  --accent-purple-bg: rgba(124, 58, 237, 0.08);
+
+  /* Gradients */
+  --gradient-gold: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  --gradient-dark: linear-gradient(180deg, #F5F5F5 0%, #FFFFFF 100%);
+  --gradient-glow: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.06) 0%, transparent 50%);
+
+  /* Border radius — uniform 12‑16px per design rules */
+  --radius-sm: 12px;
+  --radius-md: 14px;
+  --radius-lg: 16px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+
+  /* Shadows — light, lifted cards */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 1px 4px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.08), 0 20px 48px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
+  --shadow-glow-gold: 0 0 16px rgba(245, 158, 11, 0.12);
+  --shadow-glass: 0 1px 4px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
+  --shadow-amber-glow: 0 0 20px rgba(245, 158, 11, 0.12);
+  --shadow-amber-glow-sm: 0 0 12px rgba(245, 158, 11, 0.08);
+  --shadow-inner: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Ensure body inherits the light background when dashboard is active */
+body:has(.dashboard-theme) {
+  background: #F5F5F5;
+}
+
+/* Dashboard scrollbar */
+.dashboard-theme ::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+.dashboard-theme ::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+}
+.dashboard-theme ::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
+.dashboard-theme ::selection {
+  background: #F59E0B;
+  color: #FFFFFF;
 }
 
 /* ===== RESPONSIVE BREAKPOINTS ===== */

@@ -177,7 +177,7 @@ function SetupStep({ formData, setFormData }: SetupStepProps) {
           ]}
           className="py-4 px-5 text-body-lg min-h-[52px]"
         />
-        <div className="mt-4 p-5 rounded-lg bg-bg-elevated/50 border border-border-subtle">
+        <div className="mt-4 p-5 rounded-[var(--radius-sm)] bg-bg-elevated">
           <p className="text-body text-text-secondary leading-relaxed">
             A target group (audience) is required to run this simulation. If you haven&apos;t created one yet,{' '}
             <Link
@@ -236,9 +236,9 @@ function AssetSelectionStep({ formData, setFormData }: AssetSelectionStepProps) 
                   type="button"
                   onClick={() => handleToggle(folder.id)}
                   className={`
-                    text-left rounded-lg border-2 px-4 py-4 transition-standard w-full
+                    text-left rounded-[var(--radius-sm)] border-2 px-4 py-4 transition-standard w-full
                     ${isSelected
-                      ? 'border-accent-gold bg-bg-elevated'
+                      ? 'border-accent-gold bg-accent-gold/5 shadow-[var(--shadow-sm)]'
                       : 'border-border-subtle hover:border-border-medium bg-bg-secondary'
                     }
                   `}
@@ -291,10 +291,10 @@ function ParametersStep({ formData, setFormData }: SetupStepProps) {
               type="button"
               onClick={() => setFormData({ ...formData, personaDepth: depth })}
               className={`
-                flex-1 px-6 py-5 rounded-lg border-2 transition-standard capitalize text-body
+                flex-1 px-6 py-5 rounded-[var(--radius-sm)] border-2 transition-standard capitalize text-body
                 ${formData.personaDepth === depth 
-                  ? 'border-accent-gold bg-bg-elevated text-text-primary' 
-                  : 'border-border-subtle text-text-secondary hover:border-border-medium'
+                  ? 'border-accent-gold bg-accent-gold/5 text-text-primary shadow-[var(--shadow-sm)]' 
+                  : 'border-border-subtle text-text-secondary hover:border-border-medium hover:bg-bg-hover'
                 }
               `}
             >

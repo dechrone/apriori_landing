@@ -22,14 +22,18 @@ export default clerkMiddleware(
   async (auth, req) => {
     const { userId } = await auth();
     const { pathname } = req.nextUrl;
+    const hostname = req.nextUrl.hostname;
+
+    // Skip authentication for localhost
+    const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1";
 
     // Redirect authenticated users from landing page to dashboard
     if (userId && pathname === "/") {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 
-    // Protect app routes
-    if (isProtectedRoute(req)) {
+    // Protect app routes (skip on localhost)
+    if (isProtectedRoute(req) && !isLocalhost) {
       await auth.protect();
     }
   },

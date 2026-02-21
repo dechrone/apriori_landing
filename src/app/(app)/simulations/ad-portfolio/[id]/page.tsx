@@ -14,8 +14,8 @@ import {
   ChevronDown,
   ChevronRight,
   Download,
-  ExternalLink,
 } from 'lucide-react';
+import { PersonaReactionExplorer } from './components/PersonaReactionExplorer';
 
 type TabId = 'results' | 'deep-dive';
 
@@ -49,6 +49,46 @@ const MOCK_ADS = [
   { id: 'ad_4', name: 'Ad #4', desc: 'Promotional Focus', ctr: 50, ctrCi: 4.0, clicks: 5, highIntent: 4, trust: 4.4, trustCi: 0.7, relevance: 5.7, sims: 100000, rec: 'replace' as const, actions: [['Review Messaging', 'review'], ['View Details', 'view']] },
 ];
 
+// Recommended Meta (Facebook/Instagram) ad settings per creative – demographics & targeting to apply in Ads Manager
+const MOCK_META_TARGETING: Record<string, { ageRange: string; gender: string; locations: string[]; interests: string[]; languages: string[]; placements: string[]; optimizationGoal?: string }> = {
+  ad_1: {
+    ageRange: '28–55',
+    gender: 'All',
+    locations: ['India (all regions)', 'Focus: North (Hindi belt), West (Gujarat, Maharashtra)'],
+    interests: ['Small business', 'Export/Import', 'Freelancing', 'B2B services', 'Professional certifications'],
+    languages: ['Hindi', 'English', 'Gujarati', 'Marathi'],
+    placements: ['Feed (Facebook + Instagram)', 'Stories', 'Reels'],
+    optimizationGoal: 'Conversions (Lead)',
+  },
+  ad_2: {
+    ageRange: '25–54',
+    gender: 'All',
+    locations: ['India (all regions)', 'Urban + Tier 2 cities'],
+    interests: ['Business and industry', 'Entrepreneurship', 'Office supplies', 'Professional development'],
+    languages: ['English', 'Hindi'],
+    placements: ['Feed (Facebook + Instagram)', 'Audience Network'],
+    optimizationGoal: 'Link clicks',
+  },
+  ad_3: {
+    ageRange: '30–50',
+    gender: 'All',
+    locations: ['India – Metro & Tier 1 only'],
+    interests: ['Finance', 'Business news', 'Efficiency tools', 'SME'],
+    languages: ['English'],
+    placements: ['Feed (Facebook + Instagram)'],
+    optimizationGoal: 'Link clicks',
+  },
+  ad_4: {
+    ageRange: '28–45',
+    gender: 'All',
+    locations: ['India (all regions)'],
+    interests: ['Deals and offers', 'Discounts', 'B2B software', 'Startups'],
+    languages: ['English', 'Hindi'],
+    placements: ['Feed', 'Stories'],
+    optimizationGoal: 'Reach',
+  },
+};
+
 const MOCK_INSIGHTS = [
   { num: 1, title: 'Local Language Drives Trust', description: 'Ads featuring regional languages (Hindi, Marathi) scored 40% higher (±8%) on trust compared to English-only creatives across 6 archetypes representing ~600K users.', confidence: 92, ci: [89, 95], sample: 60000, effectSize: 1.2, rec: 'Create language variants for top-performing ads targeting each region', actions: [['Generate Hindi Variant', 'primary'], ['See Detailed Analysis', 'secondary']] },
   { num: 2, title: 'Trust Signals Correlate with High Intent', description: 'R² = 0.74 (95% CI: 0.69–0.79) correlation between trust scores and high-intent behavior. Personas rating trust >7 converted to high-intent at 3.2x baseline (p < 0.001).', confidence: 91, ci: [88, 94], sample: 100000, rec: 'Audit ad copy for trust signals (certifications, guarantees, social proof)', actions: [['Trust Signal Audit Tool', 'primary'], ['View Correlation Plot', 'secondary']] },
@@ -70,18 +110,10 @@ const VALIDATION_CHECKS = [
   'Ran 10,000 Monte Carlo iterations per persona',
 ];
 
-// Reaction matrix mock
-const MOCK_MATRIX = [
-  { archetype: 'Trust-Driven Professionals', personas: 4, ad1: 'high', ad2: 'high', ad3: 'mid', ad4: 'mid', cr1: 75, cr2: 70, cr3: 50, cr4: 45 },
-  { archetype: 'Cautious Rural Workers', personas: 3, ad1: 'none', ad2: 'none', ad3: 'none', ad4: 'none', cr1: 0, cr2: 0, cr3: 0, cr4: 0 },
-  { archetype: 'Pragmatic Mid-Tier', personas: 3, ad1: 'mid', ad2: 'mid', ad3: 'mid', ad4: 'mid', cr1: 40, cr2: 38, cr3: 35, cr4: 32 },
-];
-
 export default function AdPortfolioResultsPage() {
   const { toggleMobileMenu } = useAppShell();
   const [activeTab, setActiveTab] = useState<TabId>('results');
-  const [expandedArchetype, setExpandedArchetype] = useState<string | null>(null);
-  const [expandedAd, setExpandedAd] = useState<string | null>(MOCK_ADS[0]?.id ?? null);
+  const [expandedMetaAd, setExpandedMetaAd] = useState<string | null>(null);
 
   // Interactive revenue model
   const [aov, setAov] = useState(15000);
@@ -154,16 +186,16 @@ export default function AdPortfolioResultsPage() {
         }
       />
 
-      <div className="max-w-[1200px] mx-auto pb-24">
+      <div className="max-w-[1280px] mx-auto pb-24 px-6">
         {/* Tab Navigation */}
-        <div className="border-b-2 border-border-subtle mb-10">
+        <div className="border-b-2 border-border-subtle mb-12">
           <div className="flex gap-1">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`
-                  flex items-center gap-2 px-8 py-4 text-body font-semibold border-b-[3px] transition-colors
+                  flex items-center gap-2 px-8 py-5 text-lg font-semibold border-b-[3px] transition-colors
                   ${activeTab === tab.id ? 'border-accent-gold text-text-primary' : 'border-transparent text-text-tertiary hover:text-text-primary'}
                 `}
               >
@@ -175,48 +207,49 @@ export default function AdPortfolioResultsPage() {
         </div>
 
         {activeTab === 'results' && (
-          <div className="space-y-12">
+          <div className="space-y-20">
             {/* Section 1: Simulation Context */}
-            <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Simulation Overview</h2>
+            <section className="border-t border-border-subtle pt-10 first:border-t-0 first:pt-0">
+              <h2 className="text-report-section mb-8">Simulation Overview</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <Card className="text-center">
                   <CardContent className="py-8">
-                    <p className="text-[2.25rem] font-bold text-text-primary tracking-tight">{MOCK_META.archetypeCount} Archetypes</p>
-                    <p className="text-caption text-text-tertiary mt-2 max-w-[140px] mx-auto leading-relaxed">Each represents ~100K real users</p>
+                    <p className="text-[2.5rem] font-bold text-text-primary tracking-tight">{MOCK_META.archetypeCount} Archetypes</p>
+                    <p className="text-body text-text-secondary mt-2 max-w-[160px] mx-auto leading-relaxed">Each represents ~100K real users</p>
                   </CardContent>
                 </Card>
                 <Card className="text-center">
                   <CardContent className="py-8">
-                    <p className="text-[2.25rem] font-bold text-text-primary tracking-tight">{MOCK_META.adCount} Creatives</p>
-                    <p className="text-caption text-text-tertiary mt-2 max-w-[140px] mx-auto leading-relaxed">Tested across all segments</p>
+                    <p className="text-[2.5rem] font-bold text-text-primary tracking-tight">{MOCK_META.adCount} Creatives</p>
+                    <p className="text-body text-text-secondary mt-2 max-w-[160px] mx-auto leading-relaxed">Tested across all segments</p>
                   </CardContent>
                 </Card>
                 <Card className="text-center">
                   <CardContent className="py-8">
-                    <p className="text-[2.25rem] font-bold text-text-primary tracking-tight">10,000 Runs</p>
-                    <p className="text-caption text-text-tertiary mt-2 max-w-[140px] mx-auto leading-relaxed">Per persona combination</p>
+                    <p className="text-[2.5rem] font-bold text-text-primary tracking-tight">10,000 Runs</p>
+                    <p className="text-body text-text-secondary mt-2 max-w-[160px] mx-auto leading-relaxed">Per persona combination</p>
                   </CardContent>
                 </Card>
               </div>
-              <p className="text-body-sm text-text-secondary mb-4">
-                Target Audience: Exporters, Freelancers & SMEs · Geography: India (Multi-region, Multi-language) · Confidence Level: 95% (p &lt; 0.05)
-              </p>
+              <h2 className="text-report-section mb-6">Target Audience</h2>
               <Card>
-                <CardContent className="py-6">
-                  <h3 className="text-label text-text-tertiary uppercase tracking-wider mb-4">Persona Archetype Distribution</h3>
+                <CardContent className="py-8">
+                  <p className="text-body text-text-secondary mb-6">
+                    Exporters, Freelancers & SMEs · Geography: India (Multi-region, Multi-language) · Confidence Level: 95% (p &lt; 0.05)
+                  </p>
+                  <h3 className="text-report-subsection mb-6">Persona Archetype Distribution</h3>
                   {MOCK_ARCHETYPES.map((arch) => (
                     <div key={arch.name} className="mb-6 last:mb-0">
                       <div className="flex items-center gap-4 mb-2">
                         <div className="w-48 h-2 bg-bg-elevated rounded-full overflow-hidden">
                           <div className="h-full bg-accent-gold rounded-full" style={{ width: `${arch.pct}%` }} />
                         </div>
-                        <span className="text-body font-semibold text-text-primary">{arch.pct}% {arch.name}</span>
+                        <span className="text-body-lg font-semibold text-text-primary">{arch.pct}% {arch.name}</span>
                       </div>
-                      <p className="text-caption text-text-tertiary ml-52">({arch.personas} personas, {arch.users} represented users)</p>
+                      <p className="text-body-sm text-text-tertiary ml-52">({arch.personas} personas, {arch.users} represented users)</p>
                     </div>
                   ))}
-                  <div className="mt-6 p-4 rounded-lg bg-bg-elevated border-l-[3px] border-accent-blue italic text-caption text-text-tertiary">
+                  <div className="mt-6 p-5 rounded-lg bg-bg-elevated border-l-[3px] border-accent-blue italic text-body-sm text-text-secondary">
                     Methodology: Each archetype ran through 10,000 Monte Carlo simulations to generate statistically robust confidence intervals.
                   </div>
                 </CardContent>
@@ -224,8 +257,8 @@ export default function AdPortfolioResultsPage() {
             </section>
 
             {/* Section 2: Executive Summary */}
-            <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Key Findings</h2>
+            <section className="border-t border-border-subtle pt-10">
+              <h2 className="text-report-section mb-8">Key Findings</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <Card>
                   <CardContent className="py-6 text-center">
@@ -238,21 +271,21 @@ export default function AdPortfolioResultsPage() {
                 <Card>
                   <CardContent className="py-6 text-center">
                     <p className="text-[2.25rem] font-bold text-text-primary tracking-tight">22</p>
-                    <p className="text-caption text-text-tertiary mt-1">±4 leads (95% CI)</p>
+                    <p className="text-body-sm text-text-secondary mt-1">±4 leads (95% CI)</p>
                     <p className="text-body font-semibold text-text-secondary mt-3">High-Intent Leads</p>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="py-6 text-center">
                     <p className="text-[2.25rem] font-bold text-accent-green tracking-tight">+144%</p>
-                    <p className="text-caption text-text-tertiary mt-1">Revenue Lift</p>
+                    <p className="text-body-sm text-text-secondary mt-1">Revenue Lift</p>
                     <p className="text-body font-semibold text-text-secondary mt-3">Potential</p>
                   </CardContent>
                 </Card>
               </div>
               <Card className="border-l-4 border-l-accent-gold">
                 <CardContent className="py-6">
-                  <h3 className="text-h4 text-text-primary font-semibold mb-3">Synthesis</h3>
+                  <h3 className="text-report-subsection mb-3">Synthesis</h3>
                   <p className="text-body-lg text-text-secondary leading-relaxed">
                     Your portfolio demonstrates exceptional performance among high-income export managers (68% CTR ±4.1%) but reveals significant trust barriers with rural segments (33% CTR ±5.8%). Ad #1 outperforms by 43% through trust signals and localized language.
                   </p>
@@ -264,69 +297,136 @@ export default function AdPortfolioResultsPage() {
             </section>
 
             {/* Section 3: Performance Hierarchy */}
-            <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Creative Performance Ranking</h2>
+            <section className="border-t border-border-subtle pt-10">
+              <h2 className="text-report-section mb-8">Creative Performance Ranking</h2>
+
+              {/* Recommended budget – highlighted, not a CTA */}
+              <div className="mb-10 p-6 rounded-xl border-2 border-accent-gold/40 bg-accent-gold/5">
+                <p className="text-report-label text-accent-gold mb-2">Recommended budget (from simulation)</p>
+                <p className="text-[2rem] font-bold text-text-primary tracking-tight">
+                  ₹{((budget / 1000) | 0).toLocaleString()}K total
+                </p>
+                <p className="text-body text-text-secondary mt-1 mb-4">Apply this split in Meta Ads Manager for best projected results.</p>
+                <div className="flex flex-wrap gap-x-8 gap-y-2">
+                  {MOCK_ADS.map((ad) => {
+                    const pct = allocation[ad.id] ?? 25;
+                    const amount = Math.round((budget * pct) / 100);
+                    return (
+                      <span key={ad.id} className="text-body font-medium text-text-primary">
+                        {ad.name}: <span className="text-accent-gold font-semibold">₹{(amount / 1000).toFixed(0)}K</span> ({pct}%)
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <h3 className="text-report-subsection mb-4">Recommended Meta Ad Settings</h3>
+              <p className="text-body text-text-secondary mb-6">
+                Demographics and targeting to select in Meta Ads Manager for each creative. Use these settings when creating or editing your ad sets.
+              </p>
+
               <div className="space-y-4">
-                {MOCK_ADS.map((ad, i) => (
-                  <Card key={ad.id} className="border border-border-subtle">
-                    <CardContent className="py-6">
-                      <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-h4 shrink-0 ${i === 0 ? 'bg-accent-gold/20 text-accent-gold' : 'bg-bg-elevated text-text-primary'}`}>
-                          #{i + 1}
-                        </div>
-                        <div className="w-20 h-20 rounded-lg bg-bg-elevated flex items-center justify-center shrink-0">
-                          <ImageIcon className="w-10 h-10 text-text-tertiary" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-wrap items-center justify-between gap-2">
-                            <div>
-                              <p className="text-h4 text-text-primary font-semibold">{ad.name}</p>
-                              <p className="text-body-sm text-text-tertiary">&quot;{ad.desc}&quot;</p>
+                {MOCK_ADS.map((ad, i) => {
+                  const meta = MOCK_META_TARGETING[ad.id];
+                  const isMetaOpen = expandedMetaAd === ad.id;
+                  const pct = allocation[ad.id] ?? 25;
+                  const allocatedAmount = Math.round((budget * pct) / 100);
+                  return (
+                    <Card key={ad.id} className="border border-border-subtle">
+                      <CardContent className="py-6">
+                        <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                          <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-h4 shrink-0 ${i === 0 ? 'bg-accent-gold/20 text-accent-gold' : 'bg-bg-elevated text-text-primary'}`}>
+                            #{i + 1}
+                          </div>
+                          <div className="w-20 h-20 rounded-lg bg-bg-elevated flex items-center justify-center shrink-0">
+                            <ImageIcon className="w-10 h-10 text-text-tertiary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <div>
+                                <p className="text-h4 text-text-primary font-semibold">{ad.name}</p>
+                                <p className="text-body-sm text-text-tertiary">&quot;{ad.desc}&quot;</p>
+                              </div>
+                              <div className="text-right shrink-0">
+                                <p className="text-h4 font-bold text-text-primary">₹{(allocatedAmount / 1000).toFixed(0)}K</p>
+                                <p className="text-body-sm text-text-secondary">{pct}% of budget</p>
+                                <p className="text-body-sm text-text-tertiary mt-0.5">{ad.ctr}% ±{ad.ctrCi}% CTR</p>
+                              </div>
                             </div>
-                            <p className="text-h4 font-bold text-accent-gold">{ad.ctr}% ±{ad.ctrCi}%</p>
-                          </div>
-                          <div className="mt-3 h-2 bg-bg-elevated rounded-full overflow-hidden max-w-xs">
-                            <div className="h-full bg-accent-gold rounded-full" style={{ width: `${ad.ctr}%` }} />
-                          </div>
-                          <p className="text-body-sm text-text-tertiary mt-2">
-                            High-Intent: {ad.highIntent} | Trust: {ad.trust}/10 ±{ad.trustCi} | Relevance: {ad.relevance}
-                          </p>
-                          <p className="text-caption text-text-tertiary mt-1">Sample: {ad.sims.toLocaleString()} simulations</p>
-                          <div className="flex flex-wrap gap-2 mt-4">
-                            <Button size="sm">{ad.actions[0][0]}</Button>
-                            <Button variant="secondary" size="sm">{ad.actions[1][0]}</Button>
+                            <div className="mt-3 h-2 bg-bg-elevated rounded-full overflow-hidden max-w-xs">
+                              <div className="h-full bg-accent-gold rounded-full" style={{ width: `${ad.ctr}%` }} />
+                            </div>
+                            <p className="text-body-sm text-text-tertiary mt-2">
+                              High-Intent: {ad.highIntent} | Trust: {ad.trust}/10 ±{ad.trustCi} | Relevance: {ad.relevance}
+                            </p>
+                            <p className="text-body-sm text-text-tertiary mt-1">Sample: {ad.sims.toLocaleString()} simulations</p>
+
+                            {/* Dropdown: Meta targeting for this creative */}
+                            {meta && (
+                              <div className="mt-4 border border-border-subtle rounded-lg overflow-hidden">
+                                <button
+                                  type="button"
+                                  onClick={() => setExpandedMetaAd(isMetaOpen ? null : ad.id)}
+                                  className="w-full flex items-center justify-between py-3 px-4 text-left text-body font-semibold text-text-primary bg-bg-elevated/50 hover:bg-bg-elevated transition-colors"
+                                >
+                                  <span>Meta demographics &amp; targeting for this creative</span>
+                                  {isMetaOpen ? <ChevronDown className="w-5 h-5 shrink-0" /> : <ChevronRight className="w-5 h-5 shrink-0" />}
+                                </button>
+                                {isMetaOpen && (
+                                  <div className="p-4 pt-0 space-y-3 text-body-sm text-text-secondary border-t border-border-subtle bg-bg-base">
+                                    <div><span className="font-semibold text-text-primary">Age:</span> {meta.ageRange}</div>
+                                    <div><span className="font-semibold text-text-primary">Gender:</span> {meta.gender}</div>
+                                    <div>
+                                      <span className="font-semibold text-text-primary">Locations:</span>
+                                      <ul className="list-disc list-inside mt-1">{meta.locations.map((loc, j) => <li key={j}>{loc}</li>)}</ul>
+                                    </div>
+                                    <div>
+                                      <span className="font-semibold text-text-primary">Interests:</span> {meta.interests.join(', ')}
+                                    </div>
+                                    <div><span className="font-semibold text-text-primary">Languages:</span> {meta.languages.join(', ')}</div>
+                                    <div><span className="font-semibold text-text-primary">Placements:</span> {meta.placements.join(', ')}</div>
+                                    {meta.optimizationGoal && <div><span className="font-semibold text-text-primary">Optimization goal:</span> {meta.optimizationGoal}</div>}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            <div className="mt-4 pt-3 border-t border-border-subtle">
+                              <p className="text-body font-semibold text-text-primary">
+                                Recommendation: <span className="text-accent-gold">{ad.actions[0][0]}</span>
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </section>
 
             {/* Section 4: Strategic Insights */}
-            <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Data-Backed Insights</h2>
-              <div className="space-y-6">
+            <section className="border-t border-border-subtle pt-10">
+              <h2 className="text-report-section mb-8">Data-Backed Insights</h2>
+              <div className="space-y-8">
                 {MOCK_INSIGHTS.map((insight) => (
                   <Card key={insight.num} className="border-l-4 border-l-accent-gold">
-                    <CardContent className="py-6">
-                      <p className="text-h4 text-text-primary font-semibold">{insight.num}. {insight.title}</p>
-                      <p className="text-body text-text-secondary leading-relaxed mt-3">{insight.description}</p>
-                      <div className="flex flex-wrap items-center gap-4 mt-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-24 h-1.5 bg-bg-elevated rounded-full overflow-hidden">
+                    <CardContent className="py-8">
+                      <p className="text-report-subsection text-text-primary font-semibold">{insight.num}. {insight.title}</p>
+                      <p className="text-body-lg text-text-secondary leading-relaxed mt-4">{insight.description}</p>
+                      <div className="flex flex-wrap items-center gap-6 mt-5">
+                        <div className="flex items-center gap-3">
+                          <div className="w-28 h-2 bg-bg-elevated rounded-full overflow-hidden">
                             <div className="h-full bg-accent-gold rounded-full" style={{ width: `${insight.confidence}%` }} />
                           </div>
-                          <span className="text-caption text-text-tertiary">Confidence: {insight.confidence}% (95% CI: {insight.ci[0]}-{insight.ci[1]}%)</span>
+                          <span className="text-body text-text-secondary">Confidence: {insight.confidence}% (95% CI: {insight.ci[0]}-{insight.ci[1]}%)</span>
                         </div>
-                        <span className="text-caption text-text-tertiary">Sample: {insight.sample.toLocaleString()} simulations</span>
-                        {insight.effectSize && <span className="text-caption text-text-tertiary">Effect size: Cohen&apos;s d = {insight.effectSize} (Large)</span>}
+                        <span className="text-body text-text-secondary">Sample: {insight.sample.toLocaleString()} simulations</span>
+                        {insight.effectSize && <span className="text-body text-text-secondary">Effect size: Cohen&apos;s d = {insight.effectSize} (Large)</span>}
                       </div>
-                      <p className="text-body-sm font-semibold text-accent-gold mt-4">→ Recommendation: {insight.rec}</p>
-                      <div className="flex gap-2 mt-4">
-                        <Button size="sm">{insight.actions[0][0]}</Button>
-                        <Button variant="secondary" size="sm">{insight.actions[1][0]}</Button>
+                      <div className="mt-6 p-5 rounded-lg bg-accent-gold/10 border-l-4 border-accent-gold">
+                        <p className="text-report-label text-text-tertiary mb-1">Recommendation</p>
+                        <p className="text-lg font-semibold text-text-primary leading-snug">{insight.rec}</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -334,134 +434,39 @@ export default function AdPortfolioResultsPage() {
               </div>
             </section>
 
-            {/* Section 5: Revenue Impact Model */}
-            <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Projected Revenue Impact</h2>
-              <Card className="mb-6">
-                <CardContent className="py-6">
-                  <h3 className="text-h4 text-text-primary font-semibold mb-4">Model Assumptions</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <Input label="Average Order Value (₹)" type="number" value={String(aov)} onChange={(e) => setAov(Number(e.target.value) || 0)} />
-                    <Input label="Lead-to-Sale Rate (%)" type="number" value={String(conversionRate)} onChange={(e) => setConversionRate(Number(e.target.value) || 0)} />
-                    <Input label="Cost per Impression (₹)" type="number" value={String(costPerImpression)} onChange={(e) => setCostPerImpression(Number(e.target.value) || 0)} />
-                    <Input label="Total Budget (₹)" type="number" value={String(budget)} onChange={(e) => setBudget(Number(e.target.value) || 0)} />
-                  </div>
-                  <div className="flex gap-2 mt-4">
-                    <Button variant="ghost" size="sm">Reset to Defaults</Button>
-                    <Button variant="secondary" size="sm">Save My Assumptions</Button>
-                  </div>
-                </CardContent>
-              </Card>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <Card>
-                  <CardContent className="py-6">
-                    <h4 className="text-label text-text-tertiary uppercase tracking-wider mb-4">Current Allocation</h4>
-                    <p className="text-[2rem] font-bold text-text-primary">₹{(currentRevenue / 100000).toFixed(1)}L</p>
-                    <p className="text-caption text-text-tertiary">±₹0.5L (95% CI) per ₹1L spend</p>
-                    <div className="mt-4 space-y-2">
-                      {MOCK_ADS.map((ad) => (
-                        <p key={ad.id} className="text-body-sm text-text-secondary">{ad.name}: 25%</p>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="py-6">
-                    <h4 className="text-label text-text-tertiary uppercase tracking-wider mb-4">Recommended Allocation</h4>
-                    <p className="text-[2rem] font-bold text-accent-green">₹{(projectedRevenue / 100000).toFixed(1)}L</p>
-                    <p className="text-caption text-text-tertiary">±₹1.1L (95% CI) per ₹1L spend</p>
-                    <div className="mt-4 space-y-2">
-                      {MOCK_ADS.map((ad, i) => {
-                        const pct = allocation[ad.id] ?? 25;
-                        const diff = pct - 25;
-                        return (
-                          <p key={ad.id} className="text-body-sm text-text-secondary">{ad.name}: {pct}% ({diff >= 0 ? '+' : ''}{diff}%)</p>
-                        );
-                      })}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-              <Card className="mb-6">
-                <CardContent className="py-6">
-                  <h4 className="text-h4 text-text-primary font-semibold mb-4">Budget Allocation</h4>
-                  {MOCK_ADS.map((ad) => (
-                    <div key={ad.id} className="mb-4 last:mb-0">
-                      <div className="flex justify-between mb-2">
-                        <span className="text-body text-text-secondary">{ad.name}</span>
-                        <span className="text-body font-semibold text-text-primary">{allocation[ad.id] ?? 25}%</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={allocation[ad.id] ?? 25}
-                        onChange={(e) => handleAllocationChange(ad.id, Number(e.target.value))}
-                        className="w-full h-1.5 bg-bg-elevated rounded-full appearance-none cursor-pointer accent-accent-gold"
-                      />
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-              <Card className="mb-6">
-                <CardContent className="py-6">
-                  <h4 className="text-label text-text-tertiary uppercase tracking-wider mb-4">Expected Outcomes</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                      <p className="text-h3 font-bold text-accent-green">+₹4.2L</p>
-                      <p className="text-caption text-text-tertiary">±₹0.8L</p>
-                      <p className="text-body-sm text-text-secondary">Revenue Lift</p>
-                    </div>
-                    <div>
-                      <p className="text-h3 font-bold text-accent-green">+18</p>
-                      <p className="text-caption text-text-tertiary">±4 leads</p>
-                      <p className="text-body-sm text-text-secondary">High-Intent Leads</p>
-                    </div>
-                    <div>
-                      <p className="text-h3 font-bold text-accent-green">-12%</p>
-                      <p className="text-caption text-text-tertiary">±3%</p>
-                      <p className="text-body-sm text-text-secondary">Cost per Lead</p>
-                    </div>
-                    <div>
-                      <p className="text-h3 font-bold text-accent-green">+144%</p>
-                      <p className="text-caption text-text-tertiary">±28%</p>
-                      <p className="text-body-sm text-text-secondary">Revenue per Rupee</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-3 mt-6">
-                    <Button>Apply Recommended Allocation</Button>
-                    <Button variant="secondary" rightIcon={<Download className="w-4 h-4" />}>Download Financial Model</Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </section>
-
             {/* Section 6: Recommended Action Plan */}
-            <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Prioritized Next Steps</h2>
-              <div className="space-y-4">
+            <section className="border-t border-border-subtle pt-10">
+              <h2 className="text-report-section mb-8">Prioritized Next Steps</h2>
+              <div className="space-y-10">
                 {(['immediate', 'short-term', 'long-term'] as const).map((priority) => {
                   const items = MOCK_ACTION_PLAN.filter((a) => a.priority === priority);
                   if (items.length === 0) return null;
+                  const priorityLabel = priority.replace('-', ' ');
+                  const isImmediate = priority === 'immediate';
                   return (
-                    <div key={priority}>
-                      <h3 className="text-h4 text-text-primary font-semibold mb-3 uppercase">{priority.replace('-', ' ')}</h3>
-                      {items.map((item) => (
-                        <Card key={item.num} className="mb-4 border-l-4 border-l-accent-gold">
-                          <CardContent className="py-5">
-                            <p className="text-h4 text-text-primary font-semibold">{item.num}. {item.title}</p>
-                            <p className="text-body-sm text-text-secondary mt-1">Expected Impact: {item.impact}</p>
-                            <p className="text-caption text-text-tertiary mt-1">Effort: {item.effort} · Risk: {item.risk}</p>
-                            {item.aiNote && (
-                              <p className="text-caption text-text-tertiary mt-2 italic">AI will auto-translate copy and generate preview. You can review and edit before publishing.</p>
-                            )}
-                            <div className="flex gap-2 mt-4">
-                              <Button size="sm">{item.actions[0][0]}</Button>
-                              <Button variant="secondary" size="sm">{item.actions[1][0]}</Button>
+                    <div key={priority} className="relative">
+                      <div className={`inline-block px-4 py-1.5 rounded-full text-body font-semibold uppercase tracking-wider mb-6 ${isImmediate ? 'bg-accent-gold/20 text-accent-gold' : 'bg-bg-elevated text-text-secondary'}`}>
+                        {priorityLabel}
+                      </div>
+                      <div className="relative border-l-2 border-border-subtle pl-[4.5rem] ml-5 space-y-0">
+                        {items.map((item) => (
+                          <div key={item.num} className="relative pb-8 last:pb-0">
+                            <div className={`absolute left-0 top-0 w-10 h-10 -translate-x-1/2 rounded-full flex items-center justify-center font-bold text-lg shrink-0 border-2 border-bg-base ${isImmediate ? 'bg-accent-gold text-bg-base' : 'bg-bg-elevated text-text-primary'}`}>
+                              {item.num}
                             </div>
-                          </CardContent>
-                        </Card>
-                      ))}
+                            <div className="pt-0.5 pl-8">
+                              <p className="text-report-subsection text-text-primary font-semibold">{item.title}</p>
+                              <p className="inline-block mt-2 px-3 py-1.5 rounded-lg bg-accent-green/15 text-accent-green text-body font-semibold">
+                                {item.impact}
+                              </p>
+                              <p className="text-body text-text-secondary mt-3">Effort: {item.effort} · Risk: {item.risk}</p>
+                              {item.aiNote && (
+                                <p className="text-body-sm text-text-tertiary mt-2 italic">AI will auto-translate copy and generate preview. You can review and edit before publishing.</p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   );
                 })}
@@ -469,8 +474,8 @@ export default function AdPortfolioResultsPage() {
             </section>
 
             {/* Section 7: Risk Assessment */}
-            <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Simulation Quality Report</h2>
+            <section className="border-t border-border-subtle pt-10">
+              <h2 className="text-report-section mb-8">Simulation Quality Report</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <Card>
                   <CardContent className="py-6 text-center">
@@ -489,7 +494,7 @@ export default function AdPortfolioResultsPage() {
               </div>
               <Card className="mb-6">
                 <CardContent className="py-6">
-                  <h3 className="text-h4 text-text-primary font-semibold mb-4">Validation Checks Performed</h3>
+                  <h3 className="text-report-subsection mb-4">Validation Checks Performed</h3>
                   <ul className="space-y-2">
                     {VALIDATION_CHECKS.map((check, i) => (
                       <li key={i} className="flex items-center gap-2 text-body text-text-secondary">
@@ -501,7 +506,7 @@ export default function AdPortfolioResultsPage() {
               </Card>
               <Card>
                 <CardContent className="py-6">
-                  <h3 className="text-h4 text-text-primary font-semibold mb-4">Flagged Reactions (Removed from Analysis)</h3>
+                  <h3 className="text-report-subsection mb-4">Flagged Reactions (Removed from Analysis)</h3>
                   <p className="text-body text-text-secondary">
                     3 reactions showed unrealistic trust (&gt;8/10) with high-vulnerability personas (scam indicators: Yes).
                   </p>
@@ -514,7 +519,7 @@ export default function AdPortfolioResultsPage() {
                   </div>
                 </CardContent>
               </Card>
-              <p className="text-caption text-text-tertiary mt-6">
+              <p className="text-body-sm text-text-secondary mt-6">
                 Statistical Rigor: All insights include 95% confidence intervals and effect sizes. Minimum 10,000 simulations per archetype. P-values reported for all correlations.
               </p>
             </section>
@@ -522,152 +527,12 @@ export default function AdPortfolioResultsPage() {
         )}
 
         {activeTab === 'deep-dive' && (
-          <div className="space-y-10">
-            {/* Persona Matrix */}
-            <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Reaction Matrix</h2>
-              <div className="flex flex-wrap gap-4 mb-4">
-                <div className="flex items-center gap-2">
-                  <input type="radio" id="arch" name="view" defaultChecked className="accent-accent-gold" />
-                  <label htmlFor="arch" className="text-body-sm text-text-secondary">Archetypes</label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input type="radio" id="ind" name="view" className="accent-accent-gold" />
-                  <label htmlFor="ind" className="text-body-sm text-text-secondary">Individual Personas</label>
-                </div>
-                <select className="bg-bg-input border border-border-subtle rounded px-3 py-2 text-body-sm text-text-primary">
-                  <option>All Segments</option>
-                </select>
-                <select className="bg-bg-input border border-border-subtle rounded px-3 py-2 text-body-sm text-text-primary">
-                  <option>All Ads</option>
-                </select>
-              </div>
-              <Card>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-border-subtle">
-                        <th className="text-left py-4 px-4 text-label text-text-tertiary">Archetype</th>
-                        <th className="text-center py-4 px-4 text-label text-text-tertiary">Ad #1</th>
-                        <th className="text-center py-4 px-4 text-label text-text-tertiary">Ad #2</th>
-                        <th className="text-center py-4 px-4 text-label text-text-tertiary">Ad #3</th>
-                        <th className="text-center py-4 px-4 text-label text-text-tertiary">Ad #4</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {MOCK_MATRIX.map((row) => (
-                        <tr key={row.archetype} className="border-b border-border-subtle">
-                          <td className="py-4 px-4">
-                            <button
-                              onClick={() => setExpandedArchetype(expandedArchetype === row.archetype ? null : row.archetype)}
-                              className="flex items-center gap-2 text-body font-medium text-text-primary hover:text-accent-gold"
-                            >
-                              {expandedArchetype === row.archetype ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                              {row.archetype} ({row.personas} personas)
-                            </button>
-                          </td>
-                          <td className="py-4 px-4 text-center">
-                            <span className={`inline-block w-4 h-4 rounded-full ${row.ad1 === 'high' ? 'bg-accent-green' : row.ad1 === 'mid' ? 'bg-accent-gold' : 'bg-border-medium'}`} title={row.ad1} />
-                            <p className="text-caption text-text-tertiary mt-1">{row.cr1}%</p>
-                          </td>
-                          <td className="py-4 px-4 text-center">
-                            <span className={`inline-block w-4 h-4 rounded-full ${row.ad2 === 'high' ? 'bg-accent-green' : row.ad2 === 'mid' ? 'bg-accent-gold' : 'bg-border-medium'}`} />
-                            <p className="text-caption text-text-tertiary mt-1">{row.cr2}%</p>
-                          </td>
-                          <td className="py-4 px-4 text-center">
-                            <span className={`inline-block w-4 h-4 rounded-full ${row.ad3 === 'high' ? 'bg-accent-green' : row.ad3 === 'mid' ? 'bg-accent-gold' : 'bg-border-medium'}`} />
-                            <p className="text-caption text-text-tertiary mt-1">{row.cr3}%</p>
-                          </td>
-                          <td className="py-4 px-4 text-center">
-                            <span className={`inline-block w-4 h-4 rounded-full ${row.ad4 === 'high' ? 'bg-accent-green' : row.ad4 === 'mid' ? 'bg-accent-gold' : 'bg-border-medium'}`} />
-                            <p className="text-caption text-text-tertiary mt-1">{row.cr4}%</p>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <CardContent className="border-t border-border-subtle">
-                  <p className="text-caption text-text-tertiary mb-2">Legend: Green = Clicked + High Intent · Gold = Clicked + Mixed · Gray = Did Not Click</p>
-                  <p className="text-caption text-text-tertiary">Quick Insights: Trust-Driven Professionals show 5x engagement vs Rural · Ad #1 has highest cross-archetype performance (58% avg)</p>
-                </CardContent>
-              </Card>
-            </section>
-
-            {/* Ad-by-Ad Breakdown */}
-            <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Ad-Level Persona Reactions</h2>
-              {MOCK_ADS.map((ad) => (
-                <Card key={ad.id} className="mb-4">
-                  <button
-                    onClick={() => setExpandedAd(expandedAd === ad.id ? null : ad.id)}
-                    className="w-full py-4 px-6 flex items-center justify-between text-left"
-                  >
-                    <div className="flex items-center gap-3">
-                      {expandedAd === ad.id ? <ChevronDown className="w-5 h-5 text-text-tertiary" /> : <ChevronRight className="w-5 h-5 text-text-tertiary" />}
-                      <span className="text-h4 font-semibold text-text-primary">{ad.name}: &quot;{ad.desc}&quot;</span>
-                    </div>
-                    <span className="text-body-sm text-text-tertiary">Performance: {ad.ctr}% ±{ad.ctrCi}% | Trust: {ad.trust}/10 ±{ad.trustCi}</span>
-                  </button>
-                  {expandedAd === ad.id && (
-                    <CardContent className="pt-0 px-6 pb-6 border-t border-border-subtle">
-                      <p className="text-caption text-text-tertiary mb-4">Sample: {ad.sims.toLocaleString()} simulations across {ad.highIntent > 4 ? 7 : 6} personas</p>
-                      <div className="p-4 rounded-lg bg-bg-elevated border border-border-subtle">
-                        <p className="text-body font-semibold text-text-primary">Persona 1: Manager, Import & Export</p>
-                        <p className="text-caption text-text-tertiary mt-1">25F · Chandigarh · Hindi · ₹75K/month · High digital</p>
-                        <p className="text-body-sm text-accent-green mt-2">Decision: Clicked (High Intent)</p>
-                        <p className="text-body-sm text-text-secondary mt-1">Trust: 8/10 ±0.4 | Relevance: 7/10 ±0.5</p>
-                        <p className="text-body-sm text-text-secondary mt-3 italic">&quot;The ad immediately caught my attention because it&apos;s in Hindi, which feels more trustworthy. The certification badge gives me confidence this is legitimate.&quot;</p>
-                        <p className="text-caption text-text-tertiary mt-2">Key Triggers: Local language (Hindi) · Trust signals (certification) · Relevant pain point addressed</p>
-                      </div>
-                      <Button variant="ghost" size="sm" className="mt-4">Show 6 more personas</Button>
-                    </CardContent>
-                  )}
-                </Card>
-              ))}
-            </section>
-
-            {/* Export Options */}
-            <section>
-              <h2 className="text-label text-text-tertiary uppercase tracking-wider mb-6">Export Options</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card hover className="cursor-pointer">
-                  <CardContent className="py-8 text-center">
-                    <Download className="w-12 h-12 mx-auto text-accent-gold mb-4" />
-                    <p className="text-h4 font-semibold text-text-primary">Full Dataset</p>
-                    <p className="text-caption text-text-tertiary mt-2">All reactions, personas, ads (CSV, 2.4MB)</p>
-                    <Button size="sm" className="mt-4">Download</Button>
-                  </CardContent>
-                </Card>
-                <Card hover className="cursor-pointer">
-                  <CardContent className="py-8 text-center">
-                    <FileText className="w-12 h-12 mx-auto text-accent-gold mb-4" />
-                    <p className="text-h4 font-semibold text-text-primary">Financial Model</p>
-                    <p className="text-caption text-text-tertiary mt-2">Revenue calc with formulas (XLSX)</p>
-                    <Button size="sm" className="mt-4">Download</Button>
-                  </CardContent>
-                </Card>
-                <Card hover className="cursor-pointer">
-                  <CardContent className="py-8 text-center">
-                    <ExternalLink className="w-12 h-12 mx-auto text-accent-gold mb-4" />
-                    <p className="text-h4 font-semibold text-text-primary">Presentation Deck</p>
-                    <p className="text-caption text-text-tertiary mt-2">Executive summary slides (PPTX)</p>
-                    <Button size="sm" className="mt-4">Download</Button>
-                  </CardContent>
-                </Card>
-              </div>
-              <Card className="mt-6">
-                <CardContent className="py-6">
-                  <h3 className="text-h4 font-semibold text-text-primary mb-2">API Access</h3>
-                  <p className="text-body-sm text-text-secondary">GET /api/v1/simulations/&#123;id&#125;/results — Returns JSON with full simulation data</p>
-                  <div className="flex gap-2 mt-4">
-                    <Button variant="secondary" size="sm">View API Docs</Button>
-                    <Button variant="ghost" size="sm">Generate API Key</Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </section>
-          </div>
+          <section className="border-t border-border-subtle pt-10 first:border-t-0 first:pt-0 -mx-6 px-0">
+            <div className="px-6 mb-6">
+              <h2 className="text-report-section">Persona Reaction Explorer</h2>
+            </div>
+            <PersonaReactionExplorer ads={MOCK_ADS} />
+          </section>
         )}
       </div>
     </>

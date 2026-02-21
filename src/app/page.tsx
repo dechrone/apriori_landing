@@ -2,7 +2,6 @@ import { Hero } from "@/components/Hero";
 import { DemoSection } from "@/components/DemoSection";
 import { TheProblem } from "@/components/TheProblem";
 import { WorkflowSteps } from "@/components/WorkflowSteps";
-import { Pricing } from "@/components/Pricing";
 import { FAQ } from "@/components/FAQ";
 import { FinalCTA } from "@/components/FinalCTA";
 
@@ -20,9 +19,6 @@ export default function Home() {
 
       {/* Workflow Steps - Three Steps to Bulletproof Decisions */}
       <WorkflowSteps />
-
-      {/* Pricing */}
-      <Pricing />
 
       {/* FAQ */}
       <FAQ />

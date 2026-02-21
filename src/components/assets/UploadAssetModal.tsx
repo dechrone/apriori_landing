@@ -70,7 +70,7 @@ export function UploadAssetModal({
               Files
             </label>
             <div
-              className="border-2 border-dashed border-border-medium rounded-lg p-8 bg-bg-input/50 text-center cursor-pointer hover:border-accent-gold/50 hover:bg-bg-input transition-standard"
+              className="border-2 border-dashed border-border-medium rounded-[var(--radius-md)] p-8 bg-bg-elevated text-center cursor-pointer hover:border-accent-gold/50 hover:bg-bg-hover transition-standard"
               onClick={() => fileInputRef.current?.click()}
             >
               <input

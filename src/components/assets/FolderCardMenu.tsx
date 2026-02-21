@@ -46,7 +46,7 @@ export function FolderCardMenu({
       />
       {open && (
         <div
-          className="absolute right-0 top-full mt-1 z-50 min-w-[180px] py-1 rounded-lg bg-bg-elevated border border-border-medium shadow-lg"
+          className="absolute right-0 top-full mt-1 z-50 min-w-[180px] py-1 rounded-[var(--radius-sm)] bg-bg-secondary shadow-[var(--shadow-lg)]"
           onClick={(e) => e.stopPropagation()}
         >
           <button
