@@ -1,14 +1,8 @@
 "use client";
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  LayoutDashboard,
-  Beaker,
-  Users,
-  Package,
-  Image as ImageIcon,
-  Lightbulb,
 import {
   LayoutDashboard,
   Beaker,
@@ -20,11 +14,7 @@ import {
   X,
   PanelLeftClose,
   PanelLeft,
-  X,
-  PanelLeftClose,
-  PanelLeft,
 } from 'lucide-react';
-import { useAppShell } from '@/components/app/AppShell';
 import { useAppShell } from '@/components/app/AppShell';
 
 const navigation = [
@@ -48,9 +38,6 @@ interface SidebarProps {
 export const DESKTOP_SIDEBAR_WIDTH = 260;
 export const DESKTOP_SIDEBAR_WIDTH_COLLAPSED = 72;
 
-export const DESKTOP_SIDEBAR_WIDTH = 260;
-export const DESKTOP_SIDEBAR_WIDTH_COLLAPSED = 72;
-
 export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
   const pathname = usePathname();
   const { sidebarCollapsed, toggleSidebar } = useAppShell();
@@ -58,15 +45,8 @@ export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
   const [tooltipPosition, setTooltipPosition] = useState<{ top: number; left: number } | null>(null);
 
   const sidebarContent = (collapsed: boolean) => (
-  const sidebarContent = (collapsed: boolean) => (
     <>
       {/* Logo & Workspace */}
-      <div className={collapsed ? 'mb-6' : 'mb-8'}>
-        <div className={`flex items-center ${collapsed ? 'justify-center' : 'justify-between'} mb-2`}>
-          <span className="text-h4 text-text-primary font-semibold truncate">
-            {collapsed ? 'A' : 'Apriori'}
-          </span>
-          {onMobileClose && !collapsed && (
       <div className={collapsed ? 'mb-6' : 'mb-8'}>
         <div className={`flex items-center ${collapsed ? 'justify-center' : 'justify-between'} mb-2`}>
           <span className="text-h4 text-text-primary font-semibold truncate">
@@ -81,7 +61,6 @@ export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
             </button>
           )}
         </div>
-        {!collapsed && <p className="text-body-sm text-text-tertiary">Workspace</p>}
         {!collapsed && <p className="text-body-sm text-text-tertiary">Workspace</p>}
       </div>
 
@@ -223,7 +202,6 @@ export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
             className="fixed left-0 top-0 h-screen w-[280px] bg-bg-secondary shadow-[var(--shadow-xl)] p-8 flex flex-col animate-slideInRight"
             onClick={(e) => e.stopPropagation()}
           >
-            {sidebarContent(false)}
             {sidebarContent(false)}
           </aside>
         </div>
