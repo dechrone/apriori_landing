@@ -185,7 +185,7 @@ function SetupStep({ formData, setFormData }: SetupStepProps) {
           ]}
           className="py-4 px-5 text-body-lg min-h-[52px]"
         />
-        <div className="mt-4 p-5 rounded-lg bg-bg-elevated/50 border border-border-subtle">
+        <div className="mt-4 p-5 rounded-[var(--radius-sm)] bg-bg-elevated">
           <p className="text-body text-text-secondary leading-relaxed">
             Choose the audience set to run this ad audit against. If you haven&apos;t created one
             yet,{' '}
@@ -237,9 +237,9 @@ function FolderSelectionStep({ formData, setFormData }: FolderSelectionStepProps
                     setFormData({ ...formData, selectedFolderId: folder.id })
                   }
                   className={`
-                    text-left rounded-lg border-2 px-4 py-4 transition-standard w-full
+                    text-left rounded-[var(--radius-sm)] border-2 px-4 py-4 transition-standard w-full
                     ${isSelected
-                      ? 'border-accent-gold bg-bg-elevated'
+                      ? 'border-accent-gold bg-accent-gold/5 shadow-[var(--shadow-sm)]'
                       : 'border-border-subtle hover:border-border-medium bg-bg-secondary'
                     }
                   `}

@@ -1,6 +1,7 @@
 'use client';
 
 import { Search } from 'lucide-react';
+import { Dropdown } from '@/components/ui/Dropdown';
 import type { PersonaFilters as PersonaFiltersType } from './types';
 
 interface PersonaFilterBarProps {
@@ -9,6 +10,19 @@ interface PersonaFilterBarProps {
   filters: PersonaFiltersType;
   onChange: (filters: PersonaFiltersType) => void;
 }
+
+const incomeOptions = [
+  { value: 'all', label: 'All' },
+  { value: 'high', label: 'High' },
+  { value: 'mid', label: 'Mid' },
+  { value: 'low', label: 'Low' },
+];
+
+const vulnerabilityOptions = [
+  { value: 'all', label: 'All' },
+  { value: 'high', label: 'High' },
+  { value: 'low', label: 'Low' },
+];
 
 export function PersonaFilterBar({ searchQuery, onSearchChange, filters, onChange }: PersonaFilterBarProps) {
   const update = (key: keyof PersonaFiltersType, value: string | number) => {
@@ -29,29 +43,22 @@ export function PersonaFilterBar({ searchQuery, onSearchChange, filters, onChang
       </div>
       <div className="mt-4 flex flex-wrap gap-2">
         <div className="flex-1 min-w-[100px]">
-          <label className="text-[10px] font-bold text-text-tertiary uppercase px-1 block">Income</label>
-          <select
+          <label className="text-[10px] font-bold text-text-tertiary uppercase px-1 block mb-1">Income</label>
+          <Dropdown
             value={filters.income_tier}
-            onChange={(e) => update('income_tier', e.target.value as PersonaFiltersType['income_tier'])}
-            className="w-full mt-1 text-xs bg-bg-elevated border-none rounded-lg py-1.5 px-2 text-text-primary focus:ring-2 focus:ring-accent-gold/20 focus:outline-none"
-          >
-            <option value="all">All</option>
-            <option value="high">High</option>
-            <option value="mid">Mid</option>
-            <option value="low">Low</option>
-          </select>
+            onChange={(value) => update('income_tier', value as PersonaFiltersType['income_tier'])}
+            options={incomeOptions}
+            size="sm"
+          />
         </div>
         <div className="flex-1 min-w-[100px]">
-          <label className="text-[10px] font-bold text-text-tertiary uppercase px-1 block">Vulnerability</label>
-          <select
+          <label className="text-[10px] font-bold text-text-tertiary uppercase px-1 block mb-1">Vulnerability</label>
+          <Dropdown
             value={filters.vulnerability}
-            onChange={(e) => update('vulnerability', e.target.value as PersonaFiltersType['vulnerability'])}
-            className="w-full mt-1 text-xs bg-bg-elevated border-none rounded-lg py-1.5 px-2 text-text-primary focus:ring-2 focus:ring-accent-gold/20 focus:outline-none"
-          >
-            <option value="all">All</option>
-            <option value="high">High</option>
-            <option value="low">Low</option>
-          </select>
+            onChange={(value) => update('vulnerability', value as PersonaFiltersType['vulnerability'])}
+            options={vulnerabilityOptions}
+            size="sm"
+          />
         </div>
       </div>
     </div>

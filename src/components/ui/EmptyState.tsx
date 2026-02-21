@@ -19,7 +19,7 @@ export function EmptyState({ icon, title, description, action, className = '' }:
         {icon}
       </div>
       <h3 className="text-h4 text-text-primary mb-3">{title}</h3>
-      <p className="text-body text-text-tertiary leading-relaxed mb-6">{description}</p>
+      <p className="text-body text-text-tertiary leading-relaxed mb-8">{description}</p>
       {action && (
         <Button onClick={action.onClick}>
           {action.label}

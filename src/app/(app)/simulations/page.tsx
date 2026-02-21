@@ -54,6 +54,8 @@ export default function SimulationsPage() {
     },
   ];
 
+  const statusVariantMap = (s: string) => s === 'completed' ? 'success' : s === 'running' ? 'warning' : s === 'failed' ? 'warning' : 'muted';
+
   return (
     <>
       <TopBar 
@@ -125,10 +127,10 @@ export default function SimulationsPage() {
                   <CardContent className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <span className="text-caption text-text-tertiary uppercase">
+                        <span className="text-caption text-text-tertiary uppercase tracking-wide">
                           {simulation.type}
                         </span>
-                        <Badge variant={simulation.status}>{simulation.status}</Badge>
+                        <Badge variant={statusVariantMap(simulation.status)}>{simulation.status}</Badge>
                       </div>
                       <h3 className="text-h4 text-text-primary mb-2">
                         {simulation.name}
@@ -154,7 +156,7 @@ export default function SimulationsPage() {
         {/* New Simulation - bottom right */}
         <div className="fixed bottom-6 right-6 lg:right-10 z-30">
           <Link href="/simulations/new">
-            <Button size="lg" className="shadow-lg">
+            <Button size="lg" className="shadow-[var(--shadow-lg)]">
               <Plus className="w-6 h-6" />
               New Simulation
             </Button>

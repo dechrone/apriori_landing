@@ -36,25 +36,25 @@ export default function SettingsPage() {
             <CardTitle>Notification Preferences</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <label className="flex items-center gap-3 cursor-pointer">
+            <label className="flex items-center gap-3 cursor-pointer group">
               <input
                 type="checkbox"
                 defaultChecked
-                className="w-5 h-5 rounded border-2 border-border-medium bg-bg-input
+                className="w-5 h-5 rounded-[6px] border-2 border-border-medium bg-bg-input
                   checked:bg-accent-gold checked:border-accent-gold
-                  transition-standard cursor-pointer"
+                  transition-standard cursor-pointer accent-accent-gold"
               />
-              <span className="text-body text-text-secondary">Email me when simulations complete</span>
+              <span className="text-body text-text-secondary group-hover:text-text-primary transition-colors">Email me when simulations complete</span>
             </label>
-            <label className="flex items-center gap-3 cursor-pointer">
+            <label className="flex items-center gap-3 cursor-pointer group">
               <input
                 type="checkbox"
                 defaultChecked
-                className="w-5 h-5 rounded border-2 border-border-medium bg-bg-input
+                className="w-5 h-5 rounded-[6px] border-2 border-border-medium bg-bg-input
                   checked:bg-accent-gold checked:border-accent-gold
-                  transition-standard cursor-pointer"
+                  transition-standard cursor-pointer accent-accent-gold"
               />
-              <span className="text-body text-text-secondary">Weekly insights summary</span>
+              <span className="text-body text-text-secondary group-hover:text-text-primary transition-colors">Weekly insights summary</span>
             </label>
           </CardContent>
         </Card>

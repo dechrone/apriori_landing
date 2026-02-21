@@ -5,8 +5,7 @@ import { AdSelector } from './AdSelector';
 import { PersonaFilterBar } from './PersonaFilterBar';
 import { PersonaList } from './PersonaList';
 import { PersonaDetailPanel } from './PersonaDetailPanel';
-import { PatternSummaryPanel } from './PatternSummaryPanel';
-import { getReactionsForAd, getPatternInsightsForAd } from './mockReactions';
+import { getReactionsForAd } from './mockReactions';
 import type { AdSummary, PersonaReaction, PersonaFilters } from './types';
 
 const DEFAULT_FILTERS: PersonaFilters = {
@@ -44,7 +43,6 @@ export function PersonaReactionExplorer({ ads }: PersonaReactionExplorerProps) {
   const [selectedPersonaId, setSelectedPersonaId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<PersonaFilters>(DEFAULT_FILTERS);
-  const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
 
   const allReactionsForAd = useMemo(() => getReactionsForAd(selectedAdId), [selectedAdId]);
   const filteredReactions = useMemo(
@@ -54,10 +52,6 @@ export function PersonaReactionExplorer({ ads }: PersonaReactionExplorerProps) {
   const selectedReaction = useMemo(
     () => (selectedPersonaId ? filteredReactions.find((r) => r.persona_id === selectedPersonaId) ?? null : null),
     [filteredReactions, selectedPersonaId],
-  );
-  const patternInsights = useMemo(
-    () => getPatternInsightsForAd(selectedAdId, filteredReactions.length),
-    [selectedAdId, filteredReactions.length],
   );
 
   const handleSelectAd = useCallback((adId: string) => {
@@ -89,12 +83,6 @@ export function PersonaReactionExplorer({ ads }: PersonaReactionExplorerProps) {
         <section className="flex-1 min-w-0 bg-bg-primary overflow-hidden">
           <PersonaDetailPanel reaction={selectedReaction} />
         </section>
-
-        <PatternSummaryPanel
-          insights={patternInsights}
-          isCollapsed={rightPanelCollapsed}
-          onToggleCollapse={() => setRightPanelCollapsed((c) => !c)}
-        />
       </main>
     </div>
   );

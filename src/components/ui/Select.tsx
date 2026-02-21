@@ -22,13 +22,15 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           <select
             ref={ref}
             className={`
-              w-full bg-bg-input border border-border-subtle rounded-md
-              px-4 py-3 pr-10 text-body text-text-primary
+              w-full h-11 bg-bg-secondary border border-border-medium rounded-[10px]
+              px-4 pr-10 text-body text-text-primary font-medium
               appearance-none cursor-pointer
-              transition-standard
-              focus:outline-none focus:border-accent-gold focus:ring-3 focus:ring-accent-gold/10
-              disabled:bg-bg-elevated disabled:text-text-quaternary disabled:cursor-not-allowed
-              ${error ? 'border-accent-red focus:border-accent-red focus:ring-accent-red/10' : ''}
+              transition-all duration-200 ease-out
+              shadow-[0_1px_2px_rgba(0,0,0,0.05)]
+              focus:outline-none focus:border-accent-gold focus:shadow-[0_0_0_3px_rgba(245,158,11,0.1)]
+              hover:border-border-strong hover:bg-bg-elevated
+              disabled:bg-bg-subtle disabled:text-text-quaternary disabled:cursor-not-allowed disabled:opacity-50
+              ${error ? 'border-accent-red focus:border-accent-red focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]' : ''}
               ${className}
             `}
             {...props}
@@ -40,7 +42,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             ))}
           </select>
           <ChevronDown 
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-tertiary pointer-events-none" 
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-tertiary pointer-events-none transition-colors" 
           />
         </div>
         {error && (

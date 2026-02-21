@@ -61,7 +61,7 @@ interface SimulationTypeCardProps {
 
 function SimulationTypeCard({ icon, title, description, onSelect }: SimulationTypeCardProps) {
   return (
-    <Card hover className="border-2 cursor-pointer" onClick={onSelect}>
+    <Card hover className="cursor-pointer" onClick={onSelect}>
       <CardContent className="flex items-start gap-5 py-8">
         <div className="text-accent-gold flex-shrink-0">
           {icon}

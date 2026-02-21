@@ -26,11 +26,11 @@ export function AudienceSectionNav({
             type="button"
             onClick={() => onSelect(section.id)}
             className={`
-              w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-md text-left
+              w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-[var(--radius-sm)] text-left
               text-body font-medium transition-standard
               ${isActive
-                ? 'bg-bg-elevated text-text-primary border-l-3 border-accent-gold'
-                : 'text-text-secondary hover:bg-bg-elevated hover:text-text-primary'
+                ? 'bg-accent-gold/10 text-accent-gold border-l-[3px] border-accent-gold font-semibold'
+                : 'text-text-secondary hover:bg-bg-hover hover:text-text-primary'
               }
             `}
           >

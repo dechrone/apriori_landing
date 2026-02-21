@@ -71,7 +71,7 @@ export default function AudiencesPage() {
               <Card
                 key={audience.id}
                 hover
-                className="border-l-3 border-l-accent-blue hover:border-accent-blue hover:bg-bg-elevated"
+                className="border-l-[3px] border-l-accent-blue"
               >
                 <CardContent>
                   <div className="flex items-start justify-between mb-4">
@@ -96,7 +96,7 @@ export default function AudiencesPage() {
                         </p>
                       )}
                     </div>
-                    <button className="text-text-tertiary hover:text-text-primary transition-colors">
+                    <button className="text-text-tertiary hover:text-text-primary transition-colors rounded-[var(--radius-sm)] hover:bg-bg-hover p-1">
                       <MoreVertical className="w-5 h-5" />
                     </button>
                   </div>
@@ -134,7 +134,7 @@ export default function AudiencesPage() {
         {/* Create Audience - bottom right */}
         <div className="fixed bottom-6 right-6 lg:right-10 z-30">
           <Link href="/audiences/new">
-            <Button size="lg" className="shadow-lg">
+            <Button size="lg" className="shadow-[var(--shadow-lg)]">
               <Plus className="w-6 h-6" />
               Create Audience
             </Button>

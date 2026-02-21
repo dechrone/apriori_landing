@@ -65,12 +65,12 @@ export function AuditSelectionModal({ isOpen, onClose }: AuditSelectionModalProp
           transition={{ duration: 0.25 }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8"
         >
-          {/* Backdrop with blur */}
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-deep/70 backdrop-blur-md"
+            className="absolute inset-0 bg-bg-primary/60 backdrop-blur-sm"
             onClick={onClose}
             aria-hidden="true"
           />
@@ -84,7 +84,7 @@ export function AuditSelectionModal({ isOpen, onClose }: AuditSelectionModalProp
             className="relative w-full max-w-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="glass rounded-[var(--radius-lg)] p-6 md:p-8 shadow-[var(--shadow-glass)]">
+            <div className="bg-bg-secondary rounded-[var(--radius-lg)] p-6 md:p-8 shadow-[var(--shadow-xl)]">
               {/* Header */}
               <div className="flex items-start justify-between gap-4 mb-8">
                 <div>
@@ -97,7 +97,7 @@ export function AuditSelectionModal({ isOpen, onClose }: AuditSelectionModalProp
                 </div>
                 <button
                   onClick={onClose}
-                  className="w-10 h-10 rounded-lg flex items-center justify-center text-text-tertiary hover:text-text-primary hover:bg-elevated/50 transition-colors shrink-0"
+                  className="w-10 h-10 rounded-[var(--radius-sm)] flex items-center justify-center text-text-tertiary hover:text-text-primary hover:bg-bg-hover transition-colors shrink-0"
                   aria-label="Close modal"
                 >
                   <X size={22} />
@@ -112,22 +112,17 @@ export function AuditSelectionModal({ isOpen, onClose }: AuditSelectionModalProp
                     <motion.button
                       key={option.id}
                       onClick={() => handleCardClick(option.href)}
-                      className="group relative text-left p-6 rounded-[var(--radius-md)] border border-border-subtle bg-elevated/30 hover:border-amber/40 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-deep"
+                      className="group relative text-left p-6 rounded-[var(--radius-md)] bg-bg-elevated hover:bg-bg-hover shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-secondary"
                       whileHover={{
                         scale: 1.02,
                         y: -4,
-                        boxShadow:
-                          "0 0 32px rgba(245, 158, 11, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3)",
                       }}
                       whileTap={{ scale: 0.98 }}
                       transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
                     >
-                      {/* Subtle glow on hover */}
-                      <div className="absolute inset-0 rounded-[var(--radius-md)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-gradient-to-br from-amber/5 to-transparent" />
-
                       <div className="relative">
-                        <div className="w-12 h-12 rounded-lg bg-amber/10 flex items-center justify-center mb-4 group-hover:bg-amber/20 transition-colors">
-                          <Icon size={24} className="text-amber" />
+                        <div className="w-12 h-12 rounded-[var(--radius-sm)] bg-accent-gold/10 flex items-center justify-center mb-4 group-hover:bg-accent-gold/15 transition-colors">
+                          <Icon size={24} className="text-accent-gold" />
                         </div>
                         <h3 className="text-lg font-semibold text-text-primary mb-2">
                           {option.title}
@@ -135,7 +130,7 @@ export function AuditSelectionModal({ isOpen, onClose }: AuditSelectionModalProp
                         <p className="text-sm text-text-secondary leading-relaxed">
                           {option.description}
                         </p>
-                        <span className="inline-flex items-center gap-1 mt-3 text-sm font-medium text-amber opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span className="inline-flex items-center gap-1 mt-3 text-sm font-medium text-accent-gold opacity-0 group-hover:opacity-100 transition-opacity">
                           Select →
                         </span>
                       </div>

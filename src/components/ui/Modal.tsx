@@ -49,13 +49,13 @@ export function Modal({ isOpen, onClose, children, size = 'medium', className = 
       onClick={onClose}
     >
       {/* Overlay */}
-      <div className="absolute inset-0 bg-bg-primary/80 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-bg-primary/60 backdrop-blur-sm" />
       
       {/* Modal Container */}
       <div 
         className={`
-          relative bg-bg-secondary border border-border-medium rounded-xl
-          shadow-xl max-h-[90vh] overflow-auto w-full
+          relative bg-bg-secondary rounded-[var(--radius-lg)]
+          shadow-[var(--shadow-xl)] max-h-[90vh] overflow-auto w-full
           animate-slideUp
           ${sizes[size]}
           ${className}

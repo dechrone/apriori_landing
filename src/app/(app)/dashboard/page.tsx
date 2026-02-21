@@ -22,7 +22,7 @@ export default function DashboardPage() {
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-h2 text-text-primary">Recent Simulations</h2>
-            <Link href="/simulations" className="text-body text-accent-gold hover:text-accent-gold-hover transition-colors">
+            <Link href="/simulations" className="text-body text-accent-gold hover:text-accent-gold-hover transition-colors font-medium">
               View all →
             </Link>
           </div>
@@ -56,7 +56,7 @@ export default function DashboardPage() {
         <section>
           <h2 className="text-h2 text-text-primary mb-6">Quick Actions</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <QuickActionCard
               icon={<Beaker className="w-8 h-8" />}
               title="Run Product Flow Simulation"
@@ -97,12 +97,13 @@ interface SimulationCardProps {
 }
 
 function SimulationCard({ type, status, title, metric, timestamp }: SimulationCardProps) {
+  const statusVariant = status === 'completed' ? 'success' : status === 'running' ? 'warning' : status === 'failed' ? 'warning' : 'muted';
   return (
     <Card hover className="min-h-[160px] flex flex-col">
       <CardContent className="flex flex-col h-full">
         <div className="flex items-start justify-between mb-3">
-          <span className="text-caption text-text-tertiary uppercase">{type}</span>
-          <Badge variant={status}>{status}</Badge>
+          <span className="text-caption text-text-tertiary uppercase tracking-wide">{type}</span>
+          <Badge variant={statusVariant}>{status}</Badge>
         </div>
         
         <h3 className="text-h4 text-text-primary mb-4 line-clamp-2 flex-grow">
@@ -110,7 +111,7 @@ function SimulationCard({ type, status, title, metric, timestamp }: SimulationCa
         </h3>
         
         <div className="mt-auto">
-          <div className="inline-flex items-center px-3 py-1.5 bg-accent-green-bg text-accent-green rounded-md text-body-sm font-semibold mb-3">
+          <div className="inline-flex items-center px-3 py-1.5 bg-accent-green-bg text-accent-green rounded-[var(--radius-sm)] text-body-sm font-semibold mb-3">
             {metric}
           </div>
           <p className="text-caption text-text-tertiary">{timestamp}</p>
@@ -132,7 +133,7 @@ function QuickActionCard({ icon, title, description, href }: QuickActionCardProp
     <Link href={href}>
       <Card hover className="text-center">
         <CardContent className="py-8">
-          <div className="w-12 h-12 mx-auto mb-4 text-accent-gold flex items-center justify-center">
+          <div className="w-14 h-14 mx-auto mb-4 rounded-[var(--radius-sm)] bg-accent-gold/10 text-accent-gold flex items-center justify-center">
             {icon}
           </div>
           <h3 className="text-h4 text-text-primary mb-2">{title}</h3>

@@ -1,6 +1,7 @@
 'use client';
 
 import { BarChart3, Image as ImageIcon } from 'lucide-react';
+import { Dropdown } from '@/components/ui/Dropdown';
 import type { AdSummary } from './types';
 
 interface AdSelectorProps {
@@ -11,6 +12,11 @@ interface AdSelectorProps {
 
 export function AdSelector({ ads, selectedAdId, onSelect }: AdSelectorProps) {
   const selected = ads.find((a) => a.id === selectedAdId);
+
+  const adOptions = ads.map((ad) => ({
+    value: ad.id,
+    label: `${ad.name}: ${ad.desc}`,
+  }));
 
   return (
     <header className="border-b border-border-subtle bg-bg-secondary px-6 py-4 sticky top-0 z-10">
@@ -27,19 +33,15 @@ export function AdSelector({ ads, selectedAdId, onSelect }: AdSelectorProps) {
             <div className="w-12 h-12 bg-bg-elevated rounded-lg overflow-hidden flex items-center justify-center shrink-0">
               <ImageIcon className="w-6 h-6 text-text-tertiary" />
             </div>
-            <div className="pr-4">
-              <p className="text-[10px] uppercase font-bold text-text-tertiary tracking-wider">Active Creative</p>
-              <select
+            <div className="pr-4 min-w-[200px]">
+              <p className="text-[10px] uppercase font-bold text-text-tertiary tracking-wider mb-1">Active Creative</p>
+              <Dropdown
                 value={selectedAdId}
-                onChange={(e) => onSelect(e.target.value)}
-                className="bg-transparent border-none p-0 text-sm font-semibold text-text-primary focus:ring-0 cursor-pointer focus:outline-none"
-              >
-                {ads.map((ad) => (
-                  <option key={ad.id} value={ad.id}>
-                    {ad.name}: {ad.desc}
-                  </option>
-                ))}
-              </select>
+                onChange={onSelect}
+                options={adOptions}
+                size="sm"
+                className="min-w-[200px]"
+              />
             </div>
           </div>
         </div>

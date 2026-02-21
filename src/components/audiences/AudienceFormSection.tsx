@@ -24,13 +24,13 @@ export function AudienceFormSection({
 
   return (
     <section
-      className="border border-border-subtle rounded-lg bg-bg-secondary overflow-hidden"
+      className="rounded-[var(--radius-md)] bg-bg-secondary shadow-[var(--shadow-card)] overflow-hidden"
       aria-labelledby={`section-${sectionId}-heading`}
     >
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-bg-elevated/50 transition-standard"
+        className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-bg-hover transition-standard"
         aria-expanded={isOpen}
         aria-controls={`section-${sectionId}-content`}
       >
@@ -53,7 +53,7 @@ export function AudienceFormSection({
         >
           <div className="pt-5 space-y-5">{children}</div>
           {config?.whyWeAsk && (
-            <div className="mt-6 p-4 rounded-md bg-bg-elevated/50 border border-border-subtle">
+            <div className="mt-6 p-4 rounded-[var(--radius-sm)] bg-bg-elevated">
               <p className="text-label text-text-quaternary uppercase tracking-wide mb-2">
                 Why we ask this
               </p>
