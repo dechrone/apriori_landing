@@ -58,10 +58,10 @@ export function AudienceTypeSelector({ value, onChange }: AudienceTypeSelectorPr
               disabled={isDisabled}
               onClick={() => !isDisabled && onChange(type.value)}
               className={`
-                text-left rounded-lg border-2 p-4 transition-standard
+                text-left rounded-[var(--radius-sm)] border-2 p-4 transition-standard
                 ${isSelected
-                  ? 'border-accent-gold bg-bg-elevated text-text-primary'
-                  : 'border-border-subtle text-text-secondary hover:border-border-medium hover:bg-bg-elevated'
+                  ? 'border-accent-gold bg-accent-gold/5 text-text-primary shadow-[var(--shadow-sm)]'
+                  : 'border-border-subtle text-text-secondary hover:border-border-medium hover:bg-bg-hover'
                 }
                 ${isDisabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}
               `}

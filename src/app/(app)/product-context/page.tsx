@@ -88,7 +88,7 @@ export default function ProductContextPage() {
           <CardContent>
             <div className="space-y-3">
               {['Retention', 'LTV', 'Activation Rate', 'Conversion Rate', 'Churn Rate'].map((kpi) => (
-                <label key={kpi} className="flex items-center gap-3 cursor-pointer">
+                <label key={kpi} className="flex items-center gap-3 cursor-pointer group">
                   <input
                     type="checkbox"
                     checked={formData.kpis.includes(kpi)}
@@ -99,11 +99,11 @@ export default function ProductContextPage() {
                         setFormData({ ...formData, kpis: formData.kpis.filter(k => k !== kpi) });
                       }
                     }}
-                    className="w-5 h-5 rounded border-2 border-border-medium bg-bg-input
+                    className="w-5 h-5 rounded-[6px] border-2 border-border-medium bg-bg-input
                       checked:bg-accent-gold checked:border-accent-gold
-                      transition-standard cursor-pointer"
+                      transition-standard cursor-pointer accent-accent-gold"
                   />
-                  <span className="text-body text-text-secondary">{kpi}</span>
+                  <span className="text-body text-text-secondary group-hover:text-text-primary transition-colors">{kpi}</span>
                 </label>
               ))}
             </div>
@@ -126,7 +126,7 @@ export default function ProductContextPage() {
         </Card>
       </div>
 
-      <footer className="fixed bottom-0 left-0 right-0 bg-bg-primary/95 backdrop-blur-sm border-t border-border-subtle px-4 lg:px-8 py-4 z-20">
+      <footer className="fixed bottom-0 left-0 right-0 bg-bg-secondary/95 backdrop-blur-sm shadow-[0_-1px_3px_rgba(0,0,0,0.06)] px-4 lg:px-8 py-4 z-20">
         <div className="max-w-[1600px] mx-auto flex justify-end">
           <Button size="lg" onClick={handleSave}>
             Save changes

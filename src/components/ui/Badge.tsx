@@ -12,11 +12,11 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  default: "bg-border-subtle text-text-secondary",
-  amber: "bg-amber-dim text-amber border border-amber/20",
-  success: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
-  warning: "bg-orange-500/10 text-orange-400 border border-orange-500/20",
-  muted: "bg-elevated/50 text-text-tertiary",
+  default: "bg-bg-elevated text-text-secondary",
+  amber: "bg-accent-gold/10 text-accent-gold",
+  success: "bg-accent-green-bg text-accent-green",
+  warning: "bg-accent-orange-bg text-accent-orange",
+  muted: "bg-bg-elevated text-text-tertiary",
 };
 
 function Badge({ children, variant = "default", icon, className = "" }: BadgeProps) {
@@ -49,8 +49,9 @@ function Tag({ children, onRemove, className = "" }: TagProps) {
       className={`
         inline-flex items-center gap-2
         px-3 py-1.5
-        bg-bg-elevated border border-border-subtle
+        bg-bg-elevated
         rounded-full text-body-sm text-text-secondary
+        shadow-[var(--shadow-sm)]
         ${className}
       `}
     >
@@ -73,4 +74,3 @@ function Tag({ children, onRemove, className = "" }: TagProps) {
 
 export { Badge, Tag };
 export type { BadgeProps, TagProps };
-

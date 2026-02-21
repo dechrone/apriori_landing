@@ -663,11 +663,11 @@ export function AudienceFilterBuilder({ onChange }: AudienceFilterBuilderProps) 
     return (
       <div
         key={node.id}
-        className={`border border-border-subtle rounded-lg bg-bg-secondary ${
+        className={`rounded-[var(--radius-md)] bg-bg-secondary shadow-[var(--shadow-card)] ${
           depth > 0 ? "ml-4" : ""
         }`}
       >
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle bg-bg-elevated/60">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle bg-bg-elevated">
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -683,7 +683,7 @@ export function AudienceFilterBuilder({ onChange }: AudienceFilterBuilderProps) 
                 {isRoot ? "Root group" : "Nested group"}
               </span>
             </button>
-            <div className="inline-flex rounded-full border border-border-subtle bg-bg-primary text-caption overflow-hidden">
+            <div className="inline-flex rounded-full border border-border-subtle bg-bg-secondary text-caption overflow-hidden shadow-[var(--shadow-sm)]">
               <button
                 type="button"
                 className={`px-3 py-1 ${
@@ -725,7 +725,7 @@ export function AudienceFilterBuilder({ onChange }: AudienceFilterBuilderProps) 
               child.type === "condition" ? (
                 <div
                   key={child.id}
-                  className="flex flex-col md:flex-row md:items-center gap-3 border border-border-subtle rounded-md bg-bg-primary/60 px-3 py-3"
+                  className="flex flex-col md:flex-row md:items-center gap-3 rounded-[var(--radius-sm)] bg-bg-elevated px-3 py-3"
                 >
                   <div className="flex flex-col md:flex-row md:items-center gap-3 flex-1">
                     <div className="min-w-[160px] md:w-1/4">

@@ -35,13 +35,11 @@ const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
         whileHover={hover ? { y: -4, scale: 1.02 } : undefined}
         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
         className={`
-          backdrop-blur-[24px]
-          bg-glass
-          border border-border-subtle
+          bg-bg-secondary
           rounded-[var(--radius-md)]
-          shadow-[var(--shadow-glass)]
-          ${hover ? "cursor-pointer hover:border-border-emphasis transition-colors duration-200" : ""}
-          ${glow ? "shadow-[var(--shadow-amber-glow-sm)]" : ""}
+          shadow-[var(--shadow-card)]
+          ${hover ? "cursor-pointer hover:shadow-[var(--shadow-lg)] transition-shadow duration-200" : ""}
+          ${glow ? "shadow-[var(--shadow-glow-gold)]" : ""}
           ${paddingStyles[padding]}
           ${className}
         `}
@@ -57,4 +55,3 @@ GlassCard.displayName = "GlassCard";
 
 export { GlassCard };
 export type { GlassCardProps };
-

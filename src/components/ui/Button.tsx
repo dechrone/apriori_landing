@@ -17,16 +17,17 @@ interface ButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: `
-    bg-amber text-deep font-semibold
-    hover:shadow-[0_0_48px_rgba(245,158,11,0.4)]
+    bg-accent-gold text-white font-semibold
+    hover:bg-accent-gold-hover hover:shadow-[var(--shadow-glow-gold)]
   `,
   secondary: `
-    bg-transparent border border-border-emphasis text-text-primary
-    hover:bg-amber-dim hover:border-amber/30
+    bg-bg-secondary border border-border-medium text-text-primary
+    hover:bg-bg-hover hover:border-border-strong
+    shadow-[var(--shadow-sm)]
   `,
   ghost: `
     bg-transparent text-text-secondary
-    hover:text-amber hover:bg-amber-dim
+    hover:text-accent-gold hover:bg-accent-gold/5
   `,
 };
 
@@ -61,7 +62,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           rounded-[var(--radius-sm)]
           font-medium
           transition-all duration-150
-          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-deep
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary
           disabled:opacity-50 disabled:pointer-events-none
           ${variantStyles[variant]}
           ${sizeStyles[size]}
@@ -101,10 +102,10 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         ref={ref}
         className={`
           w-10 h-10 flex items-center justify-center
-          rounded-md bg-transparent text-text-tertiary
-          hover:bg-bg-elevated hover:text-text-primary
+          rounded-[var(--radius-sm)] bg-transparent text-text-tertiary
+          hover:bg-bg-hover hover:text-text-primary
           transition-all duration-200
-          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-deep
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary
           ${className}
         `}
         aria-label={label}
@@ -120,4 +121,3 @@ IconButton.displayName = "IconButton";
 
 export { Button, IconButton };
 export type { ButtonProps, IconButtonProps };
-

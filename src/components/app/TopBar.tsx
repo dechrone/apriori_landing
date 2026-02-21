@@ -13,12 +13,18 @@ interface TopBarProps {
 }
 
 export function TopBar({ title, breadcrumb, actions, onMenuClick }: TopBarProps) {
-  const { desktopSidebarOpen } = useAppShell();
-  
+  const { sidebarCollapsed } = useAppShell();
+
   return (
-    <header className={`fixed top-0 left-0 right-0 h-[72px] bg-bg-primary border-b border-border-subtle px-4 lg:px-8 flex items-center justify-between z-40 transition-all duration-300 ${
-      desktopSidebarOpen ? 'lg:left-[260px]' : 'lg:left-[80px]'
-    }`}>
+    <header
+      className={`
+        fixed top-0 left-0 right-0 h-[72px]
+        bg-bg-secondary shadow-[0_1px_3px_rgba(0,0,0,0.06)]
+        px-4 lg:px-8 flex items-center justify-between z-40
+        transition-[left] duration-200 ease-out
+        ${sidebarCollapsed ? 'lg:left-[72px]' : 'lg:left-[260px]'}
+      `}
+    >
       {/* Left Section */}
       <div className="flex items-center gap-4">
         {/* Mobile menu button */}

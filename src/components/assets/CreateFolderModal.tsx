@@ -63,10 +63,10 @@ export function CreateFolderModal({ isOpen, onClose, onCreate }: CreateFolderMod
                   type="button"
                   onClick={() => setAssetType(type.value)}
                   className={`
-                    flex items-center gap-3 p-4 rounded-lg border-2 text-left transition-standard
+                    flex items-center gap-3 p-4 rounded-[var(--radius-sm)] border-2 text-left transition-standard
                     ${assetType === type.value
-                      ? 'border-accent-gold bg-bg-elevated text-text-primary'
-                      : 'border-border-subtle text-text-secondary hover:border-border-medium'
+                      ? 'border-accent-gold bg-accent-gold/5 text-text-primary shadow-[var(--shadow-sm)]'
+                      : 'border-border-subtle text-text-secondary hover:border-border-medium hover:bg-bg-hover'
                     }
                   `}
                 >

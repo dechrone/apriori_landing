@@ -118,7 +118,7 @@ export default function AssetsPage() {
 
   const statusBadgeVariant =
     (status: AssetFolder['status']) =>
-    status === 'ready' ? 'success' : status === 'missing-metadata' ? 'warning' : 'error';
+    status === 'ready' ? 'success' : status === 'missing-metadata' ? 'warning' : 'warning';
 
   return (
     <>
@@ -146,13 +146,13 @@ export default function AssetsPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {folders.map((folder) => (
-              <Card key={folder.id} hover className="border-l-4 border-l-accent-gold relative group">
+              <Card key={folder.id} hover className="border-l-[3px] border-l-accent-gold relative group">
                 <CardContent className="flex items-center gap-4 py-5">
                   <Link
                     href={`/assets/${folder.id}?name=${encodeURIComponent(folder.name)}&type=${folder.assetType}`}
                     className="flex min-w-0 flex-1 items-center gap-4"
                   >
-                    <div className="w-12 h-12 shrink-0 rounded-lg bg-bg-elevated flex items-center justify-center">
+                    <div className="w-12 h-12 shrink-0 rounded-[var(--radius-sm)] bg-accent-gold/10 flex items-center justify-center">
                       <FolderOpen className="w-6 h-6 text-accent-gold" />
                     </div>
                     <div className="min-w-0 flex-1">
@@ -191,7 +191,7 @@ export default function AssetsPage() {
         )}
 
         <div className="fixed bottom-6 right-6 lg:right-10 z-30">
-          <Button size="lg" className="shadow-lg" onClick={openUploadModal}>
+          <Button size="lg" className="shadow-[var(--shadow-lg)]" onClick={openUploadModal}>
             <Plus className="w-6 h-6" />
             Upload Asset
           </Button>
