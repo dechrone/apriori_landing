@@ -550,6 +550,38 @@ body {
   display: none !important;
 }
 
+/* Force visible text in Clerk auth (sign-up/sign-in) on dark background */
+.clerk-auth-wrapper {
+  --clerk-color-foreground: #F9FAFB;
+  --clerk-color-muted-foreground: #D1D5DB;
+  --clerk-color-input-foreground: #FAFAFA;
+  --clerk-color-primary-foreground: #0A0E1A;
+}
+.clerk-auth-wrapper [class^="cl-"] .cl-formFieldLabel,
+.clerk-auth-wrapper [class^="cl-"] [class*="formFieldLabel"] {
+  color: #D1D5DB !important;
+}
+.clerk-auth-wrapper [class^="cl-"] .cl-footerAction,
+.clerk-auth-wrapper [class^="cl-"] [class*="footerAction"] {
+  color: #D1D5DB !important;
+}
+.clerk-auth-wrapper [class^="cl-"] [class*="socialButtonsBlockButton"] span {
+  color: #F9FAFB !important;
+}
+.clerk-auth-wrapper [class^="cl-"] [class*="optional"],
+.clerk-auth-wrapper [class^="cl-"] .cl-formFieldOptionalLabel {
+  color: #9CA3AF !important;
+}
+.clerk-auth-wrapper [class^="cl-"] [class*="footer"] {
+  color: #D1D5DB !important;
+}
+.clerk-auth-wrapper a[class*="footerActionLink"] {
+  color: var(--accent-amber) !important;
+}
+.clerk-auth-wrapper [class^="cl-"] [class*="dividerText"] {
+  color: #9CA3AF !important;
+}
+
 /* ===== UTILITY CLASSES ===== */
 
 /* Standard transition */
