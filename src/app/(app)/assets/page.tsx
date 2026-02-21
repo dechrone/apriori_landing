@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { TopBar } from '@/components/app/TopBar';
 import { Button } from '@/components/ui/Button';
@@ -14,56 +14,54 @@ import { EditFolderModal } from '@/components/assets/EditFolderModal';
 import { FolderCardMenu } from '@/components/assets/FolderCardMenu';
 import { useAppShell } from '@/components/app/AppShell';
 import { useToast } from '@/components/ui/Toast';
-import { Plus, FolderPlus, FolderOpen } from 'lucide-react';
+import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
+import { Plus, FolderPlus, FolderOpen, Loader2 } from 'lucide-react';
 import type { AssetFolder } from '@/types/asset';
 import { getAssetTypeLabel, getFolderStatusLabel } from '@/types/asset';
+import {
+  getAssetFolders,
+  saveAssetFolder,
+  updateAssetFolder,
+  deleteAssetFolder,
+} from '@/lib/firestore';
 
 export default function AssetsPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
+  const { clerkId, profileReady } = useFirebaseUser();
 
-  const [folders, setFolders] = useState<AssetFolder[]>([
-    {
-      id: '1',
-      name: 'Onboarding Flow',
-      assetType: 'product-flow',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      assetCount: 3,
-      usedInSimulations: 1,
-      status: 'ready',
-    },
-    {
-      id: '2',
-      name: 'Pricing Page Screens',
-      description: 'Screens for pricing page A/B test',
-      assetType: 'product-flow',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      assetCount: 5,
-      usedInSimulations: 0,
-      status: 'missing-metadata',
-    },
-    {
-      id: '3',
-      name: 'Q1 Ad Creatives',
-      assetType: 'ad-creative',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      assetCount: 4,
-      usedInSimulations: 2,
-      status: 'ready',
-    },
-  ]);
+  const [folders, setFolders] = useState<AssetFolder[]>([]);
+  const [loading, setLoading] = useState(true);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [editModalFolder, setEditModalFolder] = useState<AssetFolder | null>(null);
   const [deleteModalFolder, setDeleteModalFolder] = useState<AssetFolder | null>(null);
 
-  const handleCreateFolder = (name: string, assetType: AssetFolder['assetType'], description?: string) => {
+  const loadFolders = useCallback(async () => {
+    if (!clerkId || !profileReady) return;
+    try {
+      const data = await getAssetFolders(clerkId);
+      setFolders(data);
+    } catch (err) {
+      console.error(err);
+      showToast('error', 'Failed to load folders', 'Please refresh the page.');
+    } finally {
+      setLoading(false);
+    }
+  }, [clerkId, profileReady, showToast]);
+
+  useEffect(() => {
+    loadFolders();
+  }, [loadFolders]);
+
+  const handleCreateFolder = async (
+    name: string,
+    assetType: AssetFolder['assetType'],
+    description?: string
+  ) => {
+    if (!clerkId) return;
     const now = new Date().toISOString();
-    const newFolder: AssetFolder = {
-      id: String(Date.now()),
+    const folderData: Omit<AssetFolder, 'id'> = {
       name,
       description,
       assetType,
@@ -73,28 +71,46 @@ export default function AssetsPage() {
       usedInSimulations: 0,
       status: 'ready',
     };
-    setFolders((prev) => [newFolder, ...prev]);
-    showToast('success', 'Folder created', `"${name}" is ready for ${getAssetTypeLabel(assetType).toLowerCase()}.`);
+    try {
+      const newId = await saveAssetFolder(clerkId, folderData);
+      setFolders((prev) => [{ id: newId, ...folderData }, ...prev]);
+      showToast('success', 'Folder created', `"${name}" is ready for ${getAssetTypeLabel(assetType).toLowerCase()}.`);
+    } catch (err) {
+      console.error(err);
+      showToast('error', 'Failed to create folder', 'Please try again.');
+    }
   };
 
-  const handleSaveFolder = (updates: { name: string; description?: string }) => {
-    if (!editModalFolder) return;
-    setFolders((prev) =>
-      prev.map((f) =>
-        f.id === editModalFolder.id
-          ? { ...f, ...updates, updatedAt: new Date().toISOString() }
-          : f
-      )
-    );
-    showToast('success', 'Folder updated', 'Changes saved.');
-    setEditModalFolder(null);
+  const handleSaveFolder = async (updates: { name: string; description?: string }) => {
+    if (!editModalFolder || !clerkId) return;
+    try {
+      await updateAssetFolder(clerkId, editModalFolder.id, updates);
+      setFolders((prev) =>
+        prev.map((f) =>
+          f.id === editModalFolder.id
+            ? { ...f, ...updates, updatedAt: new Date().toISOString() }
+            : f
+        )
+      );
+      showToast('success', 'Folder updated', 'Changes saved.');
+      setEditModalFolder(null);
+    } catch (err) {
+      console.error(err);
+      showToast('error', 'Failed to update folder', 'Please try again.');
+    }
   };
 
-  const handleDeleteFolder = () => {
-    if (!deleteModalFolder) return;
-    setFolders((prev) => prev.filter((f) => f.id !== deleteModalFolder.id));
-    showToast('success', 'Folder deleted', `"${deleteModalFolder.name}" has been removed.`);
-    setDeleteModalFolder(null);
+  const handleDeleteFolder = async () => {
+    if (!deleteModalFolder || !clerkId) return;
+    try {
+      await deleteAssetFolder(clerkId, deleteModalFolder.id);
+      setFolders((prev) => prev.filter((f) => f.id !== deleteModalFolder.id));
+      showToast('success', 'Folder deleted', `"${deleteModalFolder.name}" has been removed.`);
+      setDeleteModalFolder(null);
+    } catch (err) {
+      console.error(err);
+      showToast('error', 'Failed to delete folder', 'Please try again.');
+    }
   };
 
   const handleUpload = (folderId: string, files: FileList | null) => {
@@ -116,9 +132,8 @@ export default function AssetsPage() {
     setUploadModalOpen(true);
   };
 
-  const statusBadgeVariant =
-    (status: AssetFolder['status']) =>
-    status === 'ready' ? 'success' : status === 'missing-metadata' ? 'warning' : 'error';
+  const statusBadgeVariant = (status: AssetFolder['status']) =>
+    status === 'ready' ? 'success' : status === 'missing-metadata' ? 'warning' : 'muted';
 
   return (
     <>
@@ -133,7 +148,11 @@ export default function AssetsPage() {
           </Button>
         </div>
 
-        {folders.length === 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 animate-spin text-accent-gold" />
+          </div>
+        ) : folders.length === 0 ? (
           <EmptyState
             icon={<FolderOpen className="w-16 h-16" />}
             title="No folders yet"

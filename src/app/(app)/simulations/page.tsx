@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { TopBar } from '@/components/app/TopBar';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
@@ -9,60 +9,56 @@ import { Select } from '@/components/ui/Select';
 import { Input } from '@/components/ui/Input';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useAppShell } from '@/components/app/AppShell';
-import { Plus, Search, Beaker } from 'lucide-react';
+import { useToast } from '@/components/ui/Toast';
+import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
+import { Plus, Search, Beaker, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { getSimulations, type SimulationDoc } from '@/lib/firestore';
 
 export default function SimulationsPage() {
   const { toggleMobileMenu } = useAppShell();
+  const { showToast } = useToast();
+  const { clerkId, profileReady } = useFirebaseUser();
+
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [simulations, setSimulations] = useState<SimulationDoc[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data - replace with actual data fetching
-  const simulations = [
-    {
-      id: '1',
-      type: 'Product Flow',
-      status: 'completed' as const,
-      name: 'Onboarding Flow Optimization',
-      metric: '+18% retention predicted',
-      timestamp: '2 days ago',
-    },
-    {
-      id: '2',
-      type: 'Ad Portfolio',
-      status: 'running' as const,
-      name: 'Q1 Campaign Performance',
-      metric: 'Running 10 variants',
-      timestamp: 'Started 3 hours ago',
-    },
-    {
-      id: '3',
-      type: 'Product Flow',
-      status: 'completed' as const,
-      name: 'Pricing Page A/B Test',
-      metric: '+12% conversion predicted',
-      timestamp: '5 days ago',
-    },
-    {
-      id: '4',
-      type: 'Product Flow',
-      status: 'draft' as const,
-      name: 'Checkout Flow Analysis',
-      metric: 'Draft',
-      timestamp: '1 week ago',
-    },
-  ];
+  const loadSimulations = useCallback(async () => {
+    if (!clerkId || !profileReady) return;
+    try {
+      const data = await getSimulations(clerkId);
+      setSimulations(data);
+    } catch (err) {
+      console.error(err);
+      showToast('error', 'Failed to load simulations', 'Please refresh.');
+    } finally {
+      setLoading(false);
+    }
+  }, [clerkId, profileReady, showToast]);
+
+  useEffect(() => {
+    loadSimulations();
+  }, [loadSimulations]);
+
+  const filtered = simulations.filter((s) => {
+    const matchType =
+      typeFilter === 'all' ||
+      (typeFilter === 'product-flow' && s.type === 'Product Flow') ||
+      (typeFilter === 'ad-portfolio' && s.type === 'Ad Portfolio');
+    const matchStatus = statusFilter === 'all' || s.status === statusFilter;
+    const matchSearch =
+      !searchQuery || s.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchType && matchStatus && matchSearch;
+  });
 
   return (
     <>
-      <TopBar 
-        title="Simulations"
-        onMenuClick={toggleMobileMenu}
-      />
+      <TopBar title="Simulations" onMenuClick={toggleMobileMenu} />
 
       <div className="max-w-[1600px] mx-auto relative pb-20">
-        {/* Filters */}
         <Card className="mb-8">
           <CardContent className="flex flex-wrap gap-3">
             <div className="w-48">
@@ -103,23 +99,35 @@ export default function SimulationsPage() {
           </CardContent>
         </Card>
 
-        {/* Simulations List */}
-        {simulations.length === 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 animate-spin text-accent-gold" />
+          </div>
+        ) : filtered.length === 0 ? (
           <EmptyState
             icon={<Beaker className="w-16 h-16" />}
-            title="No simulations yet"
-            description="Create your first simulation to start testing product decisions and identifying potential issues before building."
-            action={{
-              label: 'Create Simulation',
-              onClick: () => window.location.href = '/simulations/new'
-            }}
+            title={simulations.length === 0 ? 'No simulations yet' : 'No results'}
+            description={
+              simulations.length === 0
+                ? 'Create your first simulation to start testing product decisions and identifying potential issues before building.'
+                : 'Try adjusting your filters or search query.'
+            }
+            action={
+              simulations.length === 0
+                ? { label: 'Create Simulation', onClick: () => (window.location.href = '/simulations/new') }
+                : undefined
+            }
           />
         ) : (
           <div className="space-y-4">
-            {simulations.map((simulation) => (
+            {filtered.map((simulation) => (
               <Link
                 key={simulation.id}
-                href={simulation.type === 'Ad Portfolio' ? `/simulations/ad-portfolio/${simulation.id}` : `/simulations/${simulation.id}`}
+                href={
+                  simulation.type === 'Ad Portfolio'
+                    ? `/simulations/ad-portfolio/${simulation.id}`
+                    : `/simulations/${simulation.id}`
+                }
               >
                 <Card hover>
                   <CardContent className="flex items-center justify-between">
@@ -128,11 +136,21 @@ export default function SimulationsPage() {
                         <span className="text-caption text-text-tertiary uppercase">
                           {simulation.type}
                         </span>
-                        <Badge variant={simulation.status}>{simulation.status}</Badge>
+                        <Badge
+                          variant={
+                            simulation.status === 'completed'
+                              ? 'success'
+                              : simulation.status === 'running'
+                                ? 'amber'
+                                : simulation.status === 'failed'
+                                  ? 'muted'
+                                  : 'muted'
+                          }
+                        >
+                          {simulation.status}
+                        </Badge>
                       </div>
-                      <h3 className="text-h4 text-text-primary mb-2">
-                        {simulation.name}
-                      </h3>
+                      <h3 className="text-h4 text-text-primary mb-2">{simulation.name}</h3>
                       <div className="flex items-center gap-4 text-body-sm text-text-tertiary">
                         <span>{simulation.metric}</span>
                         <span>•</span>
@@ -151,7 +169,6 @@ export default function SimulationsPage() {
           </div>
         )}
 
-        {/* New Simulation - bottom right */}
         <div className="fixed bottom-6 right-6 lg:right-10 z-30">
           <Link href="/simulations/new">
             <Button size="lg" className="shadow-lg">

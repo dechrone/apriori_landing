@@ -10,18 +10,22 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { useAppShell } from "@/components/app/AppShell";
 import { useToast } from "@/components/ui/Toast";
+import { useFirebaseUser } from "@/contexts/FirebaseUserContext";
 import { AudienceFilterBuilder, type ConditionGroupNode } from "@/components/audiences/AudienceFilterBuilder";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { saveAudience } from "@/lib/firestore";
 
 export default function NewAudiencePage() {
   const { toggleMobileMenu } = useAppShell();
   const router = useRouter();
   const { showToast } = useToast();
+  const { clerkId } = useFirebaseUser();
 
   const [step, setStep] = useState<"details" | "builder">("details");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [filters, setFilters] = useState<ConditionGroupNode | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const handleContinueToBuilder = () => {
     const trimmed = name.trim();
@@ -32,16 +36,32 @@ export default function NewAudiencePage() {
     setStep("builder");
   };
 
-  const handleSaveDraft = () => {
-    showToast(
-      "success",
-      "Draft saved",
-      "Your audience draft has been saved locally."
-    );
-    router.push("/audiences");
+  const handleSaveDraft = async () => {
+    if (!clerkId) return;
+    setSaving(true);
+    try {
+      await saveAudience(clerkId, {
+        name: name.trim(),
+        description: description.trim() || undefined,
+        filters: filters ?? undefined,
+        status: "draft",
+        usedInSimulations: 0,
+        demographics: [],
+        psychographics: [],
+        budget: "",
+        risk: "",
+      });
+      showToast("success", "Draft saved", "Your audience draft has been saved.");
+      router.push("/audiences");
+    } catch (err) {
+      console.error(err);
+      showToast("error", "Failed to save draft", "Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleCreateAudience = () => {
+  const handleCreateAudience = async () => {
     const trimmed = name.trim();
     if (!trimmed) {
       showToast("error", "Audience name required", "Add a name to continue.");
@@ -56,13 +76,28 @@ export default function NewAudiencePage() {
       );
       return;
     }
-
-    showToast(
-      "success",
-      "Audience created",
-      "This audience will use your dynamic filter definition."
-    );
-    router.push("/audiences");
+    if (!clerkId) return;
+    setSaving(true);
+    try {
+      await saveAudience(clerkId, {
+        name: trimmed,
+        description: description.trim() || undefined,
+        filters: filters ?? undefined,
+        status: "active",
+        usedInSimulations: 0,
+        demographics: [],
+        psychographics: [],
+        budget: "",
+        risk: "",
+      });
+      showToast("success", "Audience created", "Your audience has been saved to Firebase.");
+      router.push("/audiences");
+    } catch (err) {
+      console.error(err);
+      showToast("error", "Failed to create audience", "Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -163,10 +198,14 @@ export default function NewAudiencePage() {
                   </Link>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Button variant="secondary" onClick={handleSaveDraft}>
+                  <Button variant="secondary" onClick={handleSaveDraft} disabled={saving}>
+                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                     Save draft
                   </Button>
-                  <Button onClick={handleCreateAudience}>Create audience</Button>
+                  <Button onClick={handleCreateAudience} disabled={saving}>
+                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                    Create audience
+                  </Button>
                 </div>
               </div>
             </footer>

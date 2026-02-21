@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { TopBar } from '@/components/app/TopBar';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/Card';
@@ -8,28 +8,71 @@ import { Select } from '@/components/ui/Select';
 import { Textarea } from '@/components/ui/Textarea';
 import { useToast } from '@/components/ui/Toast';
 import { useAppShell } from '@/components/app/AppShell';
+import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
+import { Loader2, Save } from 'lucide-react';
+import { getProductContext, saveProductContext, type ProductContextData } from '@/lib/firestore';
+
+const DEFAULT_FORM: ProductContextData = {
+  productType: 'saas',
+  pricingModel: 'subscription',
+  salesMotion: 'plg',
+  kpis: [],
+  constraints: '',
+};
 
 export default function ProductContextPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
-  const [formData, setFormData] = useState({
-    productType: 'saas',
-    pricingModel: 'subscription',
-    salesMotion: 'plg',
-    kpis: [] as string[],
-    constraints: '',
-  });
+  const { clerkId, profileReady } = useFirebaseUser();
 
-  const handleSave = () => {
-    showToast('success', 'Product context saved', 'Your changes have been saved successfully.');
+  const [formData, setFormData] = useState<ProductContextData>(DEFAULT_FORM);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  const loadContext = useCallback(async () => {
+    if (!clerkId || !profileReady) return;
+    try {
+      const data = await getProductContext(clerkId);
+      if (data) setFormData(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [clerkId, profileReady]);
+
+  useEffect(() => {
+    loadContext();
+  }, [loadContext]);
+
+  const handleSave = async () => {
+    if (!clerkId) return;
+    setSaving(true);
+    try {
+      await saveProductContext(clerkId, formData);
+      showToast('success', 'Product context saved', 'Your changes have been saved to Firebase.');
+    } catch (err) {
+      console.error(err);
+      showToast('error', 'Failed to save', 'Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <>
+        <TopBar title="Product Context" onMenuClick={toggleMobileMenu} />
+        <div className="flex items-center justify-center py-32">
+          <Loader2 className="w-8 h-8 animate-spin text-accent-gold" />
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
-      <TopBar 
-        title="Product Context"
-        onMenuClick={toggleMobileMenu}
-      />
+      <TopBar title="Product Context" onMenuClick={toggleMobileMenu} />
 
       <div className="max-w-[800px] mx-auto space-y-8 pb-24">
         <Card>
@@ -48,7 +91,6 @@ export default function ProductContextPage() {
                 { value: 'platform', label: 'Platform' },
               ]}
             />
-
             <Select
               label="Pricing Model"
               value={formData.pricingModel}
@@ -96,7 +138,7 @@ export default function ProductContextPage() {
                       if (e.target.checked) {
                         setFormData({ ...formData, kpis: [...formData.kpis, kpi] });
                       } else {
-                        setFormData({ ...formData, kpis: formData.kpis.filter(k => k !== kpi) });
+                        setFormData({ ...formData, kpis: formData.kpis.filter((k) => k !== kpi) });
                       }
                     }}
                     className="w-5 h-5 rounded border-2 border-border-medium bg-bg-input
@@ -128,8 +170,13 @@ export default function ProductContextPage() {
 
       <footer className="fixed bottom-0 left-0 right-0 bg-bg-primary/95 backdrop-blur-sm border-t border-border-subtle px-4 lg:px-8 py-4 z-20">
         <div className="max-w-[1600px] mx-auto flex justify-end">
-          <Button size="lg" onClick={handleSave}>
-            Save changes
+          <Button size="lg" onClick={handleSave} disabled={saving}>
+            {saving ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Save className="w-5 h-5" />
+            )}
+            {saving ? 'Saving…' : 'Save changes'}
           </Button>
         </div>
       </footer>

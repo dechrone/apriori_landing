@@ -1,0 +1,17 @@
+[
+  {
+    "origin": [
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+      "https://credigo-bc4c7.firebaseapp.com"
+    ],
+    "method": ["GET", "HEAD", "PUT", "POST", "OPTIONS", "DELETE"],
+    "responseHeader": [
+      "Content-Type",
+      "Content-Length",
+      "x-goog-resumable",
+      "x-goog-meta-*"
+    ],
+    "maxAgeSeconds": 3600
+  }
+]
