@@ -3,21 +3,30 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { Playfair_Display, DM_Sans } from "next/font/google";
 import { TopBar } from "@/components/app/TopBar";
 import { Card, CardContent } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useAppShell } from "@/components/app/AppShell";
 import { useFirebaseUser } from "@/contexts/FirebaseUserContext";
 import { getSimulation } from "@/lib/firestore";
 import type { SimulationDoc } from "@/lib/firestore";
-import type {
-  ProductFlowSimulationResult,
-  SimulationPersona,
-  ProductFlowJourney,
-  FlowInsight,
-} from "@/types/simulation-result";
-import { ArrowLeft, MoreVertical, Users, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import type { ProductFlowSimulationResult } from "@/types/simulation-result";
+import { FlowAnalysisView } from "@/components/flow-analysis/FlowAnalysisView";
+import { flowAnalysisDummyData } from "@/data/flow-analysis-dummy";
+import { ArrowLeft } from "lucide-react";
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-flow-display",
+  display: "swap",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-flow-body",
+  display: "swap",
+});
 
 export default function SimulationDetailsPage() {
   const { toggleMobileMenu } = useAppShell();
@@ -47,12 +56,16 @@ export default function SimulationDetailsPage() {
 
   const result = simulation?.result as ProductFlowSimulationResult | undefined;
   const meta = result?.metadata;
-  const hasResult = result?.simulation_type === "product_flow" && meta;
+  const isProductFlow = result?.simulation_type === "product_flow";
 
   if (loading) {
     return (
       <>
-        <TopBar title="Product Flow Results" breadcrumb="Loading…" onMenuClick={toggleMobileMenu} />
+        <TopBar
+          title="Flow Analysis"
+          breadcrumb="Loading…"
+          onMenuClick={toggleMobileMenu}
+        />
         <div className="max-w-[1280px] mx-auto px-6 py-12">
           <p className="text-body text-text-tertiary">Loading simulation…</p>
         </div>
@@ -60,14 +73,20 @@ export default function SimulationDetailsPage() {
     );
   }
 
-  if (!simulation || !hasResult) {
+  if (!simulation) {
     return (
       <>
-        <TopBar title="Product Flow Results" breadcrumb="Not found" onMenuClick={toggleMobileMenu} />
+        <TopBar
+          title="Flow Analysis"
+          breadcrumb="Not found"
+          onMenuClick={toggleMobileMenu}
+        />
         <div className="max-w-[1280px] mx-auto px-6 py-12">
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-body text-text-secondary mb-4">Simulation not found or no result data.</p>
+              <p className="text-body text-text-secondary mb-4">
+                Simulation not found.
+              </p>
               <Link href="/simulations">
                 <Button variant="secondary">
                   <ArrowLeft className="w-4 h-4 mr-2" />
@@ -81,170 +100,54 @@ export default function SimulationDetailsPage() {
     );
   }
 
-  const completionRate = meta.completion_rate_pct ?? 0;
-  const avgTime = meta.avg_time_seconds ?? 0;
-  const flowInsights = result.flow_insights ?? [];
-  const journeys = result.journeys ?? [];
-  const personas = result.personas ?? [];
+  // Product Flow simulation: show Flow Analysis (same structure as Ad simulation)
+  if (isProductFlow) {
+    const flowData = flowAnalysisDummyData;
+    const completionRate = flowData.meta.completionRate ?? 0;
+    const totalPersonas = flowData.meta.totalPersonas ?? 0;
+    return (
+      <>
+        <TopBar
+          title={meta?.simulation_name ?? flowData.meta.product}
+          breadcrumb={`Product Flow · ${simulation.timestamp ?? flowData.meta.date}`}
+          onMenuClick={toggleMobileMenu}
+          actions={
+            <div className="flex items-center gap-3">
+              <div className="inline-flex items-center px-4 py-2 bg-accent-green-bg text-accent-green rounded-xl text-body-sm font-semibold">
+                Complete ({completionRate}% completion · {totalPersonas} personas)
+              </div>
+            </div>
+          }
+        />
+        <div className={`${playfair.variable} ${dmSans.variable}`}>
+          <FlowAnalysisView data={flowData} />
+        </div>
+      </>
+    );
+  }
 
+  // Other simulation types (e.g. ad): minimal placeholder
   return (
     <>
       <TopBar
-        title={meta.simulation_name || simulation.name || "Product Flow Results"}
-        breadcrumb={`Product Flow · ${simulation.timestamp}`}
+        title={meta?.simulation_name ?? "Simulation"}
+        breadcrumb={`Simulation · ${simulation.timestamp}`}
         onMenuClick={toggleMobileMenu}
-        actions={
-          <div className="flex items-center gap-3">
-            <Badge variant="success">Completed</Badge>
-            <Button variant="ghost">
-              <MoreVertical className="w-5 h-5" />
-            </Button>
-          </div>
-        }
       />
-
-      <div className="max-w-[1280px] mx-auto pb-24 px-6">
-        {/* Overview metrics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-          <Card>
-            <CardContent className="py-6 flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-accent-green-bg text-accent-green">
-                <CheckCircle2 className="w-6 h-6" />
-              </div>
-              <div>
-                <p className="text-h3 text-text-primary">{completionRate}%</p>
-                <p className="text-caption text-text-tertiary uppercase">Completion rate</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="py-6 flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-bg-elevated text-text-secondary">
-                <Clock className="w-6 h-6" />
-              </div>
-              <div>
-                <p className="text-h3 text-text-primary">{avgTime}s</p>
-                <p className="text-caption text-text-tertiary uppercase">Avg. time</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="py-6 flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-bg-elevated text-text-secondary">
-                <Users className="w-6 h-6" />
-              </div>
-              <div>
-                <p className="text-h3 text-text-primary">{meta.num_personas}</p>
-                <p className="text-caption text-text-tertiary uppercase">Personas</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="py-6 flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-bg-elevated text-text-secondary">
-                <span className="text-2xl font-bold text-text-primary">{meta.num_screens}</span>
-              </div>
-              <div>
-                <p className="text-h3 text-text-primary">{meta.num_screens}</p>
-                <p className="text-caption text-text-tertiary uppercase">Screens</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Target & context */}
-        <section className="mb-10">
-          <h2 className="text-report-section mb-4">Target & context</h2>
-          <Card>
-            <CardContent className="py-6">
-              <p className="text-body text-text-secondary">
-                <span className="font-semibold text-text-primary">Target:</span> {meta.target_group}
-              </p>
-              {meta.optimize_metric && (
-                <p className="text-body-sm text-text-tertiary mt-2">
-                  Optimize metric: {meta.optimize_metric}
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        </section>
-
-        {/* Flow insights */}
-        {flowInsights.length > 0 && (
-          <section className="mb-10">
-            <h2 className="text-report-section mb-4">Flow insights</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {flowInsights.map((insight) => (
-                <Card key={insight.flow_id}>
-                  <CardContent className="py-6">
-                    <h3 className="text-body-lg font-semibold text-text-primary mb-3">
-                      {insight.flow_name}
-                    </h3>
-                    <div className="flex flex-wrap gap-3 mb-3">
-                      <Badge variant="default">{insight.completion_rate}% completion</Badge>
-                      <span className="text-body-sm text-text-tertiary">
-                        Avg. {insight.avg_time_seconds}s
-                      </span>
-                    </div>
-                    {insight.top_drop_off_screen && (
-                      <div className="flex items-start gap-2 p-3 rounded-lg bg-accent-orange-bg border-l-2 border-accent-orange">
-                        <AlertCircle className="w-4 h-4 text-accent-orange shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-body-sm font-medium text-text-primary">
-                            Top drop-off: {insight.top_drop_off_screen}
-                          </p>
-                          {insight.top_drop_off_reason && (
-                            <p className="text-body-sm text-text-tertiary mt-1">
-                              {insight.top_drop_off_reason}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                    {insight.friction_points && insight.friction_points.length > 0 && (
-                      <p className="text-body-sm text-text-tertiary mt-2">
-                        Friction points: {String(insight.friction_points.length)}
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Personas */}
-        {personas.length > 0 && (
-          <section className="mb-10">
-            <h2 className="text-report-section mb-4">Personas</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {personas.map((p) => (
-                <PersonaCard key={p.uuid} persona={p} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Journeys */}
-        {journeys.length > 0 && (
-          <section className="mb-10">
-            <h2 className="text-report-section mb-4">Journeys</h2>
-            <div className="space-y-6">
-              {journeys.map((journey, idx) => (
-                <JourneyCard key={journey.persona.uuid + journey.flow_id + idx} journey={journey} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        <div className="flex justify-start">
-          <Link href="/simulations">
-            <Button variant="secondary">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to simulations
-            </Button>
-          </Link>
-        </div>
+      <div className="max-w-[1280px] mx-auto px-6 py-12">
+        <Card>
+          <CardContent className="py-12 text-center">
+            <p className="text-body text-text-secondary mb-4">
+              This simulation type does not have a Flow Analysis view yet.
+            </p>
+            <Link href="/simulations">
+              <Button variant="secondary">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to simulations
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     </>
   );

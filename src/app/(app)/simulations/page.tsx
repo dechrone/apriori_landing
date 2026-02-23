@@ -15,6 +15,30 @@ import { Plus, Search, Beaker, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { getSimulations, type SimulationDoc } from '@/lib/firestore';
 
+/** Sample simulation cards for design review — always shown, link to sample results. */
+const SAMPLE_SIMULATIONS: SimulationDoc[] = [
+  {
+    id: 'sample',
+    name: 'Sample: LAMF Onboarding — Flow 1',
+    type: 'Product Flow',
+    status: 'completed',
+    metric: 'Completion rate · 40%',
+    timestamp: 'February 2026',
+    createdAt: null,
+    updatedAt: null,
+  },
+  {
+    id: 'sample-ad',
+    name: 'Sample: Export Credit — Ad Portfolio',
+    type: 'Ad Portfolio',
+    status: 'completed',
+    metric: '11/12 valid reactions · 3 ads',
+    timestamp: 'February 2026',
+    createdAt: null,
+    updatedAt: null,
+  },
+];
+
 export default function SimulationsPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
@@ -53,6 +77,17 @@ export default function SimulationsPage() {
       !searchQuery || s.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchType && matchStatus && matchSearch;
   });
+
+  const samplesToShow = SAMPLE_SIMULATIONS.filter((s) => {
+    const typeMatch =
+      typeFilter === 'all' ||
+      (typeFilter === 'product-flow' && s.type === 'Product Flow') ||
+      (typeFilter === 'ad-portfolio' && s.type === 'Ad Portfolio');
+    const searchMatch =
+      !searchQuery || s.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return typeMatch && searchMatch;
+  });
+  const listToShow = [...samplesToShow, ...filtered];
 
   const statusVariantMap = (s: string) => s === 'completed' ? 'success' : s === 'running' ? 'warning' : s === 'failed' ? 'warning' : 'muted';
 
@@ -105,7 +140,7 @@ export default function SimulationsPage() {
           <div className="flex items-center justify-center py-20">
             <Loader2 className="w-8 h-8 animate-spin text-accent-gold" />
           </div>
-        ) : filtered.length === 0 ? (
+        ) : listToShow.length === 0 ? (
           <EmptyState
             icon={<Beaker className="w-16 h-16" />}
             title={simulations.length === 0 ? 'No simulations yet' : 'No results'}
@@ -122,13 +157,17 @@ export default function SimulationsPage() {
           />
         ) : (
           <div className="space-y-4">
-            {filtered.map((simulation) => (
+            {listToShow.map((simulation) => (
               <Link
                 key={simulation.id}
                 href={
-                  simulation.type === 'Ad Portfolio'
-                    ? `/simulations/ad-portfolio/${simulation.id}`
-                    : `/simulations/${simulation.id}`
+                  simulation.id === 'sample'
+                    ? '/simulations/product-flow/sample'
+                    : simulation.id === 'sample-ad'
+                      ? '/simulations/ad-portfolio/sample'
+                      : simulation.type === 'Ad Portfolio'
+                        ? `/simulations/ad-portfolio/${simulation.id}`
+                        : `/simulations/${simulation.id}`
                 }
               >
                 <Card hover>

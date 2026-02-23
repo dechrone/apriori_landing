@@ -686,6 +686,33 @@ body:has(.dashboard-theme) {
   color: #FFFFFF;
 }
 
+/* ===== FLOW ANALYSIS (PRD) THEME ===== */
+.flow-analysis {
+  --fa-bg: #1A1917;
+  --fa-surface: #232220;
+  --fa-surface2: #2A2825;
+  --fa-gold: #C9A84C;
+  --fa-gold-dim: #6B5520;
+  --fa-text: #FFFFFF;
+  --fa-text-body: #CCCCCC;
+  --fa-text-muted: #888888;
+  --fa-text-dim: #555555;
+  --fa-red-critical: #C0392B;
+  --fa-red-high: #8B2E2E;
+  --fa-amber: #7A5C1E;
+  --fa-green-continue: #1E7A4A;
+  --fa-green-light: #27AE60;
+  --fa-divider: #2E2C28;
+  background: var(--fa-bg);
+  color: var(--fa-text);
+}
+.flow-analysis .font-flow-display {
+  font-family: var(--font-flow-display), "Playfair Display", serif;
+}
+.flow-analysis .font-flow-body {
+  font-family: var(--font-flow-body), "DM Sans", sans-serif;
+}
+
 /* ===== RESPONSIVE BREAKPOINTS ===== */
 
 /* Mobile Typography Adjustments */
