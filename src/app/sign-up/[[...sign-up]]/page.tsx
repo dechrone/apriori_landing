@@ -14,7 +14,6 @@ export default function SignUpPage() {
               colorTextSecondary: "#D1D5DB",
               colorInputBackground: "#1E293B",
               colorInputText: "#FAFAFA",
-              colorInputPlaceholder: "#94A3B8",
               borderRadius: "8px",
               /* Official variable names so all Clerk-generated text is light */
               colorForeground: "#F9FAFB",

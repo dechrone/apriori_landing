@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, type Dispatch, type SetStateAction } from 'react';
 import Link from 'next/link';
 import { TopBar } from '@/components/app/TopBar';
 import { Button } from '@/components/ui/Button';
@@ -173,17 +173,17 @@ function getStepTitle(step: Step): string {
   }
 }
 
-interface FormData {
+type ProductFlowFormData = {
   name: string;
   audience: string;
-  personaDepth: string;
+  personaDepth: 'low' | 'medium' | 'high';
   optimizeMetric: string;
   selectedFolderIds: string[];
-}
+};
 
 interface SetupStepProps {
-  formData: FormData;
-  setFormData: (data: FormData) => void;
+  formData: ProductFlowFormData;
+  setFormData: Dispatch<SetStateAction<ProductFlowFormData>>;
   audiences: AudienceDoc[];
 }
 
@@ -233,8 +233,8 @@ function SetupStep({ formData, setFormData, audiences }: SetupStepProps) {
 }
 
 interface AssetSelectionStepProps {
-  formData: FormData;
-  setFormData: (data: FormData) => void;
+  formData: ProductFlowFormData;
+  setFormData: Dispatch<SetStateAction<ProductFlowFormData>>;
   folders: AssetFolder[];
 }
 
@@ -316,7 +316,12 @@ function AssetSelectionStep({ formData, setFormData, folders }: AssetSelectionSt
   );
 }
 
-function ParametersStep({ formData, setFormData }: SetupStepProps) {
+interface ParametersStepProps {
+  formData: ProductFlowFormData;
+  setFormData: Dispatch<SetStateAction<ProductFlowFormData>>;
+}
+
+function ParametersStep({ formData, setFormData }: ParametersStepProps) {
   return (
     <div className="space-y-12">
       <div>

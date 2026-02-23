@@ -14,7 +14,6 @@ export default function SignInPage() {
               colorTextSecondary: "#D1D5DB",
               colorInputBackground: "#1E293B",
               colorInputText: "#FAFAFA",
-              colorInputPlaceholder: "#94A3B8",
               borderRadius: "8px",
               colorForeground: "#F9FAFB",
               colorMutedForeground: "#D1D5DB",

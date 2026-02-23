@@ -255,7 +255,7 @@ function PersonaCard({ persona }: { persona: SimulationPersona }) {
     <Card>
       <CardContent className="py-5">
         <div className="flex flex-wrap gap-2 mb-3">
-          <Badge variant="secondary">{persona.occupation}</Badge>
+          <Badge variant="default">{persona.occupation}</Badge>
           <span className="text-body-sm text-text-tertiary">
             {persona.age}y · {persona.sex} · {persona.location}
           </span>
@@ -298,7 +298,7 @@ function JourneyCard({ journey }: { journey: ProductFlowJourney }) {
                 <span className="text-body-sm font-medium text-text-primary w-24">
                   {step.view_name}
                 </span>
-                <Badge variant="secondary">{step.decision}</Badge>
+                <Badge variant="default">{step.decision}</Badge>
                 <span className="text-body-sm text-text-tertiary">
                   Trust {step.trust_score} · Clarity {step.clarity_score} · {step.time_spent_seconds}s
                 </span>

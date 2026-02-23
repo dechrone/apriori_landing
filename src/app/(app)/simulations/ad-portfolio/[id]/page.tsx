@@ -321,7 +321,7 @@ function PersonaCard({ persona }: { persona: SimulationPersona }) {
     <Card>
       <CardContent className="py-5">
         <div className="flex flex-wrap gap-2 mb-3">
-          <Badge variant="secondary">{persona.occupation}</Badge>
+          <Badge variant="default">{persona.occupation}</Badge>
           <span className="text-body-sm text-text-tertiary">
             {persona.age}y · {persona.sex} · {persona.location}
           </span>
@@ -343,7 +343,7 @@ function ReactionCard({ reaction }: { reaction: AdReaction }) {
     <Card>
       <CardContent className="py-5">
         <div className="flex flex-wrap items-center gap-2 mb-3">
-          <Badge variant="secondary">{reaction.ad_id}</Badge>
+          <Badge variant="default">{reaction.ad_id}</Badge>
           <Badge variant={reaction.action === "CLICK" ? "success" : "default"}>{reaction.action}</Badge>
           <span className="text-body-sm text-text-tertiary">
             Trust {reaction.trust_score} · Relevance {reaction.relevance_score} · {p.occupation}

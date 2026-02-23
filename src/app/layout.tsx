@@ -6,6 +6,8 @@ import { ConditionalSiteHeader } from "@/components/ConditionalSiteHeader";
 import { HideClerkKeylessIndicator } from "@/components/HideClerkKeylessIndicator";
 import "./globals.css";
 
+export const dynamic = "force-dynamic";
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -43,6 +45,12 @@ export const metadata: Metadata = {
   },
 };
 
+const clerkAppearance = {
+  layout: {
+    unsafe_disableDevelopmentModeWarnings: true,
+  },
+} as const;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -54,12 +62,7 @@ export default function RootLayout({
       signUpUrl="/sign-up"
       signInFallbackRedirectUrl="/"
       signUpFallbackRedirectUrl="/"
-      disableKeyless
-      appearance={{
-        layout: {
-          unsafe_disableDevelopmentModeWarnings: true,
-        },
-      }}
+      appearance={clerkAppearance}
     >
       <html lang="en" className="dark">
         <body

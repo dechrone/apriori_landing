@@ -12,8 +12,7 @@ export function HideClerkKeylessIndicator() {
       const walker = document.createTreeWalker(
         document.body,
         NodeFilter.SHOW_ELEMENT,
-        null,
-        false
+        null
       );
       let node: Node | null;
       while ((node = walker.nextNode())) {
