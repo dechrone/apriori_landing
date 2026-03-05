@@ -1,13 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { Playfair_Display, DM_Sans } from "next/font/google";
 import { TopBar } from "@/components/app/TopBar";
-import { Button } from "@/components/ui/Button";
 import { useAppShell } from "@/components/app/AppShell";
 import { FlowAnalysisView } from "@/components/flow-analysis/FlowAnalysisView";
 import { flowAnalysisDummyData } from "@/data/flow-analysis-dummy";
-import { ArrowLeft } from "lucide-react";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -31,14 +28,6 @@ export default function ProductFlowSamplePage() {
         title={`${meta.product} · Sample Results`}
         breadcrumb="Product Flow · Sample"
         onMenuClick={toggleMobileMenu}
-        actions={
-          <Link href="/simulations">
-            <Button variant="ghost" className="text-text-secondary">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to simulations
-            </Button>
-          </Link>
-        }
       />
       <div className={`${playfair.variable} ${dmSans.variable}`}>
         <FlowAnalysisView data={flowAnalysisDummyData} />

@@ -3,7 +3,6 @@
 import type { FlowAnalysisData } from "@/types/flow-analysis";
 import { AlertCircle, Users, Layers, AlertTriangle, ShieldAlert } from "lucide-react";
 import { OneBetPanel } from "./OneBetPanel";
-import { DropOffFunnel } from "./DropOffFunnel";
 
 const CARD_SHADOW = "0 1px 3px rgba(0,0,0,0.06), 0 6px 20px rgba(0,0,0,0.05)";
 const ACCENT = "#E8583A";
@@ -129,9 +128,111 @@ export function OverviewTab({ data }: { data: FlowAnalysisData }) {
           ))}
         </div>
 
-        {/* Section 3 — Drop-off Funnel */}
-        <div style={{ marginBottom: 64 }}>
-          <DropOffFunnel data={data} />
+        {/* Section 3 — Executive Summary */}
+        <div
+          className="rounded-[16px] overflow-hidden"
+          style={{
+            marginBottom: 64,
+            backgroundColor: "#1A1A1A",
+            boxShadow: CARD_SHADOW,
+          }}
+        >
+          <div
+            className="flex flex-col lg:flex-row"
+            style={{ minHeight: 0 }}
+          >
+            {/* Left column — Summary text */}
+            <div
+              style={{
+                flex: 1,
+                padding: "40px 48px",
+                borderRight: "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: 32,
+                  fontWeight: 700,
+                  color: "#FFFFFF",
+                  lineHeight: 1.25,
+                  marginBottom: 28,
+                }}
+              >
+                Executive{" "}
+                <span style={{ color: ACCENT }}>Summary</span>
+              </h2>
+              <p
+                style={{
+                  fontSize: 16,
+                  fontWeight: 400,
+                  color: "rgba(255,255,255,0.78)",
+                  lineHeight: 1.75,
+                  marginBottom: 24,
+                }}
+              >
+                Blink Money commissioned a simulated user research exercise to
+                evaluate two onboarding flows for its Loan Against Mutual Funds (LAMF)
+                product. Ten carefully designed personas spanning first-time and
+                experienced LAMF users across urgency levels, income profiles, and
+                Tier 1 / Tier 2 cities – were run through both flows and their decisions
+                recorded screen by screen.
+              </p>
+              <p
+                style={{
+                  fontSize: 16,
+                  fontWeight: 400,
+                  color: "rgba(255,255,255,0.78)",
+                  lineHeight: 1.75,
+                }}
+              >
+                The results reveal a product with genuine user needs fit, but significant
+                trust and transparency gaps that are directly causing drop-offs. Flow 1 is
+                the clear winner at 40% completion vs Flow 2 at 20%, but even Flow 1 is
+                losing 6 out of 10 users – that&apos;s a number that can and should be
+                improved.
+              </p>
+            </div>
+
+            {/* Right column — Core Diagnostic callout */}
+            <div
+              className="flex items-center"
+              style={{
+                flex: "0 0 42%",
+                padding: "40px 48px",
+              }}
+            >
+              <div>
+                <p
+                  className="uppercase"
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: "rgba(255,255,255,0.45)",
+                    letterSpacing: "0.1em",
+                    marginBottom: 16,
+                  }}
+                >
+                  Core Diagnostic
+                </p>
+                <p
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 500,
+                    color: "#FFFFFF",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  Users are not dropping because they don&apos;t want a
+                  LAMF product. They are dropping because the flows{" "}
+                  <span style={{ color: ACCENT, textDecoration: "underline", textUnderlineOffset: 3 }}>
+                    don&apos;t give them the information they need
+                  </span>
+                  , at the moment they need it, to feel safe pledging their
+                  mutual funds.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Section 4 — The One Bet */}
