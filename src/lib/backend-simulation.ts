@@ -22,6 +22,14 @@ export interface AdPortfolioSimulationPayload {
   selectedFolderId: string;
 }
 
+export interface ProductFlowComparatorPayload {
+  name: string;
+  audience: string;
+  personaDepth: "low" | "medium" | "high";
+  optimizeMetric: string;
+  selectedFolderIds: string[];
+}
+
 /** POST /api/v1/simulations/product-flow with profileId + simulation payload */
 export async function triggerProductFlowSimulation(
   profileId: string,
@@ -45,5 +53,21 @@ export async function triggerAdPortfolioSimulation(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ profileId, ...payload }),
   });
+  return res;
+}
+
+/** POST /api/v1/simulations/product-flow-comparator with profileId + simulation payload */
+export async function triggerProductFlowComparatorSimulation(
+  profileId: string,
+  payload: ProductFlowComparatorPayload
+): Promise<Response> {
+  const res = await fetch(
+    `${BASE_URL}/api/v1/simulations/product-flow-comparator`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ profileId, ...payload }),
+    }
+  );
   return res;
 }

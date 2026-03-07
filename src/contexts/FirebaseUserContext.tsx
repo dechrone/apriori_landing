@@ -42,7 +42,7 @@ export function FirebaseUserProvider({ children }: { children: React.ReactNode }
       .then(() => setProfileReady(true))
       .catch((err) => {
         console.error("[FirebaseUser] Failed to create/verify profile:", err);
-        setProfileReady(true); // still allow the app to work
+        setProfileReady(true);
       });
   }, [isLoaded, user]);
 

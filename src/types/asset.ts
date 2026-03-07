@@ -3,7 +3,7 @@
  * PRD: Asset types, folder/asset models, simulation-aware metadata.
  */
 
-export type AssetType = 'product-flow' | 'ad-creative';
+export type AssetType = 'product-flow' | 'ad-creative' | 'product-flow-comparator';
 
 export type FolderStatus = 'ready' | 'missing-metadata' | 'incompatible';
 
@@ -49,6 +49,8 @@ export interface AssetFolder {
   name: string;
   description?: string;
   assetType: AssetType;
+  /** Set for subfolders (e.g. Flow 1 / Flow 2 under a Product Flow Comparator). Omitted or null for root folders. */
+  parentId?: string | null;
   createdAt: string;
   updatedAt: string;
   assetCount: number;
@@ -73,7 +75,16 @@ export interface Asset {
 
 // --- Helpers for validation ---
 export function getAssetTypeLabel(type: AssetType): string {
-  return type === 'product-flow' ? 'Product Flow Screens' : 'Ad Creatives';
+  switch (type) {
+    case 'product-flow':
+      return 'Product Flow Screens';
+    case 'ad-creative':
+      return 'Ad Creatives';
+    case 'product-flow-comparator':
+      return 'Product Flow Comparator';
+    default:
+      return type;
+  }
 }
 
 export function getFolderStatusLabel(status: FolderStatus): string {

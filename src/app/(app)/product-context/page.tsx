@@ -74,6 +74,7 @@ export default function ProductContextPage() {
     <>
       <TopBar title="Product Context" onMenuClick={toggleMobileMenu} />
 
+      <div className="p-5 sm:p-8 lg:p-10">
       <div className="max-w-[800px] mx-auto space-y-8 pb-24">
         <Card>
           <CardHeader>
@@ -166,6 +167,7 @@ export default function ProductContextPage() {
             />
           </CardContent>
         </Card>
+      </div>
       </div>
 
       <footer className="fixed bottom-0 left-0 right-0 bg-bg-secondary/95 backdrop-blur-sm shadow-[0_-1px_3px_rgba(0,0,0,0.06)] px-4 lg:px-8 py-4 z-20">

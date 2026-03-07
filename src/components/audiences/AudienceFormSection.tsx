@@ -57,7 +57,7 @@ export function AudienceFormSection({
               <p className="text-label text-text-quaternary uppercase tracking-wide mb-2">
                 Why we ask this
               </p>
-              <p className="text-body-sm text-text-tertiary leading-relaxed">{config.whyWeAsk}</p>
+              <p className="text-[13px] text-[#4B5563] leading-[1.6]">{config.whyWeAsk}</p>
             </div>
           )}
         </div>

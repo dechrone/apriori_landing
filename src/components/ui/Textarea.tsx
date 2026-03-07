@@ -11,7 +11,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-body-sm font-medium text-text-secondary mb-2">
+          <label className="block text-[13px] font-medium text-[#4B5563] mb-1.5">
             {label}
             {required && <span className="text-accent-red ml-1">*</span>}
           </label>
@@ -20,7 +20,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           className={`
             w-full bg-bg-input border border-border-subtle rounded-[var(--radius-sm)]
-            px-4 py-3 text-body text-text-primary
+            px-3 py-2 text-body text-text-primary
             placeholder:text-text-quaternary
             transition-standard resize-y
             min-h-[100px]

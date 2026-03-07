@@ -1,27 +1,56 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { TopBar } from "@/components/app/TopBar";
 import { useAppShell } from "@/components/app/AppShell";
 import { useToast } from "@/components/ui/Toast";
 import { useFirebaseUser } from "@/contexts/FirebaseUserContext";
 import { AudienceFiltersStep } from "@/components/audiences/AudienceFiltersStep";
-import { ArrowLeft, ArrowRight, Users } from "lucide-react";
-import { saveAudience } from "@/lib/firestore";
+import { ArrowLeft, ArrowRight, Users, Loader2 } from "lucide-react";
+import { getAudience, updateAudience, type AudienceDoc } from "@/lib/firestore";
 import type { AdvancedFilters } from "@/types/audience-filters";
 
-export default function NewAudiencePage() {
+export default function EditAudiencePage() {
   const { toggleMobileMenu, sidebarCollapsed } = useAppShell();
   const router = useRouter();
+  const params = useParams();
+  const audienceId = params.id as string;
   const { showToast } = useToast();
   const { clerkId } = useFirebaseUser();
+
+  const [loading, setLoading] = useState(true);
+  const [audience, setAudience] = useState<AudienceDoc | null>(null);
 
   const [step, setStep] = useState<"details" | "builder">("details");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
+
+  // Fetch existing audience
+  useEffect(() => {
+    if (!clerkId || !audienceId) return;
+    (async () => {
+      try {
+        const doc = await getAudience(clerkId, audienceId);
+        if (!doc) {
+          showToast("error", "Audience not found", "Redirecting to audiences list.");
+          router.push("/audiences");
+          return;
+        }
+        setAudience(doc);
+        setName(doc.name || "");
+        setDescription(doc.description || "");
+      } catch (err) {
+        console.error(err);
+        showToast("error", "Failed to load audience", "Please try again.");
+        router.push("/audiences");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [clerkId, audienceId, showToast, router]);
 
   const handleContinueToBuilder = () => {
     const trimmed = name.trim();
@@ -34,20 +63,15 @@ export default function NewAudiencePage() {
 
   const handleSaveDraft = useCallback(
     async (audienceDescription: string, filters: AdvancedFilters | null) => {
-      if (!clerkId) return;
+      if (!clerkId || !audienceId) return;
       setSaving(true);
       try {
-        await saveAudience(clerkId, {
+        await updateAudience(clerkId, audienceId, {
           name: name.trim(),
           description: description.trim() || undefined,
           audienceDescription: audienceDescription || undefined,
           filters: filters ?? undefined,
           status: "draft",
-          usedInSimulations: 0,
-          demographics: [],
-          psychographics: [],
-          budget: "",
-          risk: "",
         });
         showToast("success", "Draft saved", "Your audience draft has been saved.");
         router.push("/audiences");
@@ -58,10 +82,10 @@ export default function NewAudiencePage() {
         setSaving(false);
       }
     },
-    [clerkId, name, description, showToast, router]
+    [clerkId, audienceId, name, description, showToast, router]
   );
 
-  const handleCreateAudience = useCallback(
+  const handleSaveAudience = useCallback(
     async (audienceDescription: string, filters: AdvancedFilters | null) => {
       const trimmed = name.trim();
       if (!trimmed) {
@@ -79,36 +103,42 @@ export default function NewAudiencePage() {
         );
         return;
       }
-      if (!clerkId) return;
+      if (!clerkId || !audienceId) return;
       setSaving(true);
       try {
-        await saveAudience(clerkId, {
+        await updateAudience(clerkId, audienceId, {
           name: trimmed,
           description: description.trim() || undefined,
           audienceDescription: audienceDescription || undefined,
           filters: filters ?? undefined,
           status: "active",
-          usedInSimulations: 0,
-          demographics: [],
-          psychographics: [],
-          budget: "",
-          risk: "",
         });
-        showToast("success", "Audience created", "Your audience has been saved to Firebase.");
+        showToast("success", "Audience updated", "Your changes have been saved.");
         router.push("/audiences");
       } catch (err) {
         console.error(err);
-        showToast("error", "Failed to create audience", "Please try again.");
+        showToast("error", "Failed to update audience", "Please try again.");
       } finally {
         setSaving(false);
       }
     },
-    [clerkId, name, description, showToast, router]
+    [clerkId, audienceId, name, description, showToast, router]
   );
+
+  if (loading) {
+    return (
+      <>
+        <TopBar title="Edit Audience" onMenuClick={toggleMobileMenu} />
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 animate-spin text-accent-gold" />
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
-      <TopBar title="Create Audience" onMenuClick={toggleMobileMenu} />
+      <TopBar title="Edit Audience" onMenuClick={toggleMobileMenu} />
 
       <div className="max-w-[1600px] mx-auto relative pb-24">
         {step === "details" ? (
@@ -143,10 +173,10 @@ export default function NewAudiencePage() {
                 </div>
                 <div>
                   <h2 className="text-[20px] font-bold text-[#111827] leading-snug">
-                    Audience Details
+                    Edit Audience Details
                   </h2>
                   <p className="text-[14px] text-[#6B7280] mt-1 leading-relaxed">
-                    Give this audience a clear name so you can reuse it across simulations and ad experiments.
+                    Update this audience&apos;s name and description.
                   </p>
                 </div>
               </div>
@@ -176,15 +206,12 @@ export default function NewAudiencePage() {
                     <span className="text-[14px] font-normal text-[#9CA3AF]">(optional)</span>
                   </label>
                   <textarea
-                    placeholder="Short note for collaborators. e.g., Urban millennials in Mumbai/Delhi with high digital adoption, monthly income ₹50K-1L, frequent online shoppers."
+                    placeholder="Short note for collaborators."
                     rows={3}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="w-full bg-[#F3F4F6] border border-[#E5E7EB] rounded-xl px-4 py-3 text-[15px] text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/15 transition-all resize-none leading-relaxed"
                   />
-                  <p className="text-[13px] text-[#9CA3AF] leading-relaxed">
-                    Add helpful context for your team about this audience segment
-                  </p>
                 </div>
               </div>
 
@@ -216,8 +243,11 @@ export default function NewAudiencePage() {
             sidebarCollapsed={sidebarCollapsed}
             onBack={() => setStep("details")}
             onSaveDraft={handleSaveDraft}
-            onCreateAudience={handleCreateAudience}
+            onCreateAudience={handleSaveAudience}
             saving={saving}
+            initialAudienceText={audience?.audienceDescription ?? ""}
+            initialFilters={(audience?.filters as AdvancedFilters) ?? null}
+            createButtonLabel="Save changes"
           />
         )}
       </div>

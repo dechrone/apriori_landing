@@ -13,6 +13,7 @@ export default function SettingsPage() {
     <>
       <TopBar title="Settings" onMenuClick={toggleMobileMenu} />
 
+      <div className="p-5 sm:p-8 lg:p-10">
       <div className="max-w-[800px] mx-auto space-y-8">
         <Card>
           <CardHeader>
@@ -62,6 +63,7 @@ export default function SettingsPage() {
         <div className="flex justify-end">
           <Button>Save Changes</Button>
         </div>
+      </div>
       </div>
     </>
   );

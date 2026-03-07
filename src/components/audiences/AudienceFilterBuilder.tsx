@@ -707,7 +707,7 @@ export function AudienceFilterBuilder({ onChange }: AudienceFilterBuilderProps) 
                 OR
               </button>
             </div>
-            <span className="text-body-sm text-text-tertiary">{description}</span>
+            <span className="text-[13px] text-[#4B5563]">{description}</span>
           </div>
           {!isRoot && (
             <IconButton
@@ -822,7 +822,7 @@ export function AudienceFilterBuilder({ onChange }: AudienceFilterBuilderProps) 
           <p className="text-label text-text-quaternary uppercase tracking-wide mb-1">
             Audience filters
           </p>
-          <p className="text-body-sm text-text-tertiary">
+          <p className="text-[13px] text-[#4B5563] leading-[1.6]">
             Build a dynamic segment over the Indian consumer dataset. Combine demographics,
             geography, income, purchase behavior, and digital preferences with AND / OR logic and nested groups.
           </p>

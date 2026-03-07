@@ -16,6 +16,7 @@ import {
   serverTimestamp,
   query,
   orderBy,
+  where,
 } from "firebase/firestore";
 import { db } from "./firebase";
 import type { AssetFolder, Asset } from "@/types/asset";
@@ -108,6 +109,8 @@ export type AudienceDoc = {
   id: string;
   name: string;
   description?: string;
+  /** Natural language audience description from Step 2 */
+  audienceDescription?: string;
   /** Root filter group from the builder (condition tree). */
   filters?: unknown;
   status: "draft" | "active" | "archived";
@@ -169,6 +172,12 @@ export async function getAudiences(clerkId: string): Promise<AudienceDoc[]> {
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() } as AudienceDoc));
+}
+
+export async function getAudience(clerkId: string, audienceId: string): Promise<AudienceDoc | null> {
+  const snap = await getDoc(doc(db, "apriori_users", clerkId, "audiences", audienceId));
+  if (!snap.exists()) return null;
+  return { id: snap.id, ...snap.data() } as AudienceDoc;
 }
 
 // ─── Simulations ──────────────────────────────────────────────────────────────
@@ -239,11 +248,13 @@ export async function getSimulation(
 
 export async function saveAssetFolder(
   clerkId: string,
-  folder: Omit<AssetFolder, "id">
+  folder: Omit<AssetFolder, "id">,
+  options?: { parentId?: string | null }
 ): Promise<string> {
+  const parentId = options?.parentId ?? folder.parentId ?? null;
   const docRef = await addDoc(
     collection(db, "apriori_users", clerkId, "assetFolders"),
-    withoutUndefined({ ...folder, updatedAt: serverTimestamp() }) as Record<string, unknown>
+    withoutUndefined({ ...folder, parentId, updatedAt: serverTimestamp() }) as Record<string, unknown>
   );
   return docRef.id;
 }
@@ -263,13 +274,31 @@ export async function deleteAssetFolder(clerkId: string, folderId: string): Prom
   await deleteDoc(doc(db, "apriori_users", clerkId, "assetFolders", folderId));
 }
 
-export async function getAssetFolders(clerkId: string): Promise<AssetFolder[]> {
-  const q = query(
-    collection(db, "apriori_users", clerkId, "assetFolders"),
-    orderBy("createdAt", "desc")
-  );
+/**
+ * Get asset folders. When parentId is null/undefined, returns root folders only
+ * (parentId null or missing, for backwards compatibility). When parentId is a string,
+ * returns subfolders of that folder.
+ */
+export async function getAssetFolders(
+  clerkId: string,
+  parentId?: string | null
+): Promise<AssetFolder[]> {
+  const coll = collection(db, "apriori_users", clerkId, "assetFolders");
+  if (parentId != null && parentId !== "") {
+    // Simple equality query — no composite index needed.
+    // Sort client-side to avoid requiring a Firestore composite index on parentId + createdAt.
+    const q = query(coll, where("parentId", "==", parentId));
+    const snap = await getDocs(q);
+    const folders = snap.docs.map((d) => ({ id: d.id, ...d.data() } as AssetFolder));
+    return folders.sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+  }
+  // Root folders: fetch all and filter (so folders without parentId still count as roots)
+  const q = query(coll, orderBy("createdAt", "desc"));
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() } as AssetFolder));
+  const all = snap.docs.map((d) => ({ id: d.id, ...d.data() } as AssetFolder));
+  return all.filter((f) => f.parentId == null || f.parentId === "");
 }
 
 // ─── Assets (images: upload via Cloudinary; URL + public_id stored in Firestore) ─

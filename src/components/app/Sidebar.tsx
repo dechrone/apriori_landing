@@ -35,8 +35,41 @@ interface SidebarProps {
   onMobileClose?: () => void;
 }
 
-export const DESKTOP_SIDEBAR_WIDTH = 260;
+export const DESKTOP_SIDEBAR_WIDTH = 256;
 export const DESKTOP_SIDEBAR_WIDTH_COLLAPSED = 72;
+
+function NavItem({
+  icon: Icon,
+  label,
+  href,
+  active,
+  collapsed,
+  onClick,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  href: string;
+  active: boolean;
+  collapsed: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className={`
+        flex items-center rounded-lg text-sm transition-[background] duration-150 ease-in-out
+        ${collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5'}
+        ${active
+          ? 'bg-amber-50 text-amber-700 font-semibold'
+          : 'text-[#374151] hover:bg-[#F5F5F5] font-medium'}
+      `}
+    >
+      <Icon className={`w-5 h-5 flex-shrink-0 ${active ? 'text-amber-600' : 'text-[#9CA3AF]'}`} />
+      {!collapsed && <span>{label}</span>}
+    </Link>
+  );
+}
 
 export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
   const pathname = usePathname();
@@ -44,84 +77,46 @@ export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{ top: number; left: number } | null>(null);
 
+  const isActive = (href: string) => pathname === href || pathname?.startsWith(href + '/');
+
   const sidebarContent = (collapsed: boolean) => (
     <>
-      {/* Logo & Workspace */}
-      <div className={collapsed ? 'mb-6' : 'mb-8'}>
-        <div className={`flex items-center ${collapsed ? 'justify-center' : 'justify-between'} mb-2`}>
-          <span className="text-h4 text-text-primary font-semibold truncate">
-            {collapsed ? 'A' : 'Apriori'}
-          </span>
-          {onMobileClose && !collapsed && (
-            <button
-              onClick={onMobileClose}
-              className="lg:hidden text-text-tertiary hover:text-text-primary transition-colors"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          )}
-        </div>
-        {!collapsed && <p className="text-body-sm text-text-tertiary">Workspace</p>}
-      </div>
-
-      {/* Main Navigation */}
-      <nav className="flex-1 space-y-1">
-        {!collapsed && (
-          <p className="text-label text-text-quaternary px-3 pb-2">Main Menu</p>
-        )}
-        {navigation.map((item) => {
-          const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
-          const Icon = item.icon;
-          return (
-            <div 
-              key={item.name} 
-              className="relative"
-              onMouseEnter={(e) => {
-                if (collapsed) {
-                  setHoveredItem(item.name);
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  setTooltipPosition({
-                    top: rect.top + rect.height / 2,
-                    left: rect.right + 8
-                  });
-                }
-              }}
-              onMouseLeave={() => {
-                setHoveredItem(null);
-                setTooltipPosition(null);
-              }}
-            >
-              <Link
-                href={item.href}
-                onClick={onMobileClose}
-                className={`
-                  flex items-center rounded-[var(--radius-sm)] text-body font-medium transition-standard
-                  ${collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5'}
-                  ${isActive
-                    ? 'bg-accent-gold/10 text-accent-gold border-l-[3px] border-accent-gold font-semibold'
-                    : 'text-text-secondary hover:bg-bg-hover hover:text-text-primary'}
-                `}
-              >
-                <Icon className="w-5 h-5 flex-shrink-0" />
-                {!collapsed && <span>{item.name}</span>}
-              </Link>
+      {/* Brand / Workspace */}
+      <div
+        className={`h-16 flex items-center ${collapsed ? 'justify-center px-2' : 'px-6'}`}
+        style={{ borderBottom: '1px solid #E8E4DE' }}
+      >
+        {collapsed ? (
+          <span className="text-[16px] font-bold text-[#1A1A1A]">A</span>
+        ) : (
+          <div className="flex items-center justify-between w-full">
+            <div>
+              <h3 className="font-bold text-[#1A1A1A]" style={{ fontSize: '16px' }}>Apriori</h3>
+              <p className="text-xs text-[#9CA3AF]">Workspace</p>
             </div>
-          );
-        })}
-
-        {!collapsed && (
-          <div className="pt-6 pb-2">
-            <p className="text-label text-text-quaternary px-3">Account</p>
+            {onMobileClose && (
+              <button
+                onClick={onMobileClose}
+                className="lg:hidden text-[#9CA3AF] hover:text-[#1A1A1A] transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            )}
           </div>
         )}
+      </div>
 
-        {collapsed && <div className="pt-4" />}
-
-        {secondaryNavigation.map((item) => {
-          const isActive = pathname === item.href;
-          const Icon = item.icon;
-          return (
-            <div 
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-4">
+        {/* Main Menu */}
+        <div className="space-y-0.5">
+          {!collapsed && (
+            <p className="text-xs font-semibold text-[#9CA3AF] px-3 mb-2 tracking-widest uppercase">
+              Main Menu
+            </p>
+          )}
+          {navigation.map((item) => (
+            <div
               key={item.name}
               className="relative"
               onMouseEnter={(e) => {
@@ -130,7 +125,7 @@ export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
                   const rect = e.currentTarget.getBoundingClientRect();
                   setTooltipPosition({
                     top: rect.top + rect.height / 2,
-                    left: rect.right + 8
+                    left: rect.right + 8,
                   });
                 }
               }}
@@ -139,44 +134,78 @@ export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
                 setTooltipPosition(null);
               }}
             >
-              <Link
+              <NavItem
+                icon={item.icon}
+                label={item.name}
                 href={item.href}
+                active={isActive(item.href)}
+                collapsed={collapsed}
                 onClick={onMobileClose}
-                className={`
-                  flex items-center rounded-[var(--radius-sm)] text-body font-medium transition-standard
-                  ${collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5'}
-                  ${isActive
-                    ? 'bg-accent-gold/10 text-accent-gold border-l-[3px] border-accent-gold font-semibold'
-                    : 'text-text-secondary hover:bg-bg-hover hover:text-text-primary'}
-                `}
-              >
-                <Icon className="w-5 h-5 flex-shrink-0" />
-                {!collapsed && <span>{item.name}</span>}
-              </Link>
+              />
             </div>
-          );
-        })}
+          ))}
+        </div>
+
+        {/* Account */}
+        <div className="mt-6 space-y-0.5">
+          {!collapsed && (
+            <p className="text-xs font-semibold text-[#9CA3AF] px-3 mb-2 tracking-widest uppercase">
+              Account
+            </p>
+          )}
+          {collapsed && <div className="pt-4" />}
+          {secondaryNavigation.map((item) => (
+            <div
+              key={item.name}
+              className="relative"
+              onMouseEnter={(e) => {
+                if (collapsed) {
+                  setHoveredItem(item.name);
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setTooltipPosition({
+                    top: rect.top + rect.height / 2,
+                    left: rect.right + 8,
+                  });
+                }
+              }}
+              onMouseLeave={() => {
+                setHoveredItem(null);
+                setTooltipPosition(null);
+              }}
+            >
+              <NavItem
+                icon={item.icon}
+                label={item.name}
+                href={item.href}
+                active={isActive(item.href)}
+                collapsed={collapsed}
+                onClick={onMobileClose}
+              />
+            </div>
+          ))}
+        </div>
       </nav>
 
-      {/* Desktop: collapse/expand toggle */}
-      <div className="hidden lg:block pt-4 border-t border-border-subtle">
-        <button
-          type="button"
-          onClick={toggleSidebar}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-[var(--radius-sm)] text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-standard"
-          title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {sidebarCollapsed ? (
-            <PanelLeft className="w-5 h-5 flex-shrink-0 mx-auto" />
-          ) : (
-            <>
-              <PanelLeftClose className="w-5 h-5 flex-shrink-0" />
-              <span>Collapse</span>
-            </>
-          )}
-        </button>
+      {/* Collapse/expand toggle (desktop only) */}
+      <div className="hidden lg:block" style={{ borderTop: '1px solid #E8E4DE' }}>
+        <div className="p-4">
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-[#9CA3AF] hover:bg-[#F5F5F5] hover:text-[#4B5563] transition-[background] duration-150 ease-in-out"
+            title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {sidebarCollapsed ? (
+              <PanelLeft className="w-5 h-5 flex-shrink-0 mx-auto" />
+            ) : (
+              <>
+                <PanelLeftClose className="w-5 h-5 flex-shrink-0" />
+                <span className="text-xs text-[#9CA3AF]">Collapse</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
-
     </>
   );
 
@@ -184,10 +213,13 @@ export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
     <>
       {/* Desktop Sidebar */}
       <aside
-        className="hidden lg:flex fixed left-0 top-0 h-screen bg-bg-secondary shadow-[var(--shadow-card)] flex-col z-40 transition-[width] duration-200 ease-out"
-        style={{ width: sidebarCollapsed ? DESKTOP_SIDEBAR_WIDTH_COLLAPSED : DESKTOP_SIDEBAR_WIDTH }}
+        className="hidden lg:flex h-full flex-col flex-shrink-0 z-40 bg-white transition-[width] duration-200 ease-out"
+        style={{
+          width: sidebarCollapsed ? DESKTOP_SIDEBAR_WIDTH_COLLAPSED : DESKTOP_SIDEBAR_WIDTH,
+          borderRight: '1px solid #E8E4DE',
+        }}
       >
-        <div className={`flex-1 flex flex-col min-w-0 p-8 overflow-y-auto ${sidebarCollapsed ? 'px-3' : ''}`}>
+        <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
           {sidebarContent(sidebarCollapsed)}
         </div>
       </aside>
@@ -195,14 +227,16 @@ export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
       {/* Mobile Sidebar Overlay */}
       {mobileOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-50 bg-bg-primary/60 backdrop-blur-sm"
+          className="lg:hidden fixed inset-0 z-50 bg-black/30 backdrop-blur-sm"
           onClick={onMobileClose}
         >
           <aside
-            className="fixed left-0 top-0 h-screen w-[280px] bg-bg-secondary shadow-[var(--shadow-xl)] p-8 flex flex-col animate-slideInRight"
+            className="fixed left-0 top-0 h-screen w-[280px] flex flex-col bg-white animate-slideInRight"
             onClick={(e) => e.stopPropagation()}
           >
-            {sidebarContent(false)}
+            <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+              {sidebarContent(false)}
+            </div>
           </aside>
         </div>
       )}
@@ -214,17 +248,17 @@ export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
           style={{
             top: `${tooltipPosition.top}px`,
             left: `${tooltipPosition.left}px`,
-            transform: 'translateY(-50%)'
+            transform: 'translateY(-50%)',
           }}
         >
-          <div className="relative bg-bg-secondary text-text-primary text-body-sm font-medium px-3 py-1.5 rounded-[var(--radius-md)] shadow-lg border border-border-medium whitespace-nowrap">
+          <div className="relative bg-white text-[#1A1A1A] text-[13px] font-medium px-3 py-1.5 rounded-lg shadow-lg border border-[#E5E7EB] whitespace-nowrap">
             {hoveredItem}
-            <div 
+            <div
               className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0"
-              style={{ 
+              style={{
                 borderTop: '6px solid transparent',
-                borderRight: '6px solid var(--bg-secondary)',
-                borderBottom: '6px solid transparent'
+                borderRight: '6px solid #FFFFFF',
+                borderBottom: '6px solid transparent',
               }}
             />
           </div>

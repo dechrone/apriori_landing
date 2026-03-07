@@ -2,8 +2,6 @@
 
 import { Bell, Menu } from 'lucide-react';
 import { UserButton } from '@clerk/nextjs';
-import { IconButton } from '@/components/ui/Button';
-import { useAppShell } from '@/components/app/AppShell';
 
 interface TopBarProps {
   title: string;
@@ -13,32 +11,24 @@ interface TopBarProps {
 }
 
 export function TopBar({ title, breadcrumb, actions, onMenuClick }: TopBarProps) {
-  const { sidebarCollapsed } = useAppShell();
-
   return (
     <header
-      className={`
-        fixed top-0 left-0 right-0 h-[72px]
-        bg-bg-secondary shadow-[0_1px_3px_rgba(0,0,0,0.06)]
-        px-4 lg:px-8 flex items-center justify-between z-40
-        transition-[left] duration-200 ease-out
-        ${sidebarCollapsed ? 'lg:left-[72px]' : 'lg:left-[260px]'}
-      `}
+      className="sticky top-0 h-16 bg-white flex items-center justify-between px-4 lg:px-8 z-30"
+      style={{ borderBottom: '1px solid #E8E4DE' }}
     >
       {/* Left Section */}
       <div className="flex items-center gap-4">
-        {/* Mobile menu button */}
         <button
           onClick={onMenuClick}
-          className="lg:hidden text-text-tertiary hover:text-text-primary transition-colors"
+          className="lg:hidden text-[#9CA3AF] hover:text-[#1A1A1A] transition-colors"
         >
           <Menu className="w-6 h-6" />
         </button>
         <div>
           {breadcrumb && (
-            <p className="text-body-sm text-text-tertiary mb-1 hidden sm:block">{breadcrumb}</p>
+            <p className="text-sm text-[#6B7280] mb-0.5 hidden sm:block">{breadcrumb}</p>
           )}
-          <h1 className="text-h3 text-text-primary truncate max-w-[200px] sm:max-w-none">{title}</h1>
+          <h1 className="text-2xl font-bold text-[#1A1A1A] leading-snug truncate max-w-[200px] sm:max-w-none">{title}</h1>
         </div>
       </div>
 
@@ -47,17 +37,15 @@ export function TopBar({ title, breadcrumb, actions, onMenuClick }: TopBarProps)
         <div className="hidden sm:block">
           {actions}
         </div>
-        <div className="flex items-center gap-2 h-10">
-          <IconButton
-            icon={<Bell className="w-5 h-5" />}
-            label="Notifications"
-            className="flex items-center justify-center h-10 w-10 shrink-0"
-          />
-          <div className="flex items-center justify-center h-10 w-10 shrink-0 [&_.cl-avatarBox]:!w-9 [&_.cl-avatarBox]:!h-9">
-            <UserButton 
+        <div className="flex items-center gap-3">
+          <button className="relative p-2 hover:bg-[#F5F5F5] rounded-lg transition-colors">
+            <Bell className="w-5 h-5 text-[#6B7280]" />
+          </button>
+          <div className="flex items-center justify-center shrink-0 [&_.cl-avatarBox]:!w-[34px] [&_.cl-avatarBox]:!h-[34px]">
+            <UserButton
               appearance={{
                 elements: {
-                  avatarBox: "w-9 h-9"
+                  avatarBox: "w-[34px] h-[34px]"
                 }
               }}
             />

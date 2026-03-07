@@ -18,7 +18,7 @@ import {
 import { useRouter } from 'next/navigation';
 import type { AssetFolder } from '@/types/asset';
 import { getAssetTypeLabel } from '@/types/asset';
-import { triggerProductFlowSimulation } from '@/lib/backend-simulation';
+import { triggerProductFlowComparatorSimulation } from '@/lib/backend-simulation';
 import { getAudiences, getAssetFolders, saveSimulation } from '@/lib/firestore';
 import type { AudienceDoc } from '@/lib/firestore';
 import type { ProductFlowSimulationResponse } from '@/types/simulation-result';
@@ -41,7 +41,7 @@ const PERSONA_DEPTHS: { value: 'low' | 'medium' | 'high'; label: string; sublabe
   { value: 'high', label: 'High', sublabel: '~12 personas · Deeper' },
 ];
 
-export default function ProductFlowSimulationPage() {
+export default function ProductFlowComparatorSimulationPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
   const { clerkId, profileReady } = useFirebaseUser();
@@ -76,8 +76,8 @@ export default function ProductFlowSimulationPage() {
   useEffect(() => { loadAudiences(); }, [loadAudiences]);
   useEffect(() => { loadFolders(); }, [loadFolders]);
 
-  const productFlowFolders = allFolders.filter((f) => f.assetType === 'product-flow');
-  const productFlowReadyFolders = productFlowFolders.filter((f) => f.status === 'ready');
+  const comparatorFolders = allFolders.filter((f) => f.assetType === 'product-flow-comparator');
+  const comparatorReadyFolders = comparatorFolders.filter((f) => f.status === 'ready');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -97,7 +97,7 @@ export default function ProductFlowSimulationPage() {
       if (formData.name.trim().length < 3) msg = 'Please enter a simulation name (at least 3 characters).';
       else if (!formData.audience) msg = 'Please select an audience to continue.';
     } else if (currentStep === 2) {
-      msg = 'Please select at least one folder to continue.';
+      msg = 'Please select at least one comparator folder to continue.';
     } else {
       msg = 'Please select a primary metric to continue.';
     }
@@ -123,7 +123,7 @@ export default function ProductFlowSimulationPage() {
     }
     setRunning(true);
     try {
-      const res = await triggerProductFlowSimulation(clerkId, {
+      const res = await triggerProductFlowComparatorSimulation(clerkId, {
         name: formData.name,
         audience: formData.audience,
         personaDepth: formData.personaDepth,
@@ -141,18 +141,18 @@ export default function ProductFlowSimulationPage() {
       const metric =
         meta != null
           ? `${meta.completion_rate_pct ?? 0}% completion · ${meta.avg_time_seconds ?? 0}s avg`
-          : 'Product flow run';
+          : 'Product flow comparator run';
       const docId = await saveSimulation(clerkId, {
-        type: 'Product Flow',
+        type: 'Product Flow Comparator',
         status: 'completed',
-        name: meta?.simulation_name ?? (formData.name || 'Product Flow Run'),
+        name: meta?.simulation_name ?? (formData.name || 'Product Flow Comparator Run'),
         metric,
         timestamp: new Date().toLocaleDateString(undefined, { dateStyle: 'medium' }),
         simulationId: data?.simulation_id,
         result: result ?? data,
       });
       showToast('success', 'Simulation complete', 'Redirecting to results.');
-      router.push(`/simulations/${docId}`);
+      router.push(`/simulations/product-flow-comparator/${docId}`);
     } catch (err) {
       showToast('error', 'Failed to run simulation', err instanceof Error ? err.message : 'Check backend at localhost:8080.');
     } finally {
@@ -172,12 +172,12 @@ export default function ProductFlowSimulationPage() {
   const canProceedCurrent = currentStep === 1 ? canProceedStep1 : currentStep === 2 ? canProceedStep2 : canProceedStep3;
 
   const selectedAudience = audiences.find((a) => a.id === formData.audience);
-  const selectedFolders = productFlowReadyFolders.filter((f) => formData.selectedFolderIds.includes(f.id));
+  const selectedFolders = comparatorReadyFolders.filter((f) => formData.selectedFolderIds.includes(f.id));
 
   return (
     <>
       <TopBar
-        title="New Product Flow Simulation"
+        title="New Product Flow Comparator"
         onMenuClick={toggleMobileMenu}
       />
 
@@ -192,8 +192,8 @@ export default function ProductFlowSimulationPage() {
             <AssetSelectionStep
               formData={formData}
               setFormData={setFormData}
-              allFolders={productFlowFolders}
-              readyFolders={productFlowReadyFolders}
+              allFolders={comparatorFolders}
+              readyFolders={comparatorReadyFolders}
             />
           )}
           {currentStep === 3 && (
@@ -272,7 +272,7 @@ export default function ProductFlowSimulationPage() {
    STEP 1 — SETUP
    ──────────────────────────────────────────────────────────────── */
 
-type ProductFlowFormData = {
+type ComparatorFormData = {
   name: string;
   audience: string;
   personaDepth: 'low' | 'medium' | 'high';
@@ -281,8 +281,8 @@ type ProductFlowFormData = {
 };
 
 interface SetupStepProps {
-  formData: ProductFlowFormData;
-  setFormData: Dispatch<SetStateAction<ProductFlowFormData>>;
+  formData: ComparatorFormData;
+  setFormData: Dispatch<SetStateAction<ComparatorFormData>>;
   audiences: AudienceDoc[];
 }
 
@@ -298,7 +298,7 @@ function SetupStep({ formData, setFormData, audiences }: SetupStepProps) {
           type="text"
           value={formData.name}
           onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-          placeholder="e.g., Onboarding Flow Optimization"
+          placeholder="e.g., Onboarding V1 vs V2 Comparison"
           className="w-full text-[15px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 focus:border-[#F59E0B] focus:shadow-[0_0_0_3px_rgba(245,158,11,0.12)] focus:outline-none transition-all"
         />
       </div>
@@ -311,7 +311,7 @@ function SetupStep({ formData, setFormData, audiences }: SetupStepProps) {
           Target audience <span className="text-[#EF4444]">*</span>
         </label>
         <p className="text-[13px] text-[#6B7280] mb-4">
-          Choose who you&apos;re simulating this flow for.
+          Choose who you&apos;re simulating the flow comparison for.
         </p>
 
         {audiences.length === 0 ? (
@@ -383,12 +383,12 @@ function SetupStep({ formData, setFormData, audiences }: SetupStepProps) {
 }
 
 /* ────────────────────────────────────────────────────────────────
-   STEP 2 — SELECT ASSETS
+   STEP 2 — SELECT ASSETS (Product Flow Comparator folders)
    ──────────────────────────────────────────────────────────────── */
 
 interface AssetSelectionStepProps {
-  formData: ProductFlowFormData;
-  setFormData: Dispatch<SetStateAction<ProductFlowFormData>>;
+  formData: ComparatorFormData;
+  setFormData: Dispatch<SetStateAction<ComparatorFormData>>;
   allFolders: AssetFolder[];
   readyFolders: AssetFolder[];
 }
@@ -413,18 +413,18 @@ function AssetSelectionStep({ formData, setFormData, allFolders, readyFolders }:
 
   return (
     <div className="bg-white border border-[#E8E4DE] rounded-[14px] p-7 sm:px-8">
-      <h2 className="text-[17px] font-bold text-[#1A1A1A] mb-1.5">Select asset folders</h2>
+      <h2 className="text-[17px] font-bold text-[#1A1A1A] mb-1.5">Select comparator folders</h2>
       <p className="text-[14px] text-[#4B5563] leading-[1.6] mb-5">
-        Choose which completed product flow folders to include in this simulation.
-        Only folders marked as ready with product flow assets are shown here.
+        Choose which Product Flow Comparator folders to include. Each comparator contains two flow
+        variants (Flow 1 &amp; Flow 2) that will be simulated and compared side-by-side.
       </p>
 
       {!hasAnyFolders ? (
         <div className="bg-[#FAFAFA] border-[1.5px] border-dashed border-[#E5E7EB] rounded-xl p-6 text-center">
           <FolderOpen className="w-6 h-6 text-[#9CA3AF] mx-auto mb-2" />
-          <p className="text-[14px] font-medium text-[#6B7280]">No folders ready for simulation</p>
+          <p className="text-[14px] font-medium text-[#6B7280]">No comparator folders found</p>
           <p className="text-[13px] text-[#9CA3AF] mt-1">
-            Upload assets and assign step numbers in the Assets section first.
+            Create a Product Flow Comparator folder in the Assets section with Flow 1 and Flow 2 screens.
           </p>
           <a
             href="/assets"
@@ -465,7 +465,7 @@ function AssetSelectionStep({ formData, setFormData, allFolders, readyFolders }:
                     >
                       {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                     </div>
-                    <FolderOpen className="w-5 h-5 text-[#F59E0B]" />
+                    <FolderOpen className="w-5 h-5 text-[#7C3AED]" />
                   </div>
 
                   <p className="text-[14px] font-semibold text-[#1A1A1A] truncate mt-2.5">
@@ -511,8 +511,8 @@ function AssetSelectionStep({ formData, setFormData, allFolders, readyFolders }:
    ──────────────────────────────────────────────────────────────── */
 
 interface ParametersStepProps {
-  formData: ProductFlowFormData;
-  setFormData: Dispatch<SetStateAction<ProductFlowFormData>>;
+  formData: ComparatorFormData;
+  setFormData: Dispatch<SetStateAction<ComparatorFormData>>;
   audienceName?: string;
   selectedFolders: AssetFolder[];
   onBack: () => void;
@@ -581,7 +581,7 @@ function ParametersStep({ formData, setFormData, audienceName, selectedFolders, 
           Primary metric to optimise for <span className="text-[#EF4444]">*</span>
         </label>
         <p className="text-[13px] text-[#6B7280] mb-3">
-          The simulator optimises its recommendations around this outcome.
+          The simulator optimises its comparison around this outcome.
         </p>
         <div className="grid grid-cols-2 gap-2">
           {METRICS.map((m, idx) => {
@@ -628,7 +628,7 @@ function ParametersStep({ formData, setFormData, audienceName, selectedFolders, 
           {[
             { label: 'Name', value: formData.name.trim() || '—' },
             { label: 'Audience', value: audienceName || '—' },
-            { label: 'Assets', value: folderSummary },
+            { label: 'Comparator Folders', value: folderSummary },
             { label: 'Personas', value: depthLabels[formData.personaDepth] },
           ].map((row, idx, arr) => (
             <div
@@ -675,7 +675,7 @@ function ParametersStep({ formData, setFormData, audienceName, selectedFolders, 
             `}
           >
             {running ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-            Run Simulation
+            Run Comparison
             {!running && <ChevronRight className="w-4 h-4" />}
           </button>
         </div>

@@ -44,7 +44,7 @@ interface AudienceTypeSelectorProps {
 export function AudienceTypeSelector({ value, onChange }: AudienceTypeSelectorProps) {
   return (
     <div className="space-y-3">
-      <p className="text-body-sm text-text-tertiary mb-4">
+      <p className="text-[13px] text-[#4B5563] leading-[1.6] mb-4">
         This determines which fields we show and how personas are modeled.
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

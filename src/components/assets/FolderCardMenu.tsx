@@ -51,7 +51,9 @@ export function FolderCardMenu({
         >
           <button
             type="button"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               setOpen(false);
               onRename();
             }}
@@ -62,7 +64,9 @@ export function FolderCardMenu({
           </button>
           <button
             type="button"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               setOpen(false);
               onEditDetails();
             }}
@@ -74,7 +78,9 @@ export function FolderCardMenu({
           <div className="my-1 border-t border-border-subtle" />
           <button
             type="button"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               setOpen(false);
               onDelete();
             }}

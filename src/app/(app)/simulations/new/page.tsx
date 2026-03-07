@@ -6,7 +6,7 @@ import { Modal, ModalHeader, ModalBody } from '@/components/ui/Modal';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useAppShell } from '@/components/app/AppShell';
-import { Beaker, Target, ArrowRight } from 'lucide-react';
+import { Beaker, Target, GitCompare, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function NewSimulationPage() {
@@ -27,6 +27,7 @@ export default function NewSimulationPage() {
     <>
       <TopBar title="New Simulation" onMenuClick={toggleMobileMenu} />
       
+      <div className="p-5 sm:p-8 lg:p-10">
       <Modal isOpen={isOpen} onClose={handleClose} size="large">
         <ModalHeader onClose={handleClose}>
           Choose Simulation Type
@@ -45,9 +46,16 @@ export default function NewSimulationPage() {
               description="Forecast ad performance and creative fatigue across multiple campaigns. Optimize budget allocation and creative rotation strategies."
               onSelect={() => handleSelectType('ad-portfolio')}
             />
+            <SimulationTypeCard
+              icon={<GitCompare className="w-12 h-12" />}
+              title="Product Flow Comparator"
+              description="Compare two versions of a product flow side-by-side. Perfect for A/B testing onboarding, checkout, or any user journey variants."
+              onSelect={() => handleSelectType('product-flow-comparator')}
+            />
           </div>
         </ModalBody>
       </Modal>
+      </div>
     </>
   );
 }

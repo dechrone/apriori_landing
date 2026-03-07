@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { CheckCircle, XCircle, AlertCircle, Info, X } from 'lucide-react';
-import { IconButton } from './Button';
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -33,9 +32,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const showToast = useCallback((type: ToastType, title: string, message?: string) => {
     const id = Math.random().toString(36).substring(7);
     const toast: Toast = { id, type, title, message };
-    
+
     setToasts((prev) => [...prev, toast]);
-    
+
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 5000);
@@ -48,7 +47,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className="fixed top-6 right-6 z-[100] flex flex-col gap-3 max-w-sm">
+      <div className="fixed top-6 right-6 z-[100] flex flex-col gap-3 max-w-[320px]">
         {toasts.map((toast) => (
           <ToastItem key={toast.id} toast={toast} onClose={() => removeToast(toast.id)} />
         ))}
@@ -64,33 +63,34 @@ interface ToastItemProps {
 
 function ToastItem({ toast, onClose }: ToastItemProps) {
   const icons = {
-    success: <CheckCircle className="w-5 h-5 text-accent-green" />,
-    error: <XCircle className="w-5 h-5 text-accent-red" />,
-    warning: <AlertCircle className="w-5 h-5 text-accent-orange" />,
-    info: <Info className="w-5 h-5 text-accent-blue" />
+    success: <CheckCircle className="w-4 h-4 text-[#10B981]" />,
+    error: <XCircle className="w-4 h-4 text-[#EF4444]" />,
+    warning: <AlertCircle className="w-4 h-4 text-[#F59E0B]" />,
+    info: <Info className="w-4 h-4 text-[#3B82F6]" />
   };
 
   return (
-    <div className="bg-bg-secondary rounded-[var(--radius-md)] shadow-[var(--shadow-xl)] p-4 flex gap-3 animate-slideInRight">
+    <div className="bg-[#1C1917] rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.2)] p-3.5 flex gap-3 animate-slideInRight max-w-[320px]">
       <div className="flex-shrink-0 mt-0.5">
         {icons[toast.type]}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-body font-semibold text-text-primary mb-1">
+        <p className="text-[13px] font-semibold text-white mb-0.5">
           {toast.title}
         </p>
         {toast.message && (
-          <p className="text-body-sm text-text-secondary">
+          <p className="text-[12px] text-[#A8A29E] leading-[1.5]">
             {toast.message}
           </p>
         )}
       </div>
-      <IconButton
-        icon={<X className="w-4 h-4" />}
-        label="Close"
+      <button
         onClick={onClose}
-        className="flex-shrink-0"
-      />
+        className="flex-shrink-0 text-[#6B7280] hover:text-white transition-colors"
+        aria-label="Close"
+      >
+        <X className="w-4 h-4" />
+      </button>
     </div>
   );
 }
