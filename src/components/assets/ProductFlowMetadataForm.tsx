@@ -5,11 +5,15 @@ import type { Asset } from '@/types/asset';
 import type { ProductFlowMetadata, ProductFlowPageType } from '@/types/asset';
 
 const PAGE_TYPES: { value: ProductFlowPageType; label: string }[] = [
-  { value: 'signup', label: 'Signup' },
+  { value: 'landing', label: 'Landing' },
   { value: 'onboarding', label: 'Onboarding' },
-  { value: 'pricing', label: 'Pricing' },
+  { value: 'signup', label: 'Signup' },
+  { value: 'login', label: 'Login' },
   { value: 'dashboard', label: 'Dashboard' },
+  { value: 'pricing', label: 'Pricing' },
   { value: 'checkout', label: 'Checkout' },
+  { value: 'confirmation', label: 'Confirmation' },
+  { value: 'settings', label: 'Settings' },
   { value: 'other', label: 'Other' },
 ];
 

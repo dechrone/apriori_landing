@@ -10,6 +10,21 @@ import { useToast } from '@/components/ui/Toast';
 import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
 import { IconButton } from '@/components/ui/Button';
 import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable';
+import { SortableAssetRow } from '@/components/assets/SortableAssetRow';
+import {
   ChevronRight,
   FolderOpen,
   Plus,
@@ -22,10 +37,13 @@ import {
   AlertCircle,
   Check,
   AlertTriangle,
+  CheckCircle2,
+  Info,
 } from 'lucide-react';
 import type { Asset, AssetType } from '@/types/asset';
 import { getAssetTypeLabel } from '@/types/asset';
 import { AssetSidePanel } from '@/components/assets/AssetSidePanel';
+import { DeleteAssetModal } from '@/components/assets/DeleteAssetModal';
 import {
   getAssetsInFolder,
   getAssetFolders,
@@ -59,13 +77,22 @@ export default function FolderDetailPage() {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [subfolders, setSubfolders] = useState<{ id: string; name: string; assetType: AssetType; assetCount: number }[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
+  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null); // kept for ad-creative only
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const reorderTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isComparator = assetType === 'product-flow-comparator';
+  const isProductFlow = assetType === 'product-flow';
+
+  // dnd-kit sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor)
+  );
 
   const loadSubfolders = useCallback(async () => {
     if (!clerkId || !profileReady) return;
@@ -110,28 +137,38 @@ export default function FolderDetailPage() {
       const { id: _id, ...rest } = asset;
       await saveAssetMetadata(clerkId, folderId, assetId, rest);
       setAutoSaveStatus('saved');
-      setTimeout(() => setAutoSaveStatus('idle'), 2000);
+      setTimeout(() => setAutoSaveStatus('idle'), 3000);
     } catch (err) {
       console.error('Auto-save error:', err);
       setAutoSaveStatus('error');
     }
   }, [clerkId, folderId]);
 
-  const handleSaveAsset = useCallback((assetId: string, updates: Partial<Asset>) => {
-    if (updates.productFlowMetadata?.stepNumber != null) {
-      const newStep = updates.productFlowMetadata.stepNumber;
-      const hasDuplicate = assets.some(
-        (a) =>
-          a.id !== assetId &&
-          a.assetType === 'product-flow' &&
-          a.productFlowMetadata?.stepNumber === newStep
-      );
-      if (hasDuplicate) {
-        showToast('error', 'Duplicate step number', `Step ${newStep} is already used.`);
-        return;
-      }
-    }
+  /** Inline field save — updates local state + fires Firebase auto-save */
+  const handleSaveField = useCallback((assetId: string, updates: Partial<Asset>) => {
+    const existing = assets.find((a) => a.id === assetId);
+    if (!existing) return;
 
+    // Compute whether asset is now "complete" (has step name)
+    const mergedMeta = {
+      ...existing.productFlowMetadata,
+      ...updates.productFlowMetadata,
+    };
+    const isComplete = (mergedMeta.stepName?.trim().length ?? 0) > 0;
+
+    const updatedAsset: Asset = {
+      ...existing,
+      ...updates,
+      productFlowMetadata: mergedMeta as Asset['productFlowMetadata'],
+      status: isComplete ? 'complete' : 'missing-info',
+    };
+
+    setAssets((prev) => prev.map((a) => (a.id === assetId ? updatedAsset : a)));
+    autoSaveAsset(assetId, updatedAsset);
+  }, [assets, autoSaveAsset]);
+
+  /** Legacy save for ad-creative side panel (unchanged) */
+  const handleSaveAsset = useCallback((assetId: string, updates: Partial<Asset>) => {
     const existing = assets.find((a) => a.id === assetId);
     if (!existing) return;
     const updatedAsset = { ...existing, ...updates, status: 'complete' as const };
@@ -141,10 +178,41 @@ export default function FolderDetailPage() {
       )
     );
     setSelectedAsset(null);
-
-    // Auto-save to Firebase
     autoSaveAsset(assetId, updatedAsset);
-  }, [assets, showToast, autoSaveAsset]);
+  }, [assets, autoSaveAsset]);
+
+  /** Drag-end: reorder assets and debounce-save all step numbers to Firebase */
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    setAssets((prev) => {
+      const oldIndex = prev.findIndex((a) => a.id === active.id);
+      const newIndex = prev.findIndex((a) => a.id === over.id);
+      if (oldIndex === -1 || newIndex === -1) return prev;
+      const reordered = arrayMove(prev, oldIndex, newIndex);
+
+      // Update step numbers based on new positions
+      const updated = reordered.map((a, i) => ({
+        ...a,
+        productFlowMetadata: a.productFlowMetadata
+          ? { ...a.productFlowMetadata, stepNumber: i + 1 }
+          : a.productFlowMetadata,
+      }));
+
+      // Debounced save all to Firebase
+      if (reorderTimerRef.current) clearTimeout(reorderTimerRef.current);
+      reorderTimerRef.current = setTimeout(() => {
+        updated.forEach((a) => {
+          if (a.id && !a.id.startsWith('pending_')) {
+            autoSaveAsset(a.id, a);
+          }
+        });
+      }, 500);
+
+      return updated;
+    });
+  }, [autoSaveAsset]);
 
   // ── Upload files directly (auto-save, no "Save to Firebase" button) ──
   const uploadFiles = useCallback(async (files: FileList, targetFolderId?: string) => {
@@ -191,7 +259,7 @@ export default function FolderDetailPage() {
           status: 'missing-info' as const,
           ...(currentAssetType === 'product-flow'
             ? { productFlowMetadata: { stepNumber: nextStep + i, stepName: '', pageType: 'other' as const } }
-            : { adCreativeMetadata: { caption: '', creativeFormat: 'image' as const, platform: 'generic' as const } }),
+            : { adCreativeMetadata: { caption: '' } }),
         };
 
         const savedId = await addAssetDocument(clerkId, uploadFolderId, { ...asset }, public_id);
@@ -255,19 +323,53 @@ export default function FolderDetailPage() {
     setDragOver(false);
   };
 
-  const handleDeleteAsset = (assetId: string, assetName: string) => async (e: React.MouseEvent) => {
+  const handleDeleteAsset = (assetId: string, assetName: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!confirm(`Delete "${assetName}"? This cannot be undone.`)) return;
+    setDeleteTarget({ id: assetId, name: assetName });
+  };
 
+  /** Inline delete for product-flow rows (called directly, not via modal) */
+  const handleInlineDelete = useCallback(async (assetId: string, assetName: string) => {
     if (!clerkId) return;
     try {
-      await deleteAssetMetadata(clerkId, folderId, assetId);
+      const res = await fetch('/api/delete-asset', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clerkId, folderId, assetId }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Server responded with ${res.status}`);
+      }
       setAssets((prev) => prev.filter((a) => a.id !== assetId));
       showToast('success', 'Asset deleted', `"${assetName}" has been removed.`);
     } catch (err) {
-      console.error(err);
-      showToast('error', 'Failed to delete asset', 'Please try again.');
+      console.error('[DELETE] Error deleting asset:', err);
+      showToast('error', 'Failed to delete asset', err instanceof Error ? err.message : 'Please try again.');
+    }
+  }, [clerkId, folderId, showToast]);
+
+  const confirmDeleteAsset = async () => {
+    if (!deleteTarget || !clerkId) return;
+    const { id: assetId, name: assetName } = deleteTarget;
+    try {
+      const res = await fetch('/api/delete-asset', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clerkId, folderId, assetId }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Server responded with ${res.status}`);
+      }
+
+      setAssets((prev) => prev.filter((a) => a.id !== assetId));
+      showToast('success', 'Asset deleted', `"${assetName}" has been removed.`);
+    } catch (err) {
+      console.error('[DELETE] Error deleting asset:', err);
+      showToast('error', 'Failed to delete asset', err instanceof Error ? err.message : 'Please try again.');
     }
   };
 
@@ -333,38 +435,57 @@ export default function FolderDetailPage() {
         ) : (
           /* ── Regular folder view (Product Flow / Ad Creative) ── */
           <div className="space-y-5">
-            {assetType === 'product-flow' && (
-              <p className="text-[14px] text-[#4B5563] leading-[1.6] max-w-[640px]">
-                Ordered by step. Click an asset to edit metadata. Fill step name and page type so this folder is ready for simulation.
-              </p>
-            )}
+            {/* ── Ad Creative: keep old description ── */}
             {assetType === 'ad-creative' && (
               <p className="text-[14px] text-[#4B5563] leading-[1.6] max-w-[640px]">
                 Upload creatives and add captions, platform, and hooks. Then use this folder when running ad simulations.
               </p>
             )}
 
-            {/* ── Drop zone ── */}
-            <div
-              className={`
-                border-2 border-dashed rounded-[14px] p-7 text-center cursor-pointer transition-all duration-150
-                ${dragOver
-                  ? 'border-[#F59E0B] border-solid bg-[#FFFBEB]'
-                  : 'border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#D1D5DB]'}
-              `}
-              onClick={handleUploadClick}
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-            >
-              <UploadCloud className={`w-8 h-8 mx-auto mb-2 ${dragOver ? 'text-[#F59E0B]' : 'text-[#9CA3AF]'}`} />
-              <p className={`text-[14px] font-medium ${dragOver ? 'text-[#92400E]' : 'text-[#6B7280]'}`}>
-                Drop screens here, or click to browse
-              </p>
-              <p className="text-[12px] text-[#9CA3AF] mt-1">
-                Images or PDFs · Max 10MB per file · Multiple files supported
-              </p>
-            </div>
+            {/* ── DROP ZONE ── */}
+            {isProductFlow && assets.length > 0 ? (
+              /* Compact drop zone when assets exist */
+              <div
+                className={`
+                  h-14 flex items-center justify-center gap-[10px] cursor-pointer
+                  border-2 border-dashed rounded-[12px] transition-all duration-150 mb-4
+                  ${dragOver
+                    ? 'border-[#F59E0B] border-solid bg-[#FFFBEB]'
+                    : 'border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#D1D5DB]'}
+                `}
+                onClick={handleUploadClick}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+              >
+                <UploadCloud className={`w-4 h-4 ${dragOver ? 'text-[#92400E]' : 'text-[#9CA3AF]'}`} />
+                <span className={`text-[13px] ${dragOver ? 'text-[#92400E]' : 'text-[#9CA3AF]'}`}>
+                  Drop more screens here, or click to add
+                </span>
+              </div>
+            ) : (
+              /* Full drop zone */
+              <div
+                className={`
+                  border-2 border-dashed rounded-[14px] p-7 text-center cursor-pointer transition-all duration-150
+                  ${dragOver
+                    ? 'border-[#F59E0B] border-solid bg-[#FFFBEB]'
+                    : 'border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#D1D5DB]'}
+                `}
+                onClick={handleUploadClick}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+              >
+                <UploadCloud className={`w-8 h-8 mx-auto mb-2 ${dragOver ? 'text-[#F59E0B]' : 'text-[#9CA3AF]'}`} />
+                <p className={`text-[14px] font-medium ${dragOver ? 'text-[#92400E]' : 'text-[#6B7280]'}`}>
+                  Drop screens here, or click to browse
+                </p>
+                <p className="text-[12px] text-[#9CA3AF] mt-1">
+                  Images or PDFs · Max 10MB per file · Multiple files supported
+                </p>
+              </div>
+            )}
 
             {/* ── Upload progress inline ── */}
             {uploadingFiles.length > 0 && (
@@ -377,7 +498,7 @@ export default function FolderDetailPage() {
                         <span className="text-[13px] font-medium text-[#1A1A1A]">{uf.name}</span>
                       </div>
                       <span className={`text-[12px] ${uf.status === 'done' ? 'text-[#065F46]' : uf.status === 'error' ? 'text-[#EF4444]' : 'text-[#6B7280]'}`}>
-                        {uf.status === 'uploading' ? `Uploading... ${uf.progress}%` : uf.status === 'done' ? '✓ Uploaded — add step number below' : '✕ Failed'}
+                        {uf.status === 'uploading' ? `Uploading... ${uf.progress}%` : uf.status === 'done' ? '✓ Uploaded' : '✕ Failed'}
                       </span>
                     </div>
                     <div className="mt-2 h-1 bg-[#E5E7EB] rounded-full overflow-hidden">
@@ -391,11 +512,100 @@ export default function FolderDetailPage() {
               </div>
             )}
 
-            {/* ── Asset cards grid ── */}
-            {assets.length > 0 && (
+            {/* ═══ PRODUCT FLOW — NEW SORTABLE LIST ═══ */}
+            {isProductFlow && assets.length > 0 && (() => {
+              const incompleteCount = assets.filter(
+                (a) => !(a.productFlowMetadata?.stepName?.trim())
+              ).length;
+              const allComplete = incompleteCount === 0;
+
+              return (
+                <>
+                  {/* ── Instructional header ── */}
+                  <div className="mb-5">
+                    <h2 className="text-[17px] font-bold text-[#1A1A1A] mb-1">
+                      Arrange your screens in order
+                    </h2>
+                    <p className="text-[14px] text-[#4B5563] leading-[1.6] max-w-[600px]">
+                      Drag rows to set the step sequence. Position = step number.<br />
+                      Optionally name each screen to help the simulator understand the context.
+                    </p>
+                  </div>
+
+                  {/* ── Progress banner ── */}
+                  {allComplete ? (
+                    <div className="flex items-center gap-[10px] bg-[#D1FAE5] border border-[#A7F3D0] rounded-[10px] px-4 py-3 mb-4 max-w-[780px]">
+                      <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
+                      <span className="text-[14px] font-semibold text-[#065F46]">
+                        All screens named — this folder is ready for simulation
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-start gap-[10px] bg-[#EFF6FF] border border-[#BFDBFE] rounded-[10px] px-4 py-3 mb-4 max-w-[780px]">
+                      <Info className="w-4 h-4 text-[#3B82F6] shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-[13px] font-medium text-[#1D4ED8]">
+                          {incompleteCount} screen{incompleteCount !== 1 ? 's' : ''} ha{incompleteCount === 1 ? 's' : 've'}n&apos;t been named yet
+                        </p>
+                        <p className="text-[12px] text-[#3B82F6] mt-[1px]">
+                          Naming screens is optional but helps the simulator.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── Row container: constrained width ── */}
+                  <div className="max-w-[780px]">
+                    {/* ── Column header strip ── */}
+                    <div
+                      className="grid items-center bg-[#F9FAFB] border border-[#E8E4DE] rounded-[10px] px-[14px] py-2 mb-2"
+                      style={{ gridTemplateColumns: '28px 44px 56px 1fr 150px 36px', gap: '10px' }}
+                    >
+                      <span /> {/* drag handle col */}
+                      <span className="text-[11px] font-bold text-[#4B5563] uppercase" style={{ letterSpacing: '0.07em' }}>
+                        Step
+                      </span>
+                      <span /> {/* thumbnail col */}
+                      <span className="text-[11px] font-bold text-[#4B5563] uppercase" style={{ letterSpacing: '0.07em' }}>
+                        Screen name
+                      </span>
+                      <span className="text-[11px] font-bold text-[#4B5563] uppercase" style={{ letterSpacing: '0.07em' }}>
+                        Page type
+                      </span>
+                      <span /> {/* delete col */}
+                    </div>
+
+                    {/* ── Sortable list ── */}
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={handleDragEnd}
+                    >
+                      <SortableContext
+                        items={assets.map((a) => a.id)}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        {assets.map((asset, index) => (
+                          <SortableAssetRow
+                            key={asset.id}
+                            asset={asset}
+                            stepNumber={index + 1}
+                            onSaveField={handleSaveField}
+                            onDelete={handleInlineDelete}
+                          />
+                        ))}
+                      </SortableContext>
+                    </DndContext>
+                  </div>
+                </>
+              );
+            })()}
+
+            {/* ═══ AD CREATIVE — keep old card grid ═══ */}
+            {!isProductFlow && assets.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {assets.map((asset) => {
-                  const hasStepNumber = asset.productFlowMetadata?.stepNumber != null && asset.productFlowMetadata.stepNumber !== 0;
+                  const hasCaption = asset.adCreativeMetadata?.caption != null && asset.adCreativeMetadata.caption.trim() !== '';
                   return (
                     <div
                       key={asset.id}
@@ -418,16 +628,6 @@ export default function FolderDetailPage() {
                       <div className="px-4 py-[14px]">
                         <div className="flex items-start justify-between">
                           <div className="min-w-0 flex-1">
-                            {assetType === 'product-flow' && asset.productFlowMetadata && hasStepNumber && (
-                              <p className="text-[13px] font-semibold text-[#F59E0B]">
-                                Step {asset.productFlowMetadata.stepNumber}
-                              </p>
-                            )}
-                            {asset.productFlowMetadata?.stepName && (
-                              <p className="text-[14px] font-medium text-[#1A1A1A] truncate">
-                                {asset.productFlowMetadata.stepName}
-                              </p>
-                            )}
                             {assetType === 'ad-creative' && asset.adCreativeMetadata && (
                               <p className="text-[13px] text-[#6B7280] line-clamp-2">
                                 {asset.adCreativeMetadata.caption || 'No caption'}
@@ -457,14 +657,21 @@ export default function FolderDetailPage() {
                             />
                           </div>
                         </div>
-                        {/* Warning when step number missing */}
-                        {assetType === 'product-flow' && !hasStepNumber && (
-                          <div className="flex items-center gap-1.5 bg-[#FEF3C7] rounded-[6px] px-[10px] py-1.5 mt-[10px]">
+                        {/* Warning when caption missing for ad creative */}
+                        {assetType === 'ad-creative' && !hasCaption && (
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setSelectedAsset(asset);
+                            }}
+                            className="flex items-center gap-1.5 bg-[#FEF3C7] rounded-[6px] px-[10px] py-1.5 mt-[10px] w-full text-left hover:bg-[#FDE68A] transition-colors"
+                          >
                             <AlertCircle className="w-3.5 h-3.5 text-[#D97706] shrink-0" />
                             <span className="text-[12px] font-medium text-[#92400E]">
-                              Add a step number to enable simulation
+                              Add caption
                             </span>
-                          </div>
+                          </button>
                         )}
                       </div>
                     </div>
@@ -494,20 +701,40 @@ export default function FolderDetailPage() {
           className="hidden"
         />
 
-        {/* ── New footer (no "Save to Firebase") ── */}
+        {/* ── New footer ── */}
         {!isComparator && (
-          <div className="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-[#E8E4DE] px-4 lg:px-6 py-4">
+          <div className="fixed bottom-0 left-0 lg:left-[240px] right-0 z-40 bg-white border-t border-[#E8E4DE] px-4 lg:px-7 py-3">
             <div className="max-w-[1600px] mx-auto flex items-center justify-between">
-              {/* Auto-save status indicator */}
-              <div className="text-[13px]">
+              {/* Left: readiness + auto-save status */}
+              <div className="flex items-center gap-4">
+                {isProductFlow && (() => {
+                  const incomplete = assets.filter(
+                    (a) => !(a.productFlowMetadata?.stepName?.trim())
+                  ).length;
+                  if (incomplete > 0) {
+                    return (
+                      <span className="inline-flex items-center gap-1.5 text-[13px] text-[#6B7280]">
+                        {incomplete} screen{incomplete !== 1 ? 's' : ''} unnamed
+                      </span>
+                    );
+                  }
+                  return (
+                    <span className="inline-flex items-center gap-1.5 text-[13px] text-[#10B981]">
+                      <CheckCircle2 className="w-4 h-4" />
+                      Ready for simulation
+                    </span>
+                  );
+                })()}
+
+                {/* Auto-save indicator */}
                 {autoSaveStatus === 'saving' && (
-                  <span className="inline-flex items-center gap-1.5 text-[#6B7280]">
+                  <span className="inline-flex items-center gap-1.5 text-[12px] text-[#9CA3AF]">
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     Saving...
                   </span>
                 )}
                 {autoSaveStatus === 'saved' && (
-                  <span className="inline-flex items-center gap-1.5 text-[#10B981]">
+                  <span className="inline-flex items-center gap-1.5 text-[12px] text-[#10B981]">
                     <Check className="w-3.5 h-3.5" />
                     All changes saved
                   </span>
@@ -515,16 +742,17 @@ export default function FolderDetailPage() {
                 {autoSaveStatus === 'error' && (
                   <button
                     onClick={() => setAutoSaveStatus('idle')}
-                    className="inline-flex items-center gap-1.5 text-[#EF4444] hover:underline"
+                    className="inline-flex items-center gap-1.5 text-[12px] text-[#EF4444] hover:underline"
                   >
                     <AlertTriangle className="w-3.5 h-3.5" />
-                    Save failed — retry?
+                    Save failed — retry
                   </button>
                 )}
               </div>
-              {/* Upload button only */}
+
+              {/* Right: Upload button */}
               <button
-                className="inline-flex items-center gap-2 px-5 py-3 text-[14px] font-semibold text-white bg-[#F59E0B] rounded-[10px] hover:bg-[#D97706] transition-colors shadow-[0_4px_12px_rgba(245,158,11,0.35)]"
+                className="inline-flex items-center gap-2 px-5 py-[10px] text-[14px] font-semibold text-white bg-[#F59E0B] rounded-[10px] hover:bg-[#D97706] transition-colors shadow-[0_4px_12px_rgba(245,158,11,0.35)]"
                 onClick={handleUploadClick}
               >
                 <Plus className="w-[18px] h-[18px]" />
@@ -536,10 +764,20 @@ export default function FolderDetailPage() {
       </div>
       </div>
 
-      <AssetSidePanel
-        asset={selectedAsset}
-        onClose={() => setSelectedAsset(null)}
-        onSave={handleSaveAsset}
+      {/* Side panel — only for ad-creative folders */}
+      {!isProductFlow && (
+        <AssetSidePanel
+          asset={selectedAsset}
+          onClose={() => setSelectedAsset(null)}
+          onSave={handleSaveAsset}
+        />
+      )}
+
+      <DeleteAssetModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        assetName={deleteTarget?.name ?? null}
+        onConfirm={confirmDeleteAsset}
       />
     </>
   );

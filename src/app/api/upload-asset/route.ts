@@ -14,10 +14,9 @@ function slug(str: string): string {
     .slice(0, 100) || "asset";
 }
 
-const CLOUDINARY_CLOUD_NAME = "da9uwccqm";
-const CLOUDINARY_API_KEY = "922121495748568";
-
 export async function POST(request: NextRequest) {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME || "da9uwccqm";
+  const apiKey = process.env.CLOUDINARY_API_KEY || "922121495748568";
   const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
   if (!apiSecret) {
@@ -28,8 +27,8 @@ export async function POST(request: NextRequest) {
   }
 
   cloudinary.config({
-    cloud_name: CLOUDINARY_CLOUD_NAME,
-    api_key: CLOUDINARY_API_KEY,
+    cloud_name: cloudName,
+    api_key: apiKey,
     api_secret: apiSecret,
   });
 

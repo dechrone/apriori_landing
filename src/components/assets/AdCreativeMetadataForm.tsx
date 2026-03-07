@@ -2,17 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import type { Asset } from '@/types/asset';
-import type { AdCreativeMetadata, AdPlatform, CreativeFormat, HookType } from '@/types/asset';
+import type { AdCreativeMetadata, AdPlatform, HookType } from '@/types/asset';
 
 const PLATFORMS: { value: AdPlatform; label: string }[] = [
   { value: 'meta', label: 'Meta' },
   { value: 'google', label: 'Google' },
   { value: 'generic', label: 'Generic' },
-];
-
-const FORMATS: { value: CreativeFormat; label: string }[] = [
-  { value: 'image', label: 'Image' },
-  { value: 'video', label: 'Video' },
 ];
 
 const HOOK_TYPES: { value: HookType; label: string }[] = [
@@ -30,12 +25,9 @@ interface AdCreativeMetadataFormProps {
 export function AdCreativeMetadataForm({ asset, onSave }: AdCreativeMetadataFormProps) {
   const meta = asset.adCreativeMetadata ?? {
     caption: '',
-    creativeFormat: 'image',
-    platform: 'generic',
   };
   const [caption, setCaption] = useState(meta.caption);
-  const [creativeFormat, setCreativeFormat] = useState(meta.creativeFormat);
-  const [platform, setPlatform] = useState(meta.platform);
+  const [platform, setPlatform] = useState(meta.platform ?? '');
   const [hookType, setHookType] = useState(meta.hookType ?? '');
   const [ctaType, setCtaType] = useState(meta.ctaType ?? '');
   const [angleTheme, setAngleTheme] = useState(meta.angleTheme ?? '');
@@ -44,8 +36,7 @@ export function AdCreativeMetadataForm({ asset, onSave }: AdCreativeMetadataForm
 
   useEffect(() => {
     setCaption(meta.caption);
-    setCreativeFormat(meta.creativeFormat);
-    setPlatform(meta.platform);
+    setPlatform(meta.platform ?? '');
     setHookType(meta.hookType ?? '');
     setCtaType(meta.ctaType ?? '');
     setAngleTheme(meta.angleTheme ?? '');
@@ -54,7 +45,6 @@ export function AdCreativeMetadataForm({ asset, onSave }: AdCreativeMetadataForm
   }, [
     asset.id,
     meta.caption,
-    meta.creativeFormat,
     meta.platform,
     meta.hookType,
     meta.ctaType,
@@ -66,8 +56,8 @@ export function AdCreativeMetadataForm({ asset, onSave }: AdCreativeMetadataForm
     e.preventDefault();
     onSave({
       caption,
-      creativeFormat,
-      platform,
+      creativeFormat: 'image',
+      platform: (platform || undefined) as AdPlatform | undefined,
       hookType: (hookType || undefined) as HookType | undefined,
       ctaType: ctaType || undefined,
       angleTheme: angleTheme || undefined,
@@ -83,8 +73,8 @@ export function AdCreativeMetadataForm({ asset, onSave }: AdCreativeMetadataForm
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label className="block text-[13px] font-medium text-[#374151] mb-1.5">
-          Primary caption / ad copy <span className="text-[12px] text-[#9CA3AF]">(optional)</span>
+        <label className="block text-[13px] font-semibold text-[#1A1A1A] mb-1.5">
+          Primary caption / ad copy <span className="text-[12px] text-[#F59E0B] font-medium ml-1">(recommended)</span>
         </label>
         <textarea
           placeholder="e.g., Stop guessing. Start simulating."
@@ -93,6 +83,11 @@ export function AdCreativeMetadataForm({ asset, onSave }: AdCreativeMetadataForm
           rows={4}
           className={`${inputClasses} resize-none`}
         />
+        {!caption && (
+          <p className="mt-1.5 text-[12px] text-[#D97706]">
+            Adding a caption helps the simulation understand your ad creative better.
+          </p>
+        )}
       </div>
       <div>
         <label className="block text-[13px] font-medium text-[#374151] mb-1.5">
@@ -107,29 +102,14 @@ export function AdCreativeMetadataForm({ asset, onSave }: AdCreativeMetadataForm
       </div>
       <div>
         <label className="block text-[13px] font-medium text-[#374151] mb-1.5">
-          Creative format <span className="text-accent-red ml-0.5">*</span>
+          Platform <span className="text-[12px] text-[#9CA3AF]">(optional)</span>
         </label>
         <select
-          required
-          value={creativeFormat}
-          onChange={(e) => setCreativeFormat(e.target.value as CreativeFormat)}
-          className={selectClasses}
-        >
-          {FORMATS.map((f) => (
-            <option key={f.value} value={f.value}>{f.label}</option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label className="block text-[13px] font-medium text-[#374151] mb-1.5">
-          Platform <span className="text-accent-red ml-0.5">*</span>
-        </label>
-        <select
-          required
           value={platform}
-          onChange={(e) => setPlatform(e.target.value as AdPlatform)}
+          onChange={(e) => setPlatform(e.target.value)}
           className={selectClasses}
         >
+          <option value="">Select…</option>
           {PLATFORMS.map((p) => (
             <option key={p.value} value={p.value}>{p.label}</option>
           ))}

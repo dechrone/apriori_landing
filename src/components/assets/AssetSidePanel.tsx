@@ -14,7 +14,7 @@ interface AssetSidePanelProps {
 export function AssetSidePanel({ asset, onClose, onSave }: AssetSidePanelProps) {
   if (!asset) return null;
 
-  const stepLabel = asset.productFlowMetadata?.stepNumber
+  const stepLabel = asset.assetType === 'product-flow' && asset.productFlowMetadata?.stepNumber
     ? `Edit Step ${asset.productFlowMetadata.stepNumber}`
     : 'Edit asset';
 

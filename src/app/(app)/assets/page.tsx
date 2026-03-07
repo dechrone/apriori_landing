@@ -282,10 +282,16 @@ export default function AssetsPage() {
                 : folder.assetCount;
               const folderAssets = assetsByFolderId[folder.id] ?? [];
               const hasAssets = displayAssetCount > 0;
+              const isAdCreative = folder.assetType === 'ad-creative';
               const allHaveStepNumbers = hasAssets && folderAssets.length > 0 && folderAssets.every(
                 (a) =>
                   a.productFlowMetadata?.stepNumber != null &&
                   a.productFlowMetadata.stepNumber !== 0
+              );
+              const allHaveCaptions = hasAssets && folderAssets.length > 0 && folderAssets.every(
+                (a) =>
+                  a.adCreativeMetadata?.caption != null &&
+                  a.adCreativeMetadata.caption.trim() !== ''
               );
               // For comparator, check both subfolders
               const isComparator = folder.assetType === 'product-flow-comparator';
@@ -302,8 +308,13 @@ export default function AssetsPage() {
                 });
               }
 
-              const isReady = isComparator ? comparatorReady : (hasAssets && allHaveStepNumbers);
-              const needsStepNumbers = hasAssets && !isReady && !isComparator;
+              const isReady = isComparator
+                ? comparatorReady
+                : isAdCreative
+                  ? (hasAssets && allHaveCaptions)
+                  : (hasAssets && allHaveStepNumbers);
+              const needsStepNumbers = hasAssets && !isReady && !isComparator && !isAdCreative;
+              const needsCaptions = hasAssets && !isReady && isAdCreative;
               const comparatorNeedsWork = isComparator && displayAssetCount > 0 && !comparatorReady;
 
               return (
@@ -344,6 +355,12 @@ export default function AssetsPage() {
                       <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#92400E] bg-[#FEF3C7] rounded-full px-2.5 py-0.5">
                         <AlertCircle className="w-3 h-3" />
                         Needs step numbers
+                      </span>
+                    )}
+                    {needsCaptions && (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#92400E] bg-[#FEF3C7] rounded-full px-2.5 py-0.5">
+                        <AlertCircle className="w-3 h-3" />
+                        Needs captions
                       </span>
                     )}
                     {!hasAssets && (

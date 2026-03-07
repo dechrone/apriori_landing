@@ -11,11 +11,15 @@ export type AssetStatus = 'complete' | 'missing-info';
 
 // --- Page types for Product Flow (step semantics) ---
 export type ProductFlowPageType =
-  | 'signup'
+  | 'landing'
   | 'onboarding'
-  | 'pricing'
+  | 'signup'
+  | 'login'
   | 'dashboard'
+  | 'pricing'
   | 'checkout'
+  | 'confirmation'
+  | 'settings'
   | 'other';
 
 // --- Product Flow asset metadata ---
@@ -35,8 +39,8 @@ export type HookType = 'pain-driven' | 'curiosity' | 'authority' | 'offer-led';
 
 export interface AdCreativeMetadata {
   caption: string;
-  creativeFormat: CreativeFormat;
-  platform: AdPlatform;
+  creativeFormat?: CreativeFormat;
+  platform?: AdPlatform;
   hookType?: HookType;
   ctaType?: string;
   targetPersonaId?: string;
