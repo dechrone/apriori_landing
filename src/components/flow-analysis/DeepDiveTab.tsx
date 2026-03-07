@@ -3,6 +3,8 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import type { FlowAnalysisData, FlowPersona, JourneyStep } from "@/types/flow-analysis";
 import { PersonaCardLight } from "./PersonaCardLight";
+import { DeepDiveView } from "@/components/deep-dive/DeepDiveView";
+import { MOCK_PERSONAS } from "@/data/mockSimulation";
 import {
   ArrowDown,
   X as XIcon,
@@ -135,7 +137,14 @@ function FilterPill({ label, onRemove, variant = "neutral" }: { label: string; o
 export function DeepDiveTab({ data }: { data: FlowAnalysisData }) {
   const { screens, personas, funnel } = data;
 
-  /* ── State ── */
+  /* ── New deep-dive view using PersonaDetail[] mock data ── */
+  const [useNewView] = useState(true);
+
+  if (useNewView) {
+    return <DeepDiveView personas={MOCK_PERSONAS} />;
+  }
+
+  /* ── Legacy state (kept for backwards-compat) ── */
   const [mode, setMode] = useState<ViewMode>("screen");
   const [selectedScreen, setSelectedScreen] = useState(screens[0]?.id ?? "S1");
   const [selectedPersonaId, setSelectedPersonaId] = useState(personas[0]?.id ?? "");

@@ -1,0 +1,23 @@
+:root {
+  /* Score thresholds — used by ScoreBar and JourneyTimeline */
+  --dd-score-low:          #e85450;   /* 1–4 */
+  --dd-score-low-bg:       #fef2f2;
+  --dd-score-mid:          #d97706;   /* 5–6 */
+  --dd-score-mid-bg:       #fffbeb;
+  --dd-score-high:         #16a34a;   /* 7–10 */
+  --dd-score-high-bg:      #f0fdf4;
+
+  /* Friction categories */
+  --dd-friction-trust:     #e85450;   /* trust & safety */
+  --dd-friction-trust-bg:  #fef2f2;
+  --dd-friction-clarity:   #d97706;   /* comprehension */
+  --dd-friction-clarity-bg:#fffbeb;
+  --dd-friction-ux:        #2563eb;   /* ux & flow */
+  --dd-friction-ux-bg:     #eff6ff;
+
+  /* Outcomes */
+  --dd-completed:          #16a34a;
+  --dd-completed-bg:       #f0fdf4;
+  --dd-dropoff:            #e85450;
+  --dd-dropoff-bg:         #fef2f2;
+}

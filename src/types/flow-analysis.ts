@@ -112,3 +112,54 @@ export interface FlowAnalysisData {
   patterns?: BehavioralPattern[];
   quotes?: PersonaQuote[];
 }
+
+/* ─── Deep-Dive Simulation Types (new) ──────────────────────────────────── */
+
+export interface ScreenMonologue {
+  screen_id: string;             // "view_1", "view_2", etc.
+  view_name: string;             // "KYC – Secure Verification (Step 1/6)"
+  internal_monologue: string;
+  reasoning: string;
+  emotional_state: string;       // CSV: "Anxious, Cautious"
+  trust_score: number;           // 1–10
+  clarity_score: number;         // 1–10
+  value_score: number;           // 1–10
+  time_seconds: number;
+  friction_points: string[];
+  selected_choice: "CONTINUE" | "DROP_OFF";
+  decision_outcome: "CONTINUE" | "DROP_OFF";
+}
+
+export interface Demographics {
+  occupation: string;
+  age: number;
+  sex: string;
+  state: string;
+  district: string;
+  monthly_income_inr: number;
+  digital_literacy: number;       // 1–10
+  behavioral_archetype: string;   // e.g. "The Pragmatist"
+  emi_comfort: "comfortable" | "uncomfortable";
+  education_level: string;
+  first_language: string;
+  family_size: number;
+  primary_device: string;
+  employer_type: string;
+  purchasing_power_tier: string;
+  current_insurance: boolean;
+  existing_health_conditions: boolean;
+  zone: string;
+}
+
+export interface PersonaDetail {
+  persona_uuid: string;
+  demographics: Demographics;
+  professional_background: string;
+  cultural_background: string;
+  outcome: string;               // "dropped_off_at_view_3" | "completed"
+  key_selections: Record<string, unknown>;
+  final_price_inr: number | null;
+  total_time_seconds: number;
+  overall_monologue: string;
+  screen_monologues: ScreenMonologue[];
+}
