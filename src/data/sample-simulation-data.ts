@@ -5,189 +5,210 @@ import type { SimulationData } from "@/types/simulation";
  * Used as mock data during development / demo.
  */
 export const sampleSimulationData: SimulationData = {
-  simulation_id: "e5546db94bc046ce89c531da08da01a7",
+  simulation_id: "cb3809c8fae6489b96e1e148214b56a3",
   flow_id: "blink_money_flow1",
   flow_name: "Blink Money – Loan Against Mutual Funds (Flow 1)",
-  generated_at: "2026-03-06T14:31:32.091120+00:00",
+  generated_at: "2026-03-08T09:59:40.783223+00:00",
   summary: {
-    total_personas: 5,
-    completed: 0,
-    dropped_off: 5,
-    completion_rate_pct: 0.0,
-    avg_time_to_complete_seconds: 0,
-    dominant_plan: "N/A",
-    dominant_plan_pct: 0,
+    total_personas: 50,
+    completed: 33,
+    dropped_off: 17,
+    completion_rate_pct: 66.0,
+    avg_time_to_complete_seconds: 182.8,
+    dominant_plan: "LAMF_ONLY",
+    dominant_plan_pct: 100.0,
   },
   sample_quality: {
-    sample_size: 5,
-    margin_of_error_pct: 0.0,
+    sample_size: 50,
+    margin_of_error_pct: 8.6,
     confidence_level: "80%",
-    note: "Results are directional. At n=5, completion rate has ±0.0% uncertainty. Run 30+ personas for ±8% error at 80% confidence.",
+    note: "Sample size of 50 is adequate for directional insights at 80% confidence (±8.6%).",
   },
-  plan_distribution: {},
+  plan_distribution: {
+    LAMF_ONLY: { count: 33, pct: 100.0 },
+  },
   addon_adoption: {
-    with_addon: { count: 0, pct: 0 },
-    skipped: { count: 0, pct: 0 },
+    with_addon: { count: 0, pct: 0.0 },
+    skipped: { count: 33, pct: 100.0 },
   },
   funnel_drop_off: [
-    { screen_id: "view_3", drop_offs: 4, drop_off_pct: 80.0 },
-    { screen_id: "view_1", drop_offs: 1, drop_off_pct: 20.0 },
+    { screen_id: "1", drop_offs: 13, drop_off_pct: 26.0 },
+    { screen_id: "3", drop_offs: 3, drop_off_pct: 6.0 },
+    { screen_id: "3_result", drop_offs: 1, drop_off_pct: 2.0 },
   ],
   top_friction_points: [
-    { friction: "Asking for my PAN number is very risky.", frequency: 1 },
+    { friction: "24-hour waiting period for document verification", frequency: 3 },
     {
       friction:
-        "I don't know this company, and there is no bank name or government seal.",
-      frequency: 1,
+        "technical jargon like 'encrypted' and 'central registries' causing fear",
+      frequency: 2,
     },
     {
       friction:
-        "Why do they need to see my entire investment portfolio so early?",
-      frequency: 1,
-    },
-    {
-      friction:
-        "The countdown timer makes me feel pressured and rushed.",
+        "hesitation regarding broad data access to the entire mutual fund portfolio.",
       frequency: 1,
     },
     {
       friction:
-        "Switching between this app and my SMS app is confusing.",
-      frequency: 1,
-    },
-    { friction: "No EMI or loan tenure shown", frequency: 1 },
-    {
-      friction: "Confusing slider range (max is 2x eligibility)",
+        "short 19-second resend window might be tight if the sms gateway is slow.",
       frequency: 1,
     },
     {
-      friction: "Asking for PAN number without establishing trust",
+      friction:
+        "lingering concern about the extent of data being fetched after this verification.",
+      frequency: 1,
+    },
+    {
+      friction: "logical discrepancy between 'eligibility' (2.85l) and slider maximum (5.70l).",
+      frequency: 1,
+    },
+    {
+      friction: "lack of clear breakdown on processing fees or lien-marking details for the specific funds.",
+      frequency: 1,
+    },
+    {
+      friction: "24-hour sla for document verification feels slightly slow for an 'instant' digital product.",
       frequency: 1,
     },
   ],
   screen_metrics: {
-    view_1: {
-      avg_trust: 3.4,
-      avg_clarity: 6.4,
-      avg_value: 4.6,
-      avg_time_s: 76.0,
-      sample_size: 5,
+    "1": {
+      avg_trust: 6.2,
+      avg_clarity: 6.9,
+      avg_value: 6.0,
+      avg_time_s: 54.2,
+      sample_size: 50,
     },
-    view_2: {
-      avg_trust: 3.8,
-      avg_clarity: 6.2,
-      avg_value: 3.8,
-      avg_time_s: 80.0,
-      sample_size: 4,
+    "2": {
+      avg_trust: 7.6,
+      avg_clarity: 8.9,
+      avg_value: 6.8,
+      avg_time_s: 29.4,
+      sample_size: 37,
     },
-    view_3: {
-      avg_trust: 2.0,
-      avg_clarity: 1.8,
-      avg_value: 1.8,
-      avg_time_s: 96.2,
-      sample_size: 4,
+    "3": {
+      avg_trust: 6.8,
+      avg_clarity: 6.1,
+      avg_value: 7.7,
+      avg_time_s: 65.4,
+      sample_size: 37,
+    },
+    "3_result": {
+      avg_trust: 7.8,
+      avg_clarity: 8.3,
+      avg_value: 8.1,
+      avg_time_s: 47.4,
+      sample_size: 34,
     },
   },
   executive_summary:
-    "Our initial user flow for 'Loan Against Mutual Funds' has a 0% completion rate with the tested segment, indicating a catastrophic failure in establishing trust and providing clarity. Users, primarily older and less digitally-native, are immediately alarmed by the upfront request for their PAN number without any brand credibility. The journey culminates in 80% of users dropping off at the loan offer screen, which lacks critical information like EMI and tenure, leaving them feeling overwhelmed and suspicious. The core risk is that our current flow is perceived as predatory and untrustworthy, alienating our target user base from the very first step.",
+    "Blink Money's LAMF flow achieved a solid 66% completion rate, driven by 'The Pragmatist' archetype who values the professional, 'CRED-esque' UI. However, a critical 26% drop-off at Screen 1 (KYC) indicates significant upfront friction related to data privacy and technical jargon. The primary risk is a 'trust gap' where users, particularly those with lower digital literacy, feel overwhelmed by the perceived breadth of data access and the 24-hour verification delay.",
   design_recommendations: [
     {
       priority: "P0",
       screen: "KYC – Secure Verification (Step 1/6)",
       issue:
-        "Asking for a PAN number on the very first screen, before establishing brand identity or showing value, creates immediate and intense user suspicion and fear of fraud.",
+        "High drop-off (26%) and fear regarding 'broad data access' and 'central registries' jargon.",
       recommendation:
-        "Redesign the initial screen. Replace the PAN input field with a welcome screen that clearly states the value proposition, explains the 3-step process in simple terms, and displays prominent trust signals (e.g., 'Powered by [Partner Bank Name]', RBI/SEBI registration details, security certification logos). The call-to-action should be 'Check Your Eligibility' which then leads to the phone number/PAN input.",
+        "Replace technical jargon with benefit-oriented microcopy (e.g., 'Bank-grade security' instead of 'Central Registries') and include a 'Why we need this' tooltip explaining that data access is read-only and limited to fund valuation.",
       expected_impact:
-        "-50% drop-off at this screen; decrease 'Suspicious' and 'Anxious' emotion flags by 70%",
+        "-15% drop-off at Screen 1; increased trust scores in qualitative feedback.",
       primary_affected_segment:
-        "All tested personas (The Pragmatist, The Confused Novice), literacy ≤ 6/10",
+        "The Skeptic and users with digital_literacy ≤ 4",
     },
     {
-      priority: "P0",
+      priority: "P1",
       screen: "Eligible Amount & Interest Rate",
       issue:
-        "The screen displays a loan amount and interest rate but omits crucial decision-making information like EMI options and loan tenure, causing confusion and drop-offs.",
+        "Logical discrepancy between stated eligibility (2.85L) and slider maximum (5.70L) causing cognitive dissonance.",
       recommendation:
-        "Enhance the offer screen to be fully transparent. Below the eligible amount and interest rate, add interactive sliders for 'Loan Amount' and 'Repayment Tenure (in months)'. As the user adjusts these sliders, a calculated 'Monthly EMI' should update in real-time. Also include a simple, clickable FAQ link like 'How is this calculated?' or 'Is my data safe?'.",
+        "Sync the UI slider maximum to match the calculated eligibility limit dynamically, or add a 'Boost Limit' CTA if the higher amount requires additional collateral.",
       expected_impact:
-        "-60% drop-off at this screen; increase user confidence",
-      primary_affected_segment: "The Pragmatist archetype",
+        "Reduced 'Calculating/Anxious' sentiment; faster time-to-complete on Screen 3.",
+      primary_affected_segment: "Programmer Analyst / The Pragmatist (High Literacy)",
     },
     {
       priority: "P1",
       screen: "OTP Verification",
       issue:
-        "The countdown timer induces anxiety and pressure, especially for users who are slow to navigate between the app and their SMS inbox.",
+        "Short 19-second resend window creates unnecessary anxiety for users on slower SMS gateways.",
       recommendation:
-        "Remove the visible, fast-paced countdown timer. Instead, provide a static message like 'Enter the OTP sent to your mobile.' and a 'Resend OTP' button that becomes clickable after 30-45 seconds. Implement the Android SMS Retriever API to enable one-tap or automatic OTP entry, eliminating the need for app switching.",
+        "Extend the resend OTP timer to 45 or 60 seconds and add a 'Get OTP via WhatsApp' secondary option.",
       expected_impact:
-        "-50% 'Rushed' and 'Pressured' emotion flags; improved accessibility for low-literacy users",
-      primary_affected_segment: "The Confused Novice, literacy ≤ 5/10",
-    },
-    {
-      priority: "P2",
-      screen: "KYC – Secure Verification (Step 1/6)",
-      issue:
-        "Users do not recognize the 'Blink Money' brand and cannot find any familiar trust marks (e.g., bank name, government seal), leading them to question the app's legitimacy.",
-      recommendation:
-        "Create a persistent header or footer visible on the first few screens that contains the logo of a well-known partner bank or NBFC, and a small, recognizable icon for 'RBI Approved' or a similar regulatory stamp.",
-      expected_impact: "+20% trust score; reduction in initial hesitation",
-      primary_affected_segment: "The Pragmatist, first-time users",
+        "Lower 'hurried/anxious' emotional states; reduced drop-off for users in 'Other' (non-Tier 1) locations.",
+      primary_affected_segment: "Older users (50yo+) and those in 'Other' urban categories",
     },
   ],
   behavioral_insights: [
-    "A 100% drop-off rate among the 50-64 age demographic with low-to-mid digital literacy indicates a fundamental misalignment between the product's onboarding and the segment's mental model, which prioritizes trust and clarity over speed.",
-    "The 'Pragmatist' archetype, while intellectually grasping the product's value ('clever idea'), will not proceed without full transparency. The absence of EMI/tenure information was a deal-breaker for them, triggering suspicion and abandonment.",
-    "The 'Confused Novice' archetype is highly susceptible to UI-induced anxiety. Elements like countdown timers and technical jargon ('PAN') without simple explainers caused them to feel 'helpless' and 'terrified', making completion impossible.",
-    "The request for PAN on screen 1 is a universal trust-killer for this segment. Every single persona reacted with suspicion, caution, or anxiety, setting a negative emotional tone for the entire journey, even for those who proceeded.",
+    "Users with digital_literacy scores < 5 accounted for the majority of drop-offs at Screen 1, citing 'confusion and worry' as the primary emotional driver.",
+    "The 'Pragmatist' archetype (80% of the sample) shows high tolerance for the 24-hour wait period if the initial UI feels 'sturdy' and 'slick', prioritizing professional aesthetics over instant disbursement.",
+    "Higher-income personas (₹125k+) expressed 'South Delhi/CRED-esque' expectations, indicating that premium UI design is a prerequisite for trust in this segment.",
+    "A 'Relief-Anxiety' loop was observed: users feel relief at seeing the eligible amount but immediate anxiety regarding the 'extent of data being fetched'.",
   ],
   segment_analysis: {
     summary:
-      "The tested segment of older, urban, non-working individuals with low-to-medium literacy performed catastrophically, with a 100% drop-off rate. The flow's design assumptions—that users trust new fintech brands and prioritize speed—are the opposite of this segment's needs, which are trust, transparency, and a guided pace.",
+      "The flow resonates strongly with high-literacy urban professionals who appreciate modern UI, while failing significantly for lower-income, lower-literacy users who perceive the data fetching as intrusive.",
     high_propensity_segment:
-      "N/A - No user was able to complete the journey. A hypothetical high-propensity segment would likely be younger (25-40), salaried, digitally-native, and already familiar with using fintech apps for investments and credit.",
+      "The Pragmatist, Urban, Income ₹65k–₹225k, high digital literacy (7-9/10). These users are analytical and complete the flow despite minor technical frictions.",
     low_propensity_segment:
-      "No Occupation / Retired / Homemaker, 50-65yo, literacy ≤ 6/10. Key barriers are profound distrust of sharing sensitive data (PAN) with an unknown entity upfront, overwhelming confusion from missing loan details (EMI, tenure), and high anxiety caused by pressure-inducing UI like timers.",
+      "The Skeptic or Pragmatist with digital literacy ≤ 4 and income < ₹25k. This segment drops off early due to fear of the 'central registry' and confusion over the KYC process.",
   },
   ux_analysis: {
-    highest_friction_screen: "view_3",
-    trust_building_screens: [],
-    clarity_problem_screens: ["view_1", "view_3"],
-    value_gap_screens: ["view_1", "view_3"],
+    highest_friction_screen: "1",
+    trust_building_screens: ["3_result"],
+    clarity_problem_screens: ["1", "3"],
+    value_gap_screens: ["1"],
   },
   power_users: {
     power_user_archetypes: [
       {
-        archetype_name: "The Cautious Urban Investor",
+        archetype_name: "High-Literacy Urban Pragmatist",
         defining_traits: {
-          income_range: "\u20b980,000-\u20b91,50,000/mo",
+          income_range: "₹65,000-₹2,25,000/mo",
           digital_literacy: "8-10/10",
-          employer_type: "Private Sector / MNC / Tech",
+          employer_type: "MNC / Tech / Self-Employed",
           zone: "Urban",
-          behavioral_archetype: "The Security-Conscious Planner",
-          age_range: "32-45",
+          behavioral_archetype: "The Pragmatist",
+          age_range: "30-58",
         },
         why_they_convert:
-          "This user is the target persona that the flow failed to capture. They would only convert if the journey were redesigned to proactively address their primary concerns. The core value proposition of liquidity without liquidation is strong, but conversion is entirely dependent on the flow establishing overwhelming trust through transparent pricing, clear security reassurances, and a seamless, professional UX that makes them feel safe and in control.",
+          "These users possess the financial sophistication to recognize the 10.5% rate as a superior alternative to unsecured debt. Their high digital literacy allows them to interpret a multi-step flow as a sign of institutional security rather than a friction point. They are driven by a 'rational arbitrage' mindset, seeking to leverage existing assets to maintain liquidity without liquidating their portfolios.",
         what_resonates: [
-          "Clear, upfront display of interest rates, all associated fees, and lien process",
-          "Prominent trust signals: partner bank logos, RBI compliance, data security certifications",
-          "Simple, jargon-free explainers on how the lien works and its impact",
-          "A non-intrusive, seamless data import process (e.g., via CAMS/KFintech)",
+          "10.5% Interest Rate Value Anchor",
+          "Sequential Roadmap on Result Screen",
         ],
         conversion_rate_estimate:
-          "60-70% estimated completion rate (for a redesigned, trust-centric flow)",
-        persona_count_in_sample: 0,
+          "80-90% estimated completion rate",
+        persona_count_in_sample: 7,
+      },
+      {
+        archetype_name: "Mature Self-Employed Asset Owner",
+        defining_traits: {
+          income_range: "₹35,000-₹65,000/mo",
+          digital_literacy: "4-7/10",
+          employer_type: "Self-Employed / Proprietor",
+          zone: "Urban",
+          behavioral_archetype: "The Pragmatist",
+          age_range: "35-63",
+        },
+        why_they_convert:
+          "This segment values the functional utility of the loan for business or personal cash flow management. Despite lower digital literacy in some cases, their 'Professional Pragmatism' keeps them in the flow because they view the structured steps as evidence of a robust and trustworthy financial process. They are willing to spend more time (150s+) to ensure the transaction is completed correctly.",
+        what_resonates: [
+          "Logical structure of the digital flow",
+          "Lower cost of capital compared to personal loans",
+        ],
+        conversion_rate_estimate:
+          "60-70% estimated completion rate",
+        persona_count_in_sample: 10,
       },
     ],
     flow_strengths_for_power_users: [
-      "The core value proposition of liquidity without selling long-term investments is compelling.",
-      "Theoretically offers a faster, more integrated process than traditional bank loans against securities.",
-      "Potential to offer lower interest rates than unsecured personal loans by leveraging assets.",
+      "Transparent pricing (10.5%) eliminates early-funnel skepticism.",
+      "The 3_result screen roadmap mirrors the logical-analytical mindset of technical professionals.",
+      "Process thoroughness is interpreted as security/reliability rather than friction.",
     ],
     acquisition_recommendation:
-      "Focus on content marketing via financial literacy platforms (e.g., Moneycontrol, ET Money, Livemint) and targeted performance campaigns on professional networks like LinkedIn, emphasizing trust, security, and smart liquidity management.",
+      "Focus on LinkedIn and Google Search ads targeting high-intent keywords like 'Personal Loan vs LAMF' or 'Low interest liquidity,' specifically filtering for professional cohorts in IT, Engineering, and SMEs in Tier-1/2 cities.",
   },
   drop_off_analysis: {
     top_n_screens: 3,
@@ -205,98 +226,110 @@ export const sampleSimulationData: SimulationData = {
   },
   flow_assessment: {
     overall_verdict:
-      "The flow is fundamentally broken, failing to establish the basic trust required for users to engage with a high-consideration financial product, resulting in a 100% drop-off rate.",
+      "A strong logic-driven flow that converts analytical users via rational arbitrage, but suffers from significant early-stage friction due to opaque verification timelines and technical jargon.",
     what_works: [
       {
-        element: "Initial Value Proposition (Pre-funnel)",
-        why: "The core concept of 'Loan Against Mutual Funds' was compelling enough to attract the target audience and get them to start the flow, indicating a valid market need.",
+        element: "Interest Rate Anchor (10.5%)",
+        why: "Provides immediate value comparison against unsecured loans (13-18%), appealing to 'Rational Arbitrage' mindset.",
         for_whom:
-          "Financially prudent individuals seeking liquidity without liquidating assets.",
+          "Financial-savvy professionals and business owners",
+      },
+      {
+        element: "Sequential Process Roadmap",
+        why: "Reduces 'black box' anxiety by providing a predictable operational path.",
+        for_whom:
+          "Logical-analytical personas (Programmers/Technical Managers)",
+      },
+      {
+        element: "Asset-Backed Value Prop",
+        why: "Creates a sense of financial empowerment rather than debt-driven stress.",
+        for_whom:
+          "Tier 1/Tier 2 users with 5-7L portfolios",
       },
     ],
     what_needs_fixing: [
       {
-        element: "view_3 (PAN & Portfolio Access Screen)",
+        element: "Screen 1 - 24-hour verification",
         problem:
-          "Asking for highly sensitive information (PAN, full portfolio access) prematurely, before establishing any trust or demonstrating clear value, causing a massive 80% drop-off.",
-        for_whom: "All users, especially the cautious target persona.",
-        fix: "Re-architect the flow to 'give before you get'. Introduce a loan eligibility calculator upfront based on a user-estimated portfolio value. Only after a user sees and accepts a provisional offer should the flow proceed to KYC (PAN) and portfolio verification.",
+          "Massive drop-off (26%) due to the 'instant gratification' gap and lack of transparency on why it takes 24 hours.",
+        for_whom: "Time-sensitive Tier 1 users",
+        fix: "Implement a real-time 'Status Tracker' or offer a 'Preliminary Limit' instantly while verification runs in background.",
         priority: "P0",
       },
       {
-        element: "view_1 & Overall Branding",
+        element: "Technical Jargon ('Encrypted', 'Central Registries')",
         problem:
-          "Users do not recognize or trust the Blink Money brand. The absence of any familiar bank logo, NBFC name, or regulatory badge causes immediate suspicion.",
-        for_whom: "All users, particularly those with low digital literacy.",
-        fix: "Add prominent co-branding with a recognized financial partner (e.g., 'In partnership with ICICI Bank') and display RBI/SEBI registration numbers on the first screen.",
-        priority: "P0",
-      },
-      {
-        element: "OTP Verification Timer",
-        problem:
-          "The countdown timer creates unnecessary time pressure and anxiety, especially for older users or those less comfortable with app-switching.",
-        for_whom: "The Confused Novice archetype, low-literacy users.",
-        fix: "Replace the visible countdown with a static instruction and a delayed 'Resend OTP' button. Implement auto-read OTP where possible.",
+          "Causes security-related fear and cognitive dissonance rather than building trust.",
+        for_whom: "Non-technical business owners/Tier 2 users",
+        fix: "Replace with benefit-led copy: 'Bank-grade security' and 'Official Government Records'.",
         priority: "P1",
       },
       {
-        element: "Loan Offer Screen — Missing Details",
+        element: "Portfolio Data Access",
         problem:
-          "The loan offer screen shows a large eligible amount and interest rate, but completely omits EMI and tenure information, which is the primary decision-making factor for this audience.",
-        for_whom: "The Pragmatist archetype.",
-        fix: "Add interactive EMI and tenure sliders below the offer, with real-time monthly payment calculation.",
+          "Hesitation regarding broad access to the entire MF portfolio.",
+        for_whom: "Privacy-conscious high-net-worth individuals",
+        fix: "Explicitly state that data is 'Read-only' and used solely for limit calculation.",
         priority: "P1",
+      },
+      {
+        element: "OTP Resend Window",
+        problem:
+          "19-second window is too tight for standard SMS gateway latencies.",
+        for_whom: "All users, especially in Tier 2 areas with spotty network",
+        fix: "Extend window to 45-60 seconds and add a WhatsApp fallback.",
+        priority: "P2",
       },
     ],
     quick_wins: [
       {
-        change: "Add a partner bank logo and RBI registration number to the first screen header.",
+        change: "Update Screen 1 copy to explain 'Why the 24-hour wait' (e.g., Manual Security Audit).",
         expected_uplift:
-          "Establishes minimal credibility, potentially reducing view_1 drop-offs by 50% and improving progression to view_2.",
+          "+10-12% completion",
       },
       {
-        change: "Replace the OTP countdown timer with a static message and a 'Resend' button.",
+        change: "Change 'Encrypted' to 'Your data is locked for your eyes only'.",
         expected_uplift:
-          "Reduces anxiety for low-literacy users and improves OTP completion rate by an estimated 30%.",
+          "+3-5% trust score",
       },
     ],
     ux_health_scores: {
-      trust_journey: 1,
-      clarity_journey: 2,
-      value_communication: 2,
-      cognitive_load: "high",
-      emotional_flow: "curious → skeptical → anxious → abandon",
+      trust_journey: 7.1,
+      clarity_journey: 7.5,
+      value_communication: 7.2,
+      cognitive_load: "medium",
+      emotional_flow: "Skepticism → Validation → Calculated Commitment",
     },
     emotional_journey_map: {
       completers:
-        "Not applicable, as there were zero completers in the simulation.",
+        "Intrigued by rate → Cautious during data fetch → Reassured by roadmap → Confident in arbitrage.",
       drop_offs:
-        "Initial curiosity about the loan offering quickly soured into skepticism and anxiety upon encountering an unknown brand with no trust signals. The journey culminated in distrust and abandonment when faced with high-pressure tactics (timer) and premature requests for sensitive data.",
+        "Interested → Annoyed by 24h delay → Fearful of data privacy/jargon → Abandonment.",
     },
     cognitive_load_assessment: [
       {
+        screen_id: "1",
+        load_level: "high",
         reason:
-          "Users must evaluate an unknown brand and a high-stakes value proposition with insufficient trust signals, creating high evaluative load.",
+          "Unexpected 24-hour wait time forces a mental context switch away from the task.",
       },
       {
+        screen_id: "3",
+        load_level: "medium",
         reason:
-          "The user friction 'switching between this app and my sms app is confusing' indicates a high extraneous load due to poor UX mechanics for OTP verification.",
-      },
-      {
-        reason:
-          "The loan offer screen presents a large number without context (no EMI, tenure), forcing users to perform complex mental calculations.",
+          "Processing financial terms and interest rates requires analytical effort.",
       },
     ],
     information_architecture_issues: [
       {
-        issue: "Trust signals are absent from early screens where they are most needed.",
-        recommendation: "Move trust elements to screen 1.",
+        screen_id: "1",
+        issue: "Hidden friction: The 24-hour wait is presented as a dead-end rather than a milestone.",
+        recommendation: "Use a 'Step 1 of 4' progress bar to show the wait is part of a structured journey.",
       },
     ],
     micro_interaction_gaps: [
-      "Auto-reading OTPs to prevent app switching and reduce cognitive load.",
-      "Informative tooltips or expandable info-icons next to fields like 'PAN' explaining why it's needed, how it's secured, and that it's a regulatory requirement.",
-      "Real-time input validation and formatting for the PAN field.",
+      "Lack of 'Why we need this' tooltips on data access permissions",
+      "No visual confirmation (haptic/animation) when portfolio is successfully fetched",
     ],
     three_month_roadmap: {
       month_1_P0: [
