@@ -5,7 +5,8 @@ import type { FlowAnalysisData } from "@/types/flow-analysis";
 import type { SimulationData } from "@/types/simulation";
 import { OverviewTab } from "./OverviewTab";
 import { DeepDiveTab } from "./DeepDiveTab";
-import { DropOffFunnel } from "./DropOffFunnel";
+import { DropOffFunnel as LegacyDropOffFunnel } from "./DropOffFunnel";
+import { DropOffFunnel as SimDropOffFunnel } from "@/components/DropOffFunnel";
 import { SimulationOverview } from "@/components/SimulationOverview";
 import { BarChart3, Layers, TrendingDown, Activity } from "lucide-react";
 
@@ -36,7 +37,8 @@ export function FlowAnalysisView({ data, simulationData }: FlowAnalysisViewProps
     ...(simulationData
       ? [{ id: TAB_SIM_OVERVIEW as TabId, label: "Overview", icon: Activity }]
       : []),
-    { id: TAB_OVERVIEW as TabId, label: simulationData ? "Legacy Overview" : "Overview", icon: BarChart3 },
+    // Legacy Overview - Commented out
+    // { id: TAB_OVERVIEW as TabId, label: simulationData ? "Legacy Overview" : "Overview", icon: BarChart3 },
     { id: TAB_DROP_OFF as TabId, label: "Drop-Off Funnel", icon: TrendingDown },
     { id: TAB_DEEP_DIVE as TabId, label: "Deep Dive", icon: Layers },
   ];
@@ -92,12 +94,13 @@ export function FlowAnalysisView({ data, simulationData }: FlowAnalysisViewProps
             )}
           </div>
         )}
-        <div
+        {/* Legacy Overview - Commented out */}
+        {/* <div
           className={activeTab === TAB_OVERVIEW ? "animate-fadeIn opacity-100" : "hidden"}
           style={{ animationDuration: "200ms" }}
         >
           {activeTab === TAB_OVERVIEW && <OverviewTab data={data} />}
-        </div>
+        </div> */}
         <div
           className={activeTab === TAB_DROP_OFF ? "animate-fadeIn opacity-100" : "hidden"}
           style={{ animationDuration: "200ms" }}
@@ -105,7 +108,11 @@ export function FlowAnalysisView({ data, simulationData }: FlowAnalysisViewProps
           {activeTab === TAB_DROP_OFF && (
             <div className="py-0" style={{ backgroundColor: "#F5F4F2" }}>
               <div style={{ padding: "32px 24px 64px" }}>
-                <DropOffFunnel data={data} />
+                {simulationData ? (
+                  <SimDropOffFunnel data={simulationData} />
+                ) : (
+                  <LegacyDropOffFunnel data={data} />
+                )}
               </div>
             </div>
           )}

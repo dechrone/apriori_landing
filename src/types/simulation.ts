@@ -160,6 +160,53 @@ export interface CompletionAnalysis {
   llm_synthesis: string;
 }
 
+export interface ScreenMonologue {
+  screen_id: string;
+  view_name: string;
+  internal_monologue: string;
+  reasoning: string;
+  emotional_state: string;
+  friction_points: string[];
+  decision_outcome: string;
+  trust_score?: number;
+  clarity_score?: number;
+  value_score?: number;
+  time_seconds?: number;
+  selected_choice?: string;
+}
+
+export interface PersonaDetailDemographics {
+  first_language?: string;
+  age?: number;
+  occupation?: string;
+  district?: string;
+  behavioral_archetype?: string;
+  [key: string]: unknown;
+}
+
+export interface PersonaDetail {
+  persona_uuid: string;
+  demographics: PersonaDetailDemographics;
+  professional_background: string;
+  cultural_background: string;
+  outcome: string;
+  key_selections: Record<string, unknown>;
+  final_price_inr: number | null;
+  total_time_seconds: number;
+  overall_monologue: string;
+  screen_monologues: ScreenMonologue[];
+}
+
+export interface PlaybookClusterRecommendation {
+  [key: string]: unknown;
+}
+
+export interface PlaybookInsight {
+  playbook_theme: string;
+  cluster_recommendations: PlaybookClusterRecommendation[];
+  screen_summary: string;
+}
+
 export interface SimulationData {
   simulation_id: string;
   flow_id: string;
@@ -182,7 +229,8 @@ export interface SimulationData {
   flow_assessment: FlowAssessment;
   persona_journeys: PersonaJourney[];
   completion_analysis: CompletionAnalysis;
-  persona_details: unknown[];
+  persona_details: PersonaDetail[];
+  playbook_insights?: Record<string, PlaybookInsight>;
 }
 
 export interface SimulationOverviewProps {
