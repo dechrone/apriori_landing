@@ -2,23 +2,41 @@
 
 import { useState } from "react";
 import type { FlowAnalysisData } from "@/types/flow-analysis";
+import type { SimulationData } from "@/types/simulation";
 import { OverviewTab } from "./OverviewTab";
 import { DeepDiveTab } from "./DeepDiveTab";
 import { DropOffFunnel } from "./DropOffFunnel";
-import { BarChart3, Layers, TrendingDown } from "lucide-react";
+import { SimulationOverview } from "@/components/SimulationOverview";
+import { BarChart3, Layers, TrendingDown, Activity } from "lucide-react";
 
+const TAB_SIM_OVERVIEW = "sim-overview";
 const TAB_OVERVIEW = "overview";
 const TAB_DEEP_DIVE = "deep-dive";
 const TAB_DROP_OFF = "drop-off";
 const ACCENT = "#E8583A";
 
-type TabId = typeof TAB_OVERVIEW | typeof TAB_DEEP_DIVE | typeof TAB_DROP_OFF;
+type TabId =
+  | typeof TAB_SIM_OVERVIEW
+  | typeof TAB_OVERVIEW
+  | typeof TAB_DEEP_DIVE
+  | typeof TAB_DROP_OFF;
 
-export function FlowAnalysisView({ data }: { data: FlowAnalysisData }) {
-  const [activeTab, setActiveTab] = useState<TabId>(TAB_OVERVIEW);
+interface FlowAnalysisViewProps {
+  data: FlowAnalysisData;
+  /** Optional simulation insights data — when provided, adds a Simulation Overview tab */
+  simulationData?: SimulationData;
+}
 
-  const tabs = [
-    { id: TAB_OVERVIEW as TabId, label: "Overview", icon: BarChart3 },
+export function FlowAnalysisView({ data, simulationData }: FlowAnalysisViewProps) {
+  const [activeTab, setActiveTab] = useState<TabId>(
+    simulationData ? TAB_SIM_OVERVIEW : TAB_OVERVIEW
+  );
+
+  const tabs: { id: TabId; label: string; icon: typeof BarChart3 }[] = [
+    ...(simulationData
+      ? [{ id: TAB_SIM_OVERVIEW as TabId, label: "Overview", icon: Activity }]
+      : []),
+    { id: TAB_OVERVIEW as TabId, label: simulationData ? "Legacy Overview" : "Overview", icon: BarChart3 },
     { id: TAB_DROP_OFF as TabId, label: "Drop-Off Funnel", icon: TrendingDown },
     { id: TAB_DEEP_DIVE as TabId, label: "Deep Dive", icon: Layers },
   ];
@@ -63,6 +81,17 @@ export function FlowAnalysisView({ data }: { data: FlowAnalysisData }) {
 
       {/* ── Tab Content ── */}
       <main>
+        {/* Simulation Overview tab */}
+        {simulationData && (
+          <div
+            className={activeTab === TAB_SIM_OVERVIEW ? "animate-fadeIn opacity-100" : "hidden"}
+            style={{ animationDuration: "200ms" }}
+          >
+            {activeTab === TAB_SIM_OVERVIEW && (
+              <SimulationOverview simulationData={simulationData} />
+            )}
+          </div>
+        )}
         <div
           className={activeTab === TAB_OVERVIEW ? "animate-fadeIn opacity-100" : "hidden"}
           style={{ animationDuration: "200ms" }}

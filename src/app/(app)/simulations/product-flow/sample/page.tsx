@@ -5,6 +5,7 @@ import { TopBar } from "@/components/app/TopBar";
 import { useAppShell } from "@/components/app/AppShell";
 import { FlowAnalysisView } from "@/components/flow-analysis/FlowAnalysisView";
 import { flowAnalysisDummyData } from "@/data/flow-analysis-dummy";
+import { sampleSimulationData } from "@/data/sample-simulation-data";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -30,7 +31,7 @@ export default function ProductFlowSamplePage() {
         onMenuClick={toggleMobileMenu}
       />
       <div className={`${playfair.variable} ${dmSans.variable}`}>
-        <FlowAnalysisView data={flowAnalysisDummyData} />
+        <FlowAnalysisView data={flowAnalysisDummyData} simulationData={sampleSimulationData} />
       </div>
     </>
   );

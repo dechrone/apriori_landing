@@ -804,6 +804,77 @@ body:has(.dashboard-theme) {
   }
 }
 
+/* ===== SimulationOverview — Global Styles ===== */
+
+/* Card hover effect */
+.sim-card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.sim-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Friction card hover — border opacity */
+.sim-friction-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-left-color 0.2s ease;
+}
+.sim-friction-card:hover {
+  transform: scale(1.02);
+  border-left-color: rgba(239, 68, 68, 1) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Emotion node responsive sizing */
+.sim-emotion-node {
+  transition: transform 0.2s ease;
+}
+
+/* Skeleton shimmer animation */
+@keyframes sim-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.sim-skeleton-shimmer {
+  animation: sim-shimmer 1.5s ease-in-out infinite;
+}
+
+/* ── Responsive breakpoints for SimulationOverview ── */
+
+/* Tablet: < 1024px */
+@media (max-width: 1024px) {
+  .sim-dropoff-grid,
+  .sim-power-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Tablet: < 768px */
+@media (max-width: 768px) {
+  .sim-hero-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .sim-friction-grid,
+  .sim-segment-grid,
+  .sim-quickwins-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .sim-screen-bars {
+    flex-direction: column;
+  }
+}
+
+/* Mobile: < 480px */
+@media (max-width: 480px) {
+  .sim-hero-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .sim-emotion-node {
+    width: 20px !important;
+    height: 20px !important;
+  }
+}
+
 /* Shake animation for validation error */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }

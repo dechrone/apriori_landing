@@ -14,6 +14,7 @@ import type { SimulationDoc } from "@/lib/firestore";
 import type { ProductFlowSimulationResult } from "@/types/simulation-result";
 import { FlowAnalysisView } from "@/components/flow-analysis/FlowAnalysisView";
 import { flowAnalysisDummyData } from "@/data/flow-analysis-dummy";
+import { sampleSimulationData } from "@/data/sample-simulation-data";
 import { ArrowLeft } from "lucide-react";
 
 const playfair = Playfair_Display({
@@ -120,7 +121,7 @@ export default function SimulationDetailsPage() {
           }
         />
         <div className={`${playfair.variable} ${dmSans.variable}`}>
-          <FlowAnalysisView data={flowData} />
+          <FlowAnalysisView data={flowData} simulationData={sampleSimulationData} />
         </div>
       </>
     );

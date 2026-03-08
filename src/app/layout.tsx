@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Geist_Mono } from "next/font/google";
+import { Inter, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { AuditModalProvider } from "@/contexts/AuditModalContext";
 import { ConditionalSiteHeader } from "@/components/ConditionalSiteHeader";
@@ -18,6 +18,13 @@ const inter = Inter({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  variable: "--font-plus-jakarta",
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -67,7 +74,7 @@ export default function RootLayout({
     >
       <html lang="en" className="dark">
         <body
-          className={`${inter.variable} ${geistMono.variable} antialiased bg-deep text-text-primary`}
+          className={`${inter.variable} ${geistMono.variable} ${plusJakartaSans.variable} antialiased bg-deep text-text-primary`}
         >
           <HideClerkKeylessIndicator />
           <AuditModalProvider>
