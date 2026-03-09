@@ -4,9 +4,11 @@ import { TopBar } from '@/components/app/TopBar';
 import { Beaker, Target, GitCompare, Users, Package, ChevronRight, Check } from 'lucide-react';
 import { useAppShell } from '@/components/app/AppShell';
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function DashboardPage() {
   const { toggleMobileMenu } = useAppShell();
+  const [showComingSoonModal, setShowComingSoonModal] = useState(false);
 
   return (
     <>
@@ -76,7 +78,7 @@ export default function DashboardPage() {
                 icon={<Target className="w-6 h-6 text-amber-600" />}
                 title="Run Ad Portfolio Simulation"
                 description="Forecast ad performance and creative fatigue"
-                href="/simulations/new/ad-portfolio"
+                onClick={() => setShowComingSoonModal(true)}
               />
               <QuickActionCard
                 icon={<GitCompare className="w-6 h-6 text-amber-600" />}
@@ -156,6 +158,37 @@ export default function DashboardPage() {
           </section>
         </div>
       </div>
+
+      {/* Coming Soon Modal */}
+      {showComingSoonModal && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowComingSoonModal(false)}
+        >
+          <div
+            className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center">
+              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">🚪</span>
+              </div>
+              <h3 className="text-2xl font-bold text-[#1A1A1A] mb-2">
+                This door opens soon
+              </h3>
+              <p className="text-[#6B7280] mb-6">
+                Ad Portfolio Simulation is coming soon. Stay tuned for updates!
+              </p>
+              <button
+                onClick={() => setShowComingSoonModal(false)}
+                className="w-full px-6 py-3 bg-amber-600 text-white font-semibold rounded-xl hover:bg-amber-700 transition-colors"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -236,34 +269,47 @@ interface QuickActionCardProps {
   icon: React.ReactNode;
   title: string;
   description: string;
-  href: string;
+  href?: string;
+  onClick?: () => void;
 }
 
-function QuickActionCard({ icon, title, description, href }: QuickActionCardProps) {
-  return (
-    <Link href={href} className="group">
-      <div
-        className="bg-white rounded-xl p-6 hover:shadow-md transition-all cursor-pointer"
-        style={{ border: '1px solid #E8E4DE' }}
-      >
-        <div className="flex items-start gap-4">
-          {/* Icon container — all cards use amber */}
-          <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-100 transition-colors">
-            {icon}
-          </div>
+function QuickActionCard({ icon, title, description, href, onClick }: QuickActionCardProps) {
+  const content = (
+    <div
+      className="bg-white rounded-xl p-6 hover:shadow-md transition-all cursor-pointer"
+      style={{ border: '1px solid #E8E4DE' }}
+    >
+      <div className="flex items-start gap-4">
+        {/* Icon container — all cards use amber */}
+        <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-100 transition-colors">
+          {icon}
+        </div>
 
-          {/* Text — right of icon */}
-          <div className="flex-1">
-            <h3
-              className="font-semibold text-[#1A1A1A] mb-1"
-              style={{ fontSize: '15px' }}
-            >
-              {title}
-            </h3>
-            <p className="text-sm text-[#4B5563]">{description}</p>
-          </div>
+        {/* Text — right of icon */}
+        <div className="flex-1">
+          <h3
+            className="font-semibold text-[#1A1A1A] mb-1"
+            style={{ fontSize: '15px' }}
+          >
+            {title}
+          </h3>
+          <p className="text-sm text-[#4B5563]">{description}</p>
         </div>
       </div>
+    </div>
+  );
+
+  if (onClick) {
+    return (
+      <div onClick={onClick} className="group">
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <Link href={href || '#'} className="group">
+      {content}
     </Link>
   );
 }

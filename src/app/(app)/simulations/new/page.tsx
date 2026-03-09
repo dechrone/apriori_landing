@@ -12,9 +12,14 @@ import { useRouter } from 'next/navigation';
 export default function NewSimulationPage() {
   const { toggleMobileMenu } = useAppShell();
   const [isOpen, setIsOpen] = useState(true);
+  const [showComingSoonModal, setShowComingSoonModal] = useState(false);
   const router = useRouter();
 
   const handleSelectType = (type: string) => {
+    if (type === 'ad-portfolio') {
+      setShowComingSoonModal(true);
+      return;
+    }
     router.push(`/simulations/new/${type}`);
   };
 
@@ -56,6 +61,37 @@ export default function NewSimulationPage() {
         </ModalBody>
       </Modal>
       </div>
+
+      {/* Coming Soon Modal */}
+      {showComingSoonModal && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4"
+          onClick={() => setShowComingSoonModal(false)}
+        >
+          <div
+            className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center">
+              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">🚪</span>
+              </div>
+              <h3 className="text-2xl font-bold text-[#1A1A1A] mb-2">
+                This door opens soon
+              </h3>
+              <p className="text-[#6B7280] mb-6">
+                Ad Portfolio Simulation is coming soon. Stay tuned for updates!
+              </p>
+              <button
+                onClick={() => setShowComingSoonModal(false)}
+                className="w-full px-6 py-3 bg-amber-600 text-white font-semibold rounded-xl hover:bg-amber-700 transition-colors"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
