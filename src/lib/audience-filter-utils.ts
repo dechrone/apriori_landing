@@ -97,12 +97,12 @@ export function getFilterTags(filters: AdvancedFilters | null): { category: stri
   if (filters.demographics) {
     const d = filters.demographics;
     if (d.ageMin !== undefined && d.ageMax !== undefined) {
-      tags.push({ category: "Demographics", label: `Age ${d.ageMin}–${d.ageMax}`, key: "demo-age" });
+      tags.push({ category: "Audience Attributes", label: `Age ${d.ageMin}–${d.ageMax}`, key: "demo-age" });
     }
-    if (d.gender) tags.push({ category: "Demographics", label: d.gender, key: "demo-gender" });
-    d.education?.forEach((e) => tags.push({ category: "Demographics", label: e, key: `demo-edu-${e}` }));
-    d.occupation?.forEach((o) => tags.push({ category: "Demographics", label: o, key: `demo-occ-${o}` }));
-    d.maritalStatus?.forEach((m) => tags.push({ category: "Demographics", label: m, key: `demo-mar-${m}` }));
+    if (d.gender) tags.push({ category: "Audience Attributes", label: d.gender, key: "demo-gender" });
+    d.education?.forEach((e) => tags.push({ category: "Audience Attributes", label: e, key: `demo-edu-${e}` }));
+    d.occupation?.forEach((o) => tags.push({ category: "Audience Attributes", label: o, key: `demo-occ-${o}` }));
+    d.maritalStatus?.forEach((m) => tags.push({ category: "Audience Attributes", label: m, key: `demo-mar-${m}` }));
   }
 
   if (filters.location) {

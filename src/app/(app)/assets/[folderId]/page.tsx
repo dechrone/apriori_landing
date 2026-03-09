@@ -513,13 +513,7 @@ export default function FolderDetailPage() {
             )}
 
             {/* ═══ PRODUCT FLOW — NEW SORTABLE LIST ═══ */}
-            {isProductFlow && assets.length > 0 && (() => {
-              const incompleteCount = assets.filter(
-                (a) => !(a.productFlowMetadata?.stepName?.trim())
-              ).length;
-              const allComplete = incompleteCount === 0;
-
-              return (
+            {isProductFlow && assets.length > 0 && (
                 <>
                   {/* ── Instructional header ── */}
                   <div className="mb-5">
@@ -531,28 +525,6 @@ export default function FolderDetailPage() {
                       Optionally name each screen to help the simulator understand the context.
                     </p>
                   </div>
-
-                  {/* ── Progress banner ── */}
-                  {allComplete ? (
-                    <div className="flex items-center gap-[10px] bg-[#D1FAE5] border border-[#A7F3D0] rounded-[10px] px-4 py-3 mb-4 max-w-[780px]">
-                      <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
-                      <span className="text-[14px] font-semibold text-[#065F46]">
-                        All screens named — this folder is ready for simulation
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="flex items-start gap-[10px] bg-[#EFF6FF] border border-[#BFDBFE] rounded-[10px] px-4 py-3 mb-4 max-w-[780px]">
-                      <Info className="w-4 h-4 text-[#3B82F6] shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-[13px] font-medium text-[#1D4ED8]">
-                          {incompleteCount} screen{incompleteCount !== 1 ? 's' : ''} ha{incompleteCount === 1 ? 's' : 've'}n&apos;t been named yet
-                        </p>
-                        <p className="text-[12px] text-[#3B82F6] mt-[1px]">
-                          Naming screens is optional but helps the simulator.
-                        </p>
-                      </div>
-                    </div>
-                  )}
 
                   {/* ── Row container: constrained width ── */}
                   <div className="max-w-[780px]">
@@ -598,8 +570,7 @@ export default function FolderDetailPage() {
                     </DndContext>
                   </div>
                 </>
-              );
-            })()}
+            )}
 
             {/* ═══ AD CREATIVE — keep old card grid ═══ */}
             {!isProductFlow && assets.length > 0 && (
@@ -707,24 +678,12 @@ export default function FolderDetailPage() {
             <div className="max-w-[1600px] mx-auto flex items-center justify-between">
               {/* Left: readiness + auto-save status */}
               <div className="flex items-center gap-4">
-                {isProductFlow && (() => {
-                  const incomplete = assets.filter(
-                    (a) => !(a.productFlowMetadata?.stepName?.trim())
-                  ).length;
-                  if (incomplete > 0) {
-                    return (
-                      <span className="inline-flex items-center gap-1.5 text-[13px] text-[#6B7280]">
-                        {incomplete} screen{incomplete !== 1 ? 's' : ''} unnamed
-                      </span>
-                    );
-                  }
-                  return (
-                    <span className="inline-flex items-center gap-1.5 text-[13px] text-[#10B981]">
-                      <CheckCircle2 className="w-4 h-4" />
-                      Ready for simulation
-                    </span>
-                  );
-                })()}
+                {isProductFlow && (
+                  <span className="inline-flex items-center gap-1.5 text-[13px] text-[#10B981]">
+                    <CheckCircle2 className="w-4 h-4" />
+                    {assets.length} screen{assets.length !== 1 ? 's' : ''} ready
+                  </span>
+                )}
 
                 {/* Auto-save indicator */}
                 {autoSaveStatus === 'saving' && (

@@ -44,12 +44,10 @@ const CATEGORIES: {
   title: string;
   subtitle: string;
 }[] = [
-  { key: "demographics", icon: "👤", title: "Demographics", subtitle: "Age, gender, education" },
+  { key: "demographics", icon: "👤", title: "Audience Attributes", subtitle: "Age, gender, education" },
   { key: "location", icon: "📍", title: "Location", subtitle: "City tier, state, specific cities" },
   { key: "income", icon: "💰", title: "Income & Spending", subtitle: "Monthly/annual income, household" },
-  { key: "behaviour", icon: "🛒", title: "Behaviour", subtitle: "Purchase frequency, churn risk, LTV" },
-  { key: "psychographics", icon: "🧠", title: "Psychographics", subtitle: "Loyalty, price sensitivity" },
-  { key: "digital", icon: "📱", title: "Digital Habits", subtitle: "Device, payment apps, platforms" },
+  { key: "digital", icon: "📱", title: "Digital Habits", subtitle: "Primary device" },
 ];
 
 /* ──── Props ──── */
@@ -279,7 +277,7 @@ export function AudienceFiltersStep({
   const getCategorySummary = (cat: FilterCategory): string => {
     const tags = filterTags.filter((t) => {
       const catMap: Record<string, FilterCategory> = {
-        Demographics: "demographics",
+        "Audience Attributes": "demographics",
         Location: "location",
         "Income & Spending": "income",
         Behaviour: "behaviour",

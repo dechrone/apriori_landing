@@ -87,55 +87,6 @@ export function DigitalForm({ value, onChange }: Props) {
           ))}
         </div>
       </div>
-
-      {/* Payment apps */}
-      <div>
-        <label className="block text-[13px] font-medium text-[#374151] mb-1.5">Payment apps</label>
-        <div className="grid grid-cols-2 gap-2">
-          {PAYMENT_APPS.map((app) => (
-            <CheckItem
-              key={app}
-              label={app}
-              checked={value.paymentApps?.includes(app) ?? false}
-              onChange={() => toggleArray("paymentApps", app)}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* E-commerce platforms */}
-      <div>
-        <label className="block text-[13px] font-medium text-[#374151] mb-1.5">E-commerce platforms</label>
-        <div className="grid grid-cols-2 gap-2">
-          {ECOMMERCE_PLATFORMS.map((plat) => (
-            <CheckItem
-              key={plat}
-              label={plat}
-              checked={value.ecommercePlatforms?.includes(plat) ?? false}
-              onChange={() => toggleArray("ecommercePlatforms", plat)}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Internet connection */}
-      <div>
-        <label className="block text-[13px] font-medium text-[#374151] mb-1.5">Internet connection</label>
-        <div className="flex flex-wrap gap-2">
-          {INTERNET_OPTIONS.map((opt) => {
-            const isAny = opt === "Any";
-            const selected = isAny ? !value.internetConnection : value.internetConnection === opt;
-            return (
-              <Chip
-                key={opt}
-                label={opt}
-                selected={selected}
-                onClick={() => update({ internetConnection: isAny ? undefined : opt })}
-              />
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 }

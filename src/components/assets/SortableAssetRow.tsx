@@ -195,8 +195,6 @@ export function SortableAssetRow({
     });
   };
 
-  const isIncomplete = !hasName;
-
   return (
     <div
       ref={setNodeRef}
@@ -205,7 +203,7 @@ export function SortableAssetRow({
         group relative
         ${isDragging ? 'shadow-[0_8px_24px_rgba(0,0,0,0.12)]' : ''}
         ${deleteConfirm ? 'bg-[#FEF2F2]' : 'bg-white'}
-        ${isIncomplete && !deleteConfirm ? 'border-l-2 border-l-[#D1D5DB] border-dashed rounded-r-[10px] rounded-l-none' : 'rounded-[10px]'}
+        rounded-[10px]
         border border-[#E8E4DE]
         ${isDragging ? 'border-[#F59E0B]' : 'hover:border-[#D1D5DB] hover:shadow-[0_1px_4px_rgba(0,0,0,0.06)]'}
         transition-all duration-300
@@ -305,18 +303,18 @@ export function SortableAssetRow({
               <p className="text-[11px] text-[#9CA3AF] mt-[2px] truncate">{asset.name}</p>
             </div>
           ) : !hasName ? (
-            /* Empty state — amber-tinted input */
+            /* Empty state — standard input */
             <div>
               <input
                 ref={nameInputRef}
                 type="text"
-                placeholder="Name this screen..."
+                placeholder="Name this screen (optional)..."
                 value={nameValue}
                 onChange={(e) => setNameValue(e.target.value)}
                 onFocus={() => setIsEditing(true)}
                 onBlur={saveName}
                 onKeyDown={handleNameKeyDown}
-                className="w-full max-w-[320px] text-[13px] text-[#1A1A1A] italic placeholder:text-[#B45309] placeholder:italic border-[1.5px] border-[#FDE68A] rounded-[7px] px-[10px] py-[7px] bg-[#FFFBEB] focus:bg-white focus:border-[#F59E0B] focus:shadow-[0_0_0_3px_rgba(245,158,11,0.12)] focus:outline-none transition-all"
+                className="w-full max-w-[320px] text-[13px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[7px] px-[10px] py-[7px] bg-white focus:border-[#F59E0B] focus:shadow-[0_0_0_3px_rgba(245,158,11,0.12)] focus:outline-none transition-all"
               />
               <p className="text-[11px] text-[#9CA3AF] mt-[2px] truncate">{asset.name}</p>
             </div>
