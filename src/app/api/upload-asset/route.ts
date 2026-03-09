@@ -48,6 +48,12 @@ export async function POST(request: NextRequest) {
   if (!file || !(file instanceof File)) {
     return NextResponse.json({ error: "Missing or invalid file." }, { status: 400 });
   }
+  if (!file.type.startsWith("image/")) {
+    return NextResponse.json(
+      { error: "Only image files are allowed (PNG, JPG, GIF, WebP, SVG)." },
+      { status: 400 }
+    );
+  }
   if (!clerkId || !folderId) {
     return NextResponse.json({ error: "Missing clerkId or folderId." }, { status: 400 });
   }

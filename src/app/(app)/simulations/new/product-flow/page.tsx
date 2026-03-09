@@ -35,11 +35,6 @@ const METRICS = [
   { value: 'retention-30d', label: '30-day retention', desc: '% of users still active 30 days after first visit' },
 ];
 
-const PERSONA_DEPTHS: { value: 'low' | 'medium' | 'high'; label: string; sublabel: string }[] = [
-  { value: 'low', label: 'Low', sublabel: '~3 personas  ·  Faster' },
-  { value: 'medium', label: 'Medium', sublabel: '~6 personas  ·  Balanced' },
-  { value: 'high', label: 'High', sublabel: '~12 personas · Deeper' },
-];
 
 export default function ProductFlowSimulationPage() {
   const { toggleMobileMenu } = useAppShell();
@@ -78,17 +73,18 @@ export default function ProductFlowSimulationPage() {
 
   const productFlowFolders = allFolders.filter((f) => f.assetType === 'product-flow');
   const productFlowReadyFolders = productFlowFolders.filter((f) => f.status === 'ready');
+  const eligibleFolders = productFlowReadyFolders.filter((f) => f.assetCount > 0);
 
   const [formData, setFormData] = useState({
     name: '',
     audience: '',
     personaDepth: 'medium' as 'low' | 'medium' | 'high',
-    optimizeMetric: 'checkout-conversion',
+    optimizeMetric: 'activation',
     selectedFolderIds: [] as string[],
   });
 
   const canProceedStep1 = formData.name.trim().length >= 3 && formData.audience !== '';
-  const canProceedStep2 = formData.selectedFolderIds.length > 0;
+  const canProceedStep2 = formData.selectedFolderIds.length > 0 && eligibleFolders.length > 0;
   const canProceedStep3 = formData.optimizeMetric !== '';
 
   const handleDisabledClick = () => {
@@ -97,7 +93,8 @@ export default function ProductFlowSimulationPage() {
       if (formData.name.trim().length < 3) msg = 'Please enter a simulation name (at least 3 characters).';
       else if (!formData.audience) msg = 'Please select an audience to continue.';
     } else if (currentStep === 2) {
-      msg = 'Please select at least one folder to continue.';
+      if (eligibleFolders.length === 0) msg = 'No eligible folders with assets found. Please upload assets first.';
+      else msg = 'Please select a folder to continue.';
     } else {
       msg = 'Please select a primary metric to continue.';
     }
@@ -126,7 +123,7 @@ export default function ProductFlowSimulationPage() {
       const res = await triggerProductFlowSimulation(clerkId, {
         name: formData.name,
         audience: formData.audience,
-        personaDepth: formData.personaDepth,
+        personaDepth: 'medium',
         optimizeMetric: formData.optimizeMetric,
         selectedFolderIds: formData.selectedFolderIds,
       });
@@ -396,27 +393,30 @@ interface AssetSelectionStepProps {
 function AssetSelectionStep({ formData, setFormData, allFolders, readyFolders }: AssetSelectionStepProps) {
   const [tooltipId, setTooltipId] = useState<string | null>(null);
 
-  const handleToggle = (id: string) => {
-    const isReady = readyFolders.some((f) => f.id === id);
+  // Only show folders that have at least one asset
+  const foldersWithAssets = allFolders.filter((f) => f.assetCount > 0);
+  const readyFoldersWithAssets = readyFolders.filter((f) => f.assetCount > 0);
+
+  const handleSelect = (id: string) => {
+    const isReady = readyFoldersWithAssets.some((f) => f.id === id);
     if (!isReady) return;
 
-    const exists = formData.selectedFolderIds.includes(id);
+    // Single-select: toggle off if already selected, otherwise select only this one
+    const isAlreadySelected = formData.selectedFolderIds.includes(id);
     setFormData((prev) => ({
       ...prev,
-      selectedFolderIds: exists
-        ? prev.selectedFolderIds.filter((fid) => fid !== id)
-        : [...prev.selectedFolderIds, id],
+      selectedFolderIds: isAlreadySelected ? [] : [id],
     }));
   };
 
-  const hasAnyFolders = allFolders.length > 0;
+  const hasAnyFolders = foldersWithAssets.length > 0;
 
   return (
     <div className="bg-white border border-[#E8E4DE] rounded-[14px] p-7 sm:px-8">
-      <h2 className="text-[17px] font-bold text-[#1A1A1A] mb-1.5">Select asset folders</h2>
+      <h2 className="text-[17px] font-bold text-[#1A1A1A] mb-1.5">Select asset folder</h2>
       <p className="text-[14px] text-[#4B5563] leading-[1.6] mb-5">
-        Choose which completed product flow folders to include in this simulation.
-        Only folders marked as ready with product flow assets are shown here.
+        Choose a completed product flow folder to include in this simulation.
+        Only folders with assets that are marked as ready are shown here.
       </p>
 
       {!hasAnyFolders ? (
@@ -437,7 +437,7 @@ function AssetSelectionStep({ formData, setFormData, allFolders, readyFolders }:
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {allFolders.map((folder) => {
+          {foldersWithAssets.map((folder) => {
             const isReady = folder.status === 'ready';
             const isSelected = formData.selectedFolderIds.includes(folder.id);
 
@@ -445,7 +445,7 @@ function AssetSelectionStep({ formData, setFormData, allFolders, readyFolders }:
               <div key={folder.id} className="relative">
                 <button
                   type="button"
-                  onClick={() => handleToggle(folder.id)}
+                  onClick={() => handleSelect(folder.id)}
                   onMouseEnter={() => !isReady && setTooltipId(folder.id)}
                   onMouseLeave={() => setTooltipId(null)}
                   className={`
@@ -524,58 +524,13 @@ interface ParametersStepProps {
 }
 
 function ParametersStep({ formData, setFormData, audienceName, selectedFolders, onBack, onNext, running, canProceed, validationError, shake }: ParametersStepProps) {
-  const depthLabels: Record<string, string> = {
-    low: '~3 personas (Low)',
-    medium: '~6 personas (Medium)',
-    high: '~12 personas (High)',
-  };
-
   const folderSummary = selectedFolders.length > 0
     ? selectedFolders.map((f) => `${f.name} · ${f.assetCount} screens`).join(', ')
     : '—';
 
   return (
     <div className="bg-white border border-[#E8E4DE] rounded-[14px] p-6 sm:px-7">
-      {/* Section 1: Persona Variation Depth */}
-      <div>
-        <label className="block text-[14px] font-semibold text-[#1A1A1A] mb-0.5">
-          Persona variation depth
-        </label>
-        <p className="text-[13px] text-[#6B7280] mb-3">
-          How many distinct personas the simulator will generate from your audience.
-        </p>
-        <div className="grid grid-cols-3 border-[1.5px] border-[#E5E7EB] rounded-[10px] overflow-hidden bg-[#F9FAFB]">
-          {PERSONA_DEPTHS.map((depth, idx) => {
-            const isSelected = formData.personaDepth === depth.value;
-            return (
-              <button
-                key={depth.value}
-                type="button"
-                onClick={() => setFormData((prev) => ({ ...prev, personaDepth: depth.value }))}
-                className={`
-                  relative py-[11px] px-2 text-center transition-all duration-150 cursor-pointer
-                  ${idx < PERSONA_DEPTHS.length - 1 ? 'border-r border-[#E5E7EB]' : ''}
-                  ${isSelected
-                    ? 'bg-white border-2 border-[#F59E0B] rounded-lg shadow-[0_1px_4px_rgba(245,158,11,0.2)] z-10'
-                    : 'bg-transparent'
-                  }
-                `}
-              >
-                <span className={`block text-[14px] font-semibold ${isSelected ? 'text-[#92400E]' : 'text-[#6B7280]'}`}>
-                  {depth.label}
-                </span>
-                <span className={`block text-[11px] mt-0.5 ${isSelected ? 'text-[#D97706]' : 'text-[#9CA3AF]'}`}>
-                  {depth.sublabel}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="border-t border-[#F3F4F6] my-4" />
-
-      {/* Section 2: Primary Metric — 2-column compact grid */}
+      {/* Section: Primary Metric — 2-column compact grid */}
       <div>
         <label className="block text-[14px] font-semibold text-[#1A1A1A] mb-0.5">
           Primary metric to optimise for <span className="text-[#EF4444]">*</span>
@@ -587,28 +542,43 @@ function ParametersStep({ formData, setFormData, audienceName, selectedFolders, 
           {METRICS.map((m, idx) => {
             const isSelected = formData.optimizeMetric === m.value;
             const isLast = idx === METRICS.length - 1;
+            const isComingSoon = m.value !== 'activation';
             return (
               <button
                 key={m.value}
                 type="button"
-                onClick={() => setFormData((prev) => ({ ...prev, optimizeMetric: m.value }))}
+                onClick={() => {
+                  if (!isComingSoon) {
+                    setFormData((prev) => ({ ...prev, optimizeMetric: m.value }));
+                  }
+                }}
                 className={`
-                  flex items-center gap-2.5 border-[1.5px] rounded-[10px] px-3.5 py-3 transition-all duration-150 cursor-pointer text-left
+                  flex items-center gap-2.5 border-[1.5px] rounded-[10px] px-3.5 py-3 transition-all duration-150 text-left
                   ${isLast ? 'col-span-2' : ''}
-                  ${isSelected
-                    ? 'border-[#F59E0B] bg-[#FFFBEB]'
-                    : 'border-[#E5E7EB] bg-white hover:border-[#F59E0B] hover:bg-[#FFFBEB]'
+                  ${isComingSoon
+                    ? 'border-[#E5E7EB] bg-[#F9FAFB] opacity-50 cursor-not-allowed'
+                    : isSelected
+                      ? 'border-[#F59E0B] bg-[#FFFBEB] cursor-pointer'
+                      : 'border-[#E5E7EB] bg-white hover:border-[#F59E0B] hover:bg-[#FFFBEB] cursor-pointer'
                   }
                 `}
+                disabled={isComingSoon}
               >
                 <div
                   className={`w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all
-                    ${isSelected ? 'border-[#F59E0B] bg-[#F59E0B]' : 'border-[#D1D5DB] bg-white'}`}
+                    ${isComingSoon ? 'border-[#D1D5DB] bg-[#F3F4F6]' : isSelected ? 'border-[#F59E0B] bg-[#F59E0B]' : 'border-[#D1D5DB] bg-white'}`}
                 >
-                  {isSelected && <div className="w-[7px] h-[7px] rounded-full bg-white" />}
+                  {isSelected && !isComingSoon && <div className="w-[7px] h-[7px] rounded-full bg-white" />}
                 </div>
-                <div className="min-w-0">
-                  <p className="text-[13px] font-semibold text-[#1A1A1A] leading-tight">{m.label}</p>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className={`text-[13px] font-semibold leading-tight ${isComingSoon ? 'text-[#9CA3AF]' : 'text-[#1A1A1A]'}`}>{m.label}</p>
+                    {isComingSoon && (
+                      <span className="text-[10px] font-semibold text-[#9CA3AF] bg-[#F3F4F6] rounded-full px-2 py-0.5 whitespace-nowrap">
+                        Coming soon
+                      </span>
+                    )}
+                  </div>
                   <p className="text-[11px] text-[#9CA3AF] mt-px leading-tight">{m.desc}</p>
                 </div>
               </button>
@@ -629,7 +599,6 @@ function ParametersStep({ formData, setFormData, audienceName, selectedFolders, 
             { label: 'Name', value: formData.name.trim() || '—' },
             { label: 'Audience', value: audienceName || '—' },
             { label: 'Assets', value: folderSummary },
-            { label: 'Personas', value: depthLabels[formData.personaDepth] },
           ].map((row, idx, arr) => (
             <div
               key={row.label}

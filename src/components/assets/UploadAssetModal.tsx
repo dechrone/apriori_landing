@@ -35,7 +35,16 @@ export function UploadAssetModal({
     setDragOver(false);
     const files = e.dataTransfer.files;
     if (files && files.length > 0) {
-      setSelectedFiles(files);
+      // Filter to only image files
+      const dt = new DataTransfer();
+      Array.from(files).forEach((file) => {
+        if (file.type.startsWith('image/')) {
+          dt.items.add(file);
+        }
+      });
+      if (dt.files.length > 0) {
+        setSelectedFiles(dt.files);
+      }
     }
   };
 
@@ -112,7 +121,7 @@ export function UploadAssetModal({
                 ref={fileInputRef}
                 type="file"
                 multiple
-                accept="image/*,.png,.jpg,.jpeg,.gif,.webp,.pdf"
+                accept="image/*,.png,.jpg,.jpeg,.gif,.webp,.svg"
                 onChange={handleFileChange}
                 className="hidden"
               />
@@ -121,7 +130,7 @@ export function UploadAssetModal({
                 Drag & drop or click to browse
               </p>
               <p className="text-[12px] text-[#9CA3AF]">
-                Images, PDFs. Max 10MB per file.
+                Images only (PNG, JPG, GIF, WebP, SVG). Max 10MB per file.
               </p>
               {selectedFiles && selectedFiles.length > 0 && (
                 <p className="text-[13px] text-[#F59E0B] mt-3 font-medium">

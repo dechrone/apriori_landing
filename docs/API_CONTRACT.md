@@ -449,7 +449,7 @@ interface Asset {
 **Upload assets**
 
 - **Request:** `multipart/form-data` with `folderId` and `files[]` (or equivalent).
-- **Accepted types:** images, PDF (e.g. `image/*,.png,.jpg,.jpeg,.gif,.webp,.pdf`).
+- **Accepted types:** images only (e.g. `image/*` — `.png,.jpg,.jpeg,.gif,.webp,.svg`).
 - **Constraint:** e.g. max 10MB per file (document in API spec).
 
 **Update asset (metadata only)**
