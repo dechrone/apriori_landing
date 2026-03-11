@@ -1,13 +1,38 @@
 "use client";
 
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { TopBar } from '@/components/app/TopBar';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { useAppShell } from '@/components/app/AppShell';
+import { useToast } from '@/components/ui/Toast';
+import FigmaConnectionCard from '@/components/figma/FigmaConnectionCard';
 
 export default function SettingsPage() {
   const { toggleMobileMenu } = useAppShell();
+  const { showToast } = useToast();
+  const searchParams = useSearchParams();
+  const figmaStatus = searchParams.get('figma');
+
+  // After OAuth redirect, we need to:
+  // 1. Show the toast
+  // 2. Tell the card to delay its fetch (so the DB write is visible)
+  // 3. Force a remount so it re-fetches fresh
+  const isPostOAuth = figmaStatus === 'connected';
+  const [cardKey, setCardKey] = useState(0);
+
+  useEffect(() => {
+    if (figmaStatus === 'connected') {
+      showToast('success', 'Figma connected successfully!');
+      // Force remount after 1s so the card re-fetches with a delay
+      setTimeout(() => setCardKey((k) => k + 1), 1000);
+    }
+    if (figmaStatus === 'denied')    showToast('warning', 'Figma connection was cancelled.');
+    if (figmaStatus === 'error')     showToast('error', 'Could not connect Figma. Try again.');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [figmaStatus]);
   
   return (
     <>
@@ -15,6 +40,19 @@ export default function SettingsPage() {
 
       <div className="p-5 sm:p-8 lg:p-10">
       <div className="max-w-[800px] mx-auto space-y-8">
+
+        {false && (
+        <section className="space-y-4">
+          <div>
+            <h2 className="text-h4 text-text-primary font-semibold">Integrations</h2>
+            <p className="text-[13px] text-text-secondary mt-1">
+              Connect external tools to import your designs directly.
+            </p>
+          </div>
+          <FigmaConnectionCard key={cardKey} fetchDelay={isPostOAuth ? 800 : 0} />
+        </section>
+        )}
+
         <Card>
           <CardHeader>
             <CardTitle>Workspace Settings</CardTitle>

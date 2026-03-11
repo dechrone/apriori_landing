@@ -2,16 +2,18 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { TopBar } from '@/components/app/TopBar';
 import { CreateFolderModal } from '@/components/assets/CreateFolderModal';
 import { UploadAssetModal } from '@/components/assets/UploadAssetModal';
 import { DeleteFolderModal } from '@/components/assets/DeleteFolderModal';
 import { EditFolderModal } from '@/components/assets/EditFolderModal';
 import { FolderCardMenu } from '@/components/assets/FolderCardMenu';
+import { FigmaImportModal } from '@/components/figma';
 import { useAppShell } from '@/components/app/AppShell';
 import { useToast } from '@/components/ui/Toast';
 import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
-import { Plus, FolderPlus, FolderOpen, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Plus, FolderPlus, FolderOpen, Loader2, CheckCircle2, AlertCircle, Figma } from 'lucide-react';
 import type { AssetFolder, Asset } from '@/types/asset';
 import { getAssetTypeLabel } from '@/types/asset';
 import {
@@ -26,6 +28,7 @@ export default function AssetsPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
   const { clerkId, profileReady } = useFirebaseUser();
+  const router = useRouter();
 
   const [folders, setFolders] = useState<AssetFolder[]>([]);
   const [subfoldersByParentId, setSubfoldersByParentId] = useState<Record<string, AssetFolder[]>>({});
@@ -33,6 +36,7 @@ export default function AssetsPage() {
   const [loading, setLoading] = useState(true);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [figmaImportOpen, setFigmaImportOpen] = useState(false);
   const [editModalFolder, setEditModalFolder] = useState<AssetFolder | null>(null);
   const [deleteModalFolder, setDeleteModalFolder] = useState<AssetFolder | null>(null);
 
@@ -211,6 +215,12 @@ export default function AssetsPage() {
     setUploadModalOpen(true);
   };
 
+  const handleFigmaImportComplete = (folderId: string) => {
+    showToast('success', 'Figma import complete', 'Your screens have been imported.');
+    loadFolders();
+    router.push(`/assets/${folderId}?name=Figma+Import&type=product-flow`);
+  };
+
   return (
     <>
       <TopBar title="Assets" onMenuClick={toggleMobileMenu} />
@@ -220,13 +230,24 @@ export default function AssetsPage() {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-[24px] font-bold text-[#1A1A1A]">Assets</h2>
           {folders.length > 0 && (
-            <button
-              onClick={() => setCreateModalOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-[#4B5563] bg-white border border-[#E5E7EB] rounded-lg hover:border-[#F59E0B] hover:text-[#92400E] transition-colors"
-            >
-              <FolderPlus className="w-4 h-4" />
-              Create folder
-            </button>
+            <div className="flex items-center gap-2">
+              {false && (
+              <button
+                onClick={() => setFigmaImportOpen(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-[#4B5563] bg-white border border-[#E5E7EB] rounded-lg hover:border-[#A259FF] hover:text-[#7C3AED] transition-colors"
+              >
+                <Figma className="w-4 h-4" />
+                Import from Figma
+              </button>
+              )}
+              <button
+                onClick={() => setCreateModalOpen(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-[#4B5563] bg-white border border-[#E5E7EB] rounded-lg hover:border-[#F59E0B] hover:text-[#92400E] transition-colors"
+              >
+                <FolderPlus className="w-4 h-4" />
+                Create folder
+              </button>
+            </div>
           )}
         </div>
 
@@ -423,6 +444,13 @@ export default function AssetsPage() {
         folder={deleteModalFolder}
         onConfirm={handleDeleteFolder}
       />
+      {false && (
+      <FigmaImportModal
+        isOpen={figmaImportOpen}
+        onClose={() => setFigmaImportOpen(false)}
+        onComplete={handleFigmaImportComplete}
+      />
+      )}
     </>
   );
 }
