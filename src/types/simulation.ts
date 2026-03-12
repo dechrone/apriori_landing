@@ -69,6 +69,8 @@ export interface QuickWin {
 }
 
 export interface CognLoadItem {
+  screen_id?: string;
+  load_level?: string;
   reason: string;
 }
 
@@ -198,6 +200,14 @@ export interface PersonaDetail {
 }
 
 export interface PlaybookClusterRecommendation {
+  cluster_id?: number;
+  cluster_type?: string;
+  technique?: string;
+  description?: string;
+  industry_example?: string;
+  effort?: string;
+  expected_impact?: string;
+  conversion_uplift_pct?: string;
   [key: string]: unknown;
 }
 

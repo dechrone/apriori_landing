@@ -65,7 +65,7 @@ export function PlaybookInsights({ data }: Props) {
 
       <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
         {screenEntries.map(([screenId, insight], si) => {
-          const recs = (insight.cluster_recommendations ?? []) as Record<string, unknown>[];
+          const recs = insight.cluster_recommendations ?? [];
 
           return (
             <motion.div
@@ -107,7 +107,7 @@ export function PlaybookInsights({ data }: Props) {
                     fontFamily: "var(--font-plus-jakarta), sans-serif",
                   }}
                 >
-                  {insight.playbook_theme as string}
+                  {insight.playbook_theme}
                 </span>
               </div>
 
@@ -125,7 +125,7 @@ export function PlaybookInsights({ data }: Props) {
                     paddingLeft: 14,
                   }}
                 >
-                  {insight.screen_summary as string}
+                  {insight.screen_summary}
                 </p>
               )}
 
@@ -139,9 +139,9 @@ export function PlaybookInsights({ data }: Props) {
                 className="playbook-recs-grid"
               >
                 {recs.map((rec, ri) => {
-                  const ct = clusterTypeStyle(String(rec.cluster_type ?? ""));
-                  const ef = effortStyle(String(rec.effort ?? "").toLowerCase());
-                  const uplift = rec.conversion_uplift_pct as string | undefined;
+                  const ct = clusterTypeStyle(rec.cluster_type ?? "");
+                  const ef = effortStyle((rec.effort ?? "").toLowerCase());
+                  const uplift = rec.conversion_uplift_pct;
 
                   return (
                     <div
@@ -195,7 +195,7 @@ export function PlaybookInsights({ data }: Props) {
                             fontFamily: "var(--font-plus-jakarta), sans-serif",
                           }}
                         >
-                          {String(rec.effort ?? "").charAt(0).toUpperCase() + String(rec.effort ?? "").slice(1)} effort
+                          {(rec.effort ?? "").charAt(0).toUpperCase() + (rec.effort ?? "").slice(1)} effort
                         </span>
                         {uplift && (
                           <span
@@ -225,7 +225,7 @@ export function PlaybookInsights({ data }: Props) {
                           fontFamily: "var(--font-plus-jakarta), sans-serif",
                         }}
                       >
-                        {rec.technique as string}
+                        {rec.technique}
                       </p>
 
                       {/* Description */}
@@ -239,7 +239,7 @@ export function PlaybookInsights({ data }: Props) {
                             fontFamily: "var(--font-inter), sans-serif",
                           }}
                         >
-                          {rec.description as string}
+                          {rec.description}
                         </p>
                       )}
 
@@ -258,7 +258,7 @@ export function PlaybookInsights({ data }: Props) {
                             fontFamily: "var(--font-inter), sans-serif",
                           }}
                         >
-                          ↑ {rec.expected_impact as string}
+                          ↑ {rec.expected_impact}
                         </p>
                       )}
 
@@ -272,7 +272,7 @@ export function PlaybookInsights({ data }: Props) {
                             fontFamily: "var(--font-inter), sans-serif",
                           }}
                         >
-                          💡 {rec.industry_example as string}
+                          💡 {rec.industry_example}
                         </p>
                       )}
                     </div>
