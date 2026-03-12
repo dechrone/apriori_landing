@@ -53,7 +53,14 @@ export function ComparatorResultView({ data }: ComparatorResultViewProps) {
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#F5F4F2" }}>
       {/* ── Tab Bar ── */}
-      <div style={{ borderBottom: "1px solid #E5E7EB", backgroundColor: "#F5F4F2" }}>
+      <div
+        className="sticky z-20"
+        style={{
+          top: 64, /* sits below the 64px TopBar */
+          borderBottom: "1px solid #E5E7EB",
+          backgroundColor: "#F5F4F2",
+        }}
+      >
         <div style={{ padding: "0 24px" }}>
           <div className="flex gap-0">
             {tabs.map((tab) => (

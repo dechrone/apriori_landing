@@ -30,11 +30,11 @@ export function VerdictBanner({ data }: Props) {
       transition={{ duration: 0.4, delay: 0.05 }}
       style={{
         background: COLORS.bgSurface,
-        borderLeft: `4px solid ${color}`,
         borderRadius: 16,
-        border: `1px solid ${COLORS.border}`,
-        borderLeftWidth: 4,
-        borderLeftColor: color,
+        borderTop: `1px solid ${COLORS.border}`,
+        borderRight: `1px solid ${COLORS.border}`,
+        borderBottom: `1px solid ${COLORS.border}`,
+        borderLeft: `4px solid ${color}`,
         padding: 28,
         display: "flex",
         flexWrap: "wrap",
