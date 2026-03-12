@@ -9,7 +9,7 @@ const isProtectedRoute = createRouteMatcher([
   "/assets(.*)",
   "/insights(.*)",
   "/settings(.*)",
-  "/audit(.*)"
+  "/audit(.*)",
 ]);
 
 const isPublicRoute = createRouteMatcher([
@@ -21,17 +21,19 @@ const isPublicRoute = createRouteMatcher([
 
 export default clerkMiddleware(
   async (auth, req) => {
-    const { userId } = await auth();
     const { pathname } = req.nextUrl;
-    const hostname = req.nextUrl.hostname;
 
-    const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1";
-
-    if (userId && pathname === "/") {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
+    // Redirect authenticated users away from the homepage
+    if (pathname === "/") {
+      const { userId } = await auth();
+      if (userId) {
+        return NextResponse.redirect(new URL("/dashboard", req.url));
+      }
+      return;
     }
 
-    if (isProtectedRoute(req) && !isPublicRoute(req) && !isLocalhost) {
+    // Protect non-public routes
+    if (isProtectedRoute(req) && !isPublicRoute(req)) {
       await auth.protect();
     }
   },
