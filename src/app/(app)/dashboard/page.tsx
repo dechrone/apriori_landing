@@ -1,69 +1,325 @@
 "use client";
 
 import { TopBar } from '@/components/app/TopBar';
-import { Beaker, Target, GitCompare, Users, Package, ChevronRight, Check } from 'lucide-react';
+import { Beaker, Target, GitCompare, Users, Package, ChevronRight, Check, Loader2, PartyPopper } from 'lucide-react';
 import { useAppShell } from '@/components/app/AppShell';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
+import {
+  getSimulations,
+  getAssetFolders,
+  getAudiences,
+  type SimulationDoc,
+} from '@/lib/firestore';
+
+/* ── Helpers ──────────────────────────────────────────────────────────── */
+
+function extractCreatedAt(sim: SimulationDoc): Date | null {
+  const ca = sim.createdAt as { toDate?: () => Date; seconds?: number } | null;
+  if (!ca) return null;
+  if (typeof ca.toDate === 'function') return ca.toDate();
+  if (typeof ca.seconds === 'number') return new Date(ca.seconds * 1000);
+  return null;
+}
+
+function relativeTime(date: Date | null): string {
+  if (!date) return '';
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+  const diffHrs = Math.floor(diffMins / 60);
+  if (diffHrs < 24) return `${diffHrs} hour${diffHrs > 1 ? 's' : ''} ago`;
+  const diffDays = Math.floor(diffHrs / 24);
+  if (diffDays < 30) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  const diffMonths = Math.floor(diffDays / 30);
+  return `${diffMonths} month${diffMonths > 1 ? 's' : ''} ago`;
+}
+
+function getSimulationHref(sim: SimulationDoc) {
+  if (sim.type === 'Ad Portfolio') return `/simulations/ad-portfolio/${sim.id}`;
+  if (sim.type === 'Product Flow Comparator') return `/simulations/product-flow-comparator/${sim.id}`;
+  return `/simulations/${sim.id}`;
+}
+
+/* ── Onboarding step definition ───────────────────────────────────────── */
+
+interface OnboardingStep {
+  key: string;
+  label: string;
+  doneLabel: string;
+  href?: string;
+}
+
+const ONBOARDING_STEPS: OnboardingStep[] = [
+  {
+    key: 'workspace',
+    label: 'Create your workspace',
+    doneLabel: 'Workspace created',
+  },
+  {
+    key: 'assets',
+    label: 'Upload your first assets',
+    doneLabel: 'Assets uploaded — nice!',
+    href: '/assets',
+  },
+  {
+    key: 'audience',
+    label: 'Define your target audience',
+    doneLabel: 'Audience defined — great!',
+    href: '/audiences',
+  },
+  {
+    key: 'simulation',
+    label: 'Run your first simulation',
+    doneLabel: 'Simulation launched!',
+    href: '/simulations/new',
+  },
+  {
+    key: 'review',
+    label: 'Review simulation results',
+    doneLabel: "Results reviewed — you're all set!",
+  },
+];
+
+/* ── Main page component ──────────────────────────────────────────────── */
 
 export default function DashboardPage() {
   const { toggleMobileMenu } = useAppShell();
+  const { clerkId, profileReady } = useFirebaseUser();
   const [showComingSoonModal, setShowComingSoonModal] = useState(false);
+
+  // Recent simulations state
+  const [simulations, setSimulations] = useState<SimulationDoc[]>([]);
+  const [simsLoading, setSimsLoading] = useState(true);
+
+  // Onboarding checklist state
+  const [completedSteps, setCompletedSteps] = useState<Record<string, boolean>>({
+    workspace: true,
+    assets: false,
+    audience: false,
+    simulation: false,
+    review: false,
+  });
+  const [onboardingLoading, setOnboardingLoading] = useState(true);
+
+  const allDone = Object.values(completedSteps).every(Boolean);
+
+  // A user is "new" until they've run at least one simulation
+  const isNewUser = !simsLoading && simulations.length === 0;
+  // Show onboarding only for new users (no simulations)
+  const showOnboarding = isNewUser && !simsLoading;
+
+  // Fetch dashboard data
+  const fetchDashboardData = useCallback(async () => {
+    if (!clerkId || !profileReady) return;
+
+    try {
+      const [sims, folders, audiences] = await Promise.all([
+        getSimulations(clerkId),
+        getAssetFolders(clerkId),
+        getAudiences(clerkId),
+      ]);
+
+      // Recent simulations — take top 4
+      setSimulations(sims.slice(0, 4));
+      setSimsLoading(false);
+
+      // Onboarding progress
+      const hasAssets = folders.length > 0;
+      const hasAudience = audiences.length > 0;
+      const hasSimulation = sims.length > 0;
+      const hasCompletedSim = sims.some((s) => s.status === 'completed');
+
+      setCompletedSteps({
+        workspace: true,
+        assets: hasAssets,
+        audience: hasAudience,
+        simulation: hasSimulation,
+        review: hasCompletedSim,
+      });
+      setOnboardingLoading(false);
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+      setSimsLoading(false);
+      setOnboardingLoading(false);
+    }
+  }, [clerkId, profileReady]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
+
+  // Find next suggested step (first incomplete)
+  const nextStepIndex = ONBOARDING_STEPS.findIndex((s) => !completedSteps[s.key]);
 
   return (
     <>
-      <TopBar
-        title="Dashboard"
-        onMenuClick={toggleMobileMenu}
-      />
+      <TopBar title="Dashboard" onMenuClick={toggleMobileMenu} />
 
       <div className="p-5 sm:p-8 lg:p-10">
         <div className="max-w-[1600px] mx-auto space-y-10">
-          {/* Recent Simulations */}
-          <section>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-[#1A1A1A]">Recent Simulations</h2>
-              <Link
-                href="/simulations"
-                className="text-sm font-medium text-amber-600 hover:text-amber-700 flex items-center gap-1"
-              >
-                View all <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <SimulationCard
-                type="Product Flow"
-                status="completed"
-                title="Onboarding Flow Optimization"
-                metric="+18% retention predicted"
-                timestamp="2 days ago"
-              />
-              <SimulationCard
-                type="Ad Portfolio"
-                status="running"
-                title="Q1 Campaign Performance"
-                metric="Running 10 variants"
-                timestamp="Started 3 hours ago"
-              />
-              <SimulationCard
-                type="Product Flow Comparator"
-                status="completed"
-                title="Checkout V1 vs V2 Comparison"
-                metric="+9% conversion for V2"
-                timestamp="4 days ago"
-              />
-              <SimulationCard
-                type="Product Flow"
-                status="completed"
-                title="Pricing Page A/B Test"
-                metric="+12% conversion predicted"
-                timestamp="6 days ago"
-              />
-            </div>
-          </section>
+          {/* ─── Getting Started (top for new users, hidden once they have sims) ─── */}
+          {showOnboarding && (
+            <section>
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold text-[#1A1A1A]">Getting started</h2>
+              </div>
 
-          {/* Quick Actions */}
+              {onboardingLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-6 h-6 animate-spin text-[#9CA3AF]" />
+                </div>
+              ) : allDone ? (
+                <div
+                  className="bg-white rounded-xl p-8 text-center"
+                  style={{ border: '1px solid #E8E4DE' }}
+                >
+                  <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <PartyPopper className="w-7 h-7 text-emerald-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-[#1A1A1A] mb-1">All set! 🎉</h3>
+                  <p className="text-sm text-[#6B7280]">
+                    You&apos;ve completed all the setup steps. You&apos;re ready to simulate at full power.
+                  </p>
+                </div>
+              ) : (
+                <div
+                  className="bg-white rounded-xl overflow-hidden"
+                  style={{ border: '1px solid #E8E4DE' }}
+                >
+                  {ONBOARDING_STEPS.map((step, i, arr) => {
+                    const isDone = completedSteps[step.key];
+                    const isNext = i === nextStepIndex;
+
+                    return (
+                      <div
+                        key={step.key}
+                        className={`flex items-center gap-4 px-6 py-4 transition-colors ${
+                          isNext ? 'bg-amber-50/40' : ''
+                        }`}
+                        style={{
+                          borderBottom: i < arr.length - 1 ? '1px solid #F3F4F6' : 'none',
+                        }}
+                      >
+                        {/* Status circle */}
+                        <div
+                          className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                            isDone
+                              ? 'bg-emerald-500'
+                              : isNext
+                              ? 'border-2 border-amber-400'
+                              : 'border-2 border-[#E5E7EB]'
+                          }`}
+                        >
+                          {isDone && <Check className="w-3 h-3 text-white" />}
+                        </div>
+
+                        {/* Label */}
+                        <span
+                          className={`text-sm flex-1 ${
+                            isDone
+                              ? 'text-[#9CA3AF] line-through'
+                              : isNext
+                              ? 'text-[#1A1A1A] font-semibold'
+                              : 'text-[#1A1A1A] font-medium'
+                          }`}
+                        >
+                          {isDone ? step.doneLabel : step.label}
+                        </span>
+
+                        {/* CTA — for incomplete steps with href */}
+                        {!isDone && step.href && (
+                          <Link
+                            href={step.href}
+                            className={`text-xs font-semibold transition-colors ${
+                              isNext
+                                ? 'text-amber-600 hover:text-amber-700'
+                                : 'text-amber-600/60 hover:text-amber-600'
+                            }`}
+                          >
+                            Start →
+                          </Link>
+                        )}
+
+                        {/* For "Review simulation results" — link to latest completed sim */}
+                        {!isDone && step.key === 'review' && simulations.length > 0 && (
+                          <Link
+                            href={getSimulationHref(
+                              simulations.find((s) => s.status === 'completed') || simulations[0]
+                            )}
+                            className="text-xs font-semibold text-amber-600/60 hover:text-amber-600 transition-colors"
+                          >
+                            View results →
+                          </Link>
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  {/* Progress bar */}
+                  <div className="px-6 py-3 bg-[#FAFAF8]" style={{ borderTop: '1px solid #F3F4F6' }}>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 h-1.5 bg-[#E5E7EB] rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                          style={{
+                            width: `${(Object.values(completedSteps).filter(Boolean).length / ONBOARDING_STEPS.length) * 100}%`,
+                          }}
+                        />
+                      </div>
+                      <span className="text-xs text-[#9CA3AF] font-medium whitespace-nowrap">
+                        {Object.values(completedSteps).filter(Boolean).length} of {ONBOARDING_STEPS.length}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* ─── Recent Simulations (shown only when user has sims) ─── */}
+          {!isNewUser && (
+            <section>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-[#1A1A1A]">Recent Simulations</h2>
+                <Link
+                  href="/simulations"
+                  className="text-sm font-medium text-amber-600 hover:text-amber-700 flex items-center gap-1"
+                >
+                  View all <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
+
+              {simsLoading ? (
+                <div className="flex items-center justify-center py-16">
+                  <Loader2 className="w-6 h-6 animate-spin text-[#9CA3AF]" />
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {simulations.map((sim) => {
+                    const createdDate = extractCreatedAt(sim);
+                    return (
+                      <Link key={sim.id} href={getSimulationHref(sim)}>
+                        <SimulationCard
+                          type={sim.type}
+                          status={sim.status}
+                          title={sim.name}
+                          metric={sim.metric}
+                          timestamp={createdDate ? relativeTime(createdDate) : sim.timestamp || ''}
+                        />
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* ─── Quick Actions ─── */}
           <section>
             <h2 className="text-xl font-semibold text-[#1A1A1A] mb-6">Quick Actions</h2>
 
@@ -98,62 +354,6 @@ export default function DashboardPage() {
                 description="Update your product information and constraints"
                 href="/product-context"
               />
-            </div>
-          </section>
-
-          {/* Getting Started Checklist */}
-          <section>
-            <h2 className="text-xl font-semibold text-[#1A1A1A] mb-6">Getting started</h2>
-
-            <div
-              className="bg-white rounded-xl overflow-hidden"
-              style={{ border: '1px solid #E8E4DE' }}
-            >
-              {[
-                { label: 'Create your workspace', done: true },
-                { label: 'Upload your first assets', done: false, href: '/assets' },
-                { label: 'Define your target audience', done: false, href: '/audiences' },
-                { label: 'Run your first simulation', done: false, href: '/simulations/new' },
-                { label: 'Review simulation results', done: false },
-              ].map((item, i, arr) => (
-                <div
-                  key={item.label}
-                  className="flex items-center gap-4 px-6 py-4"
-                  style={{
-                    borderBottom: i < arr.length - 1 ? '1px solid #F3F4F6' : 'none',
-                  }}
-                >
-                  {/* Status circle */}
-                  <div
-                    className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      item.done ? 'bg-emerald-500' : 'border-2 border-[#E5E7EB]'
-                    }`}
-                  >
-                    {item.done && <Check className="w-3 h-3 text-white" />}
-                  </div>
-
-                  {/* Label */}
-                  <span
-                    className={`text-sm flex-1 ${
-                      item.done
-                        ? 'text-[#9CA3AF] line-through'
-                        : 'text-[#1A1A1A] font-medium'
-                    }`}
-                  >
-                    {item.label}
-                  </span>
-
-                  {/* CTA for incomplete items */}
-                  {!item.done && item.href && (
-                    <Link
-                      href={item.href}
-                      className="text-xs font-semibold text-amber-600 hover:text-amber-700"
-                    >
-                      Start →
-                    </Link>
-                  )}
-                </div>
-              ))}
             </div>
           </section>
         </div>

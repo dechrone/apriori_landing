@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { TopBar } from '@/components/app/TopBar';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/Card';
-import { Select } from '@/components/ui/Select';
+import { StyledDropdown } from '@/components/ui/StyledDropdown';
 import { Textarea } from '@/components/ui/Textarea';
 import { useToast } from '@/components/ui/Toast';
 import { useAppShell } from '@/components/app/AppShell';
@@ -81,10 +81,10 @@ export default function ProductContextPage() {
             <CardTitle>Product Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <Select
+            <StyledDropdown
               label="Product Type"
               value={formData.productType}
-              onChange={(e) => setFormData({ ...formData, productType: e.target.value })}
+              onChange={(v) => setFormData({ ...formData, productType: v })}
               options={[
                 { value: 'saas', label: 'SaaS' },
                 { value: 'marketplace', label: 'Marketplace' },
@@ -92,10 +92,10 @@ export default function ProductContextPage() {
                 { value: 'platform', label: 'Platform' },
               ]}
             />
-            <Select
+            <StyledDropdown
               label="Pricing Model"
               value={formData.pricingModel}
-              onChange={(e) => setFormData({ ...formData, pricingModel: e.target.value })}
+              onChange={(v) => setFormData({ ...formData, pricingModel: v })}
               options={[
                 { value: 'subscription', label: 'Subscription' },
                 { value: 'usage-based', label: 'Usage-based' },
@@ -111,10 +111,10 @@ export default function ProductContextPage() {
             <CardTitle>Business Model</CardTitle>
           </CardHeader>
           <CardContent>
-            <Select
+            <StyledDropdown
               label="Sales Motion"
               value={formData.salesMotion}
-              onChange={(e) => setFormData({ ...formData, salesMotion: e.target.value })}
+              onChange={(v) => setFormData({ ...formData, salesMotion: v })}
               options={[
                 { value: 'plg', label: 'Product-Led Growth (PLG)' },
                 { value: 'sales-led', label: 'Sales-Led' },
