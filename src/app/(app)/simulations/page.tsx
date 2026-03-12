@@ -46,6 +46,16 @@ const SAMPLE_SIMULATIONS: SimulationDoc[] = [
     createdAt: null,
     updatedAt: null,
   },
+  {
+    id: 'sample-comparator',
+    name: 'Sample: Flow A vs Flow B — Comparator',
+    type: 'Product Flow Comparator',
+    status: 'completed',
+    metric: '62% vs 44% · 50 personas',
+    timestamp: 'March 2026',
+    createdAt: null,
+    updatedAt: null,
+  },
 ];
 
 /* ── Helpers ────────────────────────────────────────────────────────────── */
@@ -53,6 +63,7 @@ const SAMPLE_SIMULATIONS: SimulationDoc[] = [
 function getSimulationHref(sim: SimulationDoc) {
   if (sim.id === 'sample') return '/simulations/product-flow/sample';
   if (sim.id === 'sample-ad') return '/simulations/ad-portfolio/sample';
+  if (sim.id === 'sample-comparator') return '/simulations/product-flow-comparator/sample';
   if (sim.type === 'Ad Portfolio') return `/simulations/ad-portfolio/${sim.id}`;
   if (sim.type === 'Product Flow Comparator') return `/simulations/product-flow-comparator/${sim.id}`;
   return `/simulations/${sim.id}`;
