@@ -3,13 +3,14 @@
 /**
  * FirebaseUserContext
  *
- * Automatically creates a Firestore user profile the first time a Clerk-
- * authenticated user is seen in the app. Exposes `clerkId` and `profileReady`
- * so child components can safely read/write Firestore.
+ * Automatically creates a Firestore user profile the first time a Firebase-
+ * authenticated user is seen in the app. Exposes `clerkId` (= Firebase UID)
+ * and `profileReady` so child components can safely read/write Firestore.
  */
 
-"use client";
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useAuthContext } from "./AuthContext";
+import { createUserProfile } from "@/lib/firestore";
 
 interface FirebaseUserContextValue {
   clerkId: string | null;
@@ -22,8 +23,44 @@ const FirebaseUserContext = createContext<FirebaseUserContextValue>({
 });
 
 export function FirebaseUserProvider({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuthContext();
+  const [profileReady, setProfileReady] = useState(false);
+
+  useEffect(() => {
+    if (loading) return;
+    if (!user) {
+      setProfileReady(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        await createUserProfile(user.uid, {
+          email: user.email || "",
+          firstName: user.displayName?.split(" ")[0] || undefined,
+          lastName: user.displayName?.split(" ").slice(1).join(" ") || undefined,
+        });
+        if (!cancelled) setProfileReady(true);
+      } catch (error) {
+        console.error("Error setting up user profile:", error);
+        if (!cancelled) setProfileReady(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user, loading]);
+
   return (
-    <FirebaseUserContext.Provider value={{ clerkId: null, profileReady: false }}>
+    <FirebaseUserContext.Provider
+      value={{
+        clerkId: user?.uid || null,
+        profileReady,
+      }}
+    >
       {children}
     </FirebaseUserContext.Provider>
   );

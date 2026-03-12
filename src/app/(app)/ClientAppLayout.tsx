@@ -4,6 +4,7 @@ import { Sidebar } from '@/components/app/Sidebar';
 import { ToastProvider } from '@/components/ui/Toast';
 import { AppShellProvider, useAppShell } from '@/components/app/AppShell';
 import { FirebaseUserProvider } from '@/contexts/FirebaseUserContext';
+import { AuthGuard } from '@/components/app/AuthGuard';
 
 function AppLayoutInner({ children }: { children: React.ReactNode }) {
   const { mobileMenuOpen, setMobileMenuOpen } = useAppShell();
@@ -31,9 +32,11 @@ export default function ClientAppLayout({
   return (
     <ToastProvider>
       <AppShellProvider>
-        <FirebaseUserProvider>
-          <AppLayoutInner>{children}</AppLayoutInner>
-        </FirebaseUserProvider>
+        <AuthGuard>
+          <FirebaseUserProvider>
+            <AppLayoutInner>{children}</AppLayoutInner>
+          </FirebaseUserProvider>
+        </AuthGuard>
       </AppShellProvider>
     </ToastProvider>
   );
