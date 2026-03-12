@@ -10,7 +10,7 @@ import { FrictionPoints } from "./FrictionPoints";
 import { BehavioralInsights } from "./BehavioralInsights";
 import { DropOffAnalysis } from "./DropOffAnalysis";
 import { DesignRecommendations } from "./DesignRecommendations";
-import { QuickWins } from "./QuickWins";
+import { PlaybookInsights } from "./PlaybookInsights";
 import { SegmentAnalysis } from "./SegmentAnalysis";
 import { PowerUsers } from "./PowerUsers";
 import { SkeletonLoader } from "./SkeletonLoader";
@@ -165,12 +165,12 @@ export function SimulationOverview({
           <DesignRecommendations data={d} />
         </section>
 
-        {/* Section 9 — Quick Wins */}
+        {/* Section 10 — Playbook Insights */}
         <section style={{ marginBottom: 80 }}>
-          <QuickWins data={d} />
+          <PlaybookInsights data={d} />
         </section>
 
-        {/* Section 10 — Segment Analysis */}
+        {/* Section 11 — Segment Analysis */}
         <section style={{ marginBottom: 80 }}>
           <SegmentAnalysis data={d} />
         </section>

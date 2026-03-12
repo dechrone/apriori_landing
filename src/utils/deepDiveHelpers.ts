@@ -47,8 +47,8 @@ export function getAvatarColor(name: string): string {
 
 /** "dropped_off_at_view_3" → { type: "dropoff", screen: "S3" } */
 export function parseOutcome(outcome: string) {
-  const match = outcome.match(/dropped_off_at_view_(\d+)/);
-  if (match) return { type: "dropoff" as const, screen: `S${match[1]}` };
+  const match = outcome.match(/dropped_off_at_(.+)/);
+  if (match) return { type: "dropoff" as const, screen: match[1] };
   return { type: "completed" as const };
 }
 

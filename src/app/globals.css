@@ -890,3 +890,12 @@ body:has(.dashboard-theme) {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Hide Clerk dev-mode "Configure your application" widget */
+[data-clerk-keyless-indicator],
+[id*="clerk-keyless"],
+[class*="cl-keyless"],
+[class*="cl-configure"],
+[class*="cl-development"] {
+  display: none !important;
+}

@@ -121,7 +121,7 @@ export function FlowAnalysisView({ data, simulationData }: FlowAnalysisViewProps
           className={activeTab === TAB_DEEP_DIVE ? "animate-fadeIn opacity-100" : "hidden"}
           style={{ animationDuration: "200ms" }}
         >
-          {activeTab === TAB_DEEP_DIVE && <DeepDiveTab data={data} />}
+          {activeTab === TAB_DEEP_DIVE && <DeepDiveTab data={data} simulationData={simulationData} />}
         </div>
       </main>
     </div>

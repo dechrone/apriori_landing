@@ -8,6 +8,13 @@ import { useEffect } from "react";
  */
 export function HideClerkKeylessIndicator() {
   useEffect(() => {
+    const CLERK_WIDGET_PHRASES = [
+      "keyless mode",
+      "Clerk is in keyless",
+      "Configure your application",
+      "Temporary API keys are enabled",
+    ];
+
     const hideKeylessIndicator = () => {
       const walker = document.createTreeWalker(
         document.body,
@@ -18,16 +25,19 @@ export function HideClerkKeylessIndicator() {
       while ((node = walker.nextNode())) {
         if (node.nodeType === Node.ELEMENT_NODE) {
           const el = node as HTMLElement;
-          if (
-            el.textContent?.includes("keyless mode") ||
-            el.textContent?.includes("Clerk is in keyless")
-          ) {
+          const text = el.textContent ?? "";
+          if (CLERK_WIDGET_PHRASES.some((phrase) => text.includes(phrase))) {
+            // Walk up to find the outermost fixed/absolute ancestor to nuke
             let target: HTMLElement = el;
             let current: HTMLElement | null = el;
             while (current?.parentElement && current.parentElement !== document.body) {
               current = current.parentElement;
               const style = getComputedStyle(current);
-              if (style.position === "fixed" || style.position === "sticky") {
+              if (
+                style.position === "fixed" ||
+                style.position === "sticky" ||
+                style.position === "absolute"
+              ) {
                 target = current;
               }
             }

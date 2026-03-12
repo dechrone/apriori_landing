@@ -98,10 +98,6 @@ export function PowerUsers({ data }: Props) {
   const hasFlowStrengths = flowStrengths.length > 0;
   const hasAcquisition = !!pu!.acquisition_recommendation;
 
-  // Micro Gaps
-  const microGaps = data.flow_assessment?.micro_interaction_gaps ?? [];
-  const hasMicroGaps = microGaps.length > 0;
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -411,74 +407,6 @@ export function PowerUsers({ data }: Props) {
               </p>
             </div>
           )}
-        </div>
-      )}
-
-      {/* ═══ Micro Interaction Gaps ═══ */}
-      {hasMicroGaps && (
-        <div style={{ marginTop: 40 }}>
-          <h3
-            style={{
-              fontSize: 18,
-              fontWeight: 700,
-              textTransform: "uppercase",
-              letterSpacing: "0.08em",
-              color: COLORS.textPrimary,
-              fontFamily: "var(--font-plus-jakarta), sans-serif",
-              marginBottom: 16,
-            }}
-          >
-            Micro Interaction Gaps
-          </h3>
-
-          <div style={cardStyle}>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 0,
-              }}
-            >
-              {microGaps.map((gap, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: 12,
-                    padding: "14px 0",
-                    borderBottom:
-                      i < microGaps.length - 1 ? "1px solid #E2E2EA" : "none",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: 13,
-                      fontWeight: 700,
-                      color: "#9090A8",
-                      flexShrink: 0,
-                      lineHeight: 1.6,
-                      fontFamily: "var(--font-plus-jakarta), sans-serif",
-                      minWidth: 28,
-                    }}
-                  >
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <p
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 400,
-                      color: "#0D0D14",
-                      lineHeight: 1.6,
-                      fontFamily: "var(--font-inter), sans-serif",
-                    }}
-                  >
-                    {gap}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       )}
 

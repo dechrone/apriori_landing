@@ -16,6 +16,7 @@ const isPublicRoute = createRouteMatcher([
   "/",
   "/sign-in(.*)",
   "/sign-up(.*)",
+  "/simulations/v1(.*)",
 ]);
 
 export default clerkMiddleware(
@@ -30,7 +31,7 @@ export default clerkMiddleware(
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 
-    if (isProtectedRoute(req) && !isLocalhost) {
+    if (isProtectedRoute(req) && !isPublicRoute(req) && !isLocalhost) {
       await auth.protect();
     }
   },

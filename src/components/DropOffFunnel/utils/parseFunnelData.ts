@@ -28,9 +28,9 @@ export interface FunnelScreen {
 
 /* ── Helpers ── */
 
-/** Extract trailing number from "view_1" → 1 */
+/** Extract first number from screen ID: "view_1" → 1, "3_result" → 3, "1" → 1 */
 function extractStepNumber(screenId: string): number {
-  const m = screenId.match(/(\d+)$/);
+  const m = screenId.match(/(\d+)/);
   return m ? parseInt(m[1], 10) : 0;
 }
 
@@ -137,9 +137,12 @@ export function parseFunnelData(data: SimulationData): FunnelScreen[] {
   }
 
   // Build ordered screen list from screen_metrics keys
-  const screenIds = Object.keys(screenMetrics).sort(
-    (a, b) => extractStepNumber(a) - extractStepNumber(b)
-  );
+  // Tiebreaker: "3" < "3_result" alphabetically, so base screens sort before result screens
+  const screenIds = Object.keys(screenMetrics).sort((a, b) => {
+    const diff = extractStepNumber(a) - extractStepNumber(b);
+    if (diff !== 0) return diff;
+    return a.localeCompare(b);
+  });
 
   const screens: FunnelScreen[] = screenIds.map((sid) => {
     const metrics = screenMetrics[sid];

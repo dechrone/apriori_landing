@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
-import type { FlowAnalysisData, FlowPersona, JourneyStep } from "@/types/flow-analysis";
+import type { FlowAnalysisData, FlowPersona, JourneyStep, PersonaDetail } from "@/types/flow-analysis";
+import type { SimulationData } from "@/types/simulation";
 import { PersonaCardLight } from "./PersonaCardLight";
 import { DeepDiveView } from "@/components/deep-dive/DeepDiveView";
 import { MOCK_PERSONAS } from "@/data/mockSimulation";
@@ -134,14 +135,17 @@ function FilterPill({ label, onRemove, variant = "neutral" }: { label: string; o
 }
 
 /* ─────────── Main Component ─────────── */
-export function DeepDiveTab({ data }: { data: FlowAnalysisData }) {
+export function DeepDiveTab({ data, simulationData }: { data: FlowAnalysisData; simulationData?: SimulationData }) {
   const { screens, personas, funnel } = data;
 
-  /* ── New deep-dive view using PersonaDetail[] mock data ── */
+  /* ── New deep-dive view: prefer real persona_details from simulationData, fall back to mock ── */
   const [useNewView] = useState(true);
 
   if (useNewView) {
-    return <DeepDiveView personas={MOCK_PERSONAS} />;
+    const personas = simulationData?.persona_details
+      ? (simulationData.persona_details as unknown as PersonaDetail[])
+      : MOCK_PERSONAS;
+    return <DeepDiveView personas={personas} />;
   }
 
   /* ── Legacy state (kept for backwards-compat) ── */
