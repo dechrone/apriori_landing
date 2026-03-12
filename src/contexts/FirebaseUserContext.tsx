@@ -8,9 +8,8 @@
  * so child components can safely read/write Firestore.
  */
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { useUser } from "@clerk/nextjs";
-import { createUserProfile } from "@/lib/firestore";
+"use client";
+import React, { createContext, useContext } from "react";
 
 interface FirebaseUserContextValue {
   clerkId: string | null;
@@ -23,33 +22,8 @@ const FirebaseUserContext = createContext<FirebaseUserContextValue>({
 });
 
 export function FirebaseUserProvider({ children }: { children: React.ReactNode }) {
-  const { user, isLoaded } = useUser();
-  const [profileReady, setProfileReady] = useState(false);
-
-  useEffect(() => {
-    if (!isLoaded || !user) return;
-
-    const email =
-      user.primaryEmailAddress?.emailAddress ??
-      user.emailAddresses[0]?.emailAddress ??
-      "";
-
-    createUserProfile(user.id, {
-      email,
-      firstName: user.firstName ?? undefined,
-      lastName: user.lastName ?? undefined,
-    })
-      .then(() => setProfileReady(true))
-      .catch((err) => {
-        console.error("[FirebaseUser] Failed to create/verify profile:", err);
-        setProfileReady(true);
-      });
-  }, [isLoaded, user]);
-
   return (
-    <FirebaseUserContext.Provider
-      value={{ clerkId: user?.id ?? null, profileReady }}
-    >
+    <FirebaseUserContext.Provider value={{ clerkId: null, profileReady: false }}>
       {children}
     </FirebaseUserContext.Provider>
   );

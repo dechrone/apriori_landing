@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth } from '@/lib/auth-stub';
 import { apiFetch } from '@/lib/api';
 
 interface ConnectionStatus {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useUser } from '@/lib/auth-stub';
 import FigmaFileBrowser from './FigmaFileBrowser';
 import ScreenPicker from './ScreenPicker';
 import type { ConfirmPayload } from './ScreenPicker';

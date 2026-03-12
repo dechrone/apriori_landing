@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth } from '@/lib/auth-stub';
 import { apiFetch } from '@/lib/api';
 import { Link2, Loader2, AlertCircle } from 'lucide-react';
 

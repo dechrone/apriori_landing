@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
 import { AuditModalProvider } from "@/contexts/AuditModalContext";
 import { ConditionalSiteHeader } from "@/components/ConditionalSiteHeader";
-import { HideClerkKeylessIndicator } from "@/components/HideClerkKeylessIndicator";
 import "./globals.css";
 import "@/styles/deepDiveTokens.css";
 
@@ -53,36 +51,21 @@ export const metadata: Metadata = {
   },
 };
 
-const clerkAppearance = {
-  layout: {
-    unsafe_disableDevelopmentModeWarnings: true,
-  },
-} as const;
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider
-      signInUrl="/sign-in"
-      signUpUrl="/sign-up"
-      signInFallbackRedirectUrl="/"
-      signUpFallbackRedirectUrl="/"
-      appearance={clerkAppearance}
-    >
-      <html lang="en" className="dark">
-        <body
-          className={`${inter.variable} ${geistMono.variable} ${plusJakartaSans.variable} antialiased bg-deep text-text-primary`}
-        >
-          <HideClerkKeylessIndicator />
-          <AuditModalProvider>
-            <ConditionalSiteHeader />
-            {children}
-          </AuditModalProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" className="dark">
+      <body
+        className={`${inter.variable} ${geistMono.variable} ${plusJakartaSans.variable} antialiased bg-deep text-text-primary`}
+      >
+        <AuditModalProvider>
+          <ConditionalSiteHeader />
+          {children}
+        </AuditModalProvider>
+      </body>
+    </html>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { Bell, Menu } from 'lucide-react';
-import { UserButton } from '@clerk/nextjs';
 
 interface TopBarProps {
   title: string;
@@ -41,14 +40,8 @@ export function TopBar({ title, breadcrumb, actions, onMenuClick }: TopBarProps)
           <button className="relative p-2 hover:bg-[#F5F5F5] rounded-lg transition-colors">
             <Bell className="w-5 h-5 text-[#6B7280]" />
           </button>
-          <div className="flex items-center justify-center shrink-0 [&_.cl-avatarBox]:!w-[34px] [&_.cl-avatarBox]:!h-[34px]">
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox: "w-[34px] h-[34px]"
-                }
-              }}
-            />
+          <div className="flex items-center justify-center shrink-0 w-[34px] h-[34px] rounded-full bg-[#E8E4DE] text-[#6B7280] text-sm font-semibold">
+            A
           </div>
         </div>
       </div>

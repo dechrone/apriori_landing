@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { SignedIn, SignedOut } from "@clerk/nextjs";
-import { UserButton } from "@clerk/nextjs";
 import { Button } from "./ui/Button";
 
 export function SiteHeader() {
@@ -17,31 +15,11 @@ export function SiteHeader() {
         </Link>
 
         <div className="flex items-center gap-4">
-          <SignedOut>
-            <Link href="/sign-in">
-              <Button variant="secondary" size="sm">
-                Sign In
-              </Button>
-            </Link>
-          </SignedOut>
-          <SignedIn>
-            <UserButton
-              afterSignOutUrl="/"
-              appearance={{
-                elements: {
-                  avatarBox: "w-8 h-8",
-                },
-                variables: {
-                  colorPrimary: "#F59E0B",
-                  colorBackground: "#1E293B",
-                  colorText: "#FAFAFA",
-                  colorInputBackground: "#1E293B",
-                  colorInputText: "#FAFAFA",
-                  borderRadius: "4px",
-                },
-              }}
-            />
-          </SignedIn>
+          <Link href="/dashboard">
+            <Button variant="secondary" size="sm">
+              Dashboard
+            </Button>
+          </Link>
         </div>
       </div>
     </header>
