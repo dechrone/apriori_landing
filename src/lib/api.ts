@@ -2,13 +2,17 @@ const BASE = process.env.NEXT_PUBLIC_API_URL;
 
 /**
  * Authenticated fetch wrapper.
- * Pass the Clerk JWT token obtained via `getToken()` from `useAuth()`.
+ * Pass the Firebase ID token obtained via `getToken()` from `useAuth()`.
  */
 export async function apiFetch<T = unknown>(
   path: string,
   token: string,
   options: RequestInit = {},
 ): Promise<T> {
+  if (!BASE) {
+    throw new Error('NEXT_PUBLIC_API_URL is not configured');
+  }
+
   const res = await fetch(`${BASE}${path}`, {
     ...options,
     headers: {

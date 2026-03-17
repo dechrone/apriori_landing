@@ -65,7 +65,7 @@ function getDescriptionText(audience: AudienceDoc): { text: string; isEmpty: boo
 export default function AudiencesPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
-  const { clerkId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useFirebaseUser();
   const router = useRouter();
 
   const [audiences, setAudiences] = useState<AudienceDoc[]>([]);
@@ -77,9 +77,9 @@ export default function AudiencesPage() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   const loadAudiences = useCallback(async () => {
-    if (!clerkId || !profileReady) return;
+    if (!userId || !profileReady) return;
     try {
-      const data = await getAudiences(clerkId);
+      const data = await getAudiences(userId);
       setAudiences(data);
     } catch (err) {
       console.error(err);
@@ -87,7 +87,7 @@ export default function AudiencesPage() {
     } finally {
       setLoading(false);
     }
-  }, [clerkId, profileReady, showToast]);
+  }, [userId, profileReady, showToast]);
 
   useEffect(() => {
     loadAudiences();
@@ -106,10 +106,10 @@ export default function AudiencesPage() {
   }, [menuOpenId]);
 
   const handleDelete = async (id: string, name: string) => {
-    if (!clerkId) return;
+    if (!userId) return;
     setDeletingId(id);
     try {
-      await deleteAudience(clerkId, id);
+      await deleteAudience(userId, id);
       // Animate out
       setRemovingId(id);
       setTimeout(() => {

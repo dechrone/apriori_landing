@@ -18,7 +18,7 @@ export default function EditAudiencePage() {
   const params = useParams();
   const audienceId = params.id as string;
   const { showToast } = useToast();
-  const { clerkId } = useFirebaseUser();
+  const { userId } = useFirebaseUser();
 
   const [loading, setLoading] = useState(true);
   const [audience, setAudience] = useState<AudienceDoc | null>(null);
@@ -30,10 +30,10 @@ export default function EditAudiencePage() {
 
   // Fetch existing audience
   useEffect(() => {
-    if (!clerkId || !audienceId) return;
+    if (!userId || !audienceId) return;
     (async () => {
       try {
-        const doc = await getAudience(clerkId, audienceId);
+        const doc = await getAudience(userId, audienceId);
         if (!doc) {
           showToast("error", "Audience not found", "Redirecting to audiences list.");
           router.push("/audiences");
@@ -50,7 +50,7 @@ export default function EditAudiencePage() {
         setLoading(false);
       }
     })();
-  }, [clerkId, audienceId, showToast, router]);
+  }, [userId, audienceId, showToast, router]);
 
   const handleContinueToBuilder = () => {
     const trimmed = name.trim();
@@ -63,10 +63,10 @@ export default function EditAudiencePage() {
 
   const handleSaveDraft = useCallback(
     async (audienceDescription: string, filters: AdvancedFilters | null) => {
-      if (!clerkId || !audienceId) return;
+      if (!userId || !audienceId) return;
       setSaving(true);
       try {
-        await updateAudience(clerkId, audienceId, {
+        await updateAudience(userId, audienceId, {
           name: name.trim(),
           description: description.trim() || undefined,
           audienceDescription: audienceDescription || undefined,
@@ -82,7 +82,7 @@ export default function EditAudiencePage() {
         setSaving(false);
       }
     },
-    [clerkId, audienceId, name, description, showToast, router]
+    [userId, audienceId, name, description, showToast, router]
   );
 
   const handleSaveAudience = useCallback(
@@ -103,10 +103,10 @@ export default function EditAudiencePage() {
         );
         return;
       }
-      if (!clerkId || !audienceId) return;
+      if (!userId || !audienceId) return;
       setSaving(true);
       try {
-        await updateAudience(clerkId, audienceId, {
+        await updateAudience(userId, audienceId, {
           name: trimmed,
           description: description.trim() || undefined,
           audienceDescription: audienceDescription || undefined,
@@ -122,7 +122,7 @@ export default function EditAudiencePage() {
         setSaving(false);
       }
     },
-    [clerkId, audienceId, name, description, showToast, router]
+    [userId, audienceId, name, description, showToast, router]
   );
 
   if (loading) {

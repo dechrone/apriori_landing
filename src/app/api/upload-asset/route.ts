@@ -40,9 +40,9 @@ export async function POST(request: NextRequest) {
   }
 
   const file = formData.get("file");
-  const clerkId = formData.get("clerkId")?.toString();
+  const userId = formData.get("userId")?.toString();
   const folderId = formData.get("folderId")?.toString();
-  const accountName = formData.get("accountName")?.toString() || clerkId || "account";
+  const accountName = formData.get("accountName")?.toString() || userId || "account";
   const companyName = formData.get("companyName")?.toString() || "default";
 
   if (!file || !(file instanceof File)) {
@@ -54,8 +54,8 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   }
-  if (!clerkId || !folderId) {
-    return NextResponse.json({ error: "Missing clerkId or folderId." }, { status: 400 });
+  if (!userId || !folderId) {
+    return NextResponse.json({ error: "Missing userId or folderId." }, { status: 400 });
   }
 
   const timestamp = Date.now();

@@ -65,13 +65,21 @@ export default function FigmaFileBrowser({ onPageSelected }: Props) {
     try {
       const token = await getToken();
       if (!token) throw new Error('Not authenticated');
-      const data = await apiFetch<{ files: FigmaFile[] }>('/api/v1/figma/recent-files', token);
+      const data = await apiFetch<{ files: FigmaFile[]; message?: string }>('/api/v1/figma/recent-files', token);
       setRecentFiles(data.files);
+      if (data.message && data.files.length === 0) {
+        setError(data.message); // reuse error state for the notice
+      }
     } catch (err: unknown) {
+      console.error('[FigmaFileBrowser] raw error:', err);
+      console.error('[FigmaFileBrowser] error message:', err instanceof Error ? err.message : String(err));
       if (err instanceof Error && err.message === 'FIGMA_NOT_CONNECTED') {
         setError('Connect your Figma account in Settings first.');
+      } else if (err instanceof TypeError && err.message === 'Failed to fetch') {
+        setError('Cannot reach the backend. Is it running on localhost:8000?');
       } else {
-        setError('Could not load your Figma files. Try again.');
+        const msg = err instanceof Error ? err.message : String(err);
+        setError(`Could not load your Figma files: ${msg}`);
       }
     } finally {
       setLoadingFiles(false);
@@ -156,7 +164,7 @@ export default function FigmaFileBrowser({ onPageSelected }: Props) {
             active={activeTab === 'recent'}
             onClick={() => setActiveTab('recent')}
           >
-            Recent
+            Your Files
           </TabButton>
           {teams.length > 0 && (
             <TabButton

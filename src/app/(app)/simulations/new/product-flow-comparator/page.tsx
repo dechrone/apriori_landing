@@ -39,7 +39,7 @@ const METRICS = [
 export default function ProductFlowComparatorSimulationPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
-  const { clerkId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useFirebaseUser();
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [running, setRunning] = useState(false);
   const [audiences, setAudiences] = useState<AudienceDoc[]>([]);
@@ -49,24 +49,24 @@ export default function ProductFlowComparatorSimulationPage() {
   const router = useRouter();
 
   const loadAudiences = useCallback(async () => {
-    if (!clerkId || !profileReady) return;
+    if (!userId || !profileReady) return;
     try {
-      const list = await getAudiences(clerkId);
+      const list = await getAudiences(userId);
       setAudiences(list);
     } catch (err) {
       console.error(err);
     }
-  }, [clerkId, profileReady]);
+  }, [userId, profileReady]);
 
   const loadFolders = useCallback(async () => {
-    if (!clerkId || !profileReady) return;
+    if (!userId || !profileReady) return;
     try {
-      const list = await getAssetFolders(clerkId);
+      const list = await getAssetFolders(userId);
       setAllFolders(list);
     } catch (err) {
       console.error(err);
     }
-  }, [clerkId, profileReady]);
+  }, [userId, profileReady]);
 
   useEffect(() => { loadAudiences(); }, [loadAudiences]);
   useEffect(() => { loadFolders(); }, [loadFolders]);
@@ -114,13 +114,13 @@ export default function ProductFlowComparatorSimulationPage() {
       setCurrentStep((currentStep + 1) as Step);
       return;
     }
-    if (!clerkId) {
+    if (!userId) {
       showToast('error', 'Not signed in', 'Please sign in to run a simulation.');
       return;
     }
     setRunning(true);
     try {
-      const res = await triggerProductFlowComparatorSimulation(clerkId, {
+      const res = await triggerProductFlowComparatorSimulation(userId, {
         name: formData.name,
         audience: formData.audience,
         personaDepth: 'medium',
@@ -139,7 +139,7 @@ export default function ProductFlowComparatorSimulationPage() {
         meta != null
           ? `${meta.completion_rate_pct ?? 0}% completion · ${meta.avg_time_seconds ?? 0}s avg`
           : 'Product flow comparator run';
-      const docId = await saveSimulation(clerkId, {
+      const docId = await saveSimulation(userId, {
         type: 'Product Flow Comparator',
         status: 'completed',
         name: meta?.simulation_name ?? (formData.name || 'Product Flow Comparator Run'),

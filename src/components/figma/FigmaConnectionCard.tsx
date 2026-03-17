@@ -22,9 +22,15 @@ export default function FigmaConnectionCard({ fetchDelay = 0 }: FigmaConnectionC
 
   const fetchStatus = useCallback(async () => {
     try {
+      if (!process.env.NEXT_PUBLIC_API_URL) {
+        console.warn('[FigmaCard] NEXT_PUBLIC_API_URL is not set — skipping connection check');
+        setStatus({ connected: false });
+        return;
+      }
+
       const token = await getToken();
       if (!token) {
-        console.warn('[FigmaCard] getToken() returned null — Clerk may not be ready');
+        console.warn('[FigmaCard] getToken() returned null — Firebase Auth may not be ready');
         setStatus({ connected: false });
         return;
       }
@@ -95,8 +101,12 @@ export default function FigmaConnectionCard({ fetchDelay = 0 }: FigmaConnectionC
   }, [isLoaded, isSignedIn, fetchDelay, fetchStatus]);
 
   const handleConnect = async () => {
+    if (!process.env.NEXT_PUBLIC_API_URL) {
+      console.error('[FigmaCard] NEXT_PUBLIC_API_URL is not set — cannot initiate Figma OAuth');
+      return;
+    }
     const token = await getToken();
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/figma/auth/initiate?clerk_token=${token}`;
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/figma/auth/initiate?firebase_token=${token}`;
   };
 
   const handleDisconnect = async () => {

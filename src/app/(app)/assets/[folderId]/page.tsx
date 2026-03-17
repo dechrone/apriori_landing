@@ -68,7 +68,7 @@ export default function FolderDetailPage() {
   const searchParams = useSearchParams();
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
-  const { clerkId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useFirebaseUser();
 
   const folderId = params.folderId as string;
   const folderName = searchParams.get('name') ?? 'Folder';
@@ -95,9 +95,9 @@ export default function FolderDetailPage() {
   );
 
   const loadSubfolders = useCallback(async () => {
-    if (!clerkId || !profileReady) return;
+    if (!userId || !profileReady) return;
     try {
-      const children = await getAssetFolders(clerkId, folderId);
+      const children = await getAssetFolders(userId, folderId);
       setSubfolders(children.map((f) => ({ id: f.id, name: f.name, assetType: f.assetType, assetCount: f.assetCount })));
     } catch (err) {
       console.error('loadSubfolders error:', err);
@@ -106,12 +106,12 @@ export default function FolderDetailPage() {
     } finally {
       setLoading(false);
     }
-  }, [clerkId, profileReady, folderId, showToast]);
+  }, [userId, profileReady, folderId, showToast]);
 
   const loadAssets = useCallback(async () => {
-    if (!clerkId || !profileReady) return;
+    if (!userId || !profileReady) return;
     try {
-      const data = await getAssetsInFolder(clerkId, folderId);
+      const data = await getAssetsInFolder(userId, folderId);
       setAssets(data);
     } catch (err) {
       console.error(err);
@@ -119,7 +119,7 @@ export default function FolderDetailPage() {
     } finally {
       setLoading(false);
     }
-  }, [clerkId, profileReady, folderId, showToast]);
+  }, [userId, profileReady, folderId, showToast]);
 
   useEffect(() => {
     if (isComparator) {
@@ -131,18 +131,18 @@ export default function FolderDetailPage() {
 
   // ── Auto-save: persist asset metadata to Firebase ──
   const autoSaveAsset = useCallback(async (assetId: string, asset: Asset) => {
-    if (!clerkId || assetId.startsWith('pending_')) return;
+    if (!userId || assetId.startsWith('pending_')) return;
     setAutoSaveStatus('saving');
     try {
       const { id: _id, ...rest } = asset;
-      await saveAssetMetadata(clerkId, folderId, assetId, rest);
+      await saveAssetMetadata(userId, folderId, assetId, rest);
       setAutoSaveStatus('saved');
       setTimeout(() => setAutoSaveStatus('idle'), 3000);
     } catch (err) {
       console.error('Auto-save error:', err);
       setAutoSaveStatus('error');
     }
-  }, [clerkId, folderId]);
+  }, [userId, folderId]);
 
   /** Inline field save — updates local state + fires Firebase auto-save */
   const handleSaveField = useCallback((assetId: string, updates: Partial<Asset>) => {
@@ -216,7 +216,7 @@ export default function FolderDetailPage() {
 
   // ── Upload files directly (auto-save, no "Save to Firebase" button) ──
   const uploadFiles = useCallback(async (files: FileList, targetFolderId?: string) => {
-    if (!clerkId) return;
+    if (!userId) return;
     const uploadFolderId = targetFolderId ?? folderId;
 
     const nextStep =
@@ -242,7 +242,7 @@ export default function FolderDetailPage() {
           prev.map((u) => u.id === uploading.id ? { ...u, progress: 30 } : u)
         );
 
-        const { url, public_id } = await uploadAssetToCloudinary(uploading.file, clerkId, uploadFolderId);
+        const { url, public_id } = await uploadAssetToCloudinary(uploading.file, userId, uploadFolderId);
 
         setUploadingFiles((prev) =>
           prev.map((u) => u.id === uploading.id ? { ...u, progress: 70 } : u)
@@ -262,7 +262,7 @@ export default function FolderDetailPage() {
             : { adCreativeMetadata: { caption: '' } }),
         };
 
-        const savedId = await addAssetDocument(clerkId, uploadFolderId, { ...asset }, public_id);
+        const savedId = await addAssetDocument(userId, uploadFolderId, { ...asset }, public_id);
 
         setUploadingFiles((prev) =>
           prev.map((u) => u.id === uploading.id ? { ...u, progress: 100, status: 'done' as const, savedId } : u)
@@ -273,7 +273,7 @@ export default function FolderDetailPage() {
         }
 
         // Update folder asset count
-        await updateAssetFolder(clerkId, uploadFolderId, {
+        await updateAssetFolder(userId, uploadFolderId, {
           assetCount: (assets.length + i + 1),
           updatedAt: new Date().toISOString(),
         });
@@ -290,7 +290,7 @@ export default function FolderDetailPage() {
     setTimeout(() => {
       setUploadingFiles((prev) => prev.filter((u) => u.status !== 'done'));
     }, 3000);
-  }, [clerkId, folderId, assets, assetType, showToast]);
+  }, [userId, folderId, assets, assetType, showToast]);
 
   const handleUploadClick = () => fileInputRef.current?.click();
 
@@ -347,12 +347,12 @@ export default function FolderDetailPage() {
 
   /** Inline delete for product-flow rows (called directly, not via modal) */
   const handleInlineDelete = useCallback(async (assetId: string, assetName: string) => {
-    if (!clerkId) return;
+    if (!userId) return;
     try {
       const res = await fetch('/api/delete-asset', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clerkId, folderId, assetId }),
+        body: JSON.stringify({ userId, folderId, assetId }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -364,16 +364,16 @@ export default function FolderDetailPage() {
       console.error('[DELETE] Error deleting asset:', err);
       showToast('error', 'Failed to delete asset', err instanceof Error ? err.message : 'Please try again.');
     }
-  }, [clerkId, folderId, showToast]);
+  }, [userId, folderId, showToast]);
 
   const confirmDeleteAsset = async () => {
-    if (!deleteTarget || !clerkId) return;
+    if (!deleteTarget || !userId) return;
     const { id: assetId, name: assetName } = deleteTarget;
     try {
       const res = await fetch('/api/delete-asset', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clerkId, folderId, assetId }),
+        body: JSON.stringify({ userId, folderId, assetId }),
       });
 
       if (!res.ok) {

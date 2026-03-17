@@ -30,7 +30,7 @@ const STEP_LABELS = ['Setup', 'Select ad folder'];
 export default function AdPortfolioSimulationPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
-  const { clerkId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useFirebaseUser();
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [running, setRunning] = useState(false);
   const [audiences, setAudiences] = useState<AudienceDoc[]>([]);
@@ -40,24 +40,24 @@ export default function AdPortfolioSimulationPage() {
   const router = useRouter();
 
   const loadAudiences = useCallback(async () => {
-    if (!clerkId || !profileReady) return;
+    if (!userId || !profileReady) return;
     try {
-      const list = await getAudiences(clerkId);
+      const list = await getAudiences(userId);
       setAudiences(list);
     } catch (err) {
       console.error(err);
     }
-  }, [clerkId, profileReady]);
+  }, [userId, profileReady]);
 
   const loadFolders = useCallback(async () => {
-    if (!clerkId || !profileReady) return;
+    if (!userId || !profileReady) return;
     try {
-      const list = await getAssetFolders(clerkId);
+      const list = await getAssetFolders(userId);
       setAllFolders(list);
     } catch (err) {
       console.error(err);
     }
-  }, [clerkId, profileReady]);
+  }, [userId, profileReady]);
 
   useEffect(() => { loadAudiences(); }, [loadAudiences]);
   useEffect(() => { loadFolders(); }, [loadFolders]);
@@ -97,13 +97,13 @@ export default function AdPortfolioSimulationPage() {
       setCurrentStep(2);
       return;
     }
-    if (!clerkId) {
+    if (!userId) {
       showToast('error', 'Not signed in', 'Please sign in to run a simulation.');
       return;
     }
     setRunning(true);
     try {
-      const res = await triggerAdPortfolioSimulation(clerkId, {
+      const res = await triggerAdPortfolioSimulation(userId, {
         name: formData.name,
         audience: formData.audience,
         selectedFolderId: formData.selectedFolderId,
@@ -123,7 +123,7 @@ export default function AdPortfolioSimulationPage() {
           : meta != null
             ? `${meta.num_personas} personas · ${meta.num_ads} ads`
             : 'Ad portfolio run';
-      const docId = await saveSimulation(clerkId, {
+      const docId = await saveSimulation(userId, {
         type: 'Ad Portfolio',
         status: 'completed',
         name: meta?.simulation_name ?? (formData.name || 'Ad Portfolio Run'),

@@ -1,7 +1,7 @@
 /**
  * Firestore service layer.
- * All data is scoped under apriori_users/{clerkUserId}/...
- * Firebase Auth is not used — Clerk handles authentication.
+ * All data is scoped under apriori_users/{userId}/...
+ * Firebase Auth handles authentication.
  */
 
 import {
@@ -17,6 +17,8 @@ import {
   query,
   orderBy,
   where,
+  type DocumentReference,
+  type DocumentData,
 } from "firebase/firestore";
 import { db } from "./firebase";
 import type { AssetFolder, Asset } from "@/types/asset";
@@ -40,10 +42,19 @@ function deepWithoutUndefined(value: unknown): unknown {
   );
 }
 
+/** Type-safe wrapper – Firestore's UpdateData type doesn't accept `unknown` values. */
+async function safeUpdateDoc(
+  ref: DocumentReference<DocumentData, DocumentData>,
+  data: Record<string, unknown>
+): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await updateDoc(ref, data as Record<string, any>);
+}
+
 // ─── User Profile ─────────────────────────────────────────────────────────────
 
 export interface UserProfile {
-  clerkId: string;
+  userId: string;
   email: string;
   firstName?: string;
   lastName?: string;
@@ -52,16 +63,16 @@ export interface UserProfile {
 }
 
 export async function createUserProfile(
-  clerkId: string,
-  data: Omit<UserProfile, "clerkId" | "createdAt" | "updatedAt">
+  userId: string,
+  data: Omit<UserProfile, "userId" | "createdAt" | "updatedAt">
 ): Promise<void> {
-  const userRef = doc(db, "apriori_users", clerkId);
+  const userRef = doc(db, "apriori_users", userId);
   const existing = await getDoc(userRef);
   if (existing.exists()) return; // profile already created
   await setDoc(
     userRef,
     withoutUndefined({
-      clerkId,
+      userId,
       ...data,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
@@ -69,8 +80,8 @@ export async function createUserProfile(
   );
 }
 
-export async function getUserProfile(clerkId: string): Promise<UserProfile | null> {
-  const snap = await getDoc(doc(db, "apriori_users", clerkId));
+export async function getUserProfile(userId: string): Promise<UserProfile | null> {
+  const snap = await getDoc(doc(db, "apriori_users", userId));
   return snap.exists() ? (snap.data() as UserProfile) : null;
 }
 
@@ -85,20 +96,22 @@ export interface ProductContextData {
 }
 
 export async function saveProductContext(
-  clerkId: string,
+  userId: string,
   data: ProductContextData
 ): Promise<void> {
+  const cleaned = deepWithoutUndefined({ ...data, updatedAt: serverTimestamp() });
+  if (cleaned === undefined || typeof cleaned !== "object" || Array.isArray(cleaned)) return;
   await setDoc(
-    doc(db, "apriori_users", clerkId, "productContext", "settings"),
-    withoutUndefined({ ...data, updatedAt: serverTimestamp() }) as Record<string, unknown>,
+    doc(db, "apriori_users", userId, "productContext", "settings"),
+    cleaned as Record<string, unknown>,
     { merge: true }
   );
 }
 
 export async function getProductContext(
-  clerkId: string
+  userId: string
 ): Promise<ProductContextData | null> {
-  const snap = await getDoc(doc(db, "apriori_users", clerkId, "productContext", "settings"));
+  const snap = await getDoc(doc(db, "apriori_users", userId, "productContext", "settings"));
   return snap.exists() ? (snap.data() as ProductContextData) : null;
 }
 
@@ -131,7 +144,7 @@ export type AudienceDoc = {
 };
 
 export async function saveAudience(
-  clerkId: string,
+  userId: string,
   audience: Omit<AudienceDoc, "id" | "createdAt" | "updatedAt">
 ): Promise<string> {
   const cleaned = deepWithoutUndefined(audience);
@@ -142,40 +155,40 @@ export async function saveAudience(
     updatedAt: serverTimestamp(),
   };
   const docRef = await addDoc(
-    collection(db, "apriori_users", clerkId, "audiences"),
+    collection(db, "apriori_users", userId, "audiences"),
     payload as Record<string, unknown>
   );
   return docRef.id;
 }
 
 export async function updateAudience(
-  clerkId: string,
+  userId: string,
   audienceId: string,
   updates: Partial<Omit<AudienceDoc, "id" | "createdAt">>
 ): Promise<void> {
   const cleaned = deepWithoutUndefined(updates);
   if (cleaned === undefined || typeof cleaned !== "object" || Array.isArray(cleaned)) return;
-  await updateDoc(
-    doc(db, "apriori_users", clerkId, "audiences", audienceId),
-    { ...(cleaned as Record<string, unknown>), updatedAt: serverTimestamp() } as Record<string, unknown>
+  await safeUpdateDoc(
+    doc(db, "apriori_users", userId, "audiences", audienceId),
+    { ...(cleaned as Record<string, unknown>), updatedAt: serverTimestamp() }
   );
 }
 
-export async function deleteAudience(clerkId: string, audienceId: string): Promise<void> {
-  await deleteDoc(doc(db, "apriori_users", clerkId, "audiences", audienceId));
+export async function deleteAudience(userId: string, audienceId: string): Promise<void> {
+  await deleteDoc(doc(db, "apriori_users", userId, "audiences", audienceId));
 }
 
-export async function getAudiences(clerkId: string): Promise<AudienceDoc[]> {
+export async function getAudiences(userId: string): Promise<AudienceDoc[]> {
   const q = query(
-    collection(db, "apriori_users", clerkId, "audiences"),
+    collection(db, "apriori_users", userId, "audiences"),
     orderBy("createdAt", "desc")
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() } as AudienceDoc));
 }
 
-export async function getAudience(clerkId: string, audienceId: string): Promise<AudienceDoc | null> {
-  const snap = await getDoc(doc(db, "apriori_users", clerkId, "audiences", audienceId));
+export async function getAudience(userId: string, audienceId: string): Promise<AudienceDoc | null> {
+  const snap = await getDoc(doc(db, "apriori_users", userId, "audiences", audienceId));
   if (!snap.exists()) return null;
   return { id: snap.id, ...snap.data() } as AudienceDoc;
 }
@@ -198,38 +211,42 @@ export type SimulationDoc = {
 };
 
 export async function saveSimulation(
-  clerkId: string,
+  userId: string,
   simulation: Omit<SimulationDoc, "id" | "createdAt" | "updatedAt">
 ): Promise<string> {
+  const cleaned = deepWithoutUndefined(simulation);
+  if (cleaned === undefined || typeof cleaned !== "object" || Array.isArray(cleaned)) return "";
   const docRef = await addDoc(
-    collection(db, "apriori_users", clerkId, "simulations"),
-    withoutUndefined({
-      ...simulation,
+    collection(db, "apriori_users", userId, "simulations"),
+    {
+      ...(cleaned as Record<string, unknown>),
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-    }) as Record<string, unknown>
+    } as Record<string, unknown>
   );
   return docRef.id;
 }
 
 export async function updateSimulation(
-  clerkId: string,
+  userId: string,
   simulationId: string,
   updates: Partial<Omit<SimulationDoc, "id" | "createdAt">>
 ): Promise<void> {
-  await updateDoc(
-    doc(db, "apriori_users", clerkId, "simulations", simulationId),
-    withoutUndefined({ ...updates, updatedAt: serverTimestamp() }) as Record<string, unknown>
+  const cleaned = deepWithoutUndefined(updates);
+  if (cleaned === undefined || typeof cleaned !== "object" || Array.isArray(cleaned)) return;
+  await safeUpdateDoc(
+    doc(db, "apriori_users", userId, "simulations", simulationId),
+    { ...(cleaned as Record<string, unknown>), updatedAt: serverTimestamp() }
   );
 }
 
-export async function deleteSimulation(clerkId: string, simulationId: string): Promise<void> {
-  await deleteDoc(doc(db, "apriori_users", clerkId, "simulations", simulationId));
+export async function deleteSimulation(userId: string, simulationId: string): Promise<void> {
+  await deleteDoc(doc(db, "apriori_users", userId, "simulations", simulationId));
 }
 
-export async function getSimulations(clerkId: string): Promise<SimulationDoc[]> {
+export async function getSimulations(userId: string): Promise<SimulationDoc[]> {
   const q = query(
-    collection(db, "apriori_users", clerkId, "simulations"),
+    collection(db, "apriori_users", userId, "simulations"),
     orderBy("createdAt", "desc")
   );
   const snap = await getDocs(q);
@@ -237,41 +254,43 @@ export async function getSimulations(clerkId: string): Promise<SimulationDoc[]> 
 }
 
 export async function getSimulation(
-  clerkId: string,
+  userId: string,
   simulationDocId: string
 ): Promise<SimulationDoc | null> {
-  const snap = await getDoc(doc(db, "apriori_users", clerkId, "simulations", simulationDocId));
+  const snap = await getDoc(doc(db, "apriori_users", userId, "simulations", simulationDocId));
   return snap.exists() ? ({ id: snap.id, ...snap.data() } as SimulationDoc) : null;
 }
 
 // ─── Asset Folders ────────────────────────────────────────────────────────────
 
 export async function saveAssetFolder(
-  clerkId: string,
+  userId: string,
   folder: Omit<AssetFolder, "id">,
   options?: { parentId?: string | null }
 ): Promise<string> {
   const parentId = options?.parentId ?? folder.parentId ?? null;
   const docRef = await addDoc(
-    collection(db, "apriori_users", clerkId, "assetFolders"),
+    collection(db, "apriori_users", userId, "assetFolders"),
     withoutUndefined({ ...folder, parentId, updatedAt: serverTimestamp() }) as Record<string, unknown>
   );
   return docRef.id;
 }
 
 export async function updateAssetFolder(
-  clerkId: string,
+  userId: string,
   folderId: string,
   updates: Partial<Omit<AssetFolder, "id">>
 ): Promise<void> {
-  await updateDoc(
-    doc(db, "apriori_users", clerkId, "assetFolders", folderId),
-    withoutUndefined({ ...updates, updatedAt: serverTimestamp() }) as Record<string, unknown>
+  const cleaned = deepWithoutUndefined(updates);
+  if (cleaned === undefined || typeof cleaned !== "object" || Array.isArray(cleaned)) return;
+  await safeUpdateDoc(
+    doc(db, "apriori_users", userId, "assetFolders", folderId),
+    { ...(cleaned as Record<string, unknown>), updatedAt: serverTimestamp() }
   );
 }
 
-export async function deleteAssetFolder(clerkId: string, folderId: string): Promise<void> {
-  await deleteDoc(doc(db, "apriori_users", clerkId, "assetFolders", folderId));
+export async function deleteAssetFolder(userId: string, folderId: string): Promise<void> {
+  await deleteDoc(doc(db, "apriori_users", userId, "assetFolders", folderId));
 }
 
 /**
@@ -280,10 +299,10 @@ export async function deleteAssetFolder(clerkId: string, folderId: string): Prom
  * returns subfolders of that folder.
  */
 export async function getAssetFolders(
-  clerkId: string,
+  userId: string,
   parentId?: string | null
 ): Promise<AssetFolder[]> {
-  const coll = collection(db, "apriori_users", clerkId, "assetFolders");
+  const coll = collection(db, "apriori_users", userId, "assetFolders");
   if (parentId != null && parentId !== "") {
     // Simple equality query — no composite index needed.
     // Sort client-side to avoid requiring a Firestore composite index on parentId + createdAt.
@@ -304,7 +323,7 @@ export async function getAssetFolders(
 // ─── Assets (images: upload via Cloudinary; URL + public_id stored in Firestore) ─
 
 export async function saveAssetMetadata(
-  clerkId: string,
+  userId: string,
   folderId: string,
   assetId: string,
   asset: Omit<Asset, "id">
@@ -312,18 +331,18 @@ export async function saveAssetMetadata(
   const cleaned = deepWithoutUndefined(asset);
   if (cleaned === undefined || typeof cleaned !== "object" || Array.isArray(cleaned)) return;
   await setDoc(
-    doc(db, "apriori_users", clerkId, "assetFolders", folderId, "assets", assetId),
+    doc(db, "apriori_users", userId, "assetFolders", folderId, "assets", assetId),
     { ...(cleaned as Record<string, unknown>), updatedAt: serverTimestamp() } as Record<string, unknown>,
     { merge: true }
   );
 }
 
 export async function getAssetsInFolder(
-  clerkId: string,
+  userId: string,
   folderId: string
 ): Promise<Asset[]> {
   const q = query(
-    collection(db, "apriori_users", clerkId, "assetFolders", folderId, "assets"),
+    collection(db, "apriori_users", userId, "assetFolders", folderId, "assets"),
     orderBy("createdAt", "asc")
   );
   const snap = await getDocs(q);
@@ -331,18 +350,18 @@ export async function getAssetsInFolder(
 }
 
 export async function deleteAssetMetadata(
-  clerkId: string,
+  userId: string,
   folderId: string,
   assetId: string
 ): Promise<void> {
   await deleteDoc(
-    doc(db, "apriori_users", clerkId, "assetFolders", folderId, "assets", assetId)
+    doc(db, "apriori_users", userId, "assetFolders", folderId, "assets", assetId)
   );
 }
 
 /** Add a new asset document (e.g. after uploading file to Storage). Strips undefined. */
 export async function addAssetDocument(
-  clerkId: string,
+  userId: string,
   folderId: string,
   asset: Record<string, unknown>,
   storagePath: string
@@ -350,7 +369,7 @@ export async function addAssetDocument(
   const cleaned = deepWithoutUndefined({ ...asset, storagePath });
   if (cleaned === undefined || typeof cleaned !== "object" || Array.isArray(cleaned)) return "";
   const docRef = await addDoc(
-    collection(db, "apriori_users", clerkId, "assetFolders", folderId, "assets"),
+    collection(db, "apriori_users", userId, "assetFolders", folderId, "assets"),
     { ...(cleaned as Record<string, unknown>), updatedAt: serverTimestamp() } as Record<string, unknown>
   );
   return docRef.id;

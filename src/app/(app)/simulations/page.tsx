@@ -258,7 +258,7 @@ function FilterDropdown({
 export default function SimulationsPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
-  const { clerkId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useFirebaseUser();
   const router = useRouter();
 
   const [typeFilter, setTypeFilter] = useState('all');
@@ -287,9 +287,9 @@ export default function SimulationsPage() {
   }, [menuOpenId]);
 
   const loadSimulations = useCallback(async () => {
-    if (!clerkId || !profileReady) return;
+    if (!userId || !profileReady) return;
     try {
-      const data = await getSimulations(clerkId);
+      const data = await getSimulations(userId);
       setSimulations(data);
     } catch (err) {
       console.error(err);
@@ -297,7 +297,7 @@ export default function SimulationsPage() {
     } finally {
       setLoading(false);
     }
-  }, [clerkId, profileReady, showToast]);
+  }, [userId, profileReady, showToast]);
 
   useEffect(() => { loadSimulations(); }, [loadSimulations]);
 
@@ -333,10 +333,10 @@ export default function SimulationsPage() {
   /* ── Delete handler ─────────────────────────────────────────────────── */
 
   const handleDelete = async (id: string, name: string) => {
-    if (!clerkId) return;
+    if (!userId) return;
     setDeletingId(id);
     try {
-      await deleteSimulation(clerkId, id);
+      await deleteSimulation(userId, id);
       setConfirmDeleteId(null);
       setRemovingId(id);
       setTimeout(() => {

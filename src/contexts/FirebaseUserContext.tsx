@@ -4,7 +4,7 @@
  * FirebaseUserContext
  *
  * Automatically creates a Firestore user profile the first time a Firebase-
- * authenticated user is seen in the app. Exposes `clerkId` (= Firebase UID)
+ * authenticated user is seen in the app. Exposes `userId` (= Firebase UID)
  * and `profileReady` so child components can safely read/write Firestore.
  */
 
@@ -13,12 +13,12 @@ import { useAuthContext } from "./AuthContext";
 import { createUserProfile } from "@/lib/firestore";
 
 interface FirebaseUserContextValue {
-  clerkId: string | null;
+  userId: string | null;
   profileReady: boolean;
 }
 
 const FirebaseUserContext = createContext<FirebaseUserContextValue>({
-  clerkId: null,
+  userId: null,
   profileReady: false,
 });
 
@@ -57,7 +57,7 @@ export function FirebaseUserProvider({ children }: { children: React.ReactNode }
   return (
     <FirebaseUserContext.Provider
       value={{
-        clerkId: user?.uid || null,
+        userId: user?.uid || null,
         profileReady,
       }}
     >

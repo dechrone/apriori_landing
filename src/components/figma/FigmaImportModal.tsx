@@ -42,11 +42,11 @@ export default function FigmaImportModal({ isOpen, onClose, onComplete }: Props)
     setError(null);
 
     try {
-      const clerkId = user.id;
+      const userId = user.id;
 
       // 1. Create folder in Firestore
       setProgress('Creating folder...');
-      const folderId = await saveAssetFolder(clerkId, {
+      const folderId = await saveAssetFolder(userId, {
         name:              `${payload.fileName} — ${payload.pageName}`,
         assetType:         'product-flow',
         description:       `Imported from Figma: ${payload.fileName}`,
@@ -64,7 +64,7 @@ export default function FigmaImportModal({ isOpen, onClose, onComplete }: Props)
       await Promise.all(
         payload.frames.map((frame) =>
           addAssetDocument(
-            clerkId,
+            userId,
             folderId,
             {
               url:       frame.imageUrl,

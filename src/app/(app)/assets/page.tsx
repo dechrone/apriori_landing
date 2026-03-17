@@ -27,7 +27,7 @@ import {
 export default function AssetsPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
-  const { clerkId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useFirebaseUser();
   const router = useRouter();
 
   const [folders, setFolders] = useState<AssetFolder[]>([]);
@@ -41,15 +41,15 @@ export default function AssetsPage() {
   const [deleteModalFolder, setDeleteModalFolder] = useState<AssetFolder | null>(null);
 
   const loadFolders = useCallback(async () => {
-    if (!clerkId || !profileReady) return;
+    if (!userId || !profileReady) return;
     try {
-      const roots = await getAssetFolders(clerkId);
+      const roots = await getAssetFolders(userId);
       setFolders(roots);
       const comparatorIds = roots.filter((f) => f.assetType === 'product-flow-comparator').map((f) => f.id);
       const subfoldersMap: Record<string, AssetFolder[]> = {};
       await Promise.all(
         comparatorIds.map(async (parentId) => {
-          const children = await getAssetFolders(clerkId, parentId);
+          const children = await getAssetFolders(userId, parentId);
           subfoldersMap[parentId] = children;
         })
       );
@@ -64,7 +64,7 @@ export default function AssetsPage() {
       await Promise.all(
         allFolderIds.map(async (id) => {
           try {
-            assetsMap[id] = await getAssetsInFolder(clerkId, id);
+            assetsMap[id] = await getAssetsInFolder(userId, id);
           } catch {
             assetsMap[id] = [];
           }
@@ -77,7 +77,7 @@ export default function AssetsPage() {
     } finally {
       setLoading(false);
     }
-  }, [clerkId, profileReady, showToast]);
+  }, [userId, profileReady, showToast]);
 
   useEffect(() => {
     loadFolders();
@@ -88,7 +88,7 @@ export default function AssetsPage() {
     assetType: AssetFolder['assetType'],
     description?: string
   ) => {
-    if (!clerkId) return;
+    if (!userId) return;
     const now = new Date().toISOString();
     try {
       if (assetType === 'product-flow-comparator') {
@@ -103,7 +103,7 @@ export default function AssetsPage() {
           usedInSimulations: 0,
           status: 'ready',
         };
-        const parentId = await saveAssetFolder(clerkId, parentData);
+        const parentId = await saveAssetFolder(userId, parentData);
         const childData: Omit<AssetFolder, 'id'> = {
           name: 'Flow 1',
           assetType: 'product-flow',
@@ -118,8 +118,8 @@ export default function AssetsPage() {
           ...childData,
           name: 'Flow 2',
         };
-        const flow1Id = await saveAssetFolder(clerkId, childData);
-        const flow2Id = await saveAssetFolder(clerkId, childData2);
+        const flow1Id = await saveAssetFolder(userId, childData);
+        const flow2Id = await saveAssetFolder(userId, childData2);
         const flow1 = { id: flow1Id, ...childData };
         const flow2 = { id: flow2Id, ...childData2 };
         setFolders((prev) => [{ id: parentId, ...parentData }, ...prev]);
@@ -140,7 +140,7 @@ export default function AssetsPage() {
           usedInSimulations: 0,
           status: 'ready',
         };
-        const newId = await saveAssetFolder(clerkId, folderData);
+        const newId = await saveAssetFolder(userId, folderData);
         setFolders((prev) => [{ id: newId, ...folderData }, ...prev]);
         showToast('success', 'Folder created', `"${name}" is ready for ${getAssetTypeLabel(assetType).toLowerCase()}.`);
       }
@@ -151,9 +151,9 @@ export default function AssetsPage() {
   };
 
   const handleSaveFolder = async (updates: { name: string; description?: string }) => {
-    if (!editModalFolder || !clerkId) return;
+    if (!editModalFolder || !userId) return;
     try {
-      await updateAssetFolder(clerkId, editModalFolder.id, updates);
+      await updateAssetFolder(userId, editModalFolder.id, updates);
       setFolders((prev) =>
         prev.map((f) =>
           f.id === editModalFolder.id
@@ -170,9 +170,9 @@ export default function AssetsPage() {
   };
 
   const handleDeleteFolder = async () => {
-    if (!deleteModalFolder || !clerkId) return;
+    if (!deleteModalFolder || !userId) return;
     try {
-      await deleteAssetFolder(clerkId, deleteModalFolder.id);
+      await deleteAssetFolder(userId, deleteModalFolder.id);
       setFolders((prev) => prev.filter((f) => f.id !== deleteModalFolder.id));
       showToast('success', 'Folder deleted', `"${deleteModalFolder.name}" has been removed.`);
       setDeleteModalFolder(null);
@@ -231,7 +231,6 @@ export default function AssetsPage() {
           <h2 className="text-[24px] font-bold text-[#1A1A1A]">Assets</h2>
           {folders.length > 0 && (
             <div className="flex items-center gap-2">
-              {false && (
               <button
                 onClick={() => setFigmaImportOpen(true)}
                 className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-[#4B5563] bg-white border border-[#E5E7EB] rounded-lg hover:border-[#A259FF] hover:text-[#7C3AED] transition-colors"
@@ -239,7 +238,6 @@ export default function AssetsPage() {
                 <Figma className="w-4 h-4" />
                 Import from Figma
               </button>
-              )}
               <button
                 onClick={() => setCreateModalOpen(true)}
                 className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-[#4B5563] bg-white border border-[#E5E7EB] rounded-lg hover:border-[#F59E0B] hover:text-[#92400E] transition-colors"
@@ -444,13 +442,11 @@ export default function AssetsPage() {
         folder={deleteModalFolder}
         onConfirm={handleDeleteFolder}
       />
-      {false && (
       <FigmaImportModal
         isOpen={figmaImportOpen}
         onClose={() => setFigmaImportOpen(false)}
         onComplete={handleFigmaImportComplete}
       />
-      )}
     </>
   );
 }

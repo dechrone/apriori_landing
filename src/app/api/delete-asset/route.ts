@@ -3,11 +3,11 @@ import { adminDb } from "@/lib/firebase-admin";
 
 export async function DELETE(request: NextRequest) {
   try {
-    const { clerkId, folderId, assetId } = await request.json();
+    const { userId, folderId, assetId } = await request.json();
 
-    if (!clerkId || !folderId || !assetId) {
+    if (!userId || !folderId || !assetId) {
       return NextResponse.json(
-        { error: "Missing required fields: clerkId, folderId, assetId" },
+        { error: "Missing required fields: userId, folderId, assetId" },
         { status: 400 }
       );
     }
@@ -15,7 +15,7 @@ export async function DELETE(request: NextRequest) {
     // Delete the asset document
     const assetRef = adminDb
       .collection("apriori_users")
-      .doc(clerkId)
+      .doc(userId)
       .collection("assetFolders")
       .doc(folderId)
       .collection("assets")
@@ -34,7 +34,7 @@ export async function DELETE(request: NextRequest) {
     // Update the folder's assetCount
     const folderRef = adminDb
       .collection("apriori_users")
-      .doc(clerkId)
+      .doc(userId)
       .collection("assetFolders")
       .doc(folderId);
 

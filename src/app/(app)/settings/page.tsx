@@ -41,7 +41,6 @@ export default function SettingsPage() {
       <div className="p-5 sm:p-8 lg:p-10">
       <div className="max-w-[800px] mx-auto space-y-8">
 
-        {false && (
         <section className="space-y-4">
           <div>
             <h2 className="text-h4 text-text-primary font-semibold">Integrations</h2>
@@ -51,7 +50,6 @@ export default function SettingsPage() {
           </div>
           <FigmaConnectionCard key={cardKey} fetchDelay={isPostOAuth ? 800 : 0} />
         </section>
-        )}
 
         <Card>
           <CardHeader>

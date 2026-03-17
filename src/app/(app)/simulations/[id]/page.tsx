@@ -32,19 +32,19 @@ const dmSans = DM_Sans({
 
 export default function SimulationDetailsPage() {
   const { toggleMobileMenu } = useAppShell();
-  const { clerkId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useFirebaseUser();
   const params = useParams();
   const id = typeof params?.id === "string" ? params.id : null;
   const [simulation, setSimulation] = useState<SimulationDoc | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!clerkId || !profileReady || !id) {
+    if (!userId || !profileReady || !id) {
       setLoading(!profileReady || !id);
       return;
     }
     let cancelled = false;
-    getSimulation(clerkId, id)
+    getSimulation(userId, id)
       .then((doc) => {
         if (!cancelled) setSimulation(doc ?? null);
       })
@@ -54,7 +54,7 @@ export default function SimulationDetailsPage() {
     return () => {
       cancelled = true;
     };
-  }, [clerkId, profileReady, id]);
+  }, [userId, profileReady, id]);
 
   const result = simulation?.result as ProductFlowSimulationResult | undefined;
   const meta = result?.metadata;

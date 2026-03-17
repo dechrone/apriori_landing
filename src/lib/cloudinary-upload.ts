@@ -10,13 +10,13 @@ export interface CloudinaryUploadResult {
 
 export async function uploadAssetToCloudinary(
   file: File,
-  clerkId: string,
+  userId: string,
   folderId: string,
   options?: { accountName?: string; companyName?: string }
 ): Promise<CloudinaryUploadResult> {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("clerkId", clerkId);
+  formData.append("userId", userId);
   formData.append("folderId", folderId);
   if (options?.accountName) formData.append("accountName", options.accountName);
   if (options?.companyName) formData.append("companyName", options.companyName);

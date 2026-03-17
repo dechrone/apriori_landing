@@ -88,7 +88,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
 
 export default function DashboardPage() {
   const { toggleMobileMenu } = useAppShell();
-  const { clerkId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useFirebaseUser();
   const [showComingSoonModal, setShowComingSoonModal] = useState(false);
 
   // Recent simulations state
@@ -114,13 +114,13 @@ export default function DashboardPage() {
 
   // Fetch dashboard data
   const fetchDashboardData = useCallback(async () => {
-    if (!clerkId || !profileReady) return;
+    if (!userId || !profileReady) return;
 
     try {
       const [sims, folders, audiences] = await Promise.all([
-        getSimulations(clerkId),
-        getAssetFolders(clerkId),
-        getAudiences(clerkId),
+        getSimulations(userId),
+        getAssetFolders(userId),
+        getAudiences(userId),
       ]);
 
       // Recent simulations — take top 4
@@ -146,7 +146,7 @@ export default function DashboardPage() {
       setSimsLoading(false);
       setOnboardingLoading(false);
     }
-  }, [clerkId, profileReady]);
+  }, [userId, profileReady]);
 
   useEffect(() => {
     fetchDashboardData();

@@ -23,33 +23,33 @@ const DEFAULT_FORM: ProductContextData = {
 export default function ProductContextPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
-  const { clerkId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useFirebaseUser();
 
   const [formData, setFormData] = useState<ProductContextData>(DEFAULT_FORM);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   const loadContext = useCallback(async () => {
-    if (!clerkId || !profileReady) return;
+    if (!userId || !profileReady) return;
     try {
-      const data = await getProductContext(clerkId);
+      const data = await getProductContext(userId);
       if (data) setFormData(data);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, [clerkId, profileReady]);
+  }, [userId, profileReady]);
 
   useEffect(() => {
     loadContext();
   }, [loadContext]);
 
   const handleSave = async () => {
-    if (!clerkId) return;
+    if (!userId) return;
     setSaving(true);
     try {
-      await saveProductContext(clerkId, formData);
+      await saveProductContext(userId, formData);
       showToast('success', 'Product context saved', 'Your changes have been saved to Firebase.');
     } catch (err) {
       console.error(err);

@@ -16,7 +16,7 @@ export default function NewAudiencePage() {
   const { toggleMobileMenu, sidebarCollapsed } = useAppShell();
   const router = useRouter();
   const { showToast } = useToast();
-  const { clerkId } = useFirebaseUser();
+  const { userId } = useFirebaseUser();
 
   const [step, setStep] = useState<"details" | "builder">("details");
   const [name, setName] = useState("");
@@ -34,10 +34,10 @@ export default function NewAudiencePage() {
 
   const handleSaveDraft = useCallback(
     async (audienceDescription: string, filters: AdvancedFilters | null) => {
-      if (!clerkId) return;
+      if (!userId) return;
       setSaving(true);
       try {
-        await saveAudience(clerkId, {
+        await saveAudience(userId, {
           name: name.trim(),
           description: description.trim() || undefined,
           audienceDescription: audienceDescription || undefined,
@@ -58,7 +58,7 @@ export default function NewAudiencePage() {
         setSaving(false);
       }
     },
-    [clerkId, name, description, showToast, router]
+    [userId, name, description, showToast, router]
   );
 
   const handleCreateAudience = useCallback(
@@ -79,10 +79,10 @@ export default function NewAudiencePage() {
         );
         return;
       }
-      if (!clerkId) return;
+      if (!userId) return;
       setSaving(true);
       try {
-        await saveAudience(clerkId, {
+        await saveAudience(userId, {
           name: trimmed,
           description: description.trim() || undefined,
           audienceDescription: audienceDescription || undefined,
@@ -103,7 +103,7 @@ export default function NewAudiencePage() {
         setSaving(false);
       }
     },
-    [clerkId, name, description, showToast, router]
+    [userId, name, description, showToast, router]
   );
 
   return (
