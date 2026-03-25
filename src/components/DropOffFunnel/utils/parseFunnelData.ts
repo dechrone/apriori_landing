@@ -136,15 +136,27 @@ export function parseFunnelData(data: SimulationData): FunnelScreen[] {
     }
   }
 
-  // Build ordered screen list from screen_metrics keys
-  // Tiebreaker: "3" < "3_result" alphabetically, so base screens sort before result screens
-  const screenIds = Object.keys(screenMetrics).sort((a, b) => {
-    const diff = extractStepNumber(a) - extractStepNumber(b);
-    if (diff !== 0) return diff;
-    return a.localeCompare(b);
-  });
+  // Build ordered screen list from funnel_drop_off order (canonical funnel order).
+  // Fall back to screen_metrics keys sorted by extracted step number if funnel_drop_off is empty.
+  let screenIds: string[];
+  if (funnelDropOff.length > 0) {
+    // Use funnel_drop_off order — it's already in correct funnel sequence
+    screenIds = funnelDropOff.map((item) => item.screen_id);
+    // Add any screen_metrics keys that aren't in funnel_drop_off (shouldn't happen, but safety net)
+    for (const sid of Object.keys(screenMetrics)) {
+      if (!screenIds.includes(sid)) {
+        screenIds.push(sid);
+      }
+    }
+  } else {
+    screenIds = Object.keys(screenMetrics).sort((a, b) => {
+      const diff = extractStepNumber(a) - extractStepNumber(b);
+      if (diff !== 0) return diff;
+      return a.localeCompare(b);
+    });
+  }
 
-  const screens: FunnelScreen[] = screenIds.map((sid) => {
+  const screens: FunnelScreen[] = screenIds.map((sid, index) => {
     const metrics = screenMetrics[sid];
     const dropInfo = dropOffMap.get(sid);
     const dropOffs = dropInfo?.drop_offs ?? 0;
@@ -164,9 +176,9 @@ export function parseFunnelData(data: SimulationData): FunnelScreen[] {
 
     return {
       screen_id: sid,
-      step_number: extractStepNumber(sid),
+      step_number: index + 1,
       view_name: resolveViewName(sid, data),
-      users_at_screen: metrics.sample_size,
+      users_at_screen: metrics?.sample_size ?? 0,
       drop_offs: dropOffs,
       drop_off_pct: dropOffPct,
       is_biggest_drop: isBiggest,
@@ -178,12 +190,13 @@ export function parseFunnelData(data: SimulationData): FunnelScreen[] {
     };
   });
 
-  // Calculate cumulative remaining
+  // Calculate cumulative remaining and correct users_at_screen
   let cumulativeDropped = 0;
   for (const screen of screens) {
     const remainingCount = totalPersonas - cumulativeDropped;
     const remainingPct =
       totalPersonas > 0 ? Math.round((remainingCount / totalPersonas) * 100) : 0;
+    screen.users_at_screen = remainingCount;
     screen.remaining_count = remainingCount;
     screen.remaining_pct = remainingPct;
     cumulativeDropped += screen.drop_offs;
