@@ -377,6 +377,8 @@ const EXCLUDED_FRICTION = new Set([
   "No explicit discreet billing confirmation",
   "No reassurance about discreet billing name",
   "Upsell threshold nudge feels pressuring",
+  "No comparison between spray types and use cases",
+  "No 'which product is right for me' guidance",
 ]);
 
 function computeFrictionPoints(personas: RawPersona[]) {
@@ -392,7 +394,7 @@ function computeFrictionPoints(personas: RawPersona[]) {
   }
   return Object.entries(freq)
     .sort(([, a], [, b]) => b - a)
-    .slice(0, 6)
+    .slice(0, 4)
     .map(([friction, frequency]) => ({ friction, frequency }));
 }
 
@@ -475,7 +477,7 @@ function buildSimulationData(): SimulationData {
       {
         priority: "P0",
         screen: "Home Page \u2013 Hero Banner (Above the Fold)",
-        issue: "The homepage has no clear hero CTA or product education flow. The landing experience is: trust bar \u2192 brand messaging \u2192 products with reviews \u2192 footer. Most Indian users have literally never seen this product type before \u2014 you\u2019re creating a category and need a visual explainer above the fold. The product page has this buried under 'How to Use' text, but it needs to be front-and-center on the homepage.",
+        issue: "Homepage lacks a clear hero CTA and above-the-fold visual explainer, which is critical since users are unfamiliar with the product category.",
         recommendation: "Add a 3-step 'How it works' visual explainer with clean icons above the fold or immediately below the hero banner. Think: Shake \u2192 Spray \u2192 Enjoy. Educate before you sell.",
         expected_impact: "Reduces bounce from first-time visitors who don\u2019t understand the product category; projected +10\u201315% homepage-to-PDP progression",
         primary_affected_segment: "All first-time visitors, especially from social ads",
@@ -483,7 +485,7 @@ function buildSimulationData(): SimulationData {
       {
         priority: "P0",
         screen: "Home Page \u2013 Navigation",
-        issue: "They sell oral sprays, lubes, delay sprays, intimate wash, and aphrodisiac perfumes \u2014 but the nav is just: Home / Shop / Shark Tank / Combos. There\u2019s no category-level navigation. A user looking for a specific product has to click 'Shop' and visually scan or filter. The footer has the full category breakdown (Oral Intimacy Spray, Edible Lube, Delay Spray, Intimate Hygiene, Aphrodisiac Perfumes) \u2014 that taxonomy should be in the primary nav.",
+        issue: "Navigation lacks category-level structure — users must click 'Shop' and scan visually, despite the brand selling 5 distinct product types already listed in the footer.",
         recommendation: "Surface product taxonomy as a dropdown under 'Shop' in the primary nav, matching the footer categories: Oral Intimacy Spray, Edible Lube, Delay Spray, Intimate Hygiene, Aphrodisiac Perfumes.",
         expected_impact: "Faster navigation for intent-driven visitors; reduces hunt-and-scan friction across all product categories",
         primary_affected_segment: "All visitors, especially those arriving with specific product intent",
@@ -491,7 +493,7 @@ function buildSimulationData(): SimulationData {
       {
         priority: "P0",
         screen: "Home Page \u2013 Scrolled Section (Below the Fold)",
-        issue: "Product pages have strong reviews (91 reviews on Strawberry Bliss, 89% 5-star), but the homepage doesn\u2019t surface these. For a taboo-adjacent category, the #1 conversion driver is 'other normal people bought this and liked it.' The combos page has a single review from 'Rhea & Arjun, Mumbai' \u2014 that format is good, there should be 5\u20136 of those on the homepage.",
+        issue: "Homepage doesn't surface the strong product reviews (89% 5-star) — in a taboo-adjacent category, social proof from real buyers is the #1 trust driver.",
         recommendation: "Add a testimonial carousel or 'Trusted by 1000+ couples' section with 5\u20136 real review snippets prominently on the homepage. Use the existing format (name, city, star rating, short quote).",
         expected_impact: "+10\u201315% trust lift for first-time visitors in a taboo-adjacent category",
         primary_affected_segment: "All first-time visitors, trust-seeking users",
@@ -499,7 +501,7 @@ function buildSimulationData(): SimulationData {
       {
         priority: "P1",
         screen: "Product Detail Page",
-        issue: "The Strawberry Bliss PDP repeats the full product description twice \u2014 once in a quick-view section and once in the main body. The description itself, while well-written, could be 40% shorter. For mobile (likely 80%+ of traffic for this demographic), wall-of-text kills scroll momentum.",
+        issue: "PDP repeats the full product description twice and is too long for mobile — wall-of-text kills scroll momentum for 80%+ mobile traffic.",
         recommendation: "Lead with 2\u20133 punchy benefit lines, then collapse the rest behind a 'Read more' toggle. Remove the duplicate description block entirely.",
         expected_impact: "Improved mobile scroll momentum; faster path to Add to Cart",
         primary_affected_segment: "Mobile users, impulse buyers, anyone scanning product pages",
@@ -507,7 +509,7 @@ function buildSimulationData(): SimulationData {
       {
         priority: "P0",
         screen: "Product Detail Page",
-        issue: "For a product that gets sprayed on intimate skin and is explicitly 'edible,' the absence of a visible ingredients list on the product page is a serious miss. Users in this category have high safety anxiety. 'Food-grade' and 'dermatologically tested' are claims; an actual ingredient list is proof. The FAQ mentions FSSAI licensing but doesn\u2019t link to certificates either.",
+        issue: "No visible ingredient list on the PDP for an edible/intimate product — 'food-grade' and 'dermatologically tested' are claims, not proof, causing safety anxiety and drop-offs.",
         recommendation: "Add a collapsible 'Full Ingredients' section on every PDP with the complete ingredient list, concentrations, and a linked FSSAI badge/certificate.",
         expected_impact: "+10\u201315% conversion from safety-conscious visitors who currently bounce at PDP",
         primary_affected_segment: "Safety-conscious users, healthcare professionals, ingredient-checkers",
@@ -517,12 +519,8 @@ function buildSimulationData(): SimulationData {
     behavioral_insights: [
       "60% completion rate (6/10) with drop-offs spread across four different screens \u2014 homepage, product page, cart, and checkout \u2014 indicating conversion barriers are not concentrated but distributed throughout the funnel.",
       "All 6 completers are Pragmatists \u2014 they accepted friction points (missing ingredients, upsell pressure, cashback overload) because the rational cost-benefit analysis favored completion at \u20b9595.",
-      "The 4 drop-offs had very specific, articulable reasons: missing ingredient list (PDP), sold-out combos dead end (cart), couple-only messaging (homepage), and hidden COD refund policy (checkout). These are UX/content gaps, not product or pricing failures.",
-      "100% of completers used UPI-based payments (Google Pay, PhonePe, POP UPI), confirming instant digital payment is table-stakes for this demographic.",
       "Discreet packaging assurance was cited positively by both completers and drop-offs, validating it as a category-essential trust signal.",
       "The 'no ingredient list for an edible product' friction point appeared across 6/10 personas, making it the single most repeated UX gap even among those who completed.",
-      "The Combos page dead-end represents a systemic inventory UX problem: a primary nav item should never point to an entirely sold-out page without offering alternatives (waitlist, related products, restock dates).",
-      "The COD refund policy drop-off reveals a trust architecture problem: policies that affect purchase risk should be surfaced at the decision point, not buried in FAQ.",
     ],
 
     segment_analysis: {

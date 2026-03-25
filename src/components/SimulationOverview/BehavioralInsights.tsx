@@ -12,8 +12,8 @@ interface Props {
 const INSIGHT_TITLES = [
   "Demographic Misalignment",
   "The Pragmatist Barrier",
-  "UI-Induced Anxiety",
-  "The Universal Trust-Killer",
+  "Discreet Packaging Signal",
+  "The Ingredient Gap",
 ];
 
 export function BehavioralInsights({ data }: Props) {
