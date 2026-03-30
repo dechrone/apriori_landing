@@ -51,26 +51,22 @@ function resolveViewName(
     }
   }
 
-  // 2. Try design_recommendations — match by screen_id pattern in screen field
-  //    e.g. "KYC – Secure Verification (Step 1/6)" for view_1
+  // 2. Try usability_findings — match by screen field
   const stepNum = extractStepNumber(screenId);
-  if (stepNum && data.design_recommendations) {
-    for (const rec of data.design_recommendations) {
-      if (!rec.screen) continue;
-      const stepMatch = rec.screen.match(/Step\s+(\d+)/i);
-      if (stepMatch && parseInt(stepMatch[1], 10) === stepNum) {
-        return rec.screen;
+  if (data.usability_findings) {
+    for (const f of data.usability_findings) {
+      if (f.screen === screenId) return f.screen;
+      const stepMatch = f.screen?.match(/Step\s+(\d+)/i);
+      if (stepNum && stepMatch && parseInt(stepMatch[1], 10) === stepNum) {
+        return f.screen;
       }
     }
   }
 
-  // 3. Try playbook_insights — use playbook_theme as a descriptive name
-  const playbook = data.playbook_insights;
-  if (playbook?.[screenId]) {
-    const entry = playbook[screenId];
-    if (entry.playbook_theme) {
-      return `Screen ${stepNum} — ${entry.playbook_theme}`;
-    }
+  // 3. Try behavior_analysis — use primary_task as a descriptive name
+  const ba = data.behavior_analysis;
+  if (ba?.[screenId]?.primary_task) {
+    return `Screen ${stepNum || screenId} — ${ba[screenId].primary_task}`;
   }
 
   // 4. Fallback: "view_1" → "Screen 1"

@@ -62,24 +62,21 @@ const FLOW_A_DATA: SimulationData = {
       screen: "plan_selection",
       issue: "Plan comparison table lacks detail — deliberate personas feel rushed and drop off.",
       recommendation: "Add an expandable 'See full details' section below the comparison table that reveals coverage specifics, exclusions, and waiting periods without disrupting the default streamlined view.",
-      expected_impact: "-8% drop-off at plan selection; increased clarity scores for 40+ age group.",
-      primary_affected_segment: "Cautious decision-makers, tier-2 city users",
+      expected_impact: "-8% drop-off at plan selection; increased clarity scores for 40+ age group."
     },
     {
       priority: "P1",
       screen: "welcome",
       issue: "No vernacular language support — non-English users disengage before reaching KYC.",
       recommendation: "Add a language selector on the welcome screen supporting Hindi, Marathi, and Tamil. Translate all screen copy and labels. Use regional idioms where appropriate.",
-      expected_impact: "+5-7% completion for non-English segments; reduced early-screen bounce.",
-      primary_affected_segment: "Tier-2 and tier-3 city users with low English proficiency",
+      expected_impact: "+5-7% completion for non-English segments; reduced early-screen bounce."
     },
     {
       priority: "P1",
       screen: "kyc_step1",
       issue: "Users are unsure why Aadhaar details are needed — trust drops at this step.",
       recommendation: "Add a single-line 'Why we need this' explainer next to the Aadhaar field, citing IRDAI regulatory requirements and data protection.",
-      expected_impact: "+5% KYC completion for 40+ age group.",
-      primary_affected_segment: "40+ age group, low digital literacy users",
+      expected_impact: "+5% KYC completion for 40+ age group."
     },
   ],
   behavioral_insights: [
@@ -136,12 +133,10 @@ const FLOW_A_DATA: SimulationData = {
     acquisition_recommendation: "Target Google Ads and Instagram campaigns focusing on health-conscious professionals aged 25–45 in metro cities, using monthly pricing as the primary hook.",
   },
   drop_off_analysis: {
-    top_n_screens: 3,
-    total_drop_offs_analyzed: 14,
-    screens: {
-      plan_selection: { total_drop_offs: 8, clusters: [{ label: "Insufficient plan details", sample_reasonings: ["I can't see what's covered vs excluded", "Where are the waiting periods?"] }] },
-      kyc_step1: { total_drop_offs: 4, clusters: [{ label: "Trust deficit at KYC", sample_reasonings: ["Why do they need my Aadhaar?", "No explanation for data usage"] }] },
-      welcome: { total_drop_offs: 3, clusters: [{ label: "Language barrier", sample_reasonings: ["Everything is in English", "I can't read this properly"] }] },
+        screens: {
+      plan_selection: { drop_off_count: 8, hotspot_rank: 1, clusters: [{ cluster_id: 0, label: "Insufficient plan details", persona_count: 1, representative_reasoning: "I can't see what's covered vs excluded" }] },
+      kyc_step1: { drop_off_count: 4, hotspot_rank: 1, clusters: [{ cluster_id: 0, label: "Trust deficit at KYC", persona_count: 1, representative_reasoning: "Why do they need my Aadhaar?" }] },
+      welcome: { drop_off_count: 3, hotspot_rank: 1, clusters: [{ cluster_id: 0, label: "Language barrier", persona_count: 1, representative_reasoning: "Everything is in English" }] },
     },
   },
   flow_assessment: {
@@ -185,8 +180,7 @@ const FLOW_A_DATA: SimulationData = {
     { persona_type: "Rural User / Language Barrier", plan_chosen: "dropped off", key_decision_moment: "Welcome screen — couldn't read English, left immediately.", emotional_arc: "Confused → Frustrated → Abandoned" },
   ],
   completion_analysis: {
-    total_completers: 31,
-    completion_rate_pct: 62.0,
+        completion_rate_pct: 62.0,
     conversion_drivers: { monthly_pricing: 0.85, trust_badge: 0.72, streamlined_kyc: 0.68 },
     dominant_completion_themes: ["Monthly price accessibility", "Trust from IRDAI badge", "Fast KYC experience"],
     llm_synthesis: "Flow A converts primarily through its monthly price framing strategy, which eliminates the sticker shock that plagues annual-only displays. The IRDAI trust badge provides early credibility, and the 2-step KYC respects users' time.",
@@ -446,24 +440,21 @@ const FLOW_B_DATA: SimulationData = {
       screen: "plan_selection",
       issue: "Annual-only price display (₹5,988/yr) causes 30% drop-off due to sticker shock.",
       recommendation: "Replace annual headline with monthly pricing (₹499/mo) as the primary display, with annual price as secondary text. This single change is estimated to recover 15-18pp of the plan selection drop-off.",
-      expected_impact: "+15-18pp completion at plan selection; reduced sticker shock for mid-income segments.",
-      primary_affected_segment: "Mid-income users (₹30k–₹60k/mo) who budget monthly",
+      expected_impact: "+15-18pp completion at plan selection; reduced sticker shock for mid-income segments."
     },
     {
       priority: "P0",
       screen: "kyc_step1 through kyc_step5",
       issue: "5-step KYC adds 44 seconds of friction unnecessarily — users lose momentum.",
       recommendation: "Consolidate to a 2-step KYC (basic details + Aadhaar verification). Move employment and address details to post-purchase profile completion.",
-      expected_impact: "-44 seconds completion time; +10-12% reduction in KYC-stage drop-off.",
-      primary_affected_segment: "All segments — especially high digital literacy users who find it tedious",
+      expected_impact: "-44 seconds completion time; +10-12% reduction in KYC-stage drop-off."
     },
     {
       priority: "P1",
       screen: "addon_pre_confirm",
       issue: "Pre-confirmation addon screen feels like a bait-and-switch — users see total cost increase before committing.",
       recommendation: "Move addon upsell to post-confirmation (after payment). This removes pre-payment anxiety and increases perceived addon value.",
-      expected_impact: "+10-15% addon adoption; reduced pre-payment anxiety.",
-      primary_affected_segment: "Skeptical personas and first-time insurance buyers",
+      expected_impact: "+10-15% addon adoption; reduced pre-payment anxiety."
     },
   ],
   behavioral_insights: [
@@ -520,12 +511,10 @@ const FLOW_B_DATA: SimulationData = {
     acquisition_recommendation: "For this flow variant, target awareness campaigns in tier-2/3 cities via regional language platforms and local health camp partnerships. Emphasize the guided, step-by-step nature of the process.",
   },
   drop_off_analysis: {
-    top_n_screens: 3,
-    total_drop_offs_analyzed: 15,
-    screens: {
-      plan_selection: { total_drop_offs: 10, clusters: [{ label: "Sticker shock from annual pricing", sample_reasonings: ["₹5,988 per year is too much!", "I can't afford this — that's almost ₹6,000 at once"] }] },
-      kyc_step3: { total_drop_offs: 3, clusters: [{ label: "KYC fatigue", sample_reasonings: ["How many more steps?", "This is taking too long"] }] },
-      addon_pre_confirm: { total_drop_offs: 3, clusters: [{ label: "Bait-and-switch perception", sample_reasonings: ["Now they want more money?", "This feels like a trap"] }] },
+        screens: {
+      plan_selection: { drop_off_count: 10, hotspot_rank: 1, clusters: [{ cluster_id: 0, label: "Sticker shock from annual pricing", persona_count: 1, representative_reasoning: "₹5,988 per year is too much!" }] },
+      kyc_step3: { drop_off_count: 3, hotspot_rank: 1, clusters: [{ cluster_id: 0, label: "KYC fatigue", persona_count: 1, representative_reasoning: "How many more steps?" }] },
+      addon_pre_confirm: { drop_off_count: 3, hotspot_rank: 1, clusters: [{ cluster_id: 0, label: "Bait-and-switch perception", persona_count: 1, representative_reasoning: "Now they want more money?" }] },
     },
   },
   flow_assessment: {
@@ -570,8 +559,7 @@ const FLOW_B_DATA: SimulationData = {
     { persona_type: "Mid-Income Family Planner", plan_chosen: "dropped off", key_decision_moment: "Plan selection — ₹5,988/year felt unaffordable as a lump sum.", emotional_arc: "Hopeful → Cautious → Shocked → Exited" },
   ],
   completion_analysis: {
-    total_completers: 22,
-    completion_rate_pct: 44.0,
+        completion_rate_pct: 44.0,
     conversion_drivers: { guided_kyc: 0.65, detailed_comparison: 0.58, accessibility: 0.72 },
     dominant_completion_themes: ["Step-by-step KYC guidance", "Detailed plan comparison for cautious personas", "Accessibility for low-literacy users"],
     llm_synthesis: "Flow B converts a niche audience — low-literacy users and cautious decision-makers — through its guided approach. However, this comes at the cost of alienating the majority segment (urban professionals) who find the extended KYC tedious and the annual pricing psychologically expensive.",

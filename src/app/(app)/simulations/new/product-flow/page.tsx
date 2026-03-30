@@ -14,6 +14,8 @@ import {
   FolderOpen,
   Loader2,
   Users,
+  CheckCircle,
+  XCircle,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { AssetFolder } from '@/types/asset';
@@ -21,7 +23,8 @@ import { getAssetTypeLabel } from '@/types/asset';
 import { triggerProductFlowSimulation } from '@/lib/backend-simulation';
 import { getAudiences, getAssetFolders, saveSimulation } from '@/lib/firestore';
 import type { AudienceDoc } from '@/lib/firestore';
-import type { ProductFlowSimulationResponse } from '@/types/simulation-result';
+import { consumeNDJSONStream } from '@/lib/stream-simulation';
+import type { SimulationData } from '@/types/simulation';
 
 type Step = 1 | 2 | 3;
 
@@ -46,6 +49,11 @@ export default function ProductFlowSimulationPage() {
   const [allFolders, setAllFolders] = useState<AssetFolder[]>([]);
   const [validationError, setValidationError] = useState('');
   const [shake, setShake] = useState(false);
+  const [streamProgress, setStreamProgress] = useState<{
+    personasTotal: number;
+    personasDone: { name: string; completed: boolean }[];
+    phase: string;
+  } | null>(null);
   const router = useRouter();
 
   const loadAudiences = useCallback(async () => {
@@ -118,11 +126,19 @@ export default function ProductFlowSimulationPage() {
       showToast('error', 'Not signed in', 'Please sign in to run a simulation.');
       return;
     }
+    // Resolve audience NL description text (backend expects text, not Firestore ID)
+    const selectedAudience = audiences.find((a) => a.id === formData.audience);
+    const audienceText =
+      selectedAudience?.audienceDescription ||
+      selectedAudience?.description ||
+      formData.audience;
+
     setRunning(true);
+    setStreamProgress({ personasTotal: 0, personasDone: [], phase: 'starting' });
     try {
       const res = await triggerProductFlowSimulation(userId, {
         name: formData.name,
-        audience: formData.audience,
+        audience: audienceText,
         personaDepth: 'medium',
         optimizeMetric: formData.optimizeMetric,
         selectedFolderIds: formData.selectedFolderIds,
@@ -132,28 +148,67 @@ export default function ProductFlowSimulationPage() {
         showToast('error', 'Backend error', text || `Request failed (${res.status}).`);
         return;
       }
-      const data = (await res.json()) as ProductFlowSimulationResponse;
-      const result = data?.result;
-      const meta = result?.metadata;
-      const metric =
-        meta != null
-          ? `${meta.completion_rate_pct ?? 0}% completion · ${meta.avg_time_seconds ?? 0}s avg`
-          : 'Product flow run';
+
+      let insightsData: SimulationData | null = null;
+      let streamError: string | null = null;
+
+      await consumeNDJSONStream(res, (event) => {
+        if (event.type === 'started') {
+          setStreamProgress({
+            personasTotal: event.data.num_personas,
+            personasDone: [],
+            phase: 'simulating',
+          });
+        } else if (event.type === 'personas_loaded') {
+          setStreamProgress((prev) => ({
+            personasTotal: event.data.count,
+            personasDone: prev?.personasDone ?? [],
+            phase: 'simulating',
+          }));
+        } else if (event.type === 'persona_complete') {
+          setStreamProgress((prev) => ({
+            personasTotal: prev?.personasTotal ?? 0,
+            personasDone: [
+              ...(prev?.personasDone ?? []),
+              { name: event.data.persona_name, completed: event.data.completed },
+            ],
+            phase: 'simulating',
+          }));
+        } else if (event.type === 'insights_ready') {
+          insightsData = event.data;
+          setStreamProgress((prev) => prev ? { ...prev, phase: 'saving' } : null);
+        } else if (event.type === 'error') {
+          streamError = event.data.message;
+        }
+      });
+
+      if (streamError) {
+        showToast('error', 'Simulation error', streamError);
+        return;
+      }
+      if (!insightsData) {
+        showToast('error', 'Simulation incomplete', 'No results received from backend.');
+        return;
+      }
+
+      const data = insightsData as SimulationData;
+      const metric = `${data.summary?.completion_rate_pct ?? 0}% completion`;
       const docId = await saveSimulation(userId, {
         type: 'Product Flow',
         status: 'completed',
-        name: meta?.simulation_name ?? (formData.name || 'Product Flow Run'),
+        name: formData.name || 'Product Flow Run',
         metric,
         timestamp: new Date().toLocaleDateString(undefined, { dateStyle: 'medium' }),
-        simulationId: data?.simulation_id,
-        result: result ?? data,
+        simulationId: data.simulation_id,
+        result: data,
       });
       showToast('success', 'Simulation complete', 'Redirecting to results.');
       router.push(`/simulations/${docId}`);
     } catch (err) {
-      showToast('error', 'Failed to run simulation', err instanceof Error ? err.message : 'Check backend at localhost:8080.');
+      showToast('error', 'Failed to run simulation', err instanceof Error ? err.message : 'Check backend at localhost:8000.');
     } finally {
       setRunning(false);
+      setStreamProgress(null);
     }
   };
 
@@ -171,6 +226,7 @@ export default function ProductFlowSimulationPage() {
   const selectedAudience = audiences.find((a) => a.id === formData.audience);
   const selectedFolders = productFlowReadyFolders.filter((f) => formData.selectedFolderIds.includes(f.id));
 
+
   return (
     <>
       <TopBar
@@ -182,10 +238,39 @@ export default function ProductFlowSimulationPage() {
         <div className="max-w-[640px] mx-auto pb-24">
           <StepProgressBar currentStep={currentStep} totalSteps={3} labels={STEP_LABELS} />
 
-          {currentStep === 1 && (
+          {/* Running progress panel */}
+          {running && streamProgress && (
+            <div className="bg-white border border-[#E8E4DE] rounded-[14px] p-7">
+              <div className="flex items-center gap-3 mb-5">
+                <Loader2 className="w-5 h-5 animate-spin text-[#F59E0B]" />
+                <p className="text-[15px] font-semibold text-[#1A1A1A]">
+                  {streamProgress.phase === 'saving'
+                    ? 'Saving results…'
+                    : streamProgress.personasTotal > 0
+                      ? `Simulating ${streamProgress.personasDone.length} / ${streamProgress.personasTotal} personas…`
+                      : 'Initialising simulation…'}
+                </p>
+              </div>
+              {streamProgress.personasDone.length > 0 && (
+                <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                  {streamProgress.personasDone.map((p, i) => (
+                    <div key={i} className="flex items-center gap-2 text-[13px]">
+                      {p.completed
+                        ? <CheckCircle className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
+                        : <XCircle className="w-3.5 h-3.5 text-[#EF4444] shrink-0" />}
+                      <span className="text-[#4B5563]">{p.name}</span>
+                      <span className="text-[#9CA3AF] ml-auto">{p.completed ? 'Completed' : 'Dropped off'}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {!running && currentStep === 1 && (
             <SetupStep formData={formData} setFormData={setFormData} audiences={audiences} />
           )}
-          {currentStep === 2 && (
+          {!running && currentStep === 2 && (
             <AssetSelectionStep
               formData={formData}
               setFormData={setFormData}
@@ -193,7 +278,7 @@ export default function ProductFlowSimulationPage() {
               readyFolders={productFlowReadyFolders}
             />
           )}
-          {currentStep === 3 && (
+          {!running && currentStep === 3 && (
             <ParametersStep
               formData={formData}
               setFormData={setFormData}
@@ -209,7 +294,7 @@ export default function ProductFlowSimulationPage() {
           )}
 
           {/* Validation error — Steps 1 & 2 only */}
-          {currentStep !== 3 && validationError && (
+          {!running && currentStep !== 3 && validationError && (
             <p
               className={`text-[13px] text-[#EF4444] text-center mt-6 ${shake ? 'animate-[shake_0.3s_ease-in-out]' : ''}`}
             >
@@ -218,7 +303,7 @@ export default function ProductFlowSimulationPage() {
           )}
 
           {/* Footer Navigation — Steps 1 & 2 only */}
-          {currentStep !== 3 && (
+          {!running && currentStep !== 3 && (
           <div className="flex items-center justify-between mt-6 px-1">
             <button
               onClick={handleBack}

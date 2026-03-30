@@ -25,28 +25,12 @@ export interface FrictionPoint {
   frequency: number;
 }
 
-export interface Recommendation {
-  priority: "P0" | "P1" | "P2";
-  screen: string;
-  issue: string;
-  recommendation: string;
-  expected_impact: string;
-  primary_affected_segment: string;
-}
-
 export interface ScreenMetric {
   avg_trust: number;
   avg_clarity: number;
   avg_value: number;
   avg_time_s: number;
   sample_size: number;
-}
-
-export interface UXAnalysis {
-  highest_friction_screen: string;
-  trust_building_screens: string[];
-  clarity_problem_screens: string[];
-  value_gap_screens: string[];
 }
 
 export interface WhatWorks {
@@ -74,14 +58,6 @@ export interface CognLoadItem {
   reason: string;
 }
 
-export interface UXHealthScores {
-  trust_journey: number;
-  clarity_journey: number;
-  value_communication: number;
-  cognitive_load: string;
-  emotional_flow: string;
-}
-
 export interface EmotionalJourneyMap {
   completers: string;
   drop_offs: string;
@@ -89,19 +65,18 @@ export interface EmotionalJourneyMap {
 
 export interface FlowAssessment {
   overall_verdict: string;
-  what_works: WhatWorks[];
-  what_needs_fixing: WhatNeedsFixing[];
-  quick_wins: QuickWin[];
-  ux_health_scores: UXHealthScores;
-  emotional_journey_map: EmotionalJourneyMap;
-  cognitive_load_assessment: CognLoadItem[];
-  information_architecture_issues: unknown[];
-  micro_interaction_gaps: string[];
-  three_month_roadmap: {
-    month_1_P0: string[];
-    month_2_P1: string[];
-    month_3_P2: string[];
-  };
+  what_works?: WhatWorks[];
+  what_needs_fixing?: WhatNeedsFixing[];
+  quick_wins?: QuickWin[];
+  // New: single usability score (replaces ux_health_scores)
+  usability_score?: number;
+  emotional_journey_map?: EmotionalJourneyMap;
+  cognitive_load_assessment?: CognLoadItem[];
+  // Legacy fields kept optional for backward compat with existing sample data
+  ux_health_scores?: unknown;
+  information_architecture_issues?: unknown[];
+  micro_interaction_gaps?: unknown[];
+  three_month_roadmap?: unknown;
 }
 
 export interface PersonaJourney {
@@ -133,7 +108,10 @@ export interface PowerUsers {
 }
 
 export interface DropOffCluster {
+  cluster_id: number;
   label?: string;
+  persona_count: number;
+  representative_reasoning?: string;
   sample_reasonings?: string[];
 }
 
@@ -143,8 +121,8 @@ export interface DropOffScreen {
 }
 
 export interface DropOffAnalysis {
-  top_n_screens: number;
-  total_drop_offs_analyzed: number;
+  top_n_screens?: number;
+  total_drop_offs_analyzed?: number;
   screens: Record<string, DropOffScreen>;
 }
 
@@ -155,7 +133,7 @@ export interface FunnelDropOff {
 }
 
 export interface CompletionAnalysis {
-  total_completers: number;
+  total_completers?: number;
   completion_rate_pct: number;
   conversion_drivers: Record<string, unknown>;
   dominant_completion_themes: string[];
@@ -199,23 +177,49 @@ export interface PersonaDetail {
   screen_monologues: ScreenMonologue[];
 }
 
-export interface PlaybookClusterRecommendation {
-  cluster_id?: number;
-  cluster_type?: string;
-  technique?: string;
-  description?: string;
-  industry_example?: string;
-  effort?: string;
-  expected_impact?: string;
-  conversion_uplift_pct?: string;
-  [key: string]: unknown;
+// ── Usability Findings (replaces design_recommendations) ──────────────────────
+
+export type UsabilityFindingSeverity = "critical" | "major" | "minor";
+export type UsabilityFindingType =
+  | "task_failure"
+  | "confusion"
+  | "unexpected_behavior"
+  | "trust_issue"
+  | "friction_point";
+
+export interface UsabilityFinding {
+  severity: UsabilityFindingSeverity;
+  type: UsabilityFindingType;
+  screen: string;
+  finding: string;
+  evidence: string;
+  affected_segments: string[];
+  recommendation: string;
 }
 
-export interface PlaybookInsight {
-  playbook_theme: string;
-  cluster_recommendations: PlaybookClusterRecommendation[];
-  screen_summary: string;
+// ── User Mental Models ────────────────────────────────────────────────────────
+
+export interface UserMentalModels {
+  expectations: string[];
+  gaps_found: string[];
+  surprising_behaviors: string[];
 }
+
+// ── Per-screen Behavioral Analysis (replaces playbook_insights) ───────────────
+
+export interface BehaviorAnalysisScreen {
+  primary_task: string;
+  task_success_rate: number;
+  behavioral_observations: string[];
+  confusion_signals: string[];
+  decision_drivers: string[];
+  verbatim_reactions: string[];
+  segment_differences: string[];
+  screen_verdict: string;
+  analysis_error?: string;
+}
+
+// ── Root simulation data ──────────────────────────────────────────────────────
 
 export interface SimulationData {
   simulation_id: string;
@@ -230,17 +234,23 @@ export interface SimulationData {
   top_friction_points: FrictionPoint[];
   screen_metrics: Record<string, ScreenMetric>;
   executive_summary: string;
-  design_recommendations: Recommendation[];
-  behavioral_insights: string[];
-  segment_analysis: SegmentAnalysis;
-  ux_analysis: UXAnalysis;
-  power_users: PowerUsers;
-  drop_off_analysis: DropOffAnalysis;
-  flow_assessment: FlowAssessment;
-  persona_journeys: PersonaJourney[];
-  completion_analysis: CompletionAnalysis;
-  persona_details: PersonaDetail[];
-  playbook_insights?: Record<string, PlaybookInsight>;
+  // New user-testing fields (optional for backward compat with existing sample data)
+  usability_findings?: UsabilityFinding[];
+  behavioral_insights?: string[];
+  user_mental_models?: UserMentalModels;
+  segment_analysis?: SegmentAnalysis;
+  power_users?: PowerUsers;
+  drop_off_analysis?: DropOffAnalysis;
+  flow_assessment?: FlowAssessment;
+  persona_journeys?: PersonaJourney[];
+  completion_analysis?: CompletionAnalysis;
+  behavior_analysis?: Record<string, BehaviorAnalysisScreen>;
+  persona_details?: PersonaDetail[];
+  // Legacy fields kept optional for backward compat with existing sample data
+  design_recommendations?: unknown[];
+  ux_analysis?: unknown;
+  visual_design_analysis?: unknown;
+  playbook_insights?: unknown;
 }
 
 export interface SimulationOverviewProps {

@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { useAppShell } from '@/components/app/AppShell';
 import { useToast } from '@/components/ui/Toast';
 import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { IconButton } from '@/components/ui/Button';
 import {
   DndContext,
@@ -45,14 +46,16 @@ import { getAssetTypeLabel } from '@/types/asset';
 import { AssetSidePanel } from '@/components/assets/AssetSidePanel';
 import { DeleteAssetModal } from '@/components/assets/DeleteAssetModal';
 import {
-  getAssetsInFolder,
   getAssetFolders,
-  addAssetDocument,
   saveAssetMetadata,
-  deleteAssetMetadata,
   updateAssetFolder,
 } from '@/lib/firestore';
-import { uploadAssetToCloudinary } from '@/lib/cloudinary-upload';
+import {
+  getAssets,
+  uploadAssets,
+  updateAssetMetadata,
+  deleteAsset as deleteAssetFromBackend,
+} from '@/lib/assets-api';
 
 interface UploadingFile {
   id: string;
@@ -69,6 +72,7 @@ export default function FolderDetailPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
   const { userId, profileReady } = useFirebaseUser();
+  const { user } = useAuthContext();
 
   const folderId = params.folderId as string;
   const folderName = searchParams.get('name') ?? 'Folder';
@@ -109,9 +113,10 @@ export default function FolderDetailPage() {
   }, [userId, profileReady, folderId, showToast]);
 
   const loadAssets = useCallback(async () => {
-    if (!userId || !profileReady) return;
+    if (!userId || !profileReady || !user) return;
     try {
-      const data = await getAssetsInFolder(userId, folderId);
+      const token = await user.getIdToken();
+      const data = await getAssets(token, folderId);
       setAssets(data);
     } catch (err) {
       console.error(err);
@@ -119,7 +124,7 @@ export default function FolderDetailPage() {
     } finally {
       setLoading(false);
     }
-  }, [userId, profileReady, folderId, showToast]);
+  }, [userId, profileReady, user, folderId, showToast]);
 
   useEffect(() => {
     if (isComparator) {
@@ -129,20 +134,34 @@ export default function FolderDetailPage() {
     }
   }, [isComparator, loadSubfolders, loadAssets]);
 
-  // ── Auto-save: persist asset metadata to Firebase ──
+  // ── Auto-save: persist asset metadata to backend ──
   const autoSaveAsset = useCallback(async (assetId: string, asset: Asset) => {
-    if (!userId || assetId.startsWith('pending_')) return;
+    if (!user || assetId.startsWith('pending_')) return;
     setAutoSaveStatus('saving');
     try {
-      const { id: _id, ...rest } = asset;
-      await saveAssetMetadata(userId, folderId, assetId, rest);
+      const token = await user.getIdToken();
+      const metadata = asset.productFlowMetadata ?? asset.adCreativeMetadata ?? {};
+      await updateAssetMetadata(token, assetId, folderId, metadata);
       setAutoSaveStatus('saved');
       setTimeout(() => setAutoSaveStatus('idle'), 3000);
     } catch (err) {
       console.error('Auto-save error:', err);
+      // Fall back to Firestore save if backend fails
+      if (userId) {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { id: _assetId, ...rest } = asset;
+          await saveAssetMetadata(userId, folderId, assetId, rest);
+          setAutoSaveStatus('saved');
+          setTimeout(() => setAutoSaveStatus('idle'), 3000);
+          return;
+        } catch {
+          // ignore fallback error
+        }
+      }
       setAutoSaveStatus('error');
     }
-  }, [userId, folderId]);
+  }, [user, userId, folderId]);
 
   /** Inline field save — updates local state + fires Firebase auto-save */
   const handleSaveField = useCallback((assetId: string, updates: Partial<Asset>) => {
@@ -214,16 +233,10 @@ export default function FolderDetailPage() {
     });
   }, [autoSaveAsset]);
 
-  // ── Upload files directly (auto-save, no "Save to Firebase" button) ──
+  // ── Upload files via backend API ──
   const uploadFiles = useCallback(async (files: FileList, targetFolderId?: string) => {
-    if (!userId) return;
+    if (!user) return;
     const uploadFolderId = targetFolderId ?? folderId;
-
-    const nextStep =
-      Math.max(
-        0,
-        ...assets.map((a) => a.productFlowMetadata?.stepNumber ?? 0),
-      ) + 1;
 
     const newUploading: UploadingFile[] = Array.from(files).map((file, i) => ({
       id: `upload_${Date.now()}_${i}`,
@@ -234,63 +247,52 @@ export default function FolderDetailPage() {
     }));
 
     setUploadingFiles((prev) => [...prev, ...newUploading]);
+    // Show progress at 30% while uploading
+    setUploadingFiles((prev) =>
+      prev.map((u) => newUploading.some((n) => n.id === u.id) ? { ...u, progress: 30 } : u)
+    );
 
-    for (let i = 0; i < newUploading.length; i++) {
-      const uploading = newUploading[i];
-      try {
-        setUploadingFiles((prev) =>
-          prev.map((u) => u.id === uploading.id ? { ...u, progress: 30 } : u)
-        );
+    try {
+      const token = await user.getIdToken();
+      const fileArray = Array.from(files);
+      const savedAssets = await uploadAssets(token, uploadFolderId, fileArray);
 
-        const { url, public_id } = await uploadAssetToCloudinary(uploading.file, userId, uploadFolderId);
+      setUploadingFiles((prev) =>
+        prev.map((u) =>
+          newUploading.some((n) => n.id === u.id)
+            ? { ...u, progress: 100, status: 'done' as const }
+            : u
+        )
+      );
 
-        setUploadingFiles((prev) =>
-          prev.map((u) => u.id === uploading.id ? { ...u, progress: 70 } : u)
-        );
+      if (uploadFolderId === folderId) {
+        setAssets((prev) => [...prev, ...savedAssets]);
+      }
 
-        const currentAssetType = targetFolderId ? 'product-flow' as AssetType : assetType;
-        const asset: Asset = {
-          id: '',
-          folderId: uploadFolderId,
-          name: uploading.file.name,
-          url,
-          assetType: currentAssetType,
-          createdAt: new Date().toISOString(),
-          status: 'missing-info' as const,
-          ...(currentAssetType === 'product-flow'
-            ? { productFlowMetadata: { stepNumber: nextStep + i, stepName: '', pageType: 'other' as const } }
-            : { adCreativeMetadata: { caption: '' } }),
-        };
-
-        const savedId = await addAssetDocument(userId, uploadFolderId, { ...asset }, public_id);
-
-        setUploadingFiles((prev) =>
-          prev.map((u) => u.id === uploading.id ? { ...u, progress: 100, status: 'done' as const, savedId } : u)
-        );
-
-        if (savedId && uploadFolderId === folderId) {
-          setAssets((prev) => [...prev, { ...asset, id: savedId }]);
-        }
-
-        // Update folder asset count
+      // Update folder asset count in Firestore (for readiness badge)
+      if (userId) {
         await updateAssetFolder(userId, uploadFolderId, {
-          assetCount: (assets.length + i + 1),
+          assetCount: assets.length + savedAssets.length,
           updatedAt: new Date().toISOString(),
         });
-      } catch (err) {
-        console.error('Upload error:', err);
-        setUploadingFiles((prev) =>
-          prev.map((u) => u.id === uploading.id ? { ...u, status: 'error' as const, progress: 0 } : u)
-        );
-        showToast('error', `Failed: ${uploading.name}`, err instanceof Error ? err.message : 'Unknown error');
       }
+    } catch (err) {
+      console.error('Upload error:', err);
+      setUploadingFiles((prev) =>
+        prev.map((u) =>
+          newUploading.some((n) => n.id === u.id)
+            ? { ...u, status: 'error' as const, progress: 0 }
+            : u
+        )
+      );
+      showToast('error', 'Upload failed', err instanceof Error ? err.message : 'Unknown error');
     }
 
     // Clear completed uploads after 3s
     setTimeout(() => {
       setUploadingFiles((prev) => prev.filter((u) => u.status !== 'done'));
     }, 3000);
-  }, [userId, folderId, assets, assetType, showToast]);
+  }, [user, userId, folderId, assets, showToast]);
 
   const handleUploadClick = () => fileInputRef.current?.click();
 
@@ -347,42 +349,27 @@ export default function FolderDetailPage() {
 
   /** Inline delete for product-flow rows (called directly, not via modal) */
   const handleInlineDelete = useCallback(async (assetId: string, assetName: string) => {
-    if (!userId) return;
+    if (!user) return;
     try {
-      const res = await fetch('/api/delete-asset', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, folderId, assetId }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || `Server responded with ${res.status}`);
-      }
+      const token = await user.getIdToken();
+      await deleteAssetFromBackend(token, assetId, folderId);
       setAssets((prev) => prev.filter((a) => a.id !== assetId));
       showToast('success', 'Asset deleted', `"${assetName}" has been removed.`);
     } catch (err) {
       console.error('[DELETE] Error deleting asset:', err);
       showToast('error', 'Failed to delete asset', err instanceof Error ? err.message : 'Please try again.');
     }
-  }, [userId, folderId, showToast]);
+  }, [user, folderId, showToast]);
 
   const confirmDeleteAsset = async () => {
-    if (!deleteTarget || !userId) return;
+    if (!deleteTarget || !user) return;
     const { id: assetId, name: assetName } = deleteTarget;
     try {
-      const res = await fetch('/api/delete-asset', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, folderId, assetId }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || `Server responded with ${res.status}`);
-      }
-
+      const token = await user.getIdToken();
+      await deleteAssetFromBackend(token, assetId, folderId);
       setAssets((prev) => prev.filter((a) => a.id !== assetId));
       showToast('success', 'Asset deleted', `"${assetName}" has been removed.`);
+      setDeleteTarget(null);
     } catch (err) {
       console.error('[DELETE] Error deleting asset:', err);
       showToast('error', 'Failed to delete asset', err instanceof Error ? err.message : 'Please try again.');

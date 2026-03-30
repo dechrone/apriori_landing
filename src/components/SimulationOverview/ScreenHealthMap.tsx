@@ -79,7 +79,6 @@ function HealthBar({
 
 export function ScreenHealthMap({ data }: Props) {
   const metrics = data.screen_metrics;
-  const ux = data.ux_analysis;
 
   if (!metrics || Object.keys(metrics).length === 0) {
     return (
@@ -137,12 +136,6 @@ export function ScreenHealthMap({ data }: Props) {
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         {sortedScreens.map(([screenId, m], idx) => {
           const tags: { label: string; color: string }[] = [];
-          if (ux?.highest_friction_screen === screenId)
-            tags.push({ label: "HIGHEST FRICTION", color: COLORS.red });
-          if (ux?.clarity_problem_screens?.includes(screenId))
-            tags.push({ label: "CLARITY GAP", color: COLORS.amber });
-          if (ux?.value_gap_screens?.includes(screenId))
-            tags.push({ label: "VALUE GAP", color: COLORS.amber });
 
           return (
             <div

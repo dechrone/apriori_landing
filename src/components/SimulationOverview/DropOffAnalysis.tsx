@@ -145,11 +145,15 @@ export function DropOffAnalysis({ data }: Props) {
                         }}
                       >
                         {cluster.label}
+                        {cluster.persona_count > 0 && (
+                          <span style={{ fontWeight: 400, marginLeft: 6 }}>
+                            ({cluster.persona_count})
+                          </span>
+                        )}
                       </p>
                     )}
-                    {cluster.sample_reasonings?.slice(0, 2).map((q, qi) => (
+                    {cluster.representative_reasoning && (
                       <p
-                        key={qi}
                         style={{
                           fontSize: 14,
                           fontStyle: "italic",
@@ -161,9 +165,9 @@ export function DropOffAnalysis({ data }: Props) {
                           fontFamily: "var(--font-inter), sans-serif",
                         }}
                       >
-                        &ldquo;{q}&rdquo;
+                        &ldquo;{cluster.representative_reasoning}&rdquo;
                       </p>
-                    ))}
+                    )}
                   </div>
                 ))}
 

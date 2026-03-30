@@ -47,13 +47,11 @@ export function ScreenInsightsPanel({ screen, data, onClose }: Props) {
   // Screen metrics
   const metrics = data.screen_metrics?.[screenId];
 
-  // Find matching design recommendations
-  const recommendations = (data.design_recommendations ?? []).filter((rec) => {
-    // Match by step number pattern
-    const stepMatch = rec.screen?.match(/Step\s+(\d+)/i);
+  // Find matching usability findings for this screen
+  const recommendations = (data.usability_findings ?? []).filter((f) => {
+    if (f.screen === screenId) return true;
+    const stepMatch = f.screen?.match(/Step\s+(\d+)/i);
     if (stepMatch && parseInt(stepMatch[1], 10) === screen.step_number) return true;
-    // Also match if the screen field matches the view_name
-    if (rec.screen && screen.view_name.includes(rec.screen)) return true;
     return false;
   });
 
@@ -69,8 +67,8 @@ export function ScreenInsightsPanel({ screen, data, onClose }: Props) {
   // Drop-off clusters
   const clusters = data.drop_off_analysis?.screens?.[screenId]?.clusters ?? [];
 
-  // Playbook insight
-  const playbook = data.playbook_insights?.[screenId];
+  // Behavioral analysis for this screen
+  const behaviorScreen = data.behavior_analysis?.[screenId];
 
   return (
     <motion.div
@@ -190,11 +188,11 @@ export function ScreenInsightsPanel({ screen, data, onClose }: Props) {
         </div>
       )}
 
-      {/* ── Playbook summary ── */}
-      {playbook?.screen_summary && (
+      {/* ── Behavioral analysis summary ── */}
+      {behaviorScreen && !behaviorScreen.analysis_error && (
         <div style={{ marginBottom: 20 }}>
           <p style={{ ...labelStyle, color: "#EA580C" }}>
-            {playbook.playbook_theme || "Key Finding"}
+            {behaviorScreen.primary_task || "Behavioral Finding"}
           </p>
           <div
             style={{
@@ -214,7 +212,7 @@ export function ScreenInsightsPanel({ screen, data, onClose }: Props) {
                 fontFamily: "var(--font-inter), sans-serif",
               }}
             >
-              {playbook.screen_summary}
+              {behaviorScreen.screen_verdict}
             </p>
           </div>
         </div>
@@ -272,27 +270,22 @@ export function ScreenInsightsPanel({ screen, data, onClose }: Props) {
                     style={{
                       fontSize: 10,
                       fontWeight: 700,
-                      color: rec.priority === "P0" ? "#DC2626" : rec.priority === "P1" ? "#EA580C" : "#3B82F6",
-                      background: rec.priority === "P0" ? "#FEE2E2" : rec.priority === "P1" ? "#FFF7ED" : "#EFF6FF",
+                      color: rec.severity === "critical" ? "#DC2626" : rec.severity === "major" ? "#EA580C" : "#3B82F6",
+                      background: rec.severity === "critical" ? "#FEE2E2" : rec.severity === "major" ? "#FFF7ED" : "#EFF6FF",
                       padding: "2px 6px",
                       borderRadius: 4,
                       fontFamily: "var(--font-plus-jakarta), sans-serif",
                     }}
                   >
-                    {rec.priority}
+                    {rec.severity}
                   </span>
                   <span style={{ fontSize: 12, fontWeight: 600, color: "#0D0D14", fontFamily: "var(--font-plus-jakarta), sans-serif" }}>
-                    {rec.issue.length > 80 ? rec.issue.slice(0, 80) + "…" : rec.issue}
+                    {rec.finding.length > 80 ? rec.finding.slice(0, 80) + "…" : rec.finding}
                   </span>
                 </div>
                 <p style={{ fontSize: 13, color: "#374151", lineHeight: 1.55, fontFamily: "var(--font-inter), sans-serif" }}>
                   {rec.recommendation}
                 </p>
-                {rec.expected_impact && (
-                  <p style={{ fontSize: 12, color: "#16A34A", fontWeight: 500, marginTop: 6, fontFamily: "var(--font-inter), sans-serif" }}>
-                    Expected: {rec.expected_impact}
-                  </p>
-                )}
               </div>
             ))}
           </div>

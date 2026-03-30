@@ -21,7 +21,8 @@ import { getAssetTypeLabel } from '@/types/asset';
 import { triggerProductFlowComparatorSimulation } from '@/lib/backend-simulation';
 import { getAudiences, getAssetFolders, saveSimulation } from '@/lib/firestore';
 import type { AudienceDoc } from '@/lib/firestore';
-import type { ProductFlowSimulationResponse } from '@/types/simulation-result';
+import { consumeNDJSONStream } from '@/lib/stream-simulation';
+import type { ComparatorResult } from '@/types/comparator';
 
 type Step = 1 | 2 | 3;
 
@@ -46,6 +47,10 @@ export default function ProductFlowComparatorSimulationPage() {
   const [allFolders, setAllFolders] = useState<AssetFolder[]>([]);
   const [validationError, setValidationError] = useState('');
   const [shake, setShake] = useState(false);
+  const [streamProgress, setStreamProgress] = useState<{
+    flows: Record<string, { personasTotal: number; personasDone: number }>;
+    phase: string;
+  } | null>(null);
   const router = useRouter();
 
   const loadAudiences = useCallback(async () => {
@@ -118,42 +123,111 @@ export default function ProductFlowComparatorSimulationPage() {
       showToast('error', 'Not signed in', 'Please sign in to run a simulation.');
       return;
     }
+    // Resolve audience NL description text
+    const selectedAudience = audiences.find((a) => a.id === formData.audience);
+    const audienceText =
+      selectedAudience?.audienceDescription ||
+      selectedAudience?.description ||
+      formData.audience;
+
+    // Resolve sub-folder IDs (backend expects Flow 1 & Flow 2 folder IDs, not the parent)
+    const parentFolderId = formData.selectedFolderIds[0];
+    if (!parentFolderId) {
+      showToast('error', 'No folder selected', 'Please select a comparator folder.');
+      return;
+    }
+    const subFolders = await getAssetFolders(userId, parentFolderId);
+    if (subFolders.length < 2) {
+      showToast('error', 'Incomplete comparator folder', 'Need at least 2 flow sub-folders (Flow 1 and Flow 2).');
+      return;
+    }
+    const subFolderIds = subFolders.map((f) => f.id);
+
     setRunning(true);
+    setStreamProgress({ flows: {}, phase: 'starting' });
     try {
       const res = await triggerProductFlowComparatorSimulation(userId, {
         name: formData.name,
-        audience: formData.audience,
+        audience: audienceText,
         personaDepth: 'medium',
         optimizeMetric: formData.optimizeMetric,
-        selectedFolderIds: formData.selectedFolderIds,
+        selectedFolderIds: subFolderIds,
       });
       if (!res.ok) {
         const text = await res.text();
         showToast('error', 'Backend error', text || `Request failed (${res.status}).`);
         return;
       }
-      const data = (await res.json()) as ProductFlowSimulationResponse;
-      const result = data?.result;
-      const meta = result?.metadata;
-      const metric =
-        meta != null
-          ? `${meta.completion_rate_pct ?? 0}% completion · ${meta.avg_time_seconds ?? 0}s avg`
-          : 'Product flow comparator run';
+
+      let comparisonData: ComparatorResult | null = null;
+      let streamError: string | null = null;
+      const flowNames: Record<string, string> = {};
+
+      await consumeNDJSONStream(res, (event) => {
+        if (event.type === 'flow_started') {
+          flowNames[event.data.flow_id] = event.data.flow_name;
+          setStreamProgress((prev) => ({
+            flows: {
+              ...(prev?.flows ?? {}),
+              [event.data.flow_id]: { personasTotal: 0, personasDone: 0 },
+            },
+            phase: 'simulating',
+          }));
+        } else if (event.type === 'started') {
+          setStreamProgress((prev) => ({
+            flows: {
+              ...(prev?.flows ?? {}),
+              [event.data.flow_id]: { personasTotal: event.data.num_personas, personasDone: 0 },
+            },
+            phase: 'simulating',
+          }));
+        } else if (event.type === 'persona_complete') {
+          const fid = event.data.flow_id ?? '';
+          setStreamProgress((prev) => {
+            const existing = prev?.flows[fid] ?? { personasTotal: 0, personasDone: 0 };
+            return {
+              flows: {
+                ...(prev?.flows ?? {}),
+                [fid]: { ...existing, personasDone: existing.personasDone + 1 },
+              },
+              phase: 'simulating',
+            };
+          });
+        } else if (event.type === 'comparison_ready') {
+          comparisonData = event.data;
+          setStreamProgress((prev) => prev ? { ...prev, phase: 'saving' } : null);
+        } else if (event.type === 'error') {
+          streamError = event.data.message;
+        }
+      });
+
+      if (streamError) {
+        showToast('error', 'Simulation error', streamError);
+        return;
+      }
+      if (!comparisonData) {
+        showToast('error', 'Simulation incomplete', 'No comparison results received from backend.');
+        return;
+      }
+
+      const data = comparisonData as ComparatorResult;
+      const metric = `${data.winner?.flow_name ?? 'Winner'} leads`;
       const docId = await saveSimulation(userId, {
         type: 'Product Flow Comparator',
         status: 'completed',
-        name: meta?.simulation_name ?? (formData.name || 'Product Flow Comparator Run'),
+        name: formData.name || 'Product Flow Comparator Run',
         metric,
         timestamp: new Date().toLocaleDateString(undefined, { dateStyle: 'medium' }),
-        simulationId: data?.simulation_id,
-        result: result ?? data,
+        simulationId: data.comparison_id,
+        result: data,
       });
-      showToast('success', 'Simulation complete', 'Redirecting to results.');
+      showToast('success', 'Comparison complete', 'Redirecting to results.');
       router.push(`/simulations/product-flow-comparator/${docId}`);
     } catch (err) {
-      showToast('error', 'Failed to run simulation', err instanceof Error ? err.message : 'Check backend at localhost:8080.');
+      showToast('error', 'Failed to run simulation', err instanceof Error ? err.message : 'Check backend at localhost:8000.');
     } finally {
       setRunning(false);
+      setStreamProgress(null);
     }
   };
 
@@ -182,10 +256,50 @@ export default function ProductFlowComparatorSimulationPage() {
         <div className="max-w-[640px] mx-auto pb-24">
           <StepProgressBar currentStep={currentStep} totalSteps={3} labels={STEP_LABELS} />
 
-          {currentStep === 1 && (
+          {/* Running progress panel */}
+          {running && streamProgress && (
+            <div className="bg-white border border-[#E8E4DE] rounded-[14px] p-7">
+              <div className="flex items-center gap-3 mb-5">
+                <Loader2 className="w-5 h-5 animate-spin text-[#F59E0B]" />
+                <p className="text-[15px] font-semibold text-[#1A1A1A]">
+                  {streamProgress.phase === 'saving'
+                    ? 'Saving comparison results…'
+                    : Object.keys(streamProgress.flows).length > 0
+                      ? 'Simulating flows in parallel…'
+                      : 'Initialising comparison…'}
+                </p>
+              </div>
+              {Object.keys(streamProgress.flows).length > 0 && (
+                <div className="space-y-3">
+                  {Object.entries(streamProgress.flows).map(([flowId, flow]) => (
+                    <div key={flowId}>
+                      <div className="flex items-center justify-between text-[13px] mb-1">
+                        <span className="text-[#4B5563] font-medium">{flowId}</span>
+                        <span className="text-[#9CA3AF]">
+                          {flow.personasTotal > 0
+                            ? `${flow.personasDone} / ${flow.personasTotal} personas`
+                            : `${flow.personasDone} personas`}
+                        </span>
+                      </div>
+                      {flow.personasTotal > 0 && (
+                        <div className="h-1.5 bg-[#E5E7EB] rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-[#F59E0B] rounded-full transition-all duration-300"
+                            style={{ width: `${Math.round((flow.personasDone / flow.personasTotal) * 100)}%` }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {!running && currentStep === 1 && (
             <SetupStep formData={formData} setFormData={setFormData} audiences={audiences} />
           )}
-          {currentStep === 2 && (
+          {!running && currentStep === 2 && (
             <AssetSelectionStep
               formData={formData}
               setFormData={setFormData}
@@ -193,7 +307,7 @@ export default function ProductFlowComparatorSimulationPage() {
               readyFolders={comparatorReadyFolders}
             />
           )}
-          {currentStep === 3 && (
+          {!running && currentStep === 3 && (
             <ParametersStep
               formData={formData}
               setFormData={setFormData}
@@ -209,7 +323,7 @@ export default function ProductFlowComparatorSimulationPage() {
           )}
 
           {/* Validation error — Steps 1 & 2 only */}
-          {currentStep !== 3 && validationError && (
+          {!running && currentStep !== 3 && validationError && (
             <p
               className={`text-[13px] text-[#EF4444] text-center mt-6 ${shake ? 'animate-[shake_0.3s_ease-in-out]' : ''}`}
             >
@@ -218,7 +332,7 @@ export default function ProductFlowComparatorSimulationPage() {
           )}
 
           {/* Footer Navigation — Steps 1 & 2 only */}
-          {currentStep !== 3 && (
+          {!running && currentStep !== 3 && (
           <div className="flex items-center justify-between mt-6 px-1">
             <button
               onClick={handleBack}

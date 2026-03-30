@@ -13,21 +13,27 @@ import { FigmaImportModal } from '@/components/figma';
 import { useAppShell } from '@/components/app/AppShell';
 import { useToast } from '@/components/ui/Toast';
 import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { Plus, FolderPlus, FolderOpen, Loader2, CheckCircle2, AlertCircle, Figma } from 'lucide-react';
 import type { AssetFolder, Asset } from '@/types/asset';
 import { getAssetTypeLabel } from '@/types/asset';
 import {
   getAssetFolders,
   saveAssetFolder,
-  updateAssetFolder,
-  deleteAssetFolder,
   getAssetsInFolder,
 } from '@/lib/firestore';
+import {
+  getFolders,
+  createFolder,
+  updateFolder,
+  deleteFolder,
+} from '@/lib/assets-api';
 
 export default function AssetsPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
   const { userId, profileReady } = useFirebaseUser();
+  const { user } = useAuthContext();
   const router = useRouter();
 
   const [folders, setFolders] = useState<AssetFolder[]>([]);
@@ -41,14 +47,16 @@ export default function AssetsPage() {
   const [deleteModalFolder, setDeleteModalFolder] = useState<AssetFolder | null>(null);
 
   const loadFolders = useCallback(async () => {
-    if (!userId || !profileReady) return;
+    if (!userId || !profileReady || !user) return;
     try {
-      const roots = await getAssetFolders(userId);
+      const token = await user.getIdToken();
+      const roots = await getFolders(token);
       setFolders(roots);
       const comparatorIds = roots.filter((f) => f.assetType === 'product-flow-comparator').map((f) => f.id);
       const subfoldersMap: Record<string, AssetFolder[]> = {};
       await Promise.all(
         comparatorIds.map(async (parentId) => {
+          // Sub-folders are still in Firestore (parentId = backend folder ID)
           const children = await getAssetFolders(userId, parentId);
           subfoldersMap[parentId] = children;
         })
@@ -77,7 +85,7 @@ export default function AssetsPage() {
     } finally {
       setLoading(false);
     }
-  }, [userId, profileReady, showToast]);
+  }, [userId, profileReady, user, showToast]);
 
   useEffect(() => {
     loadFolders();
@@ -88,22 +96,15 @@ export default function AssetsPage() {
     assetType: AssetFolder['assetType'],
     description?: string
   ) => {
-    if (!userId) return;
+    if (!userId || !user) return;
     const now = new Date().toISOString();
     try {
+      const token = await user.getIdToken();
       if (assetType === 'product-flow-comparator') {
-        const parentData: Omit<AssetFolder, 'id'> = {
-          name,
-          description,
-          assetType: 'product-flow-comparator',
-          parentId: null,
-          createdAt: now,
-          updatedAt: now,
-          assetCount: 0,
-          usedInSimulations: 0,
-          status: 'ready',
-        };
-        const parentId = await saveAssetFolder(userId, parentData);
+        // Parent folder via backend API
+        const parentFolder = await createFolder(token, { name, assetType: 'product-flow-comparator', description });
+        const parentId = parentFolder.id;
+        // Sub-folders stay in Firestore until backend supports parentId
         const childData: Omit<AssetFolder, 'id'> = {
           name: 'Flow 1',
           assetType: 'product-flow',
@@ -114,34 +115,17 @@ export default function AssetsPage() {
           usedInSimulations: 0,
           status: 'ready',
         };
-        const childData2: Omit<AssetFolder, 'id'> = {
-          ...childData,
-          name: 'Flow 2',
-        };
+        const childData2: Omit<AssetFolder, 'id'> = { ...childData, name: 'Flow 2' };
         const flow1Id = await saveAssetFolder(userId, childData);
         const flow2Id = await saveAssetFolder(userId, childData2);
         const flow1 = { id: flow1Id, ...childData };
         const flow2 = { id: flow2Id, ...childData2 };
-        setFolders((prev) => [{ id: parentId, ...parentData }, ...prev]);
-        setSubfoldersByParentId((prev) => ({
-          ...prev,
-          [parentId]: [flow1, flow2],
-        }));
+        setFolders((prev) => [parentFolder, ...prev]);
+        setSubfoldersByParentId((prev) => ({ ...prev, [parentId]: [flow1, flow2] }));
         showToast('success', 'Comparator created', `"${name}" with Flow 1 and Flow 2 is ready. Open it to add screens to each flow.`);
       } else {
-        const folderData: Omit<AssetFolder, 'id'> = {
-          name,
-          description,
-          assetType,
-          parentId: null,
-          createdAt: now,
-          updatedAt: now,
-          assetCount: 0,
-          usedInSimulations: 0,
-          status: 'ready',
-        };
-        const newId = await saveAssetFolder(userId, folderData);
-        setFolders((prev) => [{ id: newId, ...folderData }, ...prev]);
+        const newFolder = await createFolder(token, { name, assetType, description });
+        setFolders((prev) => [newFolder, ...prev]);
         showToast('success', 'Folder created', `"${name}" is ready for ${getAssetTypeLabel(assetType).toLowerCase()}.`);
       }
     } catch (err) {
@@ -151,9 +135,10 @@ export default function AssetsPage() {
   };
 
   const handleSaveFolder = async (updates: { name: string; description?: string }) => {
-    if (!editModalFolder || !userId) return;
+    if (!editModalFolder || !user) return;
     try {
-      await updateAssetFolder(userId, editModalFolder.id, updates);
+      const token = await user.getIdToken();
+      await updateFolder(token, editModalFolder.id, updates);
       setFolders((prev) =>
         prev.map((f) =>
           f.id === editModalFolder.id
@@ -170,9 +155,10 @@ export default function AssetsPage() {
   };
 
   const handleDeleteFolder = async () => {
-    if (!deleteModalFolder || !userId) return;
+    if (!deleteModalFolder || !user) return;
     try {
-      await deleteAssetFolder(userId, deleteModalFolder.id);
+      const token = await user.getIdToken();
+      await deleteFolder(token, deleteModalFolder.id);
       setFolders((prev) => prev.filter((f) => f.id !== deleteModalFolder.id));
       showToast('success', 'Folder deleted', `"${deleteModalFolder.name}" has been removed.`);
       setDeleteModalFolder(null);

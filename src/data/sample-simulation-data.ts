@@ -113,8 +113,6 @@ export const sampleSimulationData: SimulationData = {
         "Replace technical jargon with benefit-oriented microcopy (e.g., 'Bank-grade security' instead of 'Central Registries') and include a 'Why we need this' tooltip explaining that data access is read-only and limited to fund valuation.",
       expected_impact:
         "-15% drop-off at Screen 1; increased trust scores in qualitative feedback.",
-      primary_affected_segment:
-        "The Skeptic and users with digital_literacy ≤ 4",
     },
     {
       priority: "P1",
@@ -125,7 +123,6 @@ export const sampleSimulationData: SimulationData = {
         "Sync the UI slider maximum to match the calculated eligibility limit dynamically, or add a 'Boost Limit' CTA if the higher amount requires additional collateral.",
       expected_impact:
         "Reduced 'Calculating/Anxious' sentiment; faster time-to-complete on Screen 3.",
-      primary_affected_segment: "Programmer Analyst / The Pragmatist (High Literacy)",
     },
     {
       priority: "P1",
@@ -136,7 +133,6 @@ export const sampleSimulationData: SimulationData = {
         "Extend the resend OTP timer to 45 or 60 seconds and add a 'Get OTP via WhatsApp' secondary option.",
       expected_impact:
         "Lower 'hurried/anxious' emotional states; reduced drop-off for users in 'Other' (non-Tier 1) locations.",
-      primary_affected_segment: "Older users (50yo+) and those in 'Other' urban categories",
     },
   ],
   behavioral_insights: [
@@ -147,7 +143,7 @@ export const sampleSimulationData: SimulationData = {
   ],
   segment_analysis: {
     summary:
-      "The flow resonates strongly with high-literacy urban professionals who appreciate modern UI, while failing significantly for lower-income, lower-literacy users who perceive the data fetching as intrusive.",
+      "The flow strongly resonates with analytical, high-literacy urban professionals but creates significant friction for lower-literacy and lower-income segments.",
     high_propensity_segment:
       "The Pragmatist, Urban, Income ₹65k–₹225k, high digital literacy (7-9/10). These users are analytical and complete the flow despite minor technical frictions.",
     low_propensity_segment:
@@ -211,15 +207,15 @@ export const sampleSimulationData: SimulationData = {
       "Focus on LinkedIn and Google Search ads targeting high-intent keywords like 'Personal Loan vs LAMF' or 'Low interest liquidity,' specifically filtering for professional cohorts in IT, Engineering, and SMEs in Tier-1/2 cities.",
   },
   drop_off_analysis: {
-    top_n_screens: 3,
-    total_drop_offs_analyzed: 5,
     screens: {
       view_3: {
-        total_drop_offs: 4,
+        drop_off_count: 4,
+        hotspot_rank: 1,
         clusters: [],
       },
       view_1: {
-        total_drop_offs: 1,
+        drop_off_count: 1,
+        hotspot_rank: 2,
         clusters: [],
       },
     },
@@ -365,7 +361,6 @@ export const sampleSimulationData: SimulationData = {
     },
   ],
   completion_analysis: {
-    total_completers: 0,
     completion_rate_pct: 0.0,
     conversion_drivers: {},
     dominant_completion_themes: [],

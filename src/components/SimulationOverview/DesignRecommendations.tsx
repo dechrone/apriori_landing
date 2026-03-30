@@ -174,23 +174,6 @@ export function DesignRecommendations({ data }: Props) {
                 </p>
               )}
 
-              {/* Affected segment */}
-              {rec.primary_affected_segment && (
-                <div style={{ marginTop: 16 }}>
-                  <span
-                    style={{
-                      fontSize: 14,
-                      color: COLORS.textMuted,
-                      fontFamily: "var(--font-inter), sans-serif",
-                    }}
-                  >
-                    👤 Affects:{" "}
-                    <span style={{ color: COLORS.textSecondary }}>
-                      {rec.primary_affected_segment}
-                    </span>
-                  </span>
-                </div>
-              )}
             </motion.div>
           );
         })}

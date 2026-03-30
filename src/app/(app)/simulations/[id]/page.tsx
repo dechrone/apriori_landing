@@ -7,15 +7,13 @@ import { Playfair_Display, DM_Sans } from "next/font/google";
 import { TopBar } from "@/components/app/TopBar";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
 import { useAppShell } from "@/components/app/AppShell";
 import { useFirebaseUser } from "@/contexts/FirebaseUserContext";
 import { getSimulation } from "@/lib/firestore";
 import type { SimulationDoc } from "@/lib/firestore";
-import type { ProductFlowSimulationResult, SimulationPersona, ProductFlowJourney } from "@/types/simulation-result";
+import type { SimulationData } from "@/types/simulation";
+import type { FlowAnalysisData } from "@/types/flow-analysis";
 import { FlowAnalysisView } from "@/components/flow-analysis/FlowAnalysisView";
-import { flowAnalysisDummyData } from "@/data/flow-analysis-dummy";
-import { sampleSimulationData } from "@/data/sample-simulation-data";
 import { ArrowLeft } from "lucide-react";
 
 const playfair = Playfair_Display({
@@ -56,9 +54,8 @@ export default function SimulationDetailsPage() {
     };
   }, [userId, profileReady, id]);
 
-  const result = simulation?.result as ProductFlowSimulationResult | undefined;
-  const meta = result?.metadata;
-  const isProductFlow = result?.simulation_type === "product_flow";
+  const result = simulation?.result as SimulationData | undefined;
+  const isProductFlow = simulation?.type === "Product Flow";
 
   if (loading) {
     return (
@@ -102,16 +99,47 @@ export default function SimulationDetailsPage() {
     );
   }
 
-  // Product Flow simulation: show Flow Analysis (same structure as Ad simulation)
-  if (isProductFlow) {
-    const flowData = flowAnalysisDummyData;
-    const completionRate = flowData.meta.completionRate ?? 0;
-    const totalPersonas = flowData.meta.totalPersonas ?? 0;
+  // Product Flow simulation: build FlowAnalysisData from real result and show FlowAnalysisView
+  if (isProductFlow && result) {
+    const completionRate = result.summary?.completion_rate_pct ?? 0;
+    const totalPersonas = result.summary?.total_personas ?? 0;
+
+    const flowData: FlowAnalysisData = {
+      meta: {
+        product: simulation.name || result.flow_name || "Product Flow",
+        flow: result.flow_name || simulation.name || "Product Flow",
+        date: simulation.timestamp || new Date().toLocaleDateString(),
+        totalPersonas,
+        completionRate,
+      },
+      screens: (result.funnel_drop_off ?? []).map((f, i) => ({
+        id: f.screen_id,
+        label: f.screen_id.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+        order: i,
+      })),
+      funnel: (result.funnel_drop_off ?? []).map((f) => ({
+        screen: f.screen_id,
+        entered: 0,
+        dropped: f.drop_offs,
+      })),
+      rootCauses: [],
+      oneBet: {
+        title: result.flow_assessment?.overall_verdict ?? "",
+        rationale: "",
+        effort: "",
+        impact: "",
+        projectedCompletion: "",
+        currentCompletion: completionRate,
+        personas: [],
+      },
+      personas: [],
+    };
+
     return (
       <>
         <TopBar
-          title={meta?.simulation_name ?? flowData.meta.product}
-          breadcrumb={`Product Flow · ${simulation.timestamp ?? flowData.meta.date}`}
+          title={simulation.name || result.flow_name || "Product Flow"}
+          breadcrumb={`Product Flow · ${simulation.timestamp}`}
           onMenuClick={toggleMobileMenu}
           actions={
             <div className="flex items-center gap-3">
@@ -122,7 +150,7 @@ export default function SimulationDetailsPage() {
           }
         />
         <div className={`${playfair.variable} ${dmSans.variable}`}>
-          <FlowAnalysisView data={flowData} simulationData={sampleSimulationData} />
+          <FlowAnalysisView data={flowData} simulationData={result} />
         </div>
       </>
     );
@@ -132,7 +160,7 @@ export default function SimulationDetailsPage() {
   return (
     <>
       <TopBar
-        title={meta?.simulation_name ?? "Simulation"}
+        title={simulation.name ?? "Simulation"}
         breadcrumb={`Simulation · ${simulation.timestamp}`}
         onMenuClick={toggleMobileMenu}
       />

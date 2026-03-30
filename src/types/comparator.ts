@@ -45,6 +45,32 @@ export interface SegmentWinner {
   reason: string;
 }
 
+/** Shape of the `comparison_ready` NDJSON stream event — no per-flow raw data. */
+export interface ComparatorResult {
+  comparison_id: string;
+  flows_compared: FlowRef[];
+  winner: ComparatorWinner;
+  scorecards: {
+    flow_0: FlowScorecard;
+    flow_1: FlowScorecard;
+  };
+  dimension_comparisons: DimensionComparison[];
+  segment_winners: SegmentWinner[];
+  where_each_excels: {
+    flow_0: string[];
+    flow_1: string[];
+  };
+  where_each_falls_short: {
+    flow_0: string[];
+    flow_1: string[];
+  };
+  cross_pollination: {
+    flow_0: string[];
+    flow_1: string[];
+  };
+  recommendation: string;
+}
+
 export interface ComparatorData {
   comparison_id: string;
   flows_compared: FlowRef[];                          // always length 2

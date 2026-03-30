@@ -101,11 +101,18 @@ export default function AdPortfolioSimulationPage() {
       showToast('error', 'Not signed in', 'Please sign in to run a simulation.');
       return;
     }
+    // Resolve audience ID → natural language description (backend expects text, not Firestore ID)
+    const selectedAudience = audiences.find((a) => a.id === formData.audience);
+    const audienceText =
+      selectedAudience?.audienceDescription ||
+      selectedAudience?.description ||
+      formData.audience;
+
     setRunning(true);
     try {
       const res = await triggerAdPortfolioSimulation(userId, {
         name: formData.name,
-        audience: formData.audience,
+        audience: audienceText,
         selectedFolderId: formData.selectedFolderId,
       });
       if (!res.ok) {

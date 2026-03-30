@@ -9,8 +9,9 @@ import { ExecutiveSummary } from "./ExecutiveSummary";
 import { FrictionPoints } from "./FrictionPoints";
 import { BehavioralInsights } from "./BehavioralInsights";
 import { DropOffAnalysis } from "./DropOffAnalysis";
-import { DesignRecommendations } from "./DesignRecommendations";
-import { PlaybookInsights } from "./PlaybookInsights";
+import { UsabilityFindings } from "./UsabilityFindings";
+import { TaskAnalysis } from "./TaskAnalysis";
+import { UserMentalModels } from "./UserMentalModels";
 import { SegmentAnalysis } from "./SegmentAnalysis";
 import { PowerUsers } from "./PowerUsers";
 import { SkeletonLoader } from "./SkeletonLoader";
@@ -18,7 +19,7 @@ import COLORS from "./utils/colorHelpers";
 
 /**
  * SimulationOverview — Orchestrator component
- * Renders all 11 sections of the simulation results overview.
+ * Renders all sections of the usability test report.
  */
 export function SimulationOverview({
   simulationData,
@@ -130,15 +131,15 @@ export function SimulationOverview({
           <HeroMetrics data={d} />
         </section>
 
-        {/* Section 3 — Screen Health (temporarily hidden) */}
-        {/* <section style={{ marginBottom: 80 }}>
+        {/* Section 3 — Screen Health Map */}
+        <section style={{ marginBottom: 80 }}>
           <ScreenHealthMap data={d} />
-        </section> */}
+        </section>
 
-        {/* Section 4 — Emotional Journey (temporarily hidden) */}
-        {/* <section style={{ marginBottom: 80 }}>
+        {/* Section 4 — Emotional Journey */}
+        <section style={{ marginBottom: 80 }}>
           <EmotionalJourneyMap data={d} />
-        </section> */}
+        </section>
 
         {/* Section 5 — Executive Summary */}
         <section style={{ marginBottom: 80 }}>
@@ -155,27 +156,32 @@ export function SimulationOverview({
           <BehavioralInsights data={d} />
         </section>
 
-        {/* Section 8 — Drop-Off + What Needs Fixing (temporarily hidden) */}
-        {/* <section style={{ marginBottom: 80 }}>
+        {/* Section 8 — Drop-Off Analysis */}
+        <section style={{ marginBottom: 80 }}>
           <DropOffAnalysis data={d} />
-        </section> */}
-
-        {/* Section 9 — Design Recommendations */}
-        <section style={{ marginBottom: 80 }}>
-          <DesignRecommendations data={d} />
         </section>
 
-        {/* Section 10 — Playbook Insights */}
+        {/* Section 9 — Usability Findings (replaces Design Recommendations) */}
         <section style={{ marginBottom: 80 }}>
-          <PlaybookInsights data={d} />
+          <UsabilityFindings data={d} />
         </section>
 
-        {/* Section 11 — Segment Analysis */}
+        {/* Section 10 — Task Analysis per screen (replaces Playbook Insights) */}
+        <section style={{ marginBottom: 80 }}>
+          <TaskAnalysis data={d} />
+        </section>
+
+        {/* Section 11 — User Mental Models */}
+        <section style={{ marginBottom: 80 }}>
+          <UserMentalModels data={d} />
+        </section>
+
+        {/* Section 12 — Segment Analysis */}
         <section style={{ marginBottom: 80 }}>
           <SegmentAnalysis data={d} />
         </section>
 
-        {/* Section 11 — Power Users & Micro Gaps */}
+        {/* Section 13 — Power Users */}
         <section style={{ marginBottom: 40 }}>
           <PowerUsers data={d} />
         </section>
@@ -193,7 +199,7 @@ export function SimulationOverview({
           }}
         >
           <p style={{ fontSize: 14, color: COLORS.textMuted }}>
-            {d.flow_name} · AI Persona Simulation ·{" "}
+            {d.flow_name} · AI Usability Test Report ·{" "}
             {d.generated_at
               ? new Date(d.generated_at).toLocaleDateString("en-US", {
                   year: "numeric",
@@ -205,7 +211,7 @@ export function SimulationOverview({
           <p style={{ fontSize: 14, color: COLORS.textMuted }}>
             {d.summary.total_personas} personas ·{" "}
             {Object.keys(d.screen_metrics || {}).length} screens ·{" "}
-            {d.summary.completion_rate_pct}% completion
+            {d.summary.completion_rate_pct}% task completion
           </p>
         </footer>
       </div>
