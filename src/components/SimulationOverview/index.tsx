@@ -1,25 +1,27 @@
 "use client";
 
 import type { SimulationOverviewProps } from "@/types/simulation";
-import { VerdictBanner } from "./VerdictBanner";
-import { HeroMetrics } from "./HeroMetrics";
-import { ScreenHealthMap } from "./ScreenHealthMap";
-import { EmotionalJourneyMap } from "./EmotionalJourneyMap";
-import { ExecutiveSummary } from "./ExecutiveSummary";
-import { FrictionPoints } from "./FrictionPoints";
-import { BehavioralInsights } from "./BehavioralInsights";
-import { DropOffAnalysis } from "./DropOffAnalysis";
-import { UsabilityFindings } from "./UsabilityFindings";
-import { TaskAnalysis } from "./TaskAnalysis";
-import { UserMentalModels } from "./UserMentalModels";
-import { SegmentAnalysis } from "./SegmentAnalysis";
-import { PowerUsers } from "./PowerUsers";
+import { ExecutiveVerdict } from "./ExecutiveVerdict";
+import { FlowFunnel } from "./FlowFunnel";
+import { SegmentDivergence } from "./SegmentDivergence";
+import { PersonaMonologues } from "./PersonaMonologues";
+import { ClusteredDropOffs } from "./ClusteredDropOffs";
+import { FixRecommendations } from "./FixRecommendations";
+import { CalibrationAppendix } from "./CalibrationAppendix";
 import { SkeletonLoader } from "./SkeletonLoader";
 import COLORS from "./utils/colorHelpers";
 
 /**
- * SimulationOverview — Orchestrator component
- * Renders all sections of the usability test report.
+ * SimulationOverview — Decision-ready report
+ *
+ * 6 core sections answering: What's happening? Why? What do I do?
+ *   1. Executive Verdict — the forwarding-ready summary
+ *   2. Flow Funnel — screen-by-screen conversion rates
+ *   3. Segment Divergence — where populations split (the differentiator)
+ *   4. Persona Monologues — actual voices at drop-off points
+ *   5. Clustered Drop-Off Reasons — root causes with percentages
+ *   6. Fix Recommendations — ranked by impact x feasibility
+ *   + Calibration Appendix (conditional, when real-world baseline available)
  */
 export function SimulationOverview({
   simulationData,
@@ -54,14 +56,7 @@ export function SimulationOverview({
             textAlign: "center",
           }}
         >
-          <p
-            style={{
-              fontSize: 48,
-              marginBottom: 16,
-            }}
-          >
-            ⚠️
-          </p>
+          <p style={{ fontSize: 48, marginBottom: 16 }}>!</p>
           <p
             style={{
               fontSize: 18,
@@ -121,69 +116,39 @@ export function SimulationOverview({
           </p>
         )}
 
-        {/* Section 1 — Verdict Banner */}
-        <section style={{ marginBottom: 80 }}>
-          <VerdictBanner data={d} />
+        {/* Section 1 — The Verdict */}
+        <section style={{ marginBottom: 64 }}>
+          <ExecutiveVerdict data={d} />
         </section>
 
-        {/* Section 2 — Hero Metrics */}
-        <section style={{ marginBottom: 80 }}>
-          <HeroMetrics data={d} />
+        {/* Section 2 — Flow Funnel */}
+        <section style={{ marginBottom: 64 }}>
+          <FlowFunnel data={d} />
         </section>
 
-        {/* Section 3 — Screen Health Map */}
-        <section style={{ marginBottom: 80 }}>
-          <ScreenHealthMap data={d} />
+        {/* Section 3 — Segment Divergence */}
+        <section style={{ marginBottom: 64 }}>
+          <SegmentDivergence data={d} />
         </section>
 
-        {/* Section 4 — Emotional Journey */}
-        <section style={{ marginBottom: 80 }}>
-          <EmotionalJourneyMap data={d} />
+        {/* Section 4 — Persona Monologues */}
+        <section style={{ marginBottom: 64 }}>
+          <PersonaMonologues data={d} />
         </section>
 
-        {/* Section 5 — Executive Summary */}
-        <section style={{ marginBottom: 80 }}>
-          <ExecutiveSummary data={d} />
+        {/* Section 5 — Clustered Drop-Off Reasons */}
+        <section style={{ marginBottom: 64 }}>
+          <ClusteredDropOffs data={d} />
         </section>
 
-        {/* Section 6 — Top Friction Points */}
-        <section style={{ marginBottom: 80 }}>
-          <FrictionPoints data={d} />
+        {/* Section 6 — Fix Recommendations */}
+        <section style={{ marginBottom: 64 }}>
+          <FixRecommendations data={d} />
         </section>
 
-        {/* Section 7 — Behavioral Insights */}
-        <section style={{ marginBottom: 80 }}>
-          <BehavioralInsights data={d} />
-        </section>
-
-        {/* Section 8 — Drop-Off Analysis */}
-        <section style={{ marginBottom: 80 }}>
-          <DropOffAnalysis data={d} />
-        </section>
-
-        {/* Section 9 — Usability Findings (replaces Design Recommendations) */}
-        <section style={{ marginBottom: 80 }}>
-          <UsabilityFindings data={d} />
-        </section>
-
-        {/* Section 10 — Task Analysis per screen (replaces Playbook Insights) */}
-        <section style={{ marginBottom: 80 }}>
-          <TaskAnalysis data={d} />
-        </section>
-
-        {/* Section 11 — User Mental Models */}
-        <section style={{ marginBottom: 80 }}>
-          <UserMentalModels data={d} />
-        </section>
-
-        {/* Section 12 — Segment Analysis */}
-        <section style={{ marginBottom: 80 }}>
-          <SegmentAnalysis data={d} />
-        </section>
-
-        {/* Section 13 — Power Users */}
+        {/* Section 8 — Calibration Appendix (conditional) */}
         <section style={{ marginBottom: 40 }}>
-          <PowerUsers data={d} />
+          <CalibrationAppendix data={d} />
         </section>
 
         {/* Footer */}
@@ -199,7 +164,7 @@ export function SimulationOverview({
           }}
         >
           <p style={{ fontSize: 14, color: COLORS.textMuted }}>
-            {d.flow_name} · AI Usability Test Report ·{" "}
+            {d.flow_name} · Simulation Report ·{" "}
             {d.generated_at
               ? new Date(d.generated_at).toLocaleDateString("en-US", {
                   year: "numeric",
@@ -211,7 +176,7 @@ export function SimulationOverview({
           <p style={{ fontSize: 14, color: COLORS.textMuted }}>
             {d.summary.total_personas} personas ·{" "}
             {Object.keys(d.screen_metrics || {}).length} screens ·{" "}
-            {d.summary.completion_rate_pct}% task completion
+            {d.summary.completion_rate_pct}% completion
           </p>
         </footer>
       </div>

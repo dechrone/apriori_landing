@@ -29,7 +29,7 @@ interface Props {
 }
 
 export function ComparatorOverview({ data }: Props) {
-  const { flows_compared, winner, scorecards, dimension_comparisons, segment_winners, where_each_excels, where_each_falls_short, cross_pollination, recommendation } = data;
+  const { flows_compared, winner, scorecards, dimension_comparisons, segment_winners, where_each_excels, where_each_falls_short, cross_pollination, recommendation, confidence_level, confidence_reasoning } = data;
 
   /* Determine winner/loser flow ids */
   const winnerFlowId = winner.flow_id as "flow_0" | "flow_1";
@@ -112,6 +112,30 @@ export function ComparatorOverview({ data }: Props) {
               <p style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", lineHeight: 1.6, maxWidth: 640 }}>
                 {winner.primary_reason}
               </p>
+              {confidence_level && (
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12 }}>
+                  <span
+                    style={{
+                      display: "inline-block",
+                      padding: "3px 10px",
+                      borderRadius: 100,
+                      fontSize: 11,
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                      backgroundColor: confidence_level === "high" ? tokens.green : confidence_level === "medium" ? tokens.orange : tokens.red,
+                      color: "#FFFFFF",
+                    }}
+                  >
+                    {confidence_level} confidence
+                  </span>
+                  {confidence_reasoning && (
+                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", maxWidth: 400 }}>
+                      {confidence_reasoning}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
             <div
               style={{

@@ -127,7 +127,7 @@ export function DropOffAnalysis({ data }: Props) {
                       fontFamily: "var(--font-inter), sans-serif",
                     }}
                   >
-                    {info.total_drop_offs} drop-off{info.total_drop_offs !== 1 ? "s" : ""}
+                    {info.total_drop_offs ?? info.drop_off_count ?? 0} drop-off{(info.total_drop_offs ?? info.drop_off_count ?? 0) !== 1 ? "s" : ""}
                   </span>
                 </div>
 
@@ -145,9 +145,9 @@ export function DropOffAnalysis({ data }: Props) {
                         }}
                       >
                         {cluster.label}
-                        {cluster.persona_count > 0 && (
+                        {(cluster.persona_count ?? 0) > 0 && (
                           <span style={{ fontWeight: 400, marginLeft: 6 }}>
-                            ({cluster.persona_count})
+                            ({cluster.persona_count ?? 0})
                           </span>
                         )}
                       </p>

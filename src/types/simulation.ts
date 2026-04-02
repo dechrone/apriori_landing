@@ -68,6 +68,7 @@ export interface FlowAssessment {
   what_works?: WhatWorks[];
   what_needs_fixing?: WhatNeedsFixing[];
   quick_wins?: QuickWin[];
+  fix_recommendations?: FixRecommendation[];
   // New: single usability score (replaces ux_health_scores)
   usability_score?: number;
   emotional_journey_map?: EmotionalJourneyMap;
@@ -108,16 +109,18 @@ export interface PowerUsers {
 }
 
 export interface DropOffCluster {
-  cluster_id: number;
+  cluster_id?: number;
   label?: string;
-  persona_count: number;
+  persona_count?: number;
   representative_reasoning?: string;
   sample_reasonings?: string[];
 }
 
 export interface DropOffScreen {
-  total_drop_offs: number;
+  total_drop_offs?: number;
+  drop_off_count?: number;  // legacy alias
   clusters: DropOffCluster[];
+  [key: string]: unknown;   // allow extra fields from sample data
 }
 
 export interface DropOffAnalysis {
@@ -219,6 +222,43 @@ export interface BehaviorAnalysisScreen {
   analysis_error?: string;
 }
 
+// ── Segment-Screen Breakdown (Section 3: Segment Divergence) ─────────────────
+
+export interface SegmentScreenEntry {
+  reached: number;
+  dropped_off: number;
+  drop_off_pct: number;
+}
+
+export type SegmentScreenBreakdown = Record<string, Record<string, SegmentScreenEntry>>;
+
+// ── Drop-Off Monologues (Section 4: Persona Monologues) ──────────────────────
+
+export interface DropOffMonologue {
+  persona_uuid: string;
+  persona_label: string;
+  behavioral_archetype: string;
+  internal_monologue: string;
+  reasoning: string;
+  emotional_state: string;
+  trust_score?: number;
+  clarity_score?: number;
+  value_score?: number;
+}
+
+// ── Fix Recommendations (Section 6: Ranked Fixes) ────────────────────────────
+
+export interface FixRecommendation {
+  root_cause: string;
+  screen: string;
+  recommendation: string;
+  estimated_impact: "high" | "medium" | "low";
+  feasibility: "high" | "medium" | "low";
+  impact_feasibility_score: number;
+  affected_segment: string;
+  expected_uplift: string;
+}
+
 // ── Root simulation data ──────────────────────────────────────────────────────
 
 export interface SimulationData {
@@ -246,6 +286,12 @@ export interface SimulationData {
   completion_analysis?: CompletionAnalysis;
   behavior_analysis?: Record<string, BehaviorAnalysisScreen>;
   persona_details?: PersonaDetail[];
+  // New report sections
+  segment_screen_breakdown?: SegmentScreenBreakdown;
+  segments_used?: string[];
+  drop_off_monologues?: Record<string, DropOffMonologue[]>;
+  fix_recommendations?: FixRecommendation[];
+  expected_completion_rate_pct?: number;
   // Legacy fields kept optional for backward compat with existing sample data
   design_recommendations?: unknown[];
   ux_analysis?: unknown;

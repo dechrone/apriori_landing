@@ -138,7 +138,8 @@ export function PlaybookInsights({ data }: Props) {
                 }}
                 className="playbook-recs-grid"
               >
-                {recs.map((rec, ri) => {
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {recs.map((rec: any, ri: number) => {
                   const ct = clusterTypeStyle(rec.cluster_type ?? "");
                   const ef = effortStyle((rec.effort ?? "").toLowerCase());
                   const uplift = rec.conversion_uplift_pct;

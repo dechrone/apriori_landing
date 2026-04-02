@@ -50,6 +50,8 @@ export interface ComparatorResult {
   comparison_id: string;
   flows_compared: FlowRef[];
   winner: ComparatorWinner;
+  confidence_level?: "high" | "medium" | "low";
+  confidence_reasoning?: string;
   scorecards: {
     flow_0: FlowScorecard;
     flow_1: FlowScorecard;
@@ -75,6 +77,8 @@ export interface ComparatorData {
   comparison_id: string;
   flows_compared: FlowRef[];                          // always length 2
   winner: ComparatorWinner;
+  confidence_level?: "high" | "medium" | "low";
+  confidence_reasoning?: string;
   scorecards: {
     flow_0: FlowScorecard;
     flow_1: FlowScorecard;

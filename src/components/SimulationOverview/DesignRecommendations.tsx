@@ -13,7 +13,7 @@ export function DesignRecommendations({ data }: Props) {
   const recs = data.design_recommendations;
   if (!recs || recs.length === 0) return null;
 
-  const sorted = [...recs].sort((a, b) => {
+  const sorted = [...(recs as Array<Record<string, string>>)].sort((a, b) => {
     const order: Record<string, number> = { P0: 0, P1: 1, P2: 2 };
     return (order[a.priority] ?? 3) - (order[b.priority] ?? 3);
   });
