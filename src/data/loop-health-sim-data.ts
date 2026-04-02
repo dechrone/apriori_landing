@@ -854,6 +854,45 @@ export const loopHealthSimData: SimulationData = {
     "The Skeptic",
   ],
 
+  segment_completion_summary: [
+    {
+      segment: "The Confused Novice",
+      total: 1,
+      completed: 0,
+      dropped: 1,
+      completion_pct: 0,
+      top_drop_off_screen: "plan_selection",
+      top_drop_off_reason: "Decision paralysis from too many plans",
+    },
+    {
+      segment: "The Skeptic",
+      total: 1,
+      completed: 0,
+      dropped: 1,
+      completion_pct: 0,
+      top_drop_off_screen: "plan_selection",
+      top_drop_off_reason: "Trust deficit — no employer validation",
+    },
+    {
+      segment: "The Enthusiast",
+      total: 1,
+      completed: 1,
+      dropped: 0,
+      completion_pct: 100,
+      top_drop_off_screen: "",
+      top_drop_off_reason: "",
+    },
+    {
+      segment: "The Pragmatist",
+      total: 2,
+      completed: 2,
+      dropped: 0,
+      completion_pct: 100,
+      top_drop_off_screen: "",
+      top_drop_off_reason: "",
+    },
+  ],
+
   segment_screen_breakdown: {
     welcome: {
       "The Pragmatist": { reached: 2, dropped_off: 0, drop_off_pct: 0 },

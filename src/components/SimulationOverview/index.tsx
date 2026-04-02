@@ -2,6 +2,7 @@
 
 import type { SimulationOverviewProps } from "@/types/simulation";
 import { ExecutiveVerdict } from "./ExecutiveVerdict";
+import { SegmentScorecard } from "./SegmentScorecard";
 import { FlowFunnel } from "./FlowFunnel";
 import { SegmentDivergence } from "./SegmentDivergence";
 import { PersonaMonologues } from "./PersonaMonologues";
@@ -117,8 +118,13 @@ export function SimulationOverview({
         )}
 
         {/* Section 1 — The Verdict */}
-        <section style={{ marginBottom: 64 }}>
+        <section style={{ marginBottom: 48 }}>
           <ExecutiveVerdict data={d} />
+        </section>
+
+        {/* Section 1b — Segment Scorecard (who converts, who doesn't, why) */}
+        <section style={{ marginBottom: 64 }}>
+          <SegmentScorecard data={d} />
         </section>
 
         {/* Section 2 — Flow Funnel */}

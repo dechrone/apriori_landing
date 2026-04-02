@@ -415,6 +415,106 @@ export const fitSquareSimData: SimulationData = {
     "Married Family Person",
   ],
 
+  segment_completion_summary: [
+    {
+      segment: "Budget-Conscious Worker",
+      total: 5,
+      completed: 1,
+      dropped: 4,
+      completion_pct: 20,
+      top_drop_off_screen: "plan_selection",
+      top_drop_off_reason:
+        "Minimum 30-session commitment too high for trial",
+    },
+    {
+      segment: "Mumbai Migrant Professional",
+      total: 5,
+      completed: 2,
+      dropped: 3,
+      completion_pct: 40,
+      top_drop_off_screen: "phone_number",
+      top_drop_off_reason:
+        "Want to browse gyms before registering personal details",
+    },
+    {
+      segment: "Young Mumbai Native",
+      total: 5,
+      completed: 3,
+      dropped: 2,
+      completion_pct: 60,
+      top_drop_off_screen: "gym_browse",
+      top_drop_off_reason: "No quality gyms within acceptable distance",
+    },
+    {
+      segment: "Bangalore Migrant Professional",
+      total: 5,
+      completed: 3,
+      dropped: 2,
+      completion_pct: 60,
+      top_drop_off_screen: "gym_browse",
+      top_drop_off_reason: "No quality gyms within acceptable distance",
+    },
+    {
+      segment: "Young Women Professional",
+      total: 5,
+      completed: 3,
+      dropped: 2,
+      completion_pct: 60,
+      top_drop_off_screen: "gym_detail",
+      top_drop_off_reason:
+        "Insufficient safety and comfort information for female users",
+    },
+    {
+      segment: "Settled Professional 35+",
+      total: 5,
+      completed: 3,
+      dropped: 2,
+      completion_pct: 60,
+      top_drop_off_screen: "plan_selection",
+      top_drop_off_reason:
+        "Minimum 30-session commitment too high for trial",
+    },
+    {
+      segment: "Young Single Millennial",
+      total: 5,
+      completed: 3,
+      dropped: 2,
+      completion_pct: 60,
+      top_drop_off_screen: "plan_selection",
+      top_drop_off_reason:
+        "Minimum 30-session commitment too high for trial",
+    },
+    {
+      segment: "Married Family Person",
+      total: 5,
+      completed: 3,
+      dropped: 2,
+      completion_pct: 60,
+      top_drop_off_screen: "checkout_basic",
+      top_drop_off_reason:
+        "Per-session model unfamiliar — want monthly subscription option",
+    },
+    {
+      segment: "Young Bangalore Native",
+      total: 5,
+      completed: 4,
+      dropped: 1,
+      completion_pct: 80,
+      top_drop_off_screen: "plan_selection",
+      top_drop_off_reason:
+        "Minimum 30-session commitment too high for trial",
+    },
+    {
+      segment: "Fitness Enthusiast",
+      total: 5,
+      completed: 5,
+      dropped: 0,
+      completion_pct: 100,
+      top_drop_off_screen: "",
+      top_drop_off_reason: "",
+    },
+  ],
+
   // ── Segment-Screen Breakdown ────────────────────────────────────────────────
   segment_screen_breakdown: {
     onboarding_1: {

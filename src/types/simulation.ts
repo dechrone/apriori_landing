@@ -259,6 +259,18 @@ export interface FixRecommendation {
   expected_uplift: string;
 }
 
+// ── Segment Completion Summary (Segment Scorecard) ───────────────────────────
+
+export interface SegmentCompletionEntry {
+  segment: string;
+  total: number;
+  completed: number;
+  dropped: number;
+  completion_pct: number;
+  top_drop_off_screen: string;
+  top_drop_off_reason: string;
+}
+
 // ── Root simulation data ──────────────────────────────────────────────────────
 
 export interface SimulationData {
@@ -289,6 +301,7 @@ export interface SimulationData {
   // New report sections
   segment_screen_breakdown?: SegmentScreenBreakdown;
   segments_used?: string[];
+  segment_completion_summary?: SegmentCompletionEntry[];
   drop_off_monologues?: Record<string, DropOffMonologue[]>;
   fix_recommendations?: FixRecommendation[];
   expected_completion_rate_pct?: number;
