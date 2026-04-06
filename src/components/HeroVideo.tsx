@@ -105,65 +105,48 @@ export function HeroVideo({ videoId, className = "" }: HeroVideoProps) {
   }, [hasPlayedOnce, videoId, onVideoEnd]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className={`w-full max-w-4xl ${className}`}
-    >
+    <div className={`w-full ${className}`}>
       <div
         ref={containerRef}
-        className="relative w-full aspect-video rounded-2xl overflow-hidden border border-border-subtle shadow-[0_0_48px_rgba(0,0,0,0.4),0_0_24px_rgba(245,158,11,0.08)]"
+        className="relative w-full aspect-video rounded-lg overflow-hidden border border-border-subtle"
       >
-        {/* Player layer - kept in DOM when video ends to avoid removeChild errors */}
+        {/* Player layer */}
         {hasPlayedOnce && (
           <div
             id="hero-video-player"
-            className={`absolute inset-0 w-full h-full [&>iframe]:rounded-2xl transition-opacity duration-300 ${
+            className={`absolute inset-0 w-full h-full [&>iframe]:rounded-lg transition-opacity duration-300 ${
               isPlaying ? "z-10 opacity-100" : "z-0 opacity-0 pointer-events-none"
             }`}
           />
         )}
 
-        {/* Thumbnail facade - shown when not playing */}
+        {/* Thumbnail facade */}
         <button
           type="button"
           onClick={handlePlay}
-          className={`absolute inset-0 w-full h-full group block cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-deep rounded-2xl transition-opacity duration-300 ${
+          className={`absolute inset-0 w-full h-full group block cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-text-primary focus-visible:ring-offset-2 rounded-lg transition-opacity duration-300 ${
             isPlaying ? "z-0 opacity-0 pointer-events-none" : "z-10 opacity-100"
           }`}
           aria-label="Play demo video"
         >
-          {/* Thumbnail */}
           <img
             src={thumbnailSrc}
             alt="Apriori Demo Video"
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.01]"
             onError={() => setThumbnailError(true)}
           />
 
-          {/* Subtle overlay on hover */}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
 
-          {/* Play button - glass-morphism with orange accent */}
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.div
               className="relative"
-              whileHover={{ scale: 1.08 }}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.96 }}
             >
-              <div
-                className="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center transition-all duration-300 group-hover:shadow-[0_0_48px_rgba(245,158,11,0.4)]"
-                style={{
-                  background:
-                    "linear-gradient(135deg, rgba(245,158,11,0.95) 0%, rgba(245,158,11,0.85) 100%)",
-                  boxShadow:
-                    "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2), 0 0 24px rgba(245,158,11,0.2)",
-                }}
-              >
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg transition-shadow duration-300 group-hover:shadow-xl">
                 <Play
-                  className="w-10 h-10 md:w-12 md:h-12 text-deep ml-1"
+                  className="w-7 h-7 md:w-8 md:h-8 text-[#111] ml-0.5"
                   fill="currentColor"
                 />
               </div>
@@ -171,6 +154,6 @@ export function HeroVideo({ videoId, className = "" }: HeroVideoProps) {
           </div>
         </button>
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -2,115 +2,94 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { FileInput, Brain, Target } from "lucide-react";
-import { GlassCard } from "./ui/GlassCard";
-import { CONTENT } from "@/config/content";
 
-const stepIcons = [FileInput, Brain, Target];
+const steps = [
+  {
+    number: 1,
+    title: "Share your flow",
+    description: "Send us your product screens and tell us who your target users are.",
+  },
+  {
+    number: 2,
+    title: "We simulate",
+    description: "We run diverse personas through your flow and capture what each one thinks, feels, and decides at every screen.",
+  },
+  {
+    number: 3,
+    title: "You decide with evidence",
+    description: "Get cohort-level analysis: which user types convert, which drop off, and exactly why. Per segment, per screen.",
+  },
+];
 
 export function WorkflowSteps() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+  const isInView = useInView(containerRef, { once: true, margin: "-80px" });
 
   return (
-    <section 
+    <section
+      id="how-it-works"
       ref={containerRef}
-      className="relative py-24 md:py-32 overflow-hidden"
+      className="py-20 md:py-28 border-t border-border-subtle scroll-mt-20"
     >
-      {/* Background */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: "radial-gradient(ellipse at 30% 30%, rgba(245, 158, 11, 0.02) 0%, transparent 50%)",
-        }}
-      />
-
-      <div className="relative max-w-[1280px] mx-auto px-6 md:px-16">
-        {/* Section Header */}
+      <div className="max-w-[960px] mx-auto px-6 md:px-16">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          transition={{ duration: 0.5 }}
+          className="mb-14"
         >
-          <h2 className="text-h2 text-text-primary mb-4">
-            {CONTENT.workflow.heading}
+          <h2
+            className="text-text-primary"
+            style={{
+              fontSize: "clamp(1.5rem, 3vw, 2rem)",
+              fontWeight: 600,
+              letterSpacing: "-0.02em",
+              lineHeight: 1.2,
+            }}
+          >
+            Three steps. Results in a day.
           </h2>
         </motion.div>
 
-        {/* Steps Container */}
-        <div className="relative">
-          {/* Connector Line (Desktop) */}
-          <div className="hidden md:block absolute top-[60px] left-[calc(16.67%+24px)] right-[calc(16.67%+24px)] h-0.5">
+        <div className="grid md:grid-cols-3 gap-10 md:gap-8">
+          {steps.map((step, index) => (
             <motion.div
-              initial={{ scaleX: 0 }}
-              animate={isInView ? { scaleX: 1 } : {}}
-              transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
-              className="w-full h-full origin-left"
-              style={{
-                background: "linear-gradient(to right, rgba(245, 158, 11, 0.5) 0%, rgba(245, 158, 11, 0.2) 50%, rgba(245, 158, 11, 0.5) 100%)",
+              key={step.number}
+              initial={{ opacity: 0, y: 16 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.4, delay: 0.15 + index * 0.1 }}
+              className="group flex flex-col p-6 rounded-lg border transition-all duration-300 cursor-default"
+              style={{ borderColor: "transparent", backgroundColor: "transparent" }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "#E8E2D8";
+                e.currentTarget.style.backgroundColor = "#FFFFFF";
+                e.currentTarget.style.boxShadow = "0 4px 16px rgba(184, 134, 11, 0.06)";
               }}
-            />
-          </div>
-
-          {/* Steps Grid */}
-          <div className="grid md:grid-cols-3 gap-8 md:gap-6">
-            {CONTENT.workflow.steps.map((step, index) => {
-              const Icon = stepIcons[index];
-              
-              return (
-                <motion.div
-                  key={step.number}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.5, delay: 0.2 + index * 0.15 }}
-                  className="relative flex flex-col items-center h-full"
-                >
-                  {/* Step Badge */}
-                  <motion.div
-                    whileHover={{ scale: 1.1 }}
-                    className={`
-                      relative z-10 w-12 h-12 rounded-full
-                      flex items-center justify-center
-                      text-2xl font-semibold
-                      transition-colors duration-300
-                      ${index === CONTENT.workflow.steps.length - 1 
-                        ? "bg-amber text-deep" 
-                        : "bg-amber-dim border-2 border-amber text-amber"
-                      }
-                    `}
-                  >
-                    {step.number}
-                  </motion.div>
-
-                  {/* Card */}
-                  <GlassCard 
-                    padding="lg" 
-                    className="mt-6 w-full text-center h-full flex flex-col"
-                    hover
-                  >
-                    {/* Icon */}
-                    <div className="w-10 h-10 rounded-lg bg-amber-dim flex items-center justify-center mx-auto mb-4">
-                      <Icon size={20} className="text-amber" />
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="text-lg font-semibold text-text-primary mb-2">
-                      {step.title}
-                    </h3>
-
-                    {/* Description */}
-                    <p className="text-sm text-text-secondary flex-1">
-                      {step.description}
-                    </p>
-                  </GlassCard>
-                </motion.div>
-              );
-            })}
-          </div>
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "transparent";
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold mb-4"
+                style={{
+                  backgroundColor: "rgba(184, 134, 11, 0.08)",
+                  color: "#B8860B",
+                }}
+              >
+                {step.number}
+              </div>
+              <h3 className="text-base font-semibold text-text-primary mb-2">
+                {step.title}
+              </h3>
+              <p className="text-sm text-text-secondary leading-relaxed">
+                {step.description}
+              </p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
   );
 }
-

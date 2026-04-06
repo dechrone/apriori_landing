@@ -253,49 +253,6 @@ export function CubeVisualization({ className = "" }: CubeVisualizationProps) {
         </svg>
       </motion.div>
       
-      {/* Data readout - top right */}
-      <motion.div
-        className="absolute top-4 right-4 text-right"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-      >
-        <motion.div
-          className="text-[10px] text-text-tertiary font-mono tracking-wider"
-          animate={{ opacity: [0.4, 0.8, 0.4] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          COHORTS: 1,000,000+
-        </motion.div>
-        <motion.div
-          className="text-[10px] text-amber font-mono tracking-wider mt-1"
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        >
-          ACTIVE
-        </motion.div>
-      </motion.div>
-      
-      {/* Data readout - bottom left */}
-      <motion.div
-        className="absolute bottom-4 left-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.8 }}
-      >
-        <motion.div
-          className="text-[10px] text-amber font-mono tracking-wider flex items-center gap-1"
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
-        >
-          <motion.span
-            className="inline-block w-1.5 h-1.5 rounded-full bg-amber"
-            animate={{ scale: [1, 1.3, 1] }}
-            transition={{ duration: 1, repeat: Infinity }}
-          />
-          SIMULATING
-        </motion.div>
-      </motion.div>
     </div>
   );
 }

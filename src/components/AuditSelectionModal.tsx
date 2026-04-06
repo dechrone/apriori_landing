@@ -10,20 +10,20 @@ interface AuditSelectionModalProps {
   onClose: () => void;
 }
 
-const auditOptions = [
+const simulationOptions = [
   {
     id: "product-flow",
-    title: "Product Flow Audit",
+    title: "Product Flow Simulation",
     description:
-      "Analyze user journeys, retention loops, and UX friction points using persona simulation.",
+      "Simulate user journeys through your product screens. See where different personas drop off and why.",
     icon: Route,
     href: "/audit/product-flow",
   },
   {
     id: "ad-portfolio",
-    title: "Ad Portfolio Audit",
+    title: "Ad Portfolio Analysis",
     description:
-      "Evaluate creative fatigue, targeting efficiency, and ROAS potential.",
+      "Evaluate creative performance across audience segments.",
     icon: BarChart3,
     href: "/audit/ad-portfolio",
   },
@@ -62,7 +62,7 @@ export function AuditSelectionModal({ isOpen, onClose }: AuditSelectionModalProp
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}
+          transition={{ duration: 0.2 }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8"
         >
           {/* Backdrop */}
@@ -70,71 +70,60 @@ export function AuditSelectionModal({ isOpen, onClose }: AuditSelectionModalProp
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-bg-primary/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
             onClick={onClose}
             aria-hidden="true"
           />
 
           {/* Modal Content */}
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
+            initial={{ scale: 0.97, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
-            className="relative w-full max-w-2xl"
+            exit={{ scale: 0.97, opacity: 0 }}
+            transition={{ duration: 0.2, ease: [0.25, 0.4, 0.25, 1] as const }}
+            className="relative w-full max-w-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-bg-secondary rounded-[var(--radius-lg)] p-6 md:p-8 shadow-[var(--shadow-xl)]">
+            <div className="bg-white rounded-lg p-6 md:p-8 shadow-xl border border-[#E8E8E8]">
               {/* Header */}
-              <div className="flex items-start justify-between gap-4 mb-8">
+              <div className="flex items-start justify-between gap-4 mb-6">
                 <div>
-                  <h2 className="text-h3 md:text-2xl text-text-primary mb-2">
-                    Choose Your Simulation
+                  <h2 className="text-lg font-semibold text-[#111] mb-1">
+                    Choose Simulation Type
                   </h2>
-                  <p className="text-sm text-text-secondary">
-                    Select the specific simulation engine for your product needs.
+                  <p className="text-sm text-[#555]">
+                    Select what you want to simulate.
                   </p>
                 </div>
                 <button
                   onClick={onClose}
-                  className="w-10 h-10 rounded-[var(--radius-sm)] flex items-center justify-center text-text-tertiary hover:text-text-primary hover:bg-bg-hover transition-colors shrink-0"
+                  className="w-8 h-8 rounded flex items-center justify-center text-[#888] hover:text-[#111] hover:bg-[#F0F0F0] transition-colors shrink-0"
                   aria-label="Close modal"
                 >
-                  <X size={22} />
+                  <X size={18} />
                 </button>
               </div>
 
-              {/* Audit Type Cards */}
+              {/* Option Cards */}
               <div className="grid sm:grid-cols-2 gap-4">
-                {auditOptions.map((option) => {
+                {simulationOptions.map((option) => {
                   const Icon = option.icon;
                   return (
-                    <motion.button
+                    <button
                       key={option.id}
                       onClick={() => handleCardClick(option.href)}
-                      className="group relative text-left p-6 rounded-[var(--radius-md)] bg-bg-elevated hover:bg-bg-hover shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-secondary"
-                      whileHover={{
-                        scale: 1.02,
-                        y: -4,
-                      }}
-                      whileTap={{ scale: 0.98 }}
-                      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
+                      className="group text-left p-5 rounded-lg border border-[#E8E8E8] hover:border-[#D4D4D4] hover:bg-[#FAFAFA] transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#111]"
                     >
-                      <div className="relative">
-                        <div className="w-12 h-12 rounded-[var(--radius-sm)] bg-accent-gold/10 flex items-center justify-center mb-4 group-hover:bg-accent-gold/15 transition-colors">
-                          <Icon size={24} className="text-accent-gold" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-text-primary mb-2">
-                          {option.title}
-                        </h3>
-                        <p className="text-sm text-text-secondary leading-relaxed">
-                          {option.description}
-                        </p>
-                        <span className="inline-flex items-center gap-1 mt-3 text-sm font-medium text-accent-gold opacity-0 group-hover:opacity-100 transition-opacity">
-                          Select →
-                        </span>
+                      <div className="w-10 h-10 rounded bg-[#F5F5F5] flex items-center justify-center mb-3 group-hover:bg-[#EEEEEE] transition-colors">
+                        <Icon size={20} className="text-[#555]" />
                       </div>
-                    </motion.button>
+                      <h3 className="text-sm font-semibold text-[#111] mb-1">
+                        {option.title}
+                      </h3>
+                      <p className="text-xs text-[#555] leading-relaxed">
+                        {option.description}
+                      </p>
+                    </button>
                   );
                 })}
               </div>

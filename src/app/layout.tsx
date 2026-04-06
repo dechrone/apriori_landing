@@ -28,27 +28,26 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Apriori - The Simulation Layer for Pre-Build Conviction",
-  description: "Identify Belief Collapse before you build. The first Simulation Layer for high-stakes product decisions. Stress-test pricing, onboarding, and commitment flows against 1M+ synthetic personas.",
+  title: "Apriori - Know Why Users Drop Off. Before They Do.",
+  description: "AI-powered simulations that show you which users convert, which drop off, and why. In hours, not weeks.",
   keywords: [
     "product simulation",
-    "pre-build testing",
     "user research",
-    "decision infrastructure",
     "synthetic personas",
-    "belief collapse",
-    "product conviction"
+    "product analytics",
+    "conversion optimization",
+    "UX research",
   ],
   openGraph: {
-    title: "Apriori - Stop Guessing. Start Simulating.",
-    description: "Prevent product failures before you write code. High-stakes decision infrastructure for irreversible choices.",
-    type: 'website',
-    siteName: 'Apriori',
+    title: "Apriori - Know Why Users Drop Off. Before They Do.",
+    description: "AI-powered simulations that show you which users convert, which drop off, and why. In hours, not weeks.",
+    type: "website",
+    siteName: "Apriori",
   },
   twitter: {
-    card: 'summary_large_image',
+    card: "summary_large_image",
     title: "Apriori - The Simulation Layer",
-    description: "Identify Belief Collapse before building. Infrastructure for Pre-Build Conviction.",
+    description: "AI-powered simulations that show you which users convert, which drop off, and why. In hours, not weeks.",
   },
 };
 
@@ -58,9 +57,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body
-        className={`${inter.variable} ${geistMono.variable} ${plusJakartaSans.variable} antialiased bg-deep text-text-primary`}
+        className={`${inter.variable} ${geistMono.variable} ${plusJakartaSans.variable} antialiased bg-bg-primary text-text-primary`}
       >
         <AuthProvider>
           <AuditModalProvider>

@@ -24,5 +24,11 @@ export function ConditionalSiteHeader() {
     return null;
   }
 
-  return <SiteHeader />;
+  const isLandingPage = pathname === "/";
+
+  return (
+    <div className={isLandingPage ? "landing-light" : ""}>
+      <SiteHeader />
+    </div>
+  );
 }

@@ -1,158 +1,113 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Cpu, Target, Zap } from "lucide-react";
-import { GlassCard } from "./ui/GlassCard";
+import { useRef, useState } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 
 const faqs = [
   {
     question: "How is this different from user testing or analytics?",
-    answer: "Traditional testing shows you what users do. We simulate what they think. While analytics tells you the 'what' after failure, we predict the 'why' before you build. It's the difference between autopsy and prevention.",
-    icon: Target,
+    answer: "Analytics shows where users drop off. We show why. User testing gives you 5-10 opinions in weeks. We give you 50+ diverse perspectives in a day. We are not a replacement for either. We are a fast, cheap pre-filter that tells you where to focus your deeper research.",
   },
   {
-    question: "What if my idea is completely wrong?",
-    answer: "Then you'd rather know before spending 6 months of runway. Most founders discover their core assumptions are wrong at the validation stage. We accelerate that timeline from months to days.",
-    icon: Cpu,
+    question: "How accurate are the simulations?",
+    answer: "We do not claim to replicate full human behavior. Within a specific product context, we simulate how different user segments make decisions with high fidelity. The best way to test it: run a simulation on a flow where you already have real analytics, and compare. If we flag the same friction points your data shows, you know it works.",
   },
   {
-    question: "Do you guarantee results?",
-    answer: "We guarantee you'll see risks you never considered. Results depend on execution, but every client uncovers at least 3 critical Belief Collapse points they would have discovered the expensive way.",
-    icon: Zap,
+    question: "What do you need from us to start?",
+    answer: "Product flow screenshots and a brief on your target audience. That is it. First simulation results come back within 24 hours.",
   },
   {
-    question: "What's your accuracy like?",
-    answer: "94.2% detection accuracy across 200+ simulations. We're not psychic—we're systematic. Every recommendation is backed by behavioral data from 1M+ synthetic personas.",
-    icon: Target,
+    question: "What does it cost?",
+    answer: "First simulation is free. After that, pay-per-simulation at 10K INR or a monthly retainer at 50K INR for unlimited runs.",
   },
 ];
 
 export function FAQ() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { once: true, margin: "-80px" });
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const toggleFAQ = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
-
   return (
-    <section className="relative py-24 md:py-32 overflow-hidden">
-      {/* Background */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: "radial-gradient(ellipse at 30% 70%, rgba(148, 163, 184, 0.02) 0%, transparent 50%)",
-        }}
-      />
-
-      <div className="relative max-w-[800px] mx-auto px-6 md:px-16">
+    <section
+      id="faqs"
+      ref={containerRef}
+      className="py-20 md:py-28 border-t border-border-subtle scroll-mt-20"
+    >
+      <div className="max-w-[960px] mx-auto px-6 md:px-16">
         {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          initial={{ opacity: 0, y: 16 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5 }}
+          className="mb-10"
         >
-          <span className="text-xs font-semibold text-text-tertiary uppercase tracking-[0.1em] mb-4 block">
-            COMMON OBJECTIONS
-          </span>
-          <h2 className="text-h2 text-text-primary max-w-[600px] mx-auto mb-4">
-            The Questions Keeping You Up at Night
+          <h2
+            className="text-text-primary"
+            style={{
+              fontSize: "clamp(1.5rem, 3vw, 2rem)",
+              fontWeight: 600,
+              letterSpacing: "-0.02em",
+              lineHeight: 1.2,
+            }}
+          >
+            Common questions.
           </h2>
-          <p className="text-large text-text-secondary max-w-[500px] mx-auto">
-            We get it. This sounds too good to be true. Here are the real answers.
-          </p>
         </motion.div>
 
-        {/* FAQ Items */}
-        <div className="space-y-4">
+        {/* FAQ Items - collapsible with arrows */}
+        <div className="divide-y divide-border-subtle border-t border-b border-border-subtle">
           {faqs.map((faq, index) => {
-            const Icon = faq.icon;
             const isOpen = openIndex === index;
-
             return (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.1 * index }}
+                initial={{ opacity: 0, y: 12 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.4, delay: 0.1 + index * 0.06 }}
               >
-                <GlassCard padding="none" className="overflow-hidden">
-                  <button
-                    onClick={() => toggleFAQ(index)}
-                    className="w-full p-6 text-left flex items-center justify-between hover:bg-elevated/30 transition-colors duration-200 group"
+                <button
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                  className="w-full py-5 flex items-center justify-between gap-4 text-left group cursor-pointer"
+                >
+                  <h3
+                    className="text-[15px] font-medium transition-colors duration-200"
+                    style={{ color: isOpen ? "#B8860B" : "#1A1714" }}
                   >
-                    <div className="flex items-center gap-4">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-200 ${
-                        isOpen ? 'bg-amber/20' : 'bg-border-emphasis/50 group-hover:bg-amber/10'
-                      }`}>
-                        <Icon
-                          size={16}
-                          className={`transition-colors duration-200 ${
-                            isOpen ? 'text-amber' : 'text-text-tertiary group-hover:text-amber'
-                          }`}
-                        />
-                      </div>
-                      <h3 className={`text-lg font-medium transition-colors duration-200 ${
-                        isOpen ? 'text-amber' : 'text-text-primary group-hover:text-amber'
-                      }`}>
-                        {faq.question}
-                      </h3>
-                    </div>
+                    {faq.question}
+                  </h3>
+                  <motion.div
+                    animate={{ rotate: isOpen ? 180 : 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="shrink-0"
+                  >
+                    <ChevronDown
+                      size={18}
+                      className="transition-colors duration-200"
+                      style={{ color: isOpen ? "#B8860B" : "#9C9488" }}
+                    />
+                  </motion.div>
+                </button>
 
+                <AnimatePresence>
+                  {isOpen && (
                     <motion.div
-                      animate={{ rotate: isOpen ? 180 : 0 }}
-                      transition={{ duration: 0.2 }}
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      className="overflow-hidden"
                     >
-                      <ChevronDown
-                        size={20}
-                        className={`transition-colors duration-200 ${
-                          isOpen ? 'text-amber' : 'text-text-tertiary group-hover:text-amber'
-                        }`}
-                      />
+                      <p className="text-sm text-text-secondary leading-relaxed max-w-[600px] pb-5">
+                        {faq.answer}
+                      </p>
                     </motion.div>
-                  </button>
-
-                  <AnimatePresence>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                        className="overflow-hidden"
-                      >
-                        <div className="px-6 pb-6">
-                          <div className="w-px h-4 bg-border-emphasis mx-auto mb-4" />
-                          <p className="text-text-secondary leading-relaxed">
-                            {faq.answer}
-                          </p>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </GlassCard>
+                  )}
+                </AnimatePresence>
               </motion.div>
             );
           })}
         </div>
-
-        {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="text-center mt-12"
-        >
-          <div className="inline-flex items-center gap-3 px-6 py-4 rounded-full bg-amber/5 border border-amber/20">
-            <div className="w-6 h-6 rounded-full bg-amber flex items-center justify-center">
-              <span className="text-xs font-bold text-deep">?</span>
-            </div>
-            <span className="text-sm text-amber font-medium">
-              Still have questions? <span className="underline hover:no-underline cursor-pointer">Let's chat</span>
-            </span>
-          </div>
-        </motion.div>
       </div>
     </section>
   );

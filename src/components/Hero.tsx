@@ -1,143 +1,99 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ChevronRight } from "lucide-react";
-import { Button } from "./ui/Button";
-import { CubeVisualization } from "./CubeVisualization";
-import { CONTENT } from "@/config/content";
-import { useAuditModal } from "@/contexts/AuditModalContext";
+import { ArrowRight } from "lucide-react";
+import { PersonaField } from "./PersonaField";
 
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.2,
+      staggerChildren: 0.12,
+      delayChildren: 0.1,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.6,
-      ease: [0.16, 1, 0.3, 1] as const,
+      ease: [0.25, 0.4, 0.25, 1] as const,
     },
   },
 };
 
 export function Hero() {
-  const { openAuditModal } = useAuditModal();
-
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Background gradient */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: "radial-gradient(ellipse at 70% 50%, rgba(245, 158, 11, 0.05) 0%, transparent 50%)",
-        }}
-      />
-      
-      {/* Grid overlay */}
-      <div 
-        className="absolute inset-0 pointer-events-none opacity-[0.02]"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(148, 163, 184, 1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(148, 163, 184, 1) 1px, transparent 1px)
-          `,
-          backgroundSize: "64px 64px",
-        }}
-      />
+    <section className="relative pt-24 pb-20 md:pt-32 md:pb-28 min-h-[85vh] flex items-center overflow-hidden">
+      {/* Persona grid on the right - desktop only */}
+      <PersonaField />
 
-      {/* Cube Visualization - Background */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.5, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-        style={{ transform: "translateY(3%)" }}
-      >
-        <CubeVisualization className="w-full max-w-[1800px] lg:max-w-[2400px] xl:max-w-[2800px] opacity-50 scale-[1.8]" />
-      </motion.div>
-
-      {/* Centered Title Section */}
-      <div className="absolute inset-0 flex items-center justify-center z-10">
+      <div className="relative z-10 max-w-[960px] mx-auto px-6 md:px-16 w-full">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="flex flex-col items-center gap-6 text-center px-6"
+          className="flex flex-col items-start gap-6 max-w-[460px]"
         >
-          {/* Headline - Apriori */}
-          <motion.h1 
+          {/* Headline */}
+          <motion.h1
             variants={itemVariants}
-            className="text-text-primary font-mono"
+            className="text-text-primary"
             style={{
-              fontSize: "clamp(3rem, 8vw, 6rem)",
-              fontWeight: 300,
-              letterSpacing: "0.1em",
-              lineHeight: 1.05,
-              fontFamily: "var(--font-mono)",
+              fontSize: "clamp(2.2rem, 5vw, 3.25rem)",
+              fontWeight: 600,
+              letterSpacing: "-0.03em",
+              lineHeight: 1.12,
             }}
           >
-            Apriori
+            Know why users drop off.
+            <br />
+            <span style={{ color: "#B8860B" }}>Before they do.</span>
           </motion.h1>
 
           {/* Subheadline */}
-          <motion.p 
+          <motion.p
             variants={itemVariants}
-            className="text-large text-text-secondary"
+            className="max-w-[440px]"
             style={{
-              fontSize: "clamp(1.125rem, 2vw, 1.5rem)",
+              fontSize: "clamp(1rem, 1.5vw, 1.1rem)",
+              lineHeight: 1.65,
+              color: "#5C554A",
             }}
           >
-            High-stakes product decisions made easy
+            AI-powered simulations that show you which users convert, which drop off, and why. In hours, not weeks.
           </motion.p>
 
-          {/* CTA Button */}
-          <motion.div 
+          {/* CTA Buttons */}
+          <motion.div
             variants={itemVariants}
-            className="mt-4"
+            className="flex flex-col sm:flex-row items-start gap-3 mt-2"
           >
-            <Button
-              variant="primary"
-              size="lg"
-              rightIcon={<ChevronRight size={20} />}
-              onClick={openAuditModal}
+            <a
+              href="/demo/flent"
+              className="group inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium text-sm text-white transition-all duration-200 hover:shadow-lg"
+              style={{ backgroundColor: "#B8860B" }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#9A7209")}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#B8860B")}
             >
-              {CONTENT.hero.primaryCTA}
-            </Button>
+              See a Live Report
+              <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
+            </a>
+            <a
+              href="mailto:alpha@apriori.work"
+              className="inline-flex items-center gap-2 px-6 py-3 border rounded-lg font-medium text-sm text-text-primary hover:bg-[#F8F6F1] transition-colors duration-200"
+              style={{ borderColor: "#D4C9B0" }}
+            >
+              Run It On Your Flow
+            </a>
           </motion.div>
         </motion.div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-      >
-        <span className="text-tiny text-text-tertiary uppercase tracking-wider">Scroll to explore</span>
-        <motion.div
-          className="w-6 h-10 rounded-full border-2 border-border-emphasis flex justify-center pt-2"
-          animate={{ opacity: [1, 0.5, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <motion.div
-            className="w-1.5 h-1.5 rounded-full bg-amber"
-            animate={{ y: [0, 16, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </motion.div>
-      </motion.div>
     </section>
   );
 }
-

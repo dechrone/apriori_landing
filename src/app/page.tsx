@@ -2,142 +2,67 @@ import { Hero } from "@/components/Hero";
 import { DemoSection } from "@/components/DemoSection";
 import { TheProblem } from "@/components/TheProblem";
 import { WorkflowSteps } from "@/components/WorkflowSteps";
+import { WhatYouGet } from "@/components/WhatYouGet";
 import { FAQ } from "@/components/FAQ";
+import { AboutUs } from "@/components/AboutUs";
 import { FinalCTA } from "@/components/FinalCTA";
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen bg-deep">
-      {/* Hero Section */}
+    <main className="landing-light relative min-h-screen">
       <Hero />
-
-      {/* Demo Section */}
-      <DemoSection />
-
-      {/* The Problem */}
       <TheProblem />
-
-      {/* Workflow Steps - Three Steps to Bulletproof Decisions */}
       <WorkflowSteps />
-
-      {/* FAQ */}
+      <WhatYouGet />
+      <DemoSection />
       <FAQ />
-
-      {/* Final CTA */}
+      <AboutUs />
       <FinalCTA />
 
       {/* Footer */}
       <footer className="py-16 border-t border-border-subtle">
-        <div className="max-w-[1280px] mx-auto px-6 md:px-16">
-          <div className="grid md:grid-cols-4 gap-8 mb-12">
-            {/* Brand */}
-            <div className="md:col-span-1">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-lg font-semibold text-text-primary">Apriori</span>
-                <span className="text-tiny text-text-tertiary">The Simulation Layer</span>
+        <div className="max-w-[960px] mx-auto px-6 md:px-16">
+          <div className="flex flex-col md:flex-row items-start justify-between gap-8">
+            <div>
+              <div
+                className="text-sm font-semibold tracking-[0.15em] uppercase mb-3"
+                style={{ color: "#B8860B" }}
+              >
+                APRIORI
               </div>
-              <p className="text-sm text-text-tertiary mb-4">
-                Preventing failure before you build. Join 200+ teams who've saved $50M+ in failed launches.
+              <p className="text-sm text-text-tertiary max-w-[320px] mb-4">
+                Built for product teams who ship with evidence.
               </p>
-              <div className="text-tiny text-text-tertiary">
-                © {new Date().getFullYear()} Apriori. Building Pre-Build Conviction.
+              <div className="text-xs text-text-tertiary">
+                &copy; {new Date().getFullYear()} Apriori.
               </div>
             </div>
 
-            {/* Free Tools */}
-            <div>
-              <h4 className="text-sm font-semibold text-text-primary mb-4">Free Tools</h4>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
-                    Belief Collapse Calculator
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
-                    Risk Assessment Quiz
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
-                    Persona Generator
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
-                    Sample Simulation Report
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Comparisons */}
-            <div>
-              <h4 className="text-sm font-semibold text-text-primary mb-4">Comparisons</h4>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
-                    vs UserTesting
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
-                    vs Analytics Platforms
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
-                    vs A/B Testing Tools
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
-                    vs Traditional Consulting
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Legal & Support */}
-            <div>
-              <h4 className="text-sm font-semibold text-text-primary mb-4">Legal & Support</h4>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
-                    Terms of Service
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
-                    Security
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-sm text-text-tertiary hover:text-amber transition-colors">
-                    Contact Support
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Bottom Section */}
-          <div className="pt-8 border-t border-border-subtle">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-6 text-sm text-text-tertiary">
-                <span>SOC 2 Compliant</span>
-                <span>•</span>
-                <span>GDPR Ready</span>
-                <span>•</span>
-                <span>Enterprise Security</span>
+            <div className="flex gap-16">
+              <div>
+                <h4 className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-3">Product</h4>
+                <ul className="space-y-2">
+                  <li>
+                    <a href="/demo/flent" className="text-sm text-text-secondary hover:text-text-primary transition-colors">
+                      Sample Report
+                    </a>
+                  </li>
+                </ul>
               </div>
-              <div className="text-sm text-text-tertiary">
-                Built for founders who refuse to fail
+              <div>
+                <h4 className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-3">Contact</h4>
+                <ul className="space-y-2">
+                  <li>
+                    <a href="mailto:alpha@apriori.work" className="text-sm text-text-secondary hover:text-text-primary transition-colors">
+                      alpha@apriori.work
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://apriori.work" className="text-sm text-text-secondary hover:text-text-primary transition-colors">
+                      apriori.work
+                    </a>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>

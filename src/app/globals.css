@@ -706,6 +706,53 @@ body:has(.dashboard-theme) {
   color: #FFFFFF;
 }
 
+/* ===== LANDING PAGE LIGHT THEME ===== */
+.landing-light {
+  --bg-primary: #FDFCFA;
+  --bg-secondary: #FFFFFF;
+  --bg-elevated: #F8F6F1;
+  --bg-hover: #F3F0EA;
+  --bg-input: #FFFFFF;
+  --bg-deep: #FDFCFA;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+
+  --text-primary: #1A1714;
+  --text-secondary: #5C554A;
+  --text-tertiary: #9C9488;
+  --text-quaternary: #B8B0A4;
+  --text-inverse: #FDFCFA;
+
+  --border-subtle: #E8E2D8;
+  --border-medium: #D4C9B0;
+  --border-strong: #B8AE9C;
+  --border-emphasis: #D4C9B0;
+
+  --accent-gold: #B8860B;
+  --accent-gold-hover: #9A7209;
+  --accent-gold-dim: rgba(184, 134, 11, 0.06);
+  --accent-amber: #B8860B;
+  --accent-amber-glow: rgba(184, 134, 11, 0.08);
+  --accent-amber-dim: rgba(184, 134, 11, 0.04);
+
+  --gradient-gold: linear-gradient(135deg, #B8860B 0%, #9A7209 100%);
+  --gradient-dark: linear-gradient(180deg, #FDFCFA 0%, #F8F6F1 100%);
+  --gradient-glow: none;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.03);
+  --shadow-glass: 0 1px 3px rgba(0, 0, 0, 0.03);
+  --shadow-glow-gold: 0 0 20px rgba(184, 134, 11, 0.08);
+  --shadow-amber-glow: 0 0 16px rgba(184, 134, 11, 0.06);
+  --shadow-amber-glow-sm: 0 0 10px rgba(184, 134, 11, 0.04);
+  --shadow-inner: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+
+  color: var(--text-primary);
+  background: #FDFCFA;
+}
+
 /* ===== FLOW ANALYSIS (PRD) THEME ===== */
 .flow-analysis {
   --fa-bg: #1A1917;
