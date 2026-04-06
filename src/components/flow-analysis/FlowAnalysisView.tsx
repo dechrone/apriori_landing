@@ -3,11 +3,13 @@
 import { useState } from "react";
 import type { FlowAnalysisData } from "@/types/flow-analysis";
 import type { SimulationData } from "@/types/simulation";
+import type { StudyData } from "@/types/study";
 import { OverviewTab } from "./OverviewTab";
 import { DeepDiveTab } from "./DeepDiveTab";
 import { DropOffFunnel as LegacyDropOffFunnel } from "./DropOffFunnel";
 import { DropOffFunnel as SimDropOffFunnel } from "@/components/DropOffFunnel";
 import { SimulationOverview } from "@/components/SimulationOverview";
+import { StudyOverviewTab } from "@/components/SimulationOverview/StudyOverviewTab";
 import { BarChart3, Layers, TrendingDown, Activity } from "lucide-react";
 
 const TAB_SIM_OVERVIEW = "sim-overview";
@@ -26,15 +28,17 @@ interface FlowAnalysisViewProps {
   data: FlowAnalysisData;
   /** Optional simulation insights data — when provided, adds a Simulation Overview tab */
   simulationData?: SimulationData;
+  /** Optional study-format data — when provided, replaces the Overview tab with the new Act 1/2/3 layout */
+  studyData?: StudyData;
 }
 
-export function FlowAnalysisView({ data, simulationData }: FlowAnalysisViewProps) {
+export function FlowAnalysisView({ data, simulationData, studyData }: FlowAnalysisViewProps) {
   const [activeTab, setActiveTab] = useState<TabId>(
-    simulationData ? TAB_SIM_OVERVIEW : TAB_OVERVIEW
+    simulationData || studyData ? TAB_SIM_OVERVIEW : TAB_OVERVIEW
   );
 
   const tabs: { id: TabId; label: string; icon: typeof BarChart3 }[] = [
-    ...(simulationData
+    ...(simulationData || studyData
       ? [{ id: TAB_SIM_OVERVIEW as TabId, label: "Overview", icon: Activity }]
       : []),
     // Legacy Overview - Commented out
@@ -91,13 +95,19 @@ export function FlowAnalysisView({ data, simulationData }: FlowAnalysisViewProps
       {/* ── Tab Content ── */}
       <main>
         {/* Simulation Overview tab */}
-        {simulationData && (
+        {(simulationData || studyData) && (
           <div
             className={activeTab === TAB_SIM_OVERVIEW ? "animate-fadeIn opacity-100" : "hidden"}
             style={{ animationDuration: "200ms" }}
           >
             {activeTab === TAB_SIM_OVERVIEW && (
-              <SimulationOverview simulationData={simulationData} />
+              studyData ? (
+                <div style={{ background: "#F2F0EC", minHeight: "100vh" }}>
+                  <StudyOverviewTab data={studyData} />
+                </div>
+              ) : simulationData ? (
+                <SimulationOverview simulationData={simulationData} />
+              ) : null
             )}
           </div>
         )}

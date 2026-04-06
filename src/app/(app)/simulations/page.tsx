@@ -56,6 +56,16 @@ const SAMPLE_SIMULATIONS: SimulationDoc[] = [
     createdAt: null,
     updatedAt: null,
   },
+  {
+    id: 'sample-flent',
+    name: 'Sample: Flent Secured — Rent Payment Onboarding',
+    type: 'Product Flow',
+    status: 'completed',
+    metric: 'Completion rate · 62%',
+    timestamp: 'April 2026',
+    createdAt: null,
+    updatedAt: null,
+  },
 ];
 
 /* ── Helpers ────────────────────────────────────────────────────────────── */
@@ -64,6 +74,7 @@ function getSimulationHref(sim: SimulationDoc) {
   if (sim.id === 'sample') return '/simulations/product-flow/sample';
   if (sim.id === 'sample-ad') return '/simulations/ad-portfolio/sample';
   if (sim.id === 'sample-comparator') return '/simulations/product-flow-comparator/sample';
+  if (sim.id === 'sample-flent') return '/simulations/product-flow/sample-flent';
   if (sim.type === 'Ad Portfolio') return `/simulations/ad-portfolio/${sim.id}`;
   if (sim.type === 'Product Flow Comparator') return `/simulations/product-flow-comparator/${sim.id}`;
   return `/simulations/${sim.id}`;
