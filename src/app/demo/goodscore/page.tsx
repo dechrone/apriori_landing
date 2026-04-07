@@ -4,6 +4,7 @@ import { Playfair_Display, DM_Sans } from "next/font/google";
 import { FlowAnalysisView } from "@/components/flow-analysis/FlowAnalysisView";
 import { goodScoreSimData } from "@/data/goodscore-sim-data";
 import type { FlowAnalysisData } from "@/types/flow-analysis";
+import type { SimulationData } from "@/types/simulation";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -57,7 +58,7 @@ const goodScoreFlowData: FlowAnalysisData = {
 export default function GoodScoreDemoPage() {
   return (
     <div className={`${playfair.variable} ${dmSans.variable}`}>
-      <FlowAnalysisView data={goodScoreFlowData} simulationData={goodScoreSimData} />
+      <FlowAnalysisView data={goodScoreFlowData} simulationData={goodScoreSimData as unknown as SimulationData} />
     </div>
   );
 }

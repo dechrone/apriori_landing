@@ -8,7 +8,7 @@ import type { SimulationData } from "@/types/simulation";
  * 0 completers, 2 drop-offs. 0% completion rate.
  * DAG flow: dashboard → [subscribe path | loan path] → payment/OTP terminal
  */
-export const goodScoreSimData: SimulationData = {
+export const goodScoreSimData = {
   "simulation_id": "fd2d48f7a8cc4e999998e6fdea49c18e",
   "flow_id": "goodscore_credit_monetization",
   "flow_name": "GoodScore – Credit Score Dashboard Monetization (Subscribe / Personal Loan)",
@@ -577,4 +577,4 @@ export const goodScoreSimData: SimulationData = {
     }
   ],
   "expected_completion_rate_pct": null
-} as SimulationData;
+};
