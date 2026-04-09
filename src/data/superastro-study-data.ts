@@ -376,7 +376,7 @@ export const superastroStudyData: StudyData = {
       },
       root_causes:
         "The AI\u2019s first response is templated: generate a birth chart, summarize key planetary positions, then offer to go deeper. This works for astrology-literate users who understand that kundli analysis precedes specific answers. But ad-acquired users arrive with a specific emotional question and expect a specific emotional answer. The system has no awareness of which ad the user clicked, so it can\u2019t tailor its first response to the user\u2019s entry context. The ad team and the AI team are operating independently.",
-      connected_friction_point_ids: ["FP_003"],
+      connected_friction_point_ids: [],
     },
     {
       theme_id: "T_004",
@@ -418,7 +418,7 @@ export const superastroStudyData: StudyData = {
       },
       root_causes:
         "The onboarding was designed for the majority use case: a 25-35 year old Indian user born in an Indian city with marriage or career questions. The city picker is seeded with Indian cities only. The purpose selector has three options (Marriage, Career, Relationship) that cover ~70% of use cases but structurally exclude health queries, spiritual guidance, family issues, and legal matters. The DOB picker uses a calendar widget that requires an exact date, with no accommodation for uncertainty. These are not bugs \u2014 they\u2019re design decisions that prioritize the majority at the cost of excluding meaningful minority segments.",
-      connected_friction_point_ids: ["FP_004"],
+      connected_friction_point_ids: [],
     },
     {
       theme_id: "T_005",
@@ -1530,89 +1530,8 @@ export const superastroStudyData: StudyData = {
       ],
     },
     {
-      friction_point_id: "FP_003",
-      rank: 3,
-      step_id: 11,
-      step_name: "AI Chat (Mahesh Ji)",
-      friction_type: "expectation_mismatch",
-      friction_score: 7.2,
-      severity: "high",
-      drop_off_pct: 8.8,
-      frequency_pct: 38,
-      affected_personas: [
-        "Life-Transition",
-        "Privacy-Seeker",
-        "Gen-Z-Curious",
-      ],
-      top_emotional_tags: ["DISAPPOINTED", "FRUSTRATED", "SKEPTICAL"],
-      top_behavioral_tags: ["ABANDONED"],
-      avg_seq: 3.6,
-      problem_narrative:
-        "Users who survived the 10-screen onboarding finally reach the AI chat \u2014 the moment the ad promised. But the AI\u2019s first response is a generic birth chart summary: planetary positions, dasha periods, and house analysis. Users who clicked an ad saying \u2018Does he miss me?\u2019 or \u2018Career kab set hogi?\u2019 expected a direct, emotionally resonant answer to their specific question. Instead, they receive a technical astrological readout that requires literacy in Vedic astrology to interpret. The specificity gap between the ad\u2019s promise and the AI\u2019s delivery feels like false advertising \u2014 especially after 10 screens of personal data entry.",
-      user_expectation:
-        "A direct, specific answer to the question implied by the ad: \u2018Does he miss me?\u2019 \u2192 yes/no with emotional context. \u2018Career kab set hogi?\u2019 \u2192 a timeline with actionable insight.",
-      actual_experience:
-        "A generic birth chart summary with planetary positions, technical astrological terms (Rahu, Ketu, Mahadasha, Sade Sati), and no direct reference to the user\u2019s actual question.",
-      business_impact:
-        "8.8% drop-off at the final value-delivery step \u2014 these are users who completed the entire onboarding and are lost at the moment of truth. 38% of all users report disappointment. This is the highest drop-off point in the entire flow and it happens after maximum investment from the user.",
-      related_theme_ids: ["T_003"],
-      key_monologues: [
-        {
-          session_id: "APR_SA_U058_20260410",
-          persona_type: "Life-Transition",
-          text: "I clicked because the ad asked \u2018Career kab set hogi?\u2019 but the AI started talking about Rahu in my 7th house. I don\u2019t care about planets. When will my career improve?",
-        },
-        {
-          session_id: "APR_SA_U093_20260410",
-          persona_type: "Gen-Z-Curious",
-          text: "The reel literally said \u2018Does he miss me?\u2019 so I thought the AI would tell me about my relationship. Instead it\u2019s giving me a birth chart I can\u2019t read.",
-        },
-        {
-          session_id: "APR_SA_U017_20260410",
-          persona_type: "Privacy-Seeker",
-          text: "I gave my phone number, name, DOB, birth time, birth place \u2014 basically my entire identity. And for what? A generic paragraph about Saturn and Jupiter that could apply to anyone.",
-        },
-      ],
-    },
-    {
-      friction_point_id: "FP_004",
-      rank: 4,
-      step_id: 9,
-      step_name: "Place of Birth (cumulative S9\u2013S10)",
-      friction_type: "structural_exclusion",
-      friction_score: 6.4,
-      severity: "moderate",
-      drop_off_pct: 7.0,
-      frequency_pct: 28,
-      affected_personas: ["NRI", "Devotee", "Life-Transition"],
-      top_emotional_tags: ["FRUSTRATED"],
-      top_behavioral_tags: ["HESITATED", "ABANDONED"],
-      avg_seq: 4.0,
-      problem_narrative:
-        "The city picker and purpose selector were designed for a standard Indian urban user with marriage/career concerns. NRIs born outside India can\u2019t find their birth city. Users from tier-3 towns can\u2019t find their birthplace. The purpose selector offers only Marriage, Career, and Relationship \u2014 excluding health, spiritual guidance, family matters, and specific NRI concerns like visa timing. These aren\u2019t edge cases: NRIs represent 10% of the user base, and users with non-standard needs represent 28% of all personas. The flow structurally blocks them rather than accommodating them.",
-      user_expectation:
-        "A city input that accepts any global location, and a purpose selector that covers the full range of astrological consultation needs.",
-      actual_experience:
-        "A dropdown limited to Indian cities with no fuzzy matching or international support, and a purpose selector with only three options that miss significant use cases.",
-      business_impact:
-        "7% cumulative drop-off across S9\u2013S10, concentrated among NRI (50% conversion rate vs 71% for Devotees) and users with non-standard needs. This is a structural ceiling on growth \u2014 the app literally cannot serve these users without input changes.",
-      related_theme_ids: ["T_004"],
-      key_monologues: [
-        {
-          session_id: "APR_SA_U071_20260410",
-          persona_type: "NRI",
-          text: "I was born in Edison, New Jersey. The city dropdown only has Indian cities. Am I not allowed to use this app if I wasn\u2019t born in India?",
-        },
-        {
-          session_id: "APR_SA_U046_20260410",
-          persona_type: "Devotee",
-          text: "My main concern is my son\u2019s health and spiritual growth. But the purpose options are only Marriage, Career, and Relationship. Where is Health? Where is Spiritual Guidance?",
-        },
-      ],
-    },
-    {
       friction_point_id: "FP_005",
-      rank: 5,
+      rank: 3,
       step_id: 6,
       step_name: "Marital Status",
       friction_type: "emotional_trigger",
@@ -1796,7 +1715,7 @@ export const superastroStudyData: StudyData = {
       actionable_insight:
         "Track which ad creative the user clicked and pass that context to the AI. If the user came from the \u2018Does he miss me?\u2019 ad, the AI\u2019s first response should directly address relationship questions. If from \u2018Career kab set hogi?\u2019, lead with career predictions. The ad\u2019s hook must be the AI\u2019s opening.",
       related_theme_ids: ["T_003"],
-      related_friction_point_ids: ["FP_003"],
+      related_friction_point_ids: [],
     },
     {
       pattern_id: "BP_005",
@@ -1845,7 +1764,7 @@ export const superastroStudyData: StudyData = {
         n: 18,
         conversion_rate: 56,
         avg_sus: 52.4,
-        top_friction_point_ids: ["FP_001", "FP_003"],
+        top_friction_point_ids: ["FP_001"],
         primary_pattern: "stigma_guardian",
         top_emotional_tags: ["EMBARRASSED", "DISTRUST"],
         summary:
@@ -1978,7 +1897,7 @@ export const superastroStudyData: StudyData = {
         n: 10,
         conversion_rate: 50,
         avg_sus: 54.2,
-        top_friction_point_ids: ["FP_004", "FP_001"],
+        top_friction_point_ids: ["FP_001"],
         primary_pattern: "stigma_guardian",
         top_emotional_tags: ["FRUSTRATED", "CONFUSED"],
         summary:
@@ -2021,7 +1940,7 @@ export const superastroStudyData: StudyData = {
         n: 16,
         conversion_rate: 69,
         avg_sus: 60.4,
-        top_friction_point_ids: ["FP_003", "FP_005"],
+        top_friction_point_ids: ["FP_005"],
         primary_pattern: "specific_answer_hunter",
         top_emotional_tags: ["ANXIOUS", "HOPEFUL"],
         summary:
@@ -2109,7 +2028,7 @@ export const superastroStudyData: StudyData = {
         n: 13,
         conversion_rate: 54,
         avg_sus: 48.0,
-        top_friction_point_ids: ["FP_001", "FP_002", "FP_003"],
+        top_friction_point_ids: ["FP_001", "FP_002"],
         primary_pattern: "exploratory_browser",
         top_emotional_tags: ["SKEPTICAL", "CURIOUS"],
         summary:
@@ -2428,7 +2347,7 @@ export const superastroStudyData: StudyData = {
           text: "I gave my phone number, name, DOB, birth time, birth place. And for what? A generic paragraph that could apply to anyone.",
         },
       ],
-      linked_friction_point_id: "FP_003",
+      linked_friction_point_id: "",
       linked_theme_id: "T_003",
       linked_rec_id: "DR_002",
       rice_score: null,
@@ -2470,7 +2389,7 @@ export const superastroStudyData: StudyData = {
       rank: 2,
       headline: "Ad-Aware AI First Response",
       linked_insight_id: "INS_003",
-      linked_friction_point_id: "FP_003",
+      linked_friction_point_id: "",
       linked_theme_id: "T_003",
       problem:
         "38% of users who reached the AI chat were disappointed by generic kundli responses that didn\u2019t address the specific question their ad promised to answer. 8.8% drop-off at the final value-delivery step.",
@@ -2496,7 +2415,7 @@ export const superastroStudyData: StudyData = {
       headline:
         "Expand journey purpose + NRI-friendly city input",
       linked_insight_id: "INS_003",
-      linked_friction_point_id: "FP_004",
+      linked_friction_point_id: "",
       linked_theme_id: "T_004",
       problem:
         "28% of users faced structural exclusion: NRIs couldn\u2019t find international birth cities, and users with non-standard needs had no matching purpose option. 7% cumulative drop-off across S9\u2013S10.",

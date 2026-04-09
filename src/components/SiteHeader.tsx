@@ -16,10 +16,13 @@ export function SiteHeader() {
   const { user, loading, signOut } = useAuthContext();
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const isDemo = pathname?.startsWith("/demo");
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border-subtle bg-bg-primary/80 backdrop-blur-md">
-      <div className="max-w-[960px] mx-auto px-6 md:px-16 py-3 flex items-center justify-between">
+    <header
+      className={`${isDemo ? "fixed" : "sticky"} top-0 z-50 w-full border-b border-border-subtle bg-bg-primary/80 backdrop-blur-md`}
+    >
+      <div className={`${isDemo ? "max-w-none px-8" : "max-w-[960px] px-6 md:px-16"} mx-auto py-3 flex items-center justify-between`}>
         <Link
           href="/"
           className="text-sm font-semibold tracking-[0.15em] uppercase hover:opacity-70 transition-opacity shrink-0"
@@ -43,29 +46,32 @@ export function SiteHeader() {
           </nav>
         )}
 
-        <div className="flex items-center gap-4">
-          {loading ? null : user ? (
-            <>
-              <Link href="/dashboard">
+        {/* Hide auth buttons on demo pages */}
+        {!isDemo && (
+          <div className="flex items-center gap-4">
+            {loading ? null : user ? (
+              <>
+                <Link href="/dashboard">
+                  <Button variant="secondary" size="sm">
+                    Dashboard
+                  </Button>
+                </Link>
+                <button
+                  onClick={() => signOut()}
+                  className="text-[13px] text-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
+                >
+                  Sign out
+                </button>
+              </>
+            ) : (
+              <Link href="/sign-in">
                 <Button variant="secondary" size="sm">
-                  Dashboard
+                  Sign In
                 </Button>
               </Link>
-              <button
-                onClick={() => signOut()}
-                className="text-[13px] text-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
-              >
-                Sign out
-              </button>
-            </>
-          ) : (
-            <Link href="/sign-in">
-              <Button variant="secondary" size="sm">
-                Sign In
-              </Button>
-            </Link>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );

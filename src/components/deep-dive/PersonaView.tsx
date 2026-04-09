@@ -8,6 +8,7 @@ import { buildJourneyNodes } from "@/utils/deepDiveHelpers";
 
 /* ── Types ──────────────────────────────────────────────────────────── */
 type PersonaFilter = "all" | "completed" | "dropped";
+type SegmentFilter = string; // "all" or a behavioral_archetype value
 
 /* ── Parse full name using the PRD regex ────────────────────────────── */
 function parsePersonaName(background: string): string {
@@ -214,6 +215,18 @@ function PersonaRow({
         >
           {persona.age}y · {persona.district}
         </p>
+        <p
+          style={{
+            fontSize: 10,
+            color: "#B0B0C0",
+            margin: 0,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {persona.detail.demographics.behavioral_archetype}
+        </p>
       </div>
 
       {/* Status icon */}
@@ -249,14 +262,26 @@ export function PersonaView({ personas }: Props) {
     [prepared],
   );
 
+  /* ── Extract unique segments for the dropdown ── */
+  const segments = useMemo(() => {
+    const set = new Set<string>();
+    for (const p of prepared) {
+      const arch = p.detail.demographics.behavioral_archetype;
+      if (arch) set.add(arch);
+    }
+    return Array.from(set).sort();
+  }, [prepared]);
+
   const [activeFilter, setActiveFilter] = useState<PersonaFilter>("all");
+  const [segmentFilter, setSegmentFilter] = useState<SegmentFilter>("all");
 
   const filtered = useMemo(() => {
-    if (activeFilter === "all") return prepared;
-    if (activeFilter === "completed")
-      return prepared.filter((p) => p.isCompleted);
-    return prepared.filter((p) => !p.isCompleted);
-  }, [prepared, activeFilter]);
+    let result = prepared;
+    if (activeFilter === "completed") result = result.filter((p) => p.isCompleted);
+    else if (activeFilter === "dropped") result = result.filter((p) => !p.isCompleted);
+    if (segmentFilter !== "all") result = result.filter((p) => p.detail.demographics.behavioral_archetype === segmentFilter);
+    return result;
+  }, [prepared, activeFilter, segmentFilter]);
 
   /* ── Selection (stored as persona_uuid for stability) ──────────── */
   const [selectedUuid, setSelectedUuid] = useState<string | null>(null);
@@ -334,12 +359,64 @@ export function PersonaView({ personas }: Props) {
           </p>
 
           {/* Filter bar */}
-          <div style={{ marginBottom: 16 }}>
+          <div style={{ marginBottom: 8 }}>
             <FilterBar
               active={activeFilter}
               onChange={setActiveFilter}
               counts={counts}
             />
+          </div>
+
+          {/* Segment filter — scrollable pills */}
+          <div style={{ marginBottom: 16 }}>
+            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9CA3AF", marginBottom: 6 }}>Segment</p>
+            <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+              <button
+                type="button"
+                onClick={() => setSegmentFilter("all")}
+                style={{
+                  padding: "4px 10px",
+                  borderRadius: 6,
+                  fontSize: 11,
+                  fontWeight: segmentFilter === "all" ? 600 : 400,
+                  color: segmentFilter === "all" ? "#0D0D14" : "#9090A8",
+                  backgroundColor: segmentFilter === "all" ? "#FFFFFF" : "transparent",
+                  boxShadow: segmentFilter === "all" ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "all 150ms ease",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                All
+              </button>
+              {segments.map((s) => {
+                const isActive = segmentFilter === s;
+                const count = prepared.filter((p) => p.detail.demographics.behavioral_archetype === s).length;
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setSegmentFilter(isActive ? "all" : s)}
+                    style={{
+                      padding: "4px 10px",
+                      borderRadius: 6,
+                      fontSize: 11,
+                      fontWeight: isActive ? 600 : 400,
+                      color: isActive ? "#7C3AED" : "#9090A8",
+                      backgroundColor: isActive ? "#F5F3FF" : "transparent",
+                      boxShadow: isActive ? "0 1px 3px rgba(124,58,237,0.12)" : "none",
+                      border: isActive ? "1px solid #C4B5FD" : "1px solid transparent",
+                      cursor: "pointer",
+                      transition: "all 150ms ease",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {s} <span style={{ opacity: 0.5 }}>{count}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 

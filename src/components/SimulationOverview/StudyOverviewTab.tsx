@@ -877,7 +877,6 @@ function DesignRecGrid({ recommendations, themes, frictionPoints }: { recommenda
 function ComparisonTable({ converter, dropper }: { converter: StudyData["segment_analysis"]["converter_profile"]; dropper: StudyData["segment_analysis"]["dropper_profile"] }) {
   const dims: { key: string; label: string; cv: string[]; dv: string[]; type: "persona" | "neutral" | "emotion" }[] = [
     { key: "personas", label: "Personas", cv: converter.dominant_personas, dv: dropper.dominant_personas, type: "persona" },
-    { key: "channels", label: "Channels", cv: converter.dominant_channels.map(humanize), dv: dropper.dominant_channels.map(humanize), type: "neutral" },
     { key: "patterns", label: "Patterns", cv: converter.common_patterns.map(humanize), dv: dropper.common_patterns.map(humanize), type: "neutral" },
     { key: "emotions", label: "Emotional signals", cv: converter.shared_emotional_signals.map(humanize), dv: dropper.shared_emotional_signals.map(humanize), type: "emotion" },
   ];

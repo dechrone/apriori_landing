@@ -16,6 +16,7 @@ interface Props {
   personas: PersonaAtScreen[];
   onClose: () => void;
   data: SimulationData;
+  hideClose?: boolean;
 }
 
 /* ── Shared label style ── */
@@ -50,6 +51,7 @@ export function PersonaThoughtsPanel({
   personas,
   onClose,
   data,
+  hideClose,
 }: Props) {
   const [activeIdx, setActiveIdx] = useState(0);
   const hasPersonas = personas.length > 0;
@@ -110,6 +112,7 @@ export function PersonaThoughtsPanel({
             {view_name}
           </p>
         </div>
+        {!hideClose && (
         <button
           onClick={onClose}
           style={{
@@ -127,6 +130,7 @@ export function PersonaThoughtsPanel({
         >
           <X size={14} color="#9090A8" />
         </button>
+        )}
       </div>
 
       {/* ── Drop Summary Strip ── */}

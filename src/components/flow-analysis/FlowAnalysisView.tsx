@@ -48,12 +48,12 @@ export function FlowAnalysisView({ data, simulationData, studyData }: FlowAnalys
   ];
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#F5F4F2" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "#F5F4F2", paddingTop: 52 }}>
       {/* ── Tab Bar only ── */}
       <div
         className="sticky z-20"
         style={{
-          top: 64, /* sits below the 64px TopBar */
+          top: 52, /* sits below the fixed TopBar */
           borderBottom: "1px solid #E5E7EB",
           backgroundColor: "#F5F4F2",
         }}
