@@ -3,8 +3,12 @@ import type { SimulationData } from "@/types/simulation";
 
 /**
  * Flow A — SimulationData (winner flow, 62% completion)
+ *
+ * NOTE: intentionally untyped so legacy demo fields (behavioral_insights,
+ * user_mental_models, power_users, persona_journeys) survive without
+ * tripping TS excess-property checks. See univest-sim-data.ts.
  */
-const FLOW_A_DATA: SimulationData = {
+const FLOW_A_DATA = {
   simulation_id: "comp_flow_a_001",
   flow_id: "flow_0",
   flow_name: "Flow A — Streamlined Onboarding",
@@ -373,9 +377,9 @@ const FLOW_A_DATA: SimulationData = {
 };
 
 /**
- * Flow B — SimulationData (loser flow, 44% completion)
+ * Flow B — SimulationData (loser flow, 44% completion) — untyped, see FLOW_A_DATA.
  */
-const FLOW_B_DATA: SimulationData = {
+const FLOW_B_DATA = {
   simulation_id: "comp_flow_b_001",
   flow_id: "flow_1",
   flow_name: "Flow B — Detailed Guided Onboarding",
@@ -882,6 +886,10 @@ export const SAMPLE_COMPARATOR_DATA: ComparatorData = {
   },
   recommendation:
     "Ship Flow A for your primary urban salaried segment — it converts 18pp higher with the same persona set. Before launch, patch in Flow B's KYC trust copy to recover the 40+ age group. Consider an A/B test of Flow B's detailed comparison table for tier-2 city segments where deliberate decision-making is more prevalent.",
-  flow_0_data: FLOW_A_DATA,
-  flow_1_data: FLOW_B_DATA,
+  // FLOW_*_DATA are intentionally untyped at declaration to carry legacy demo
+  // fields (behavioral_insights, power_users, persona_journeys, etc.) that were
+  // removed from SimulationData. Casts suppress widening of discriminated-union
+  // fields like WhatNeedsFixing.priority ("P0" | "P1" | "P2").
+  flow_0_data: FLOW_A_DATA as unknown as SimulationData,
+  flow_1_data: FLOW_B_DATA as unknown as SimulationData,
 };

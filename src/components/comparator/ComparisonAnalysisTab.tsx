@@ -88,6 +88,16 @@ interface Recommendation {
   priority: "high" | "medium";
   rice_score: number;
   rationale: string;
+  effort_estimate?: string;
+  success_metric?: string;
+}
+
+interface RecommendedNextTest {
+  name: string;
+  hypothesis: string;
+  predicted_conversion: string;
+  predicted_lift: string;
+  estimated_effort: string;
 }
 
 export interface ComparisonData {
@@ -122,6 +132,9 @@ export interface ComparisonData {
   segment_verdicts: SegmentVerdict[];
   friction_provenance: FrictionProvenanceItem[];
   recommendations: Recommendation[];
+  recommended_next_test?: RecommendedNextTest;
+  risks_to_monitor?: string[];
+  variant_screenshots?: Record<string, string | string[]>;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -221,16 +234,32 @@ function Popup({ onClose, children }: { onClose: () => void; children: React.Rea
    EXEC SUMMARY BANNER — dark banner matching StudyOverviewTab
    ═══════════════════════════════════════════════════════════════════════════ */
 
-function VerdictBanner({ data, variants }: { data: ComparisonData["verdict"]; variants: VariantDef[] }) {
+function VerdictBanner({ data, variants, segmentVerdicts, personaCount }: { data: ComparisonData["verdict"]; variants: VariantDef[]; segmentVerdicts?: SegmentVerdict[]; personaCount?: number }) {
   const winner = variantById(variants, data.recommended_variant);
   const winnerColor = winner?.color ?? "#10B981";
+
+  // Find dissenting segment details from segment_verdicts
+  const dissentingDetails = data.confidence.dissenting_segments.map((segName) => {
+    const seg = segmentVerdicts?.find((s) => s.segment_name === segName);
+    if (!seg) return { name: segName, variant: "", rate: 0 };
+    const winVariant = variantById(variants, seg.winner);
+    const rate = seg.metrics_by_variant[seg.winner]?.completion_rate ?? 0;
+    return { name: segName, variant: winVariant?.label ?? seg.winner, rate };
+  });
 
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
       style={{ background: "#1A1814", borderRadius: 20, padding: "36px 40px", position: "relative", overflow: "hidden", marginBottom: 16 }}>
       <div style={{ position: "absolute", top: -60, right: -60, width: 200, height: 200, borderRadius: "50%", background: "rgba(232,88,58,0.12)", filter: "blur(80px)", pointerEvents: "none" }} />
       <div style={{ position: "relative" }}>
-        <p style={{ fontSize: 14, fontWeight: 500, color: "#E8583A", letterSpacing: "0.12em", marginBottom: 14 }}>The Verdict</p>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+          <p style={{ fontSize: 14, fontWeight: 500, color: "#E8583A", letterSpacing: "0.12em", margin: 0 }}>The Verdict</p>
+          {personaCount && (
+            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", margin: 0, fontFamily: "monospace" }}>
+              {personaCount} synthetic personas · Indian fintech behavior data
+            </p>
+          )}
+        </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
           {winner && (
             <span style={{ display: "inline-flex", alignItems: "center", padding: "4px 14px", borderRadius: 999, fontSize: 13, fontWeight: 600, fontFamily: "monospace", background: `${winnerColor}25`, border: `1px solid ${winnerColor}50`, color: winnerColor }}>
@@ -248,15 +277,17 @@ function VerdictBanner({ data, variants }: { data: ComparisonData["verdict"]; va
           <div style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: "10px 16px", flex: "1 1 260px" }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: winnerColor, marginBottom: 4 }}>Confidence</p>
             <p style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.5 }}>
-              {data.confidence.personas_preferring_winner} of {data.confidence.total_personas} personas had their best experience in {winner?.label ?? "the recommended variant"}
+              {data.confidence.personas_preferring_winner} of {data.confidence.total_personas} persona sub-segments had their best experience in {winner?.label ?? "the recommended variant"}
             </p>
           </div>
-          {data.confidence.dissenting_segments.length > 0 && (
+          {dissentingDetails.length > 0 && (
             <div style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: "10px 16px", flex: "1 1 260px" }}>
               <p style={{ fontSize: 11, fontWeight: 700, color: "#F59E0B", marginBottom: 4 }}>Dissenting</p>
-              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.5 }}>
-                {data.confidence.dissenting_segments.join(", ")} preferred a different variant
-              </p>
+              {dissentingDetails.map((d, i) => (
+                <p key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.5, margin: "0 0 2px" }}>
+                  {d.name} preferred {d.variant}{d.rate ? ` (${d.rate}% conversion in that segment)` : ""}
+                </p>
+              ))}
             </div>
           )}
           {data.modifications.length > 0 && (
@@ -368,11 +399,18 @@ function WinnerScoreStrip({ metrics, variants }: { metrics: Record<string, Metri
    METRICS TABLE — full comparison table
    ═══════════════════════════════════════════════════════════════════════════ */
 
-interface MetricDef { label: string; key: keyof MetricsRow; unit: string; bestIs: "highest" | "lowest"; }
+interface MetricDef { label: string; key: keyof MetricsRow; unit: string; bestIs: "highest" | "lowest"; explanation?: string; isNorthStar?: boolean; gradeMap?: Record<string, string>; }
+function susGrade(score: number): { grade: string; label: string } {
+  if (score >= 80.3) return { grade: "A", label: "Excellent" };
+  if (score >= 68) return { grade: "B", label: "Good" };
+  if (score >= 51) return { grade: "C", label: "OK" };
+  if (score >= 25) return { grade: "D", label: "Poor" };
+  return { grade: "F", label: "Awful" };
+}
 const METRIC_DEFS: MetricDef[] = [
-  { label: "SUS Score", key: "sus", unit: "", bestIs: "highest" },
-  { label: "SEQ Score", key: "seq", unit: "", bestIs: "highest" },
-  { label: "Completion Rate", key: "completion_rate", unit: "%", bestIs: "highest" },
+  { label: "Completion Rate", key: "completion_rate", unit: "%", bestIs: "highest", explanation: "₹1 plan activation rate — the primary metric for this test", isNorthStar: true },
+  { label: "SUS Score", key: "sus", unit: "", bestIs: "highest", explanation: "System Usability Scale (0-100). Industry avg: ~68. Higher = easier to use." },
+  { label: "SEQ Score", key: "seq", unit: "", bestIs: "highest", explanation: "Single Ease Question (1-7). Above 5 = easy. Higher = less friction." },
   { label: "Friction Points", key: "friction_count", unit: "", bestIs: "lowest" },
   { label: "Avg Sentiment", key: "avg_sentiment", unit: "", bestIs: "highest" },
 ];
@@ -406,19 +444,28 @@ function MetricsTable({ metrics, variants }: { metrics: Record<string, MetricsRo
                 <tr key={md.key} style={{ borderBottom: "1px solid #F3F4F6", transition: "background 0.15s" }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = "#FAFAF8"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = "transparent"; }}>
-                  <td style={{ textAlign: "left", padding: "16px 20px", fontSize: 13, fontWeight: 500, color: "#6B7280" }}>{md.label}</td>
+                  <td style={{ textAlign: "left", padding: "16px 20px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      {md.isNorthStar && <span style={{ fontSize: 9, fontWeight: 700, color: "#E8583A", background: "#E8583A15", border: "1px solid #E8583A30", padding: "2px 6px", borderRadius: 4, whiteSpace: "nowrap" }}>PRIMARY</span>}
+                      <span style={{ fontSize: 13, fontWeight: md.isNorthStar ? 600 : 500, color: md.isNorthStar ? "#1A1A1A" : "#6B7280" }}>{md.label}</span>
+                    </div>
+                    {md.explanation && <p style={{ fontSize: 11, color: "#9CA3AF", margin: "2px 0 0", lineHeight: 1.3 }}>{md.explanation}</p>}
+                  </td>
                   {variants.map((v) => {
                     const val = metrics[v.id]?.[md.key] ?? 0;
                     const isBest = val === bestVal;
                     const isControl = v.id === ctrlId;
-                    const rawDelta = val - controlVal;
+                    const rawDelta = Math.round((val - controlVal) * 100) / 100;
                     const delta = md.bestIs === "lowest" ? -rawDelta : rawDelta;
-                    const deltaStr = rawDelta === 0 ? "" : rawDelta > 0 ? `+${Number.isInteger(rawDelta) ? rawDelta : rawDelta.toFixed(2)}` : `${Number.isInteger(rawDelta) ? rawDelta : rawDelta.toFixed(2)}`;
+                    const deltaStr = rawDelta === 0 ? "" : rawDelta > 0 ? `+${Number.isInteger(rawDelta) ? rawDelta : rawDelta.toFixed(1)}` : `${Number.isInteger(rawDelta) ? rawDelta : rawDelta.toFixed(1)}`;
                     return (
                       <td key={v.id} style={{ textAlign: "center", padding: "16px 16px", background: isBest ? "#ECFDF510" : "transparent" }}>
-                        <span style={{ fontSize: 18, fontWeight: 700, fontFamily: "monospace", color: isBest ? "#10B981" : "#1A1A1A" }}>
+                        <span style={{ fontSize: md.isNorthStar ? 20 : 18, fontWeight: 700, fontFamily: "monospace", color: isBest ? "#10B981" : "#1A1A1A" }}>
                           {val}{md.unit}
                         </span>
+                        {md.key === "sus" && (
+                          <div style={{ fontSize: 10, color: "#9CA3AF", marginTop: 1 }}>{susGrade(val).grade} — {susGrade(val).label}</div>
+                        )}
                         {!isControl && deltaStr && (
                           <div style={{ fontSize: 11, fontFamily: "monospace", color: delta > 0 ? "#10B981" : "#EF4444", marginTop: 2 }}>{deltaStr}</div>
                         )}
@@ -441,7 +488,7 @@ function MetricsTable({ metrics, variants }: { metrics: Record<string, MetricsRo
 
 const THEME_COLORS = { persistent: "#F59E0B", resolved: "#10B981", introduced: "#EF4444" };
 
-function ThemeCard({ theme, category, variants }: { theme: ThemeItem; category: "persistent" | "resolved" | "introduced"; variants: VariantDef[] }) {
+function ThemeCard({ theme, category, variants, totalPersonas }: { theme: ThemeItem; category: "persistent" | "resolved" | "introduced"; variants: VariantDef[]; totalPersonas?: number }) {
   const [expanded, setExpanded] = useState(false);
   const color = THEME_COLORS[category];
   const evidence = theme.monologue_evidence;
@@ -458,7 +505,7 @@ function ThemeCard({ theme, category, variants }: { theme: ThemeItem; category: 
           {(theme.persona_count || theme.persona_count_in_control) && (
             <div style={{ flexShrink: 0, textAlign: "right" }}>
               <p style={{ fontSize: 22, fontWeight: 500, color: "#1A1A1A", lineHeight: 1, margin: 0 }}>{theme.persona_count ?? theme.persona_count_in_control}</p>
-              <p style={{ fontSize: 11, color: "#9CA3AF", margin: "2px 0 0" }}>users</p>
+              <p style={{ fontSize: 11, color: "#9CA3AF", margin: "2px 0 0" }}>{totalPersonas ? `of ${totalPersonas} users` : "users"}</p>
             </div>
           )}
           <ChevronDown size={14} style={{ color: "#9CA3AF", transition: "transform 0.2s", transform: expanded ? "rotate(180deg)" : "rotate(0deg)" }} />
@@ -504,7 +551,7 @@ function ThemeCard({ theme, category, variants }: { theme: ThemeItem; category: 
   );
 }
 
-function ThemeMovementSection({ data, variants }: { data: ComparisonData["theme_movement"]; variants: VariantDef[] }) {
+function ThemeMovementSection({ data, variants, totalPersonas }: { data: ComparisonData["theme_movement"]; variants: VariantDef[]; totalPersonas?: number }) {
   const sections: { key: "persistent" | "resolved" | "introduced"; label: string; desc: string }[] = [
     { key: "resolved", label: "Resolved", desc: "Friction from Control that one or more variants eliminated" },
     { key: "introduced", label: "Introduced", desc: "New friction that didn't exist in Control" },
@@ -528,7 +575,7 @@ function ThemeMovementSection({ data, variants }: { data: ComparisonData["theme_
               </div>
               <div style={{ display: "grid", gridTemplateColumns: items.length === 1 ? "1fr" : "1fr 1fr", gap: 12 }}>
                 {items.map((theme) => (
-                  <ThemeCard key={theme.id} theme={theme} category={sec.key} variants={variants} />
+                  <ThemeCard key={theme.id} theme={theme} category={sec.key} variants={variants} totalPersonas={totalPersonas} />
                 ))}
               </div>
             </div>
@@ -600,7 +647,16 @@ function ScreenComparisonSection({ screens, variants }: { screens: ScreenCompari
    PERSONA JOURNEYS — card grid matching behavioral patterns
    ═══════════════════════════════════════════════════════════════════════════ */
 
-function PersonaJourneysSection({ journeys, variants }: { journeys: PersonaJourney[]; variants: VariantDef[] }) {
+function extractHighlightStat(narrative: string): string | null {
+  // Pull out key stats that should be headlines
+  const timeMatch = narrative.match(/(?:average |Average )?[Tt]ime[- ]on[- ]screen:?\s*(\d+\s*seconds?)/i);
+  if (timeMatch) return `Avg. time on screen: ${timeMatch[1]}`;
+  const rateMatch = narrative.match(/(\d+%)\s*(?:—|–|-)\s*approaching the natural ceiling/i);
+  if (rateMatch) return `${rateMatch[1]} — approaching natural ceiling`;
+  return null;
+}
+
+function PersonaJourneysSection({ journeys, variants, segmentVerdicts }: { journeys: PersonaJourney[]; variants: VariantDef[]; segmentVerdicts?: SegmentVerdict[] }) {
   return (
     <div>
       <SectionHeader num="05" title="Persona Journeys" subtitle="How representative personas experienced the same checkout across all variants." />
@@ -608,18 +664,32 @@ function PersonaJourneysSection({ journeys, variants }: { journeys: PersonaJourn
         {journeys.map((pj) => {
           const prefVariant = variantById(variants, pj.preferred_variant);
           const prefColor = prefVariant?.color ?? "#6B7280";
+          const highlightStat = extractHighlightStat(pj.narrative);
+          // Find this segment's conversion rate in preferred variant
+          const segVerdict = segmentVerdicts?.find((s) => s.segment_name === pj.segment);
+          const prefRate = segVerdict?.metrics_by_variant[pj.preferred_variant]?.completion_rate;
           return (
             <div key={pj.persona_id}
               style={{ background: "#FFF", borderRadius: 12, border: "0.5px solid #D1D5DB", borderLeft: `3px solid ${prefColor}`, padding: "18px 20px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                 <span style={{ fontSize: 24 }}>{pj.avatar_emoji}</span>
-                <div>
+                <div style={{ flex: 1 }}>
                   <p style={{ fontSize: 15, fontWeight: 600, color: "#1A1A1A", margin: 0, lineHeight: 1.3 }}>{pj.name}, {pj.age}</p>
                   <p style={{ fontSize: 12, color: "#9CA3AF", margin: 0 }}>{pj.archetype}</p>
                 </div>
+                {segVerdict && (
+                  <div style={{ textAlign: "right", flexShrink: 0 }}>
+                    <p style={{ fontSize: 11, color: "#9CA3AF", margin: 0 }}>n={segVerdict.persona_count}</p>
+                  </div>
+                )}
               </div>
-              <div style={{ marginBottom: 10 }}>
-                {prefVariant && <Pill bg={`${prefColor}20`} text={prefColor} style={{ fontSize: 10, padding: "2px 8px" }}>Preferred: {prefVariant.label}</Pill>}
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10, flexWrap: "wrap" }}>
+                {prefVariant && <Pill bg={`${prefColor}20`} text={prefColor} style={{ fontSize: 10, padding: "2px 8px" }}>Preferred: {prefVariant.label}{prefRate ? ` (${prefRate}%)` : ""}</Pill>}
+                {highlightStat && (
+                  <span style={{ fontSize: 10, fontWeight: 700, fontFamily: "monospace", color: "#E8583A", background: "#E8583A10", border: "1px solid #E8583A25", padding: "2px 8px", borderRadius: 6 }}>
+                    {highlightStat}
+                  </span>
+                )}
               </div>
               <p style={{ fontSize: 13, color: "#6B7280", lineHeight: 1.6, margin: 0 }}>{pj.narrative}</p>
             </div>
@@ -634,6 +704,112 @@ function PersonaJourneysSection({ journeys, variants }: { journeys: PersonaJourn
    SEGMENT VERDICTS — table matching SegmentTable + popup
    ═══════════════════════════════════════════════════════════════════════════ */
 
+function heatmapColor(rate: number, min: number, max: number): string {
+  if (max === min) return "#F3F4F6";
+  const t = (rate - min) / (max - min); // 0..1
+  // red (low) → amber → green (high)
+  if (t < 0.33) {
+    const r = 254, g = Math.round(202 + (243 - 202) * (t / 0.33)), b = Math.round(202 + (198 - 202) * (t / 0.33));
+    return `rgb(${r},${g},${b})`;
+  }
+  if (t < 0.66) {
+    const p = (t - 0.33) / 0.33;
+    const r = Math.round(254 + (209 - 254) * p), g = Math.round(243 + (250 - 243) * p), b = Math.round(198 + (229 - 198) * p);
+    return `rgb(${r},${g},${b})`;
+  }
+  const p = (t - 0.66) / 0.34;
+  const r = Math.round(209 + (187 - 209) * p), g = Math.round(250 + (247 - 250) * p), b = Math.round(229 + (208 - 229) * p);
+  return `rgb(${r},${g},${b})`;
+}
+
+function heatmapTextColor(rate: number, min: number, max: number): string {
+  const t = max === min ? 0.5 : (rate - min) / (max - min);
+  if (t < 0.33) return "#991B1B";
+  if (t < 0.66) return "#92400E";
+  return "#065F46";
+}
+
+function SegmentHeatmap({ segments, variants }: { segments: SegmentVerdict[]; variants: VariantDef[] }) {
+  // Collect all completion rates to find global min/max
+  const allRates: number[] = [];
+  for (const seg of segments) {
+    for (const v of variants) {
+      const r = seg.metrics_by_variant[v.id]?.completion_rate;
+      if (r !== undefined) allRates.push(r);
+    }
+  }
+  const min = Math.min(...allRates);
+  const max = Math.max(...allRates);
+
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <p style={{ fontSize: 13, fontWeight: 500, color: "#6B7280", marginBottom: 10 }}>Segment × Variant Conversion Matrix</p>
+      <div style={{ background: "#FFF", borderRadius: 14, border: "1px solid #E5E7EB", overflow: "hidden", boxShadow: "0 4px 24px rgba(0,0,0,0.08), 0 1px 6px rgba(0,0,0,0.04)" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr style={{ background: "#F9FAFB", borderBottom: "1px solid #E5E7EB" }}>
+              <th style={{ textAlign: "left", padding: "12px 20px", fontSize: 12, fontWeight: 500, color: "#9CA3AF" }}>Segment</th>
+              {variants.map((v) => (
+                <th key={v.id} style={{ textAlign: "center", padding: "12px 12px", fontSize: 11, fontWeight: 600, color: v.color, textTransform: "uppercase", letterSpacing: 1, fontFamily: "monospace" }}>
+                  {v.label}
+                </th>
+              ))}
+              <th style={{ textAlign: "center", padding: "12px 16px", fontSize: 11, fontWeight: 500, color: "#9CA3AF" }}>Winner</th>
+            </tr>
+          </thead>
+          <tbody>
+            {segments.map((seg, ri) => {
+              const winV = variantById(variants, seg.winner);
+              const winColor = winV?.color ?? "#6B7280";
+              // Find best rate for this segment
+              let bestRate = 0;
+              for (const v of variants) {
+                const r = seg.metrics_by_variant[v.id]?.completion_rate ?? 0;
+                if (r > bestRate) bestRate = r;
+              }
+              return (
+                <tr key={seg.segment_name} style={{ borderBottom: ri < segments.length - 1 ? "1px solid #F3F4F6" : "none" }}>
+                  <td style={{ padding: "14px 20px", fontSize: 13, fontWeight: 600, color: "#1A1A1A" }}>
+                    {seg.segment_name}
+                    <span style={{ fontSize: 11, color: "#9CA3AF", fontWeight: 400, marginLeft: 6 }}>n={seg.persona_count}</span>
+                  </td>
+                  {variants.map((v) => {
+                    const rate = seg.metrics_by_variant[v.id]?.completion_rate ?? 0;
+                    const bg = heatmapColor(rate, min, max);
+                    const textCol = heatmapTextColor(rate, min, max);
+                    const isBest = rate === bestRate;
+                    return (
+                      <td key={v.id} style={{ textAlign: "center", padding: "10px 8px", background: bg, transition: "background 0.2s" }}>
+                        <span style={{ fontSize: 16, fontWeight: isBest ? 800 : 600, fontFamily: "monospace", color: textCol }}>
+                          {rate}%
+                        </span>
+                      </td>
+                    );
+                  })}
+                  <td style={{ textAlign: "center", padding: "10px 16px" }}>
+                    <Pill bg={`${winColor}20`} text={winColor} style={{ fontSize: 10, padding: "2px 8px" }}>{winV?.label ?? seg.winner}</Pill>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8, justifyContent: "flex-end" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <div style={{ width: 12, height: 12, borderRadius: 2, background: heatmapColor(min, min, max) }} />
+          <span style={{ fontSize: 10, color: "#9CA3AF" }}>{min}%</span>
+        </div>
+        <div style={{ width: 80, height: 8, borderRadius: 4, background: `linear-gradient(90deg, ${heatmapColor(min, min, max)}, ${heatmapColor((min + max) / 2, min, max)}, ${heatmapColor(max, min, max)})` }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <div style={{ width: 12, height: 12, borderRadius: 2, background: heatmapColor(max, min, max) }} />
+          <span style={{ fontSize: 10, color: "#9CA3AF" }}>{max}%</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function SegmentVerdictsSection({ segments, variants }: { segments: SegmentVerdict[]; variants: VariantDef[] }) {
   const [selId, setSelId] = useState<string | null>(null);
   const sel = segments.find((s) => s.segment_name === selId) ?? null;
@@ -643,6 +819,10 @@ function SegmentVerdictsSection({ segments, variants }: { segments: SegmentVerdi
   return (
     <div>
       <SectionHeader num="06" title="Segment Verdicts" subtitle="Which variant won for each user segment, and why." />
+
+      {/* Heatmap */}
+      <SegmentHeatmap segments={segments} variants={variants} />
+
       <div style={{ background: "#FFF", borderRadius: 14, border: "1px solid #E5E7EB", overflow: "hidden" }}>
         {/* Header row */}
         <div style={{ display: "grid", gridTemplateColumns: "180px 60px 100px 1fr", padding: "14px 24px", borderBottom: "1px solid #E5E7EB" }}>
@@ -729,16 +909,41 @@ function SegmentVerdictsSection({ segments, variants }: { segments: SegmentVerdi
    FRICTION PROVENANCE — table matching Priority Table styling
    ═══════════════════════════════════════════════════════════════════════════ */
 
-function presenceDot(status: "present" | "partial" | "absent"): { char: string; color: string } {
-  if (status === "present") return { char: "●", color: "#EF4444" };
-  if (status === "partial") return { char: "◐", color: "#F59E0B" };
-  return { char: "●", color: "#10B981" };
+type PresenceDisplay = { bg: string; text: string; char: string };
+function presenceDisplay(status: "present" | "partial" | "absent", item: FrictionProvenanceItem, variantId: string): PresenceDisplay {
+  if (status === "present") return { bg: "#FEE2E2", text: "#991B1B", char: "●" };
+  if (status === "partial") return { bg: "#FEF3C7", text: "#92400E", char: "◐" };
+  // "absent" — distinguish between "fixed" (was present in another variant that came before)
+  // and "never existed" (N/A for this variant)
+  const wasEverPresent = Object.values(item.presence).some((p) => p === "present");
+  if (!wasEverPresent) return { bg: "#F3F4F6", text: "#9CA3AF", char: "—" };
+  // If this item is "resolved", the resolving variants show green. Others show grey.
+  if (item.status === "resolved" && item.resolved_by?.includes(variantId)) {
+    return { bg: "#D1FAE5", text: "#065F46", char: "✓" };
+  }
+  // If the friction was never present in this variant (e.g. blurred card not in Control/V1), show grey
+  return { bg: "#F3F4F6", text: "#9CA3AF", char: "—" };
 }
 
 function FrictionProvenanceSection({ items, variants }: { items: FrictionProvenanceItem[]; variants: VariantDef[] }) {
+  const ctrl = controlVariant(variants);
   return (
     <div>
-      <SectionHeader num="07" title="Friction Provenance" subtitle="Every friction point tracked across all variants. Green = absent, amber = partial, red = present." />
+      <SectionHeader num="07" title="Friction Provenance" subtitle="Every friction point tracked across all variants." />
+      <div style={{ display: "flex", gap: 16, marginBottom: 12, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ display: "inline-block", padding: "2px 6px", borderRadius: 4, fontSize: 9, fontWeight: 600, background: "#FEE2E2", color: "#991B1B" }}>●</span>
+          <span style={{ fontSize: 11, color: "#6B7280" }}>Present</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ display: "inline-block", padding: "2px 6px", borderRadius: 4, fontSize: 9, fontWeight: 600, background: "#D1FAE5", color: "#065F46" }}>✓</span>
+          <span style={{ fontSize: 11, color: "#6B7280" }}>Fixed</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ display: "inline-block", padding: "2px 6px", borderRadius: 4, fontSize: 9, fontWeight: 600, background: "#F3F4F6", color: "#9CA3AF" }}>—</span>
+          <span style={{ fontSize: 11, color: "#6B7280" }}>Never existed</span>
+        </div>
+      </div>
       <div style={{ background: "#FFF", borderRadius: 14, border: "1px solid #E5E7EB", overflow: "hidden", boxShadow: "0 4px 24px rgba(0,0,0,0.08), 0 1px 6px rgba(0,0,0,0.04)" }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
@@ -762,12 +967,27 @@ function FrictionProvenanceSection({ items, variants }: { items: FrictionProvena
                 <td style={{ padding: "14px 16px", fontSize: 12, color: "#6B7280" }}>{item.screen}</td>
                 {variants.map((v) => {
                   const p = item.presence[v.id] ?? "absent";
-                  const dot = presenceDot(p);
-                  return <td key={v.id} style={{ textAlign: "center", padding: "14px 12px" }}><span style={{ fontSize: 14, color: dot.color }}>{dot.char}</span></td>;
+                  const pd = presenceDisplay(p, item, v.id);
+                  return (
+                    <td key={v.id} style={{ textAlign: "center", padding: "8px 6px" }}>
+                      <span style={{ display: "inline-block", padding: "3px 8px", borderRadius: 6, fontSize: 10, fontWeight: 600, background: pd.bg, color: pd.text, minWidth: 42 }}>
+                        {pd.char}
+                      </span>
+                    </td>
+                  );
                 })}
                 <td style={{ padding: "14px 16px" }}>
                   {item.status === "persistent" && <Pill bg="#FEF3C7" text="#92400E" style={{ fontSize: 10, padding: "2px 8px" }}>Persistent</Pill>}
-                  {item.status === "resolved" && <Pill bg="#D1FAE5" text="#065F46" style={{ fontSize: 10, padding: "2px 8px" }}>Resolved by {item.resolved_by?.map((id) => variantLabel(variants, id).replace("Variant ", "")).join(", ")}</Pill>}
+                  {item.status === "resolved" && (() => {
+                    const ctrlPresent = item.presence[ctrl?.id ?? ""] === "present";
+                    const resolvedLabels = item.resolved_by?.map((id) => variantLabel(variants, id).replace("Variant ", "")).join(", ") ?? "";
+                    if (ctrlPresent) {
+                      return <Pill bg="#D1FAE5" text="#065F46" style={{ fontSize: 10, padding: "2px 8px" }}>Resolved by {resolvedLabels}</Pill>;
+                    }
+                    // Friction originated in a non-Control variant — find which
+                    const sourceIds = variants.filter((v) => !v.is_control && item.presence[v.id] === "present").map((v) => v.label.replace("Variant ", ""));
+                    return <Pill bg="#D1FAE5" text="#065F46" style={{ fontSize: 10, padding: "2px 8px" }}>In {sourceIds.join(", ")}, fixed by {resolvedLabels}</Pill>;
+                  })()}
                   {item.status === "introduced" && <Pill bg="#FEE2E2" text="#991B1B" style={{ fontSize: 10, padding: "2px 8px" }}>New in {item.introduced_by?.map((id) => variantLabel(variants, id).replace("Variant ", "")).join(", ")}</Pill>}
                 </td>
               </tr>
@@ -812,11 +1032,102 @@ function RecommendationsSection({ recommendations, variants }: { recommendations
                 <span style={{ fontSize: 11, color: "#9CA3AF", background: "#F3F4F6", padding: "3px 10px", borderRadius: 6 }}>{appliesToLabel}</span>
                 <span style={{ fontSize: 11, color: "#9CA3AF", marginLeft: "auto" }}>RICE {rec.rice_score}</span>
               </div>
-              <p style={{ fontSize: 15, fontWeight: 500, color: "#1A1A1A", margin: "0 0 6px", lineHeight: 1.4, flex: "1 1 auto" }}>{rec.recommendation}</p>
-              <p style={{ fontSize: 12, color: "#6B7280", lineHeight: 1.5, margin: 0, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{rec.rationale}</p>
+              <p style={{ fontSize: 15, fontWeight: 500, color: "#1A1A1A", margin: "0 0 6px", lineHeight: 1.4 }}>{rec.recommendation}</p>
+              <p style={{ fontSize: 12, color: "#6B7280", lineHeight: 1.5, margin: "0 0 8px", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{rec.rationale}</p>
+              {rec.effort_estimate && (
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 6, marginBottom: 4 }}>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: "#6366F1", background: "#6366F110", padding: "2px 6px", borderRadius: 4, whiteSpace: "nowrap", flexShrink: 0 }}>Effort</span>
+                  <span style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.4 }}>{rec.effort_estimate}</span>
+                </div>
+              )}
+              {rec.success_metric && (
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: "#10B981", background: "#10B98110", padding: "2px 6px", borderRadius: 4, whiteSpace: "nowrap", flexShrink: 0 }}>Measure</span>
+                  <span style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.4 }}>{rec.success_metric}</span>
+                </div>
+              )}
             </div>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   VARIANT SCREENSHOTS — side-by-side visual reference
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function VariantScreenshotsSection({ screenshots, variants }: { screenshots: Record<string, string | string[]>; variants: VariantDef[] }) {
+  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+
+  return (
+    <div>
+      <SectionHeader title="Variant Screenshots" subtitle="Side-by-side visual reference for each variant tested." />
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(variants.length, 5)}, 1fr)`, gap: 12 }}>
+        {variants.map((v, vi) => {
+          const src = screenshots[v.id];
+          const srcs = Array.isArray(src) ? src : src ? [src] : [];
+          return (
+            <div key={v.id} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: v.color, flexShrink: 0 }} />
+                <span style={{ fontSize: 12, fontWeight: 600, color: v.color, fontFamily: "monospace" }}>{v.label}</span>
+              </div>
+              {srcs.map((imgSrc, si) => (
+                <div key={si} onClick={() => setSelectedIdx(selectedIdx === vi * 10 + si ? null : vi * 10 + si)}
+                  style={{ background: "#FFF", border: `1.5px solid ${selectedIdx === vi * 10 + si ? v.color : "#E5E7EB"}`, borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "border-color 0.15s, box-shadow 0.15s", boxShadow: selectedIdx === vi * 10 + si ? `0 0 0 3px ${v.color}20` : "0 1px 4px rgba(0,0,0,0.06)" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={imgSrc} alt={`${v.label} screenshot`} style={{ width: "100%", height: "auto", display: "block" }} />
+                </div>
+              ))}
+              <p style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.4, margin: "4px 0 0" }}>{v.description}</p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WHAT TO TEST NEXT — concrete V5 hypothesis
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function NextTestSection({ data, risks }: { data: RecommendedNextTest; risks?: string[] }) {
+  return (
+    <div>
+      <SectionHeader title="What to Test Next" subtitle="The concrete next experiment based on this study's findings." />
+      <div style={{ background: "#1A1814", borderRadius: 16, padding: "28px 32px", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: -40, right: -40, width: 160, height: 160, borderRadius: "50%", background: "rgba(99,102,241,0.1)", filter: "blur(60px)", pointerEvents: "none" }} />
+        <div style={{ position: "relative" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "#6366F1" }}>{data.name}</span>
+            <span style={{ fontSize: 12, fontFamily: "monospace", color: "#10B981", background: "#10B98120", padding: "2px 10px", borderRadius: 999 }}>
+              Predicted: {data.predicted_conversion}
+            </span>
+            <span style={{ fontSize: 12, fontFamily: "monospace", color: "rgba(255,255,255,0.5)" }}>
+              {data.predicted_lift}
+            </span>
+          </div>
+          <p style={{ fontSize: 14, color: "rgba(255,255,255,0.85)", lineHeight: 1.65, margin: "0 0 16px" }}>
+            {data.hypothesis}
+          </p>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: risks?.length ? 20 : 0 }}>
+            <div style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "8px 14px" }}>
+              <span style={{ fontSize: 10, fontWeight: 600, color: "#6366F1" }}>Effort</span>
+              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", margin: "2px 0 0" }}>{data.estimated_effort}</p>
+            </div>
+          </div>
+          {risks && risks.length > 0 && (
+            <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: 16 }}>
+              <p style={{ fontSize: 11, fontWeight: 600, color: "#F59E0B", marginBottom: 8 }}>Risks to Monitor Post-Ship</p>
+              {risks.map((r, i) => (
+                <p key={i} style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", lineHeight: 1.5, margin: "0 0 4px" }}>• {r}</p>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -832,7 +1143,15 @@ export function ComparisonAnalysisTab({ data }: { data: ComparisonData }) {
   return (
     <div style={{ maxWidth: 1280, margin: "0 auto", padding: "32px 24px 80px" }}>
       {/* Executive-style verdict banner */}
-      <VerdictBanner data={data.verdict} variants={variants} />
+      <VerdictBanner data={data.verdict} variants={variants} segmentVerdicts={data.segment_verdicts} personaCount={data.metadata.persona_count} />
+
+      {/* Variant Screenshots — visual reference */}
+      {data.variant_screenshots && (
+        <>
+          <div style={{ marginTop: 32 }} />
+          <VariantScreenshotsSection screenshots={data.variant_screenshots} variants={variants} />
+        </>
+      )}
 
       <ActDivider label="What Happened" />
 
@@ -847,7 +1166,7 @@ export function ComparisonAnalysisTab({ data }: { data: ComparisonData }) {
       <SectionDivider />
 
       {/* Theme Movement */}
-      <ThemeMovementSection data={data.theme_movement} variants={variants} />
+      <ThemeMovementSection data={data.theme_movement} variants={variants} totalPersonas={data.metadata.persona_count} />
 
       <SectionDivider />
 
@@ -857,7 +1176,7 @@ export function ComparisonAnalysisTab({ data }: { data: ComparisonData }) {
       <SectionDivider />
 
       {/* Persona Journeys */}
-      <PersonaJourneysSection journeys={data.persona_journeys} variants={variants} />
+      <PersonaJourneysSection journeys={data.persona_journeys} variants={variants} segmentVerdicts={data.segment_verdicts} />
 
       <SectionDivider />
 
@@ -873,6 +1192,14 @@ export function ComparisonAnalysisTab({ data }: { data: ComparisonData }) {
 
       {/* Recommendations */}
       <RecommendationsSection recommendations={data.recommendations} variants={variants} />
+
+      {/* What to Test Next */}
+      {data.recommended_next_test && (
+        <>
+          <SectionDivider />
+          <NextTestSection data={data.recommended_next_test} risks={data.risks_to_monitor} />
+        </>
+      )}
     </div>
   );
 }

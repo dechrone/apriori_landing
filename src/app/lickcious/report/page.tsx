@@ -4,6 +4,7 @@ import { Playfair_Display, DM_Sans } from "next/font/google";
 import { FlowAnalysisView } from "@/components/flow-analysis/FlowAnalysisView";
 import { liciousSimulationData } from "@/data/licious-simulation-data";
 import type { FlowAnalysisData } from "@/types/flow-analysis";
+import type { SimulationData } from "@/types/simulation";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -117,7 +118,7 @@ export default function LiciousReportPage() {
       {/* ── Full simulation view ── */}
       <FlowAnalysisView
         data={liciousFlowData}
-        simulationData={liciousSimulationData}
+        simulationData={liciousSimulationData as unknown as SimulationData}
       />
     </div>
   );

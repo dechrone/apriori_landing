@@ -135,12 +135,6 @@ export const sampleSimulationData: SimulationData = {
         "Lower 'hurried/anxious' emotional states; reduced drop-off for users in 'Other' (non-Tier 1) locations.",
     },
   ],
-  behavioral_insights: [
-    "Users with digital_literacy scores < 5 accounted for the majority of drop-offs at Screen 1, citing 'confusion and worry' as the primary emotional driver.",
-    "The 'Pragmatist' archetype (80% of the sample) shows high tolerance for the 24-hour wait period if the initial UI feels 'sturdy' and 'slick', prioritizing professional aesthetics over instant disbursement.",
-    "Higher-income personas (₹125k+) expressed 'South Delhi/CRED-esque' expectations, indicating that premium UI design is a prerequisite for trust in this segment.",
-    "A 'Relief-Anxiety' loop was observed: users feel relief at seeing the eligible amount but immediate anxiety regarding the 'extent of data being fetched'.",
-  ],
   segment_analysis: {
     summary:
       "The flow strongly resonates with analytical, high-literacy urban professionals but creates significant friction for lower-literacy and lower-income segments.",
@@ -154,57 +148,6 @@ export const sampleSimulationData: SimulationData = {
     trust_building_screens: ["3_result"],
     clarity_problem_screens: ["1", "3"],
     value_gap_screens: ["1"],
-  },
-  power_users: {
-    power_user_archetypes: [
-      {
-        archetype_name: "High-Literacy Urban Pragmatist",
-        defining_traits: {
-          income_range: "₹65,000-₹2,25,000/mo",
-          digital_literacy: "8-10/10",
-          employer_type: "MNC / Tech / Self-Employed",
-          zone: "Urban",
-          behavioral_archetype: "The Pragmatist",
-          age_range: "30-58",
-        },
-        why_they_convert:
-          "These users possess the financial sophistication to recognize the 10.5% rate as a superior alternative to unsecured debt. Their high digital literacy allows them to interpret a multi-step flow as a sign of institutional security rather than a friction point. They are driven by a 'rational arbitrage' mindset, seeking to leverage existing assets to maintain liquidity without liquidating their portfolios.",
-        what_resonates: [
-          "10.5% Interest Rate Value Anchor",
-          "Sequential Roadmap on Result Screen",
-        ],
-        conversion_rate_estimate:
-          "80-90% estimated completion rate",
-        persona_count_in_sample: 7,
-      },
-      {
-        archetype_name: "Mature Self-Employed Asset Owner",
-        defining_traits: {
-          income_range: "₹35,000-₹65,000/mo",
-          digital_literacy: "4-7/10",
-          employer_type: "Self-Employed / Proprietor",
-          zone: "Urban",
-          behavioral_archetype: "The Pragmatist",
-          age_range: "35-63",
-        },
-        why_they_convert:
-          "This segment values the functional utility of the loan for business or personal cash flow management. Despite lower digital literacy in some cases, their 'Professional Pragmatism' keeps them in the flow because they view the structured steps as evidence of a robust and trustworthy financial process. They are willing to spend more time (150s+) to ensure the transaction is completed correctly.",
-        what_resonates: [
-          "Logical structure of the digital flow",
-          "Lower cost of capital compared to personal loans",
-        ],
-        conversion_rate_estimate:
-          "60-70% estimated completion rate",
-        persona_count_in_sample: 10,
-      },
-    ],
-    flow_strengths_for_power_users: [
-      "Transparent pricing (10.5%) eliminates early-funnel skepticism.",
-      "The 3_result screen roadmap mirrors the logical-analytical mindset of technical professionals.",
-      "Process thoroughness is interpreted as security/reliability rather than friction.",
-    ],
-    acquisition_recommendation:
-      "Focus on LinkedIn and Google Search ads targeting high-intent keywords like 'Personal Loan vs LAMF' or 'Low interest liquidity,' specifically filtering for professional cohorts in IT, Engineering, and SMEs in Tier-1/2 cities.",
   },
   drop_off_analysis: {
     screens: {
@@ -337,29 +280,6 @@ export const sampleSimulationData: SimulationData = {
       month_3_P2: [],
     },
   },
-  persona_journeys: [
-    {
-      persona_type: "No Occupation / The Pragmatist",
-      plan_chosen: "dropped off",
-      key_decision_moment:
-        "Eligible Amount & Interest Rate screen. After cautiously providing their PAN and OTP, they were met with an offer that lacked EMI and tenure details. This lack of transparency confirmed their initial suspicion, causing them to feel 'Alarmed' and immediately abandon the process.",
-      emotional_arc: "cautious → hesitant → alarmed → suspicious",
-    },
-    {
-      persona_type: "No Occupation / The Confused Novice",
-      plan_chosen: "dropped off",
-      key_decision_moment:
-        "Eligible Amount & Interest Rate screen. The user was already confused and anxious from the PAN and OTP steps. Being presented with a large loan amount without any context or understandable terms was 'Terrifying' and 'Overwhelming,' leading to an immediate drop-off out of fear.",
-      emotional_arc: "confused → anxious → dependent → terrified",
-    },
-    {
-      persona_type: "No Occupation / The Pragmatist",
-      plan_chosen: "dropped off",
-      key_decision_moment:
-        "KYC – Secure Verification (Step 1/6). The user immediately questioned the legitimacy of the app upon seeing the upfront PAN request. Searching for a familiar bank or government logo and finding none, they felt it was too risky and dropped off before providing any information.",
-      emotional_arc: "curious → suspicious → cautious",
-    },
-  ],
   completion_analysis: {
     completion_rate_pct: 0.0,
     conversion_drivers: {},

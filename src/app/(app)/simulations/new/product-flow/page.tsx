@@ -20,7 +20,8 @@ import {
 import { useRouter } from 'next/navigation';
 import type { AssetFolder } from '@/types/asset';
 import { getAssetTypeLabel } from '@/types/asset';
-import { triggerProductFlowSimulation } from '@/lib/backend-simulation';
+import { triggerProductFlowSimulation, fetchAudienceTemplates } from '@/lib/backend-simulation';
+import type { AudienceTemplate } from '@/lib/backend-simulation';
 import { getAudiences, getAssetFolders, saveSimulation } from '@/lib/firestore';
 import type { AudienceDoc } from '@/lib/firestore';
 import { consumeNDJSONStream } from '@/lib/stream-simulation';
@@ -46,6 +47,7 @@ export default function ProductFlowSimulationPage() {
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [running, setRunning] = useState(false);
   const [audiences, setAudiences] = useState<AudienceDoc[]>([]);
+  const [templates, setTemplates] = useState<AudienceTemplate[]>([]);
   const [allFolders, setAllFolders] = useState<AssetFolder[]>([]);
   const [validationError, setValidationError] = useState('');
   const [shake, setShake] = useState(false);
@@ -78,6 +80,13 @@ export default function ProductFlowSimulationPage() {
 
   useEffect(() => { loadAudiences(); }, [loadAudiences]);
   useEffect(() => { loadFolders(); }, [loadFolders]);
+  useEffect(() => {
+    // Load curated audience templates once. Non-blocking: if the backend is
+    // unreachable we just fall back to showing only user-created audiences.
+    fetchAudienceTemplates("IN")
+      .then(setTemplates)
+      .catch((err) => console.warn("[templates] fetch failed:", err));
+  }, []);
 
   const productFlowFolders = allFolders.filter((f) => f.assetType === 'product-flow');
   const productFlowReadyFolders = productFlowFolders.filter((f) => f.status === 'ready');
@@ -85,13 +94,16 @@ export default function ProductFlowSimulationPage() {
 
   const [formData, setFormData] = useState({
     name: '',
-    audience: '',
+    audience: '',              // selected user-created audience id (mutually exclusive with templateId)
+    audienceTemplateId: '',    // selected curated template id
     personaDepth: 'medium' as 'low' | 'medium' | 'high',
     optimizeMetric: 'activation',
     selectedFolderIds: [] as string[],
   });
 
-  const canProceedStep1 = formData.name.trim().length >= 3 && formData.audience !== '';
+  const canProceedStep1 =
+    formData.name.trim().length >= 3 &&
+    (formData.audience !== '' || formData.audienceTemplateId !== '');
   const canProceedStep2 = formData.selectedFolderIds.length > 0 && eligibleFolders.length > 0;
   const canProceedStep3 = formData.optimizeMetric !== '';
 
@@ -99,7 +111,8 @@ export default function ProductFlowSimulationPage() {
     let msg = '';
     if (currentStep === 1) {
       if (formData.name.trim().length < 3) msg = 'Please enter a simulation name (at least 3 characters).';
-      else if (!formData.audience) msg = 'Please select an audience to continue.';
+      else if (!formData.audience && !formData.audienceTemplateId)
+        msg = 'Please select an audience or template to continue.';
     } else if (currentStep === 2) {
       if (eligibleFolders.length === 0) msg = 'No eligible folders with assets found. Please upload assets first.';
       else msg = 'Please select a folder to continue.';
@@ -126,9 +139,18 @@ export default function ProductFlowSimulationPage() {
       showToast('error', 'Not signed in', 'Please sign in to run a simulation.');
       return;
     }
-    // Resolve audience NL description text (backend expects text, not Firestore ID)
-    const selectedAudience = audiences.find((a) => a.id === formData.audience);
+    // Resolve audience source: template > user audience > raw text.
+    // Backend always needs free-text `audience` for fallback/logging, even when a
+    // template or audience_id is passed (it becomes the semantic ranking query).
+    const selectedTemplate = formData.audienceTemplateId
+      ? templates.find((t) => t.id === formData.audienceTemplateId)
+      : undefined;
+    const selectedAudience = formData.audience
+      ? audiences.find((a) => a.id === formData.audience)
+      : undefined;
+
     const audienceText =
+      selectedTemplate?.target_group_seed ||
       selectedAudience?.audienceDescription ||
       selectedAudience?.description ||
       formData.audience;
@@ -142,6 +164,11 @@ export default function ProductFlowSimulationPage() {
         personaDepth: 'medium',
         optimizeMetric: formData.optimizeMetric,
         selectedFolderIds: formData.selectedFolderIds,
+        // Persona-retrieval routing hints — backend uses these to skip the
+        // LLM filter extraction step (template) or reuse a cached cohort
+        // (audienceId). Both are optional.
+        audienceId: formData.audience || undefined,
+        audienceTemplateId: formData.audienceTemplateId || undefined,
       });
       if (!res.ok) {
         const text = await res.text();
@@ -224,6 +251,9 @@ export default function ProductFlowSimulationPage() {
   const canProceedCurrent = currentStep === 1 ? canProceedStep1 : currentStep === 2 ? canProceedStep2 : canProceedStep3;
 
   const selectedAudience = audiences.find((a) => a.id === formData.audience);
+  const selectedTemplateForSummary = templates.find((t) => t.id === formData.audienceTemplateId);
+  const audienceDisplayName =
+    selectedTemplateForSummary?.name || selectedAudience?.name || undefined;
   const selectedFolders = productFlowReadyFolders.filter((f) => formData.selectedFolderIds.includes(f.id));
 
 
@@ -268,7 +298,12 @@ export default function ProductFlowSimulationPage() {
           )}
 
           {!running && currentStep === 1 && (
-            <SetupStep formData={formData} setFormData={setFormData} audiences={audiences} />
+            <SetupStep
+              formData={formData}
+              setFormData={setFormData}
+              audiences={audiences}
+              templates={templates}
+            />
           )}
           {!running && currentStep === 2 && (
             <AssetSelectionStep
@@ -282,7 +317,7 @@ export default function ProductFlowSimulationPage() {
             <ParametersStep
               formData={formData}
               setFormData={setFormData}
-              audienceName={selectedAudience?.name}
+              audienceName={audienceDisplayName}
               selectedFolders={selectedFolders}
               onBack={handleBack}
               onNext={handleNext}
@@ -357,6 +392,7 @@ export default function ProductFlowSimulationPage() {
 type ProductFlowFormData = {
   name: string;
   audience: string;
+  audienceTemplateId: string;
   personaDepth: 'low' | 'medium' | 'high';
   optimizeMetric: string;
   selectedFolderIds: string[];
@@ -366,9 +402,13 @@ interface SetupStepProps {
   formData: ProductFlowFormData;
   setFormData: Dispatch<SetStateAction<ProductFlowFormData>>;
   audiences: AudienceDoc[];
+  templates: AudienceTemplate[];
 }
 
-function SetupStep({ formData, setFormData, audiences }: SetupStepProps) {
+function SetupStep({ formData, setFormData, audiences, templates }: SetupStepProps) {
+  const [audienceTab, setAudienceTab] = useState<'mine' | 'templates'>(
+    formData.audienceTemplateId ? 'templates' : 'mine'
+  );
   return (
     <div className="bg-white border border-[#E8E4DE] rounded-[14px] p-7 sm:px-8">
       {/* Simulation name */}
@@ -393,71 +433,164 @@ function SetupStep({ formData, setFormData, audiences }: SetupStepProps) {
           Target audience <span className="text-[#EF4444]">*</span>
         </label>
         <p className="text-[13px] text-[#6B7280] mb-4">
-          Choose who you&apos;re simulating this flow for.
+          Pick from your saved audiences or start from a curated template.
         </p>
 
-        {audiences.length === 0 ? (
-          <div className="bg-[#FAFAFA] border-[1.5px] border-dashed border-[#E5E7EB] rounded-xl p-6 text-center">
-            <Users className="w-6 h-6 text-[#9CA3AF] mx-auto mb-2" />
-            <p className="text-[14px] font-medium text-[#6B7280]">No audiences created yet</p>
-            <p className="text-[13px] text-[#9CA3AF] mt-1">
-              You need a target audience to run a simulation.
-            </p>
-            <a
-              href="/audiences"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block text-[13px] font-semibold text-[#F59E0B] hover:text-[#D97706] hover:underline mt-3"
-            >
-              → Create an audience
-            </a>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {audiences.map((aud) => {
-              const isSelected = formData.audience === aud.id;
-              const summary = aud.audienceDescription
-                ? aud.audienceDescription.slice(0, 60) + (aud.audienceDescription.length > 60 ? '…' : '')
-                : aud.description
-                  ? aud.description.slice(0, 60) + (aud.description.length > 60 ? '…' : '')
-                  : '';
+        {/* Tab switcher: your audiences | curated templates */}
+        <div className="inline-flex items-center bg-[#F3F4F6] rounded-lg p-1 mb-4">
+          <button
+            type="button"
+            onClick={() => setAudienceTab('mine')}
+            className={`text-[13px] font-medium px-3 py-1.5 rounded-md transition-all ${
+              audienceTab === 'mine'
+                ? 'bg-white text-[#1A1A1A] shadow-sm'
+                : 'text-[#6B7280] hover:text-[#1A1A1A]'
+            }`}
+          >
+            Your audiences {audiences.length > 0 && `(${audiences.length})`}
+          </button>
+          <button
+            type="button"
+            onClick={() => setAudienceTab('templates')}
+            className={`text-[13px] font-medium px-3 py-1.5 rounded-md transition-all ${
+              audienceTab === 'templates'
+                ? 'bg-white text-[#1A1A1A] shadow-sm'
+                : 'text-[#6B7280] hover:text-[#1A1A1A]'
+            }`}
+          >
+            Curated templates {templates.length > 0 && `(${templates.length})`}
+          </button>
+        </div>
 
-              return (
-                <button
-                  key={aud.id}
-                  type="button"
-                  onClick={() => setFormData((prev) => ({ ...prev, audience: aud.id }))}
-                  className={`
-                    text-left rounded-xl border-[1.5px] px-[18px] py-4 transition-all duration-150 cursor-pointer flex items-start gap-3
-                    ${isSelected
-                      ? 'border-[#F59E0B] bg-[#FFFBEB]'
-                      : 'border-[#E5E7EB] bg-white hover:border-[#F59E0B] hover:bg-[#FFFBEB]'
+        {audienceTab === 'mine' ? (
+          audiences.length === 0 ? (
+            <div className="bg-[#FAFAFA] border-[1.5px] border-dashed border-[#E5E7EB] rounded-xl p-6 text-center">
+              <Users className="w-6 h-6 text-[#9CA3AF] mx-auto mb-2" />
+              <p className="text-[14px] font-medium text-[#6B7280]">No audiences created yet</p>
+              <p className="text-[13px] text-[#9CA3AF] mt-1">
+                Create one — or switch to &quot;Curated templates&quot; for a fast start.
+              </p>
+              <a
+                href="/audiences"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block text-[13px] font-semibold text-[#F59E0B] hover:text-[#D97706] hover:underline mt-3"
+              >
+                → Create an audience
+              </a>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {audiences.map((aud) => {
+                const isSelected = formData.audience === aud.id && !formData.audienceTemplateId;
+                const summary = aud.audienceDescription
+                  ? aud.audienceDescription.slice(0, 60) + (aud.audienceDescription.length > 60 ? '…' : '')
+                  : aud.description
+                    ? aud.description.slice(0, 60) + (aud.description.length > 60 ? '…' : '')
+                    : '';
+
+                return (
+                  <button
+                    key={aud.id}
+                    type="button"
+                    onClick={() =>
+                      // Selecting a user audience clears any previously-selected template
+                      // so the two selection modes stay mutually exclusive.
+                      setFormData((prev) => ({ ...prev, audience: aud.id, audienceTemplateId: '' }))
                     }
-                  `}
-                >
-                  <div className="mt-0.5 flex-shrink-0">
-                    <div
-                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
-                        ${isSelected ? 'border-[#F59E0B] bg-[#F59E0B]' : 'border-[#D1D5DB] bg-white'}`}
-                    >
-                      {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                    className={`
+                      text-left rounded-xl border-[1.5px] px-[18px] py-4 transition-all duration-150 cursor-pointer flex items-start gap-3
+                      ${isSelected
+                        ? 'border-[#F59E0B] bg-[#FFFBEB]'
+                        : 'border-[#E5E7EB] bg-white hover:border-[#F59E0B] hover:bg-[#FFFBEB]'
+                      }
+                    `}
+                  >
+                    <div className="mt-0.5 flex-shrink-0">
+                      <div
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
+                          ${isSelected ? 'border-[#F59E0B] bg-[#F59E0B]' : 'border-[#D1D5DB] bg-white'}`}
+                      >
+                        {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                      </div>
                     </div>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-[14px] font-semibold text-[#1A1A1A] truncate">{aud.name}</p>
-                    {summary && (
-                      <p className="text-[12px] text-[#6B7280] mt-0.5 leading-[1.5]">{summary}</p>
-                    )}
-                    {aud.status === 'active' && (
-                      <span className="inline-block text-[11px] font-medium text-emerald-700 bg-emerald-50 rounded-full px-1.5 py-0.5 mt-1.5">
-                        active
-                      </span>
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+                    <div className="min-w-0">
+                      <p className="text-[14px] font-semibold text-[#1A1A1A] truncate">{aud.name}</p>
+                      {summary && (
+                        <p className="text-[12px] text-[#6B7280] mt-0.5 leading-[1.5]">{summary}</p>
+                      )}
+                      {aud.status === 'active' && (
+                        <span className="inline-block text-[11px] font-medium text-emerald-700 bg-emerald-50 rounded-full px-1.5 py-0.5 mt-1.5">
+                          active
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )
+        ) : (
+          // ── Curated templates tab ────────────────────────────────────
+          templates.length === 0 ? (
+            <div className="bg-[#FAFAFA] border-[1.5px] border-dashed border-[#E5E7EB] rounded-xl p-6 text-center">
+              <Users className="w-6 h-6 text-[#9CA3AF] mx-auto mb-2" />
+              <p className="text-[14px] font-medium text-[#6B7280]">No templates available</p>
+              <p className="text-[13px] text-[#9CA3AF] mt-1">
+                Check that the backend is running and has audience templates configured.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {templates.map((tpl) => {
+                const isSelected = formData.audienceTemplateId === tpl.id;
+                return (
+                  <button
+                    key={tpl.id}
+                    type="button"
+                    onClick={() =>
+                      // Selecting a template clears any user-audience selection
+                      setFormData((prev) => ({ ...prev, audienceTemplateId: tpl.id, audience: '' }))
+                    }
+                    className={`
+                      text-left rounded-xl border-[1.5px] px-[18px] py-4 transition-all duration-150 cursor-pointer flex items-start gap-3
+                      ${isSelected
+                        ? 'border-[#F59E0B] bg-[#FFFBEB]'
+                        : 'border-[#E5E7EB] bg-white hover:border-[#F59E0B] hover:bg-[#FFFBEB]'
+                      }
+                    `}
+                  >
+                    <div className="mt-0.5 flex-shrink-0">
+                      <div
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
+                          ${isSelected ? 'border-[#F59E0B] bg-[#F59E0B]' : 'border-[#D1D5DB] bg-white'}`}
+                      >
+                        {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                      </div>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[14px] font-semibold text-[#1A1A1A] truncate">{tpl.name}</p>
+                      <p className="text-[12px] text-[#6B7280] mt-0.5 leading-[1.5] line-clamp-2">
+                        {tpl.description}
+                      </p>
+                      <div className="mt-1.5 flex items-center gap-2 flex-wrap">
+                        {tpl.category && (
+                          <span className="text-[10px] font-medium text-[#6B7280] bg-[#F3F4F6] rounded-full px-1.5 py-0.5 uppercase tracking-wider">
+                            {tpl.category}
+                          </span>
+                        )}
+                        {tpl.pre_cached_uuids_count > 0 && (
+                          <span className="text-[10px] font-medium text-emerald-700 bg-emerald-50 rounded-full px-1.5 py-0.5">
+                            {tpl.pre_cached_uuids_count} pre-cached
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )
         )}
       </div>
     </div>

@@ -30,6 +30,9 @@ interface FlowAnalysisViewProps {
   simulationData?: SimulationData;
   /** Optional study-format data — when provided, replaces the Overview tab with the new Act 1/2/3 layout */
   studyData?: StudyData;
+  /** Optional screen image map (screen_id → URL) used by founder-driven demo pages.
+   *  Currently unused inside this component but accepted so demo pages compile. */
+  screenImages?: Record<string, string>;
 }
 
 export function FlowAnalysisView({ data, simulationData, studyData }: FlowAnalysisViewProps) {

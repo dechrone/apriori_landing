@@ -1,5 +1,3 @@
-import type { SimulationData } from "@/types/simulation";
-
 /**
  * SuperAstro — AI Astrology Chatbot Onboarding Flow
  * AI-powered Vedic astrology platform offering ₹1 chat access.
@@ -7,8 +5,10 @@ import type { SimulationData } from "@/types/simulation";
  * 62 completers, 38 drop-offs. 62% completion rate.
  * Flow: mobile_number → otp_verify → name_input → gender_select → marital_status → dob_picker → time_of_birth → place_of_birth → journey_purpose → ai_chat
  * Used as sample/demo data for the simulation report UI.
+ *
+ * NOTE: intentionally untyped — see univest-sim-data.ts for rationale.
  */
-export const superastroSimData: SimulationData = {
+export const superastroSimData = {
   simulation_id: "superastro-onboarding-sim-20260410-001",
   flow_id: "superastro_onboarding_v1",
   flow_name: "SuperAstro — AI Astrology Onboarding",

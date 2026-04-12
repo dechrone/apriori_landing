@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { Playfair_Display, DM_Sans } from "next/font/google";
 import { TopBar } from "@/components/app/TopBar";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -11,22 +10,9 @@ import { useAppShell } from "@/components/app/AppShell";
 import { useFirebaseUser } from "@/contexts/FirebaseUserContext";
 import { getSimulation } from "@/lib/firestore";
 import type { SimulationDoc } from "@/lib/firestore";
-import type { ProductFlowSimulationResult } from "@/types/simulation-result";
-import { FlowAnalysisView } from "@/components/flow-analysis/FlowAnalysisView";
-import { flowAnalysisDummyData } from "@/data/flow-analysis-dummy";
+import type { ComparatorData } from "@/types/comparator";
+import { ComparatorResultView } from "@/components/comparator";
 import { ArrowLeft } from "lucide-react";
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-flow-display",
-  display: "swap",
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-flow-body",
-  display: "swap",
-});
 
 export default function ProductFlowComparatorResultsPage() {
   const { toggleMobileMenu } = useAppShell();
@@ -54,8 +40,7 @@ export default function ProductFlowComparatorResultsPage() {
     };
   }, [userId, profileReady, id]);
 
-  const result = simulation?.result as ProductFlowSimulationResult | undefined;
-  const meta = result?.metadata;
+  const data = simulation?.result as ComparatorData | undefined;
 
   if (loading) {
     return (
@@ -72,7 +57,7 @@ export default function ProductFlowComparatorResultsPage() {
     );
   }
 
-  if (!simulation) {
+  if (!simulation || !data || !data.flows_compared || data.flows_compared.length < 2) {
     return (
       <>
         <TopBar
@@ -84,7 +69,7 @@ export default function ProductFlowComparatorResultsPage() {
           <Card>
             <CardContent className="py-12 text-center">
               <p className="text-body text-text-secondary mb-4">
-                Simulation not found.
+                Comparator result not found or missing per-flow data.
               </p>
               <Link href="/simulations">
                 <Button variant="secondary">
@@ -99,55 +84,25 @@ export default function ProductFlowComparatorResultsPage() {
     );
   }
 
-  // Use the flow analysis view — same as Product Flow, works for comparator results too
-  if (result?.simulation_type === "product_flow" || result) {
-    const flowData = flowAnalysisDummyData;
-    const completionRate = meta?.completion_rate_pct ?? flowData.meta.completionRate ?? 0;
-    const totalPersonas = meta?.num_personas ?? flowData.meta.totalPersonas ?? 0;
-    return (
-      <>
-        <TopBar
-          title={meta?.simulation_name ?? simulation.name ?? flowData.meta.product}
-          breadcrumb={`Product Flow Comparator · ${simulation.timestamp ?? flowData.meta.date}`}
-          onMenuClick={toggleMobileMenu}
-          actions={
-            <div className="flex items-center gap-3">
-              <div className="inline-flex items-center px-4 py-2 bg-[#F3E8FF] text-[#7C3AED] rounded-xl text-sm font-semibold">
-                Comparator ({completionRate}% completion · {totalPersonas} personas)
-              </div>
-            </div>
-          }
-        />
-        <div className={`${playfair.variable} ${dmSans.variable}`}>
-          <FlowAnalysisView data={flowData} />
-        </div>
-      </>
-    );
-  }
+  const title = `${data.flows_compared[0].flow_name} vs ${data.flows_compared[1].flow_name}`;
+  const flow0Rate = data.scorecards.flow_0?.completion_rate_pct ?? 0;
+  const flow1Rate = data.scorecards.flow_1?.completion_rate_pct ?? 0;
 
-  // Fallback
   return (
     <>
       <TopBar
-        title={simulation.name || "Product Flow Comparator"}
-        breadcrumb={`Comparator · ${simulation.timestamp}`}
+        title={simulation.name || title}
+        breadcrumb={`Product Flow · Comparator · ${simulation.timestamp}`}
         onMenuClick={toggleMobileMenu}
+        actions={
+          <div className="flex items-center gap-3">
+            <div className="inline-flex items-center px-4 py-2 bg-[#F3E8FF] text-[#7C3AED] rounded-xl text-sm font-semibold">
+              Comparator ({flow0Rate}% vs {flow1Rate}%)
+            </div>
+          </div>
+        }
       />
-      <div className="max-w-[1280px] mx-auto px-6 py-12">
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-body text-text-secondary mb-4">
-              This simulation does not have a Flow Analysis view yet.
-            </p>
-            <Link href="/simulations">
-              <Button variant="secondary">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to simulations
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
+      <ComparatorResultView data={data} />
     </>
   );
 }

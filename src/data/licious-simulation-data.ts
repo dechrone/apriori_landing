@@ -5,7 +5,6 @@
  */
 
 import type {
-  SimulationData,
   PersonaDetail,
   ScreenMonologue,
 } from "@/types/simulation";
@@ -402,7 +401,7 @@ function computeFrictionPoints(personas: RawPersona[]) {
  *  Build the SimulationData export — 6/10 completion
  * ══════════════════════════════════════════════════════════════════════ */
 
-function buildSimulationData(): SimulationData {
+function buildSimulationData() {
   const screenMetrics = computeScreenMetrics(RAW_PERSONAS);
   const frictionPoints = computeFrictionPoints(RAW_PERSONAS);
 
@@ -834,4 +833,4 @@ function buildSimulationData(): SimulationData {
   };
 }
 
-export const liciousSimulationData: SimulationData = buildSimulationData();
+export const liciousSimulationData = buildSimulationData();

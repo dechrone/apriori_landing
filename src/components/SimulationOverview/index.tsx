@@ -9,6 +9,7 @@ import { PersonaMonologues } from "./PersonaMonologues";
 import { ClusteredDropOffs } from "./ClusteredDropOffs";
 import { FixRecommendations } from "./FixRecommendations";
 import { CalibrationAppendix } from "./CalibrationAppendix";
+import { IntentAnalysis } from "./IntentAnalysis";
 import { SkeletonLoader } from "./SkeletonLoader";
 import COLORS from "./utils/colorHelpers";
 
@@ -150,6 +151,11 @@ export function SimulationOverview({
         {/* Section 6 — Fix Recommendations */}
         <section style={{ marginBottom: 64 }}>
           <FixRecommendations data={d} />
+        </section>
+
+        {/* Section 7 — Intent Analysis (conditional, shown when post-flow questions exist) */}
+        <section style={{ marginBottom: 64 }}>
+          <IntentAnalysis data={d} />
         </section>
 
         {/* Section 8 — Calibration Appendix (conditional) */}

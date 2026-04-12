@@ -8,8 +8,9 @@ import { useAppShell } from "@/components/app/AppShell";
 import { useToast } from "@/components/ui/Toast";
 import { useFirebaseUser } from "@/contexts/FirebaseUserContext";
 import { AudienceFiltersStep } from "@/components/audiences/AudienceFiltersStep";
-import { ArrowLeft, ArrowRight, Users, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Users, Loader2, RefreshCw } from "lucide-react";
 import { getAudience, updateAudience, type AudienceDoc } from "@/lib/firestore";
+import { refreshAudiencePersonas } from "@/lib/backend-simulation";
 import type { AdvancedFilters } from "@/types/audience-filters";
 
 export default function EditAudiencePage() {
@@ -27,6 +28,7 @@ export default function EditAudiencePage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
+  const [refreshingPersonas, setRefreshingPersonas] = useState(false);
 
   // Fetch existing audience
   useEffect(() => {
@@ -125,6 +127,32 @@ export default function EditAudiencePage() {
     [userId, audienceId, name, description, showToast, router]
   );
 
+  const handleRefreshPersonas = useCallback(async () => {
+    if (!audienceId) return;
+    setRefreshingPersonas(true);
+    try {
+      // Backend: POST /api/v1/audiences/{id}/refresh-personas. Invalidates the
+      // Firestore persona cache so the next simulation against this audience
+      // re-runs the full filter-first retrieval pipeline. Idempotent — 200
+      // even if nothing was cached.
+      await refreshAudiencePersonas(audienceId);
+      showToast(
+        "success",
+        "Persona cache cleared",
+        "Next simulation will re-run retrieval against the latest audience text.",
+      );
+    } catch (err) {
+      console.error(err);
+      showToast(
+        "error",
+        "Failed to refresh personas",
+        err instanceof Error ? err.message : "Is the backend running?",
+      );
+    } finally {
+      setRefreshingPersonas(false);
+    }
+  }, [audienceId, showToast]);
+
   if (loading) {
     return (
       <>
@@ -216,7 +244,27 @@ export default function EditAudiencePage() {
               </div>
 
               {/* Card footer / actions */}
-              <div className="flex items-center justify-end px-7 py-5 border-t border-[#F3F4F6] bg-[#FAFAFA]">
+              <div className="flex items-center justify-between gap-4 px-7 py-5 border-t border-[#F3F4F6] bg-[#FAFAFA]">
+                {/* Refresh personas — secondary, advanced action.
+                    The backend caches retrieved persona UUIDs per audience to
+                    skip the full LLM filter-extraction + BM25 hybrid retrieval
+                    on repeat runs. Users hit this when they've edited the
+                    audience text or just want a freshly sampled cohort. */}
+                <button
+                  type="button"
+                  onClick={handleRefreshPersonas}
+                  disabled={refreshingPersonas}
+                  title="Clear the cached persona cohort for this audience. The next simulation will re-retrieve."
+                  className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[#6B7280] hover:text-[#111827] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {refreshingPersonas ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-3.5 h-3.5" />
+                  )}
+                  {refreshingPersonas ? "Refreshing…" : "Refresh cached personas"}
+                </button>
+
                 <button
                   onClick={handleContinueToBuilder}
                   className="inline-flex items-center gap-2 px-6 py-2.5 text-[14px] font-semibold text-white bg-[#F59E0B] rounded-[10px] hover:bg-[#D97706] active:bg-[#B45309] transition-all shadow-[0_4px_12px_rgba(245,158,11,0.3)] hover:shadow-[0_6px_16px_rgba(245,158,11,0.4)]"

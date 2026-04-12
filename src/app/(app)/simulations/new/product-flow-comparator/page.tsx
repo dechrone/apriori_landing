@@ -18,11 +18,12 @@ import {
 import { useRouter } from 'next/navigation';
 import type { AssetFolder } from '@/types/asset';
 import { getAssetTypeLabel } from '@/types/asset';
-import { triggerProductFlowComparatorSimulation } from '@/lib/backend-simulation';
+import { triggerProductFlowComparatorSimulation, fetchAudienceTemplates } from '@/lib/backend-simulation';
+import type { AudienceTemplate } from '@/lib/backend-simulation';
 import { getAudiences, getAssetFolders, saveSimulation } from '@/lib/firestore';
 import type { AudienceDoc } from '@/lib/firestore';
 import { consumeNDJSONStream } from '@/lib/stream-simulation';
-import type { ComparatorResult } from '@/types/comparator';
+import type { ComparatorData } from '@/types/comparator';
 
 type Step = 1 | 2 | 3;
 
@@ -44,6 +45,7 @@ export default function ProductFlowComparatorSimulationPage() {
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [running, setRunning] = useState(false);
   const [audiences, setAudiences] = useState<AudienceDoc[]>([]);
+  const [templates, setTemplates] = useState<AudienceTemplate[]>([]);
   const [allFolders, setAllFolders] = useState<AssetFolder[]>([]);
   const [validationError, setValidationError] = useState('');
   const [shake, setShake] = useState(false);
@@ -75,6 +77,11 @@ export default function ProductFlowComparatorSimulationPage() {
 
   useEffect(() => { loadAudiences(); }, [loadAudiences]);
   useEffect(() => { loadFolders(); }, [loadFolders]);
+  useEffect(() => {
+    fetchAudienceTemplates("IN")
+      .then(setTemplates)
+      .catch((err) => console.warn("[templates] fetch failed:", err));
+  }, []);
 
   const comparatorFolders = allFolders.filter((f) => f.assetType === 'product-flow-comparator');
   const comparatorReadyFolders = comparatorFolders.filter((f) => f.status === 'ready');
@@ -83,12 +90,15 @@ export default function ProductFlowComparatorSimulationPage() {
   const [formData, setFormData] = useState({
     name: '',
     audience: '',
+    audienceTemplateId: '',
     personaDepth: 'medium' as 'low' | 'medium' | 'high',
     optimizeMetric: 'activation',
     selectedFolderIds: [] as string[],
   });
 
-  const canProceedStep1 = formData.name.trim().length >= 3 && formData.audience !== '';
+  const canProceedStep1 =
+    formData.name.trim().length >= 3 &&
+    (formData.audience !== '' || formData.audienceTemplateId !== '');
   const canProceedStep2 = formData.selectedFolderIds.length > 0 && eligibleFolders.length > 0;
   const canProceedStep3 = formData.optimizeMetric !== '';
 
@@ -96,7 +106,8 @@ export default function ProductFlowComparatorSimulationPage() {
     let msg = '';
     if (currentStep === 1) {
       if (formData.name.trim().length < 3) msg = 'Please enter a simulation name (at least 3 characters).';
-      else if (!formData.audience) msg = 'Please select an audience to continue.';
+      else if (!formData.audience && !formData.audienceTemplateId)
+        msg = 'Please select an audience or template to continue.';
     } else if (currentStep === 2) {
       if (eligibleFolders.length === 0) msg = 'No eligible folders with assets found. Please upload assets first.';
       else msg = 'Please select a comparator folder to continue.';
@@ -123,9 +134,15 @@ export default function ProductFlowComparatorSimulationPage() {
       showToast('error', 'Not signed in', 'Please sign in to run a simulation.');
       return;
     }
-    // Resolve audience NL description text
-    const selectedAudience = audiences.find((a) => a.id === formData.audience);
+    // Resolve audience source: template > user audience > raw text.
+    const selectedTemplate = formData.audienceTemplateId
+      ? templates.find((t) => t.id === formData.audienceTemplateId)
+      : undefined;
+    const selectedAudience = formData.audience
+      ? audiences.find((a) => a.id === formData.audience)
+      : undefined;
     const audienceText =
+      selectedTemplate?.target_group_seed ||
       selectedAudience?.audienceDescription ||
       selectedAudience?.description ||
       formData.audience;
@@ -152,6 +169,11 @@ export default function ProductFlowComparatorSimulationPage() {
         personaDepth: 'medium',
         optimizeMetric: formData.optimizeMetric,
         selectedFolderIds: subFolderIds,
+        // Persona-retrieval routing hints — same semantics as single-flow page.
+        // Both are optional; the backend uses them to skip filter extraction
+        // (template) or reuse a cached cohort (audienceId).
+        audienceId: formData.audience || undefined,
+        audienceTemplateId: formData.audienceTemplateId || undefined,
       });
       if (!res.ok) {
         const text = await res.text();
@@ -159,7 +181,7 @@ export default function ProductFlowComparatorSimulationPage() {
         return;
       }
 
-      let comparisonData: ComparatorResult | null = null;
+      let comparisonData: ComparatorData | null = null;
       let streamError: string | null = null;
       const flowNames: Record<string, string> = {};
 
@@ -210,7 +232,7 @@ export default function ProductFlowComparatorSimulationPage() {
         return;
       }
 
-      const data = comparisonData as ComparatorResult;
+      const data = comparisonData as ComparatorData;
       const metric = `${data.winner?.flow_name ?? 'Winner'} leads`;
       const docId = await saveSimulation(userId, {
         type: 'Product Flow Comparator',
@@ -243,6 +265,9 @@ export default function ProductFlowComparatorSimulationPage() {
   const canProceedCurrent = currentStep === 1 ? canProceedStep1 : currentStep === 2 ? canProceedStep2 : canProceedStep3;
 
   const selectedAudience = audiences.find((a) => a.id === formData.audience);
+  const selectedTemplateForSummary = templates.find((t) => t.id === formData.audienceTemplateId);
+  const audienceDisplayName =
+    selectedTemplateForSummary?.name || selectedAudience?.name || undefined;
   const selectedFolders = comparatorReadyFolders.filter((f) => formData.selectedFolderIds.includes(f.id));
 
   return (
@@ -297,7 +322,12 @@ export default function ProductFlowComparatorSimulationPage() {
           )}
 
           {!running && currentStep === 1 && (
-            <SetupStep formData={formData} setFormData={setFormData} audiences={audiences} />
+            <SetupStep
+              formData={formData}
+              setFormData={setFormData}
+              audiences={audiences}
+              templates={templates}
+            />
           )}
           {!running && currentStep === 2 && (
             <AssetSelectionStep
@@ -311,7 +341,7 @@ export default function ProductFlowComparatorSimulationPage() {
             <ParametersStep
               formData={formData}
               setFormData={setFormData}
-              audienceName={selectedAudience?.name}
+              audienceName={audienceDisplayName}
               selectedFolders={selectedFolders}
               onBack={handleBack}
               onNext={handleNext}
@@ -386,6 +416,7 @@ export default function ProductFlowComparatorSimulationPage() {
 type ComparatorFormData = {
   name: string;
   audience: string;
+  audienceTemplateId: string;
   personaDepth: 'low' | 'medium' | 'high';
   optimizeMetric: string;
   selectedFolderIds: string[];
@@ -395,9 +426,14 @@ interface SetupStepProps {
   formData: ComparatorFormData;
   setFormData: Dispatch<SetStateAction<ComparatorFormData>>;
   audiences: AudienceDoc[];
+  templates: AudienceTemplate[];
 }
 
-function SetupStep({ formData, setFormData, audiences }: SetupStepProps) {
+function SetupStep({ formData, setFormData, audiences, templates }: SetupStepProps) {
+  const [audienceTab, setAudienceTab] = useState<'mine' | 'templates'>(
+    formData.audienceTemplateId ? 'templates' : 'mine'
+  );
+
   return (
     <div className="bg-white border border-[#E8E4DE] rounded-[14px] p-7 sm:px-8">
       {/* Simulation name */}
@@ -422,40 +458,120 @@ function SetupStep({ formData, setFormData, audiences }: SetupStepProps) {
           Target audience <span className="text-[#EF4444]">*</span>
         </label>
         <p className="text-[13px] text-[#6B7280] mb-4">
-          Choose who you&apos;re simulating the flow comparison for.
+          Pick from your saved audiences or start from a curated template.
         </p>
 
-        {audiences.length === 0 ? (
+        {/* Tab switcher */}
+        <div className="inline-flex items-center bg-[#F3F4F6] rounded-lg p-1 mb-4">
+          <button
+            type="button"
+            onClick={() => setAudienceTab('mine')}
+            className={`text-[13px] font-medium px-3 py-1.5 rounded-md transition-all ${
+              audienceTab === 'mine'
+                ? 'bg-white text-[#1A1A1A] shadow-sm'
+                : 'text-[#6B7280] hover:text-[#1A1A1A]'
+            }`}
+          >
+            Your audiences {audiences.length > 0 && `(${audiences.length})`}
+          </button>
+          <button
+            type="button"
+            onClick={() => setAudienceTab('templates')}
+            className={`text-[13px] font-medium px-3 py-1.5 rounded-md transition-all ${
+              audienceTab === 'templates'
+                ? 'bg-white text-[#1A1A1A] shadow-sm'
+                : 'text-[#6B7280] hover:text-[#1A1A1A]'
+            }`}
+          >
+            Curated templates {templates.length > 0 && `(${templates.length})`}
+          </button>
+        </div>
+
+        {audienceTab === 'mine' ? (
+          audiences.length === 0 ? (
+            <div className="bg-[#FAFAFA] border-[1.5px] border-dashed border-[#E5E7EB] rounded-xl p-6 text-center">
+              <Users className="w-6 h-6 text-[#9CA3AF] mx-auto mb-2" />
+              <p className="text-[14px] font-medium text-[#6B7280]">No audiences created yet</p>
+              <p className="text-[13px] text-[#9CA3AF] mt-1">
+                Create one — or switch to &quot;Curated templates&quot; for a fast start.
+              </p>
+              <a
+                href="/audiences"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block text-[13px] font-semibold text-[#F59E0B] hover:text-[#D97706] hover:underline mt-3"
+              >
+                → Create an audience
+              </a>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {audiences.map((aud) => {
+                const isSelected = formData.audience === aud.id && !formData.audienceTemplateId;
+                const summary = aud.audienceDescription
+                  ? aud.audienceDescription.slice(0, 60) + (aud.audienceDescription.length > 60 ? '…' : '')
+                  : aud.description
+                    ? aud.description.slice(0, 60) + (aud.description.length > 60 ? '…' : '')
+                    : '';
+
+                return (
+                  <button
+                    key={aud.id}
+                    type="button"
+                    onClick={() =>
+                      setFormData((prev) => ({ ...prev, audience: aud.id, audienceTemplateId: '' }))
+                    }
+                    className={`
+                      text-left rounded-xl border-[1.5px] px-[18px] py-4 transition-all duration-150 cursor-pointer flex items-start gap-3
+                      ${isSelected
+                        ? 'border-[#F59E0B] bg-[#FFFBEB]'
+                        : 'border-[#E5E7EB] bg-white hover:border-[#F59E0B] hover:bg-[#FFFBEB]'
+                      }
+                    `}
+                  >
+                    <div className="mt-0.5 flex-shrink-0">
+                      <div
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
+                          ${isSelected ? 'border-[#F59E0B] bg-[#F59E0B]' : 'border-[#D1D5DB] bg-white'}`}
+                      >
+                        {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                      </div>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[14px] font-semibold text-[#1A1A1A] truncate">{aud.name}</p>
+                      {summary && (
+                        <p className="text-[12px] text-[#6B7280] mt-0.5 leading-[1.5]">{summary}</p>
+                      )}
+                      {aud.status === 'active' && (
+                        <span className="inline-block text-[11px] font-medium text-emerald-700 bg-emerald-50 rounded-full px-1.5 py-0.5 mt-1.5">
+                          active
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )
+        ) : templates.length === 0 ? (
           <div className="bg-[#FAFAFA] border-[1.5px] border-dashed border-[#E5E7EB] rounded-xl p-6 text-center">
             <Users className="w-6 h-6 text-[#9CA3AF] mx-auto mb-2" />
-            <p className="text-[14px] font-medium text-[#6B7280]">No audiences created yet</p>
+            <p className="text-[14px] font-medium text-[#6B7280]">No templates available</p>
             <p className="text-[13px] text-[#9CA3AF] mt-1">
-              You need a target audience to run a simulation.
+              Check that the backend is running and has audience templates configured.
             </p>
-            <a
-              href="/audiences"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block text-[13px] font-semibold text-[#F59E0B] hover:text-[#D97706] hover:underline mt-3"
-            >
-              → Create an audience
-            </a>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {audiences.map((aud) => {
-              const isSelected = formData.audience === aud.id;
-              const summary = aud.audienceDescription
-                ? aud.audienceDescription.slice(0, 60) + (aud.audienceDescription.length > 60 ? '…' : '')
-                : aud.description
-                  ? aud.description.slice(0, 60) + (aud.description.length > 60 ? '…' : '')
-                  : '';
-
+            {templates.map((tpl) => {
+              const isSelected = formData.audienceTemplateId === tpl.id;
               return (
                 <button
-                  key={aud.id}
+                  key={tpl.id}
                   type="button"
-                  onClick={() => setFormData((prev) => ({ ...prev, audience: aud.id }))}
+                  onClick={() =>
+                    setFormData((prev) => ({ ...prev, audienceTemplateId: tpl.id, audience: '' }))
+                  }
                   className={`
                     text-left rounded-xl border-[1.5px] px-[18px] py-4 transition-all duration-150 cursor-pointer flex items-start gap-3
                     ${isSelected
@@ -473,15 +589,22 @@ function SetupStep({ formData, setFormData, audiences }: SetupStepProps) {
                     </div>
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[14px] font-semibold text-[#1A1A1A] truncate">{aud.name}</p>
-                    {summary && (
-                      <p className="text-[12px] text-[#6B7280] mt-0.5 leading-[1.5]">{summary}</p>
-                    )}
-                    {aud.status === 'active' && (
-                      <span className="inline-block text-[11px] font-medium text-emerald-700 bg-emerald-50 rounded-full px-1.5 py-0.5 mt-1.5">
-                        active
-                      </span>
-                    )}
+                    <p className="text-[14px] font-semibold text-[#1A1A1A] truncate">{tpl.name}</p>
+                    <p className="text-[12px] text-[#6B7280] mt-0.5 leading-[1.5] line-clamp-2">
+                      {tpl.description}
+                    </p>
+                    <div className="mt-1.5 flex items-center gap-2 flex-wrap">
+                      {tpl.category && (
+                        <span className="text-[10px] font-medium text-[#6B7280] bg-[#F3F4F6] rounded-full px-1.5 py-0.5 uppercase tracking-wider">
+                          {tpl.category}
+                        </span>
+                      )}
+                      {tpl.pre_cached_uuids_count > 0 && (
+                        <span className="text-[10px] font-medium text-emerald-700 bg-emerald-50 rounded-full px-1.5 py-0.5">
+                          {tpl.pre_cached_uuids_count} pre-cached
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </button>
               );

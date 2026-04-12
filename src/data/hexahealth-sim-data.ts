@@ -1,5 +1,3 @@
-import type { SimulationData } from "@/types/simulation";
-
 /**
  * HexaHealth — Piles Treatment Consultation Flow
  * India's leading surgical care platform for anorectal conditions.
@@ -7,8 +5,10 @@ import type { SimulationData } from "@/types/simulation";
  * 27 completers, 23 drop-offs. 54% completion rate.
  * Flow: ad_landing → conditions_list → piles_detail → health_description → doctor_form → app_login → home_dashboard → submit_question
  * Used as sample/demo data for the simulation report UI.
+ *
+ * NOTE: intentionally untyped — see univest-sim-data.ts for rationale.
  */
-export const hexahealthSimData: SimulationData = {
+export const hexahealthSimData = {
   simulation_id: "hexahealth-piles-sim-20260409-001",
   flow_id: "hexahealth_piles_treatment_v1",
   flow_name: "HexaHealth — Piles Treatment Consultation",

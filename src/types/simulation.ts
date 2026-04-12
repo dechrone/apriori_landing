@@ -80,32 +80,10 @@ export interface FlowAssessment {
   three_month_roadmap?: unknown;
 }
 
-export interface PersonaJourney {
-  persona_type: string;
-  plan_chosen: string;
-  key_decision_moment: string;
-  emotional_arc: string;
-}
-
 export interface SegmentAnalysis {
   summary: string;
   high_propensity_segment: string;
   low_propensity_segment: string;
-}
-
-export interface PowerUserArchetype {
-  archetype_name: string;
-  defining_traits: Record<string, string>;
-  why_they_convert: string;
-  what_resonates: string[];
-  conversion_rate_estimate: string;
-  persona_count_in_sample: number;
-}
-
-export interface PowerUsers {
-  power_user_archetypes: PowerUserArchetype[];
-  flow_strengths_for_power_users: string[];
-  acquisition_recommendation: string;
 }
 
 export interface DropOffCluster {
@@ -200,14 +178,6 @@ export interface UsabilityFinding {
   recommendation: string;
 }
 
-// ── User Mental Models ────────────────────────────────────────────────────────
-
-export interface UserMentalModels {
-  expectations: string[];
-  gaps_found: string[];
-  surprising_behaviors: string[];
-}
-
 // ── Per-screen Behavioral Analysis (replaces playbook_insights) ───────────────
 
 export interface BehaviorAnalysisScreen {
@@ -271,6 +241,44 @@ export interface SegmentCompletionEntry {
   top_drop_off_reason: string;
 }
 
+// ── Post-flow Question Analysis (e.g. payment intent capture) ───────────
+
+export interface QuestionPersonaResponse {
+  persona_uuid: string;
+  reasoning: string;
+  willingness_to_pay_score: number;
+  max_monthly_price_inr: number;
+  income: number;
+  occupation: string;
+  age: number;
+  zone: string;
+  completed_flow: boolean;
+}
+
+export interface QuestionActionGroup {
+  count: number;
+  pct: number;
+  personas: QuestionPersonaResponse[];
+}
+
+export interface QuestionReasonAgainst {
+  reason: string;
+  frequency: number;
+}
+
+export interface QuestionAnalysis {
+  question_id: string;
+  question_text: string;
+  total_responses: number;
+  would_pay_count: number;
+  would_pay_pct: number;
+  would_not_pay_count: number;
+  action_distribution: Record<string, QuestionActionGroup>;
+  avg_willingness_to_pay_score: number;
+  avg_max_monthly_price_inr: number;
+  top_reasons_against: QuestionReasonAgainst[];
+}
+
 // ── Root simulation data ──────────────────────────────────────────────────────
 
 export interface SimulationData {
@@ -288,13 +296,9 @@ export interface SimulationData {
   executive_summary: string;
   // New user-testing fields (optional for backward compat with existing sample data)
   usability_findings?: UsabilityFinding[];
-  behavioral_insights?: string[];
-  user_mental_models?: UserMentalModels;
   segment_analysis?: SegmentAnalysis;
-  power_users?: PowerUsers;
   drop_off_analysis?: DropOffAnalysis;
   flow_assessment?: FlowAssessment;
-  persona_journeys?: PersonaJourney[];
   completion_analysis?: CompletionAnalysis;
   behavior_analysis?: Record<string, BehaviorAnalysisScreen>;
   persona_details?: PersonaDetail[];
@@ -305,6 +309,8 @@ export interface SimulationData {
   drop_off_monologues?: Record<string, DropOffMonologue[]>;
   fix_recommendations?: FixRecommendation[];
   expected_completion_rate_pct?: number;
+  // Post-flow question analysis (e.g. payment intent)
+  question_analysis?: QuestionAnalysis[];
   // Legacy fields kept optional for backward compat with existing sample data
   design_recommendations?: unknown[];
   ux_analysis?: unknown;

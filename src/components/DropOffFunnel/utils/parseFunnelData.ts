@@ -132,24 +132,29 @@ export function parseFunnelData(data: SimulationData): FunnelScreen[] {
     }
   }
 
-  // Build ordered screen list from funnel_drop_off order (canonical funnel order).
-  // Fall back to screen_metrics keys sorted by extracted step number if funnel_drop_off is empty.
+  // Build ordered screen list.
+  // Primary source: screen_metrics keys (these come from the flow traversal and are
+  // already in the correct flow order — first screen visited first).
+  // Merge in any funnel_drop_off screens that aren't in screen_metrics.
+  // funnel_drop_off is NOT reliable for ordering — it's often sorted by drop count.
+  const metricsKeys = Object.keys(screenMetrics);
+  const funnelKeys = funnelDropOff.map((item) => item.screen_id);
+
   let screenIds: string[];
-  if (funnelDropOff.length > 0) {
-    // Use funnel_drop_off order — it's already in correct funnel sequence
-    screenIds = funnelDropOff.map((item) => item.screen_id);
-    // Add any screen_metrics keys that aren't in funnel_drop_off (shouldn't happen, but safety net)
-    for (const sid of Object.keys(screenMetrics)) {
-      if (!screenIds.includes(sid)) {
-        screenIds.push(sid);
-      }
+  if (metricsKeys.length > 0) {
+    screenIds = [...metricsKeys];
+    for (const sid of funnelKeys) {
+      if (!screenIds.includes(sid)) screenIds.push(sid);
     }
-  } else {
-    screenIds = Object.keys(screenMetrics).sort((a, b) => {
+  } else if (funnelKeys.length > 0) {
+    // No screen_metrics — use funnel keys sorted by extracted number
+    screenIds = [...funnelKeys].sort((a, b) => {
       const diff = extractStepNumber(a) - extractStepNumber(b);
       if (diff !== 0) return diff;
       return a.localeCompare(b);
     });
+  } else {
+    screenIds = [];
   }
 
   const screens: FunnelScreen[] = screenIds.map((sid, index) => {
