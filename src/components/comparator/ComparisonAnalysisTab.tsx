@@ -451,10 +451,22 @@ function ThemeCard({ theme, category, variants }: { theme: ThemeItem; category: 
       style={{ background: "#FFF", borderRadius: 12, border: "0.5px solid #D1D5DB", borderLeft: `3px solid ${color}`, padding: "18px 20px", cursor: "pointer", transition: "border-color 0.15s" }}
       onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "#9CA3AF"; (e.currentTarget as HTMLDivElement).style.borderLeftColor = color; const h = e.currentTarget.querySelector(".viewHint") as HTMLElement; if (h) h.style.color = "#1A1A1A"; }}
       onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "#D1D5DB"; (e.currentTarget as HTMLDivElement).style.borderLeftColor = color; const h = e.currentTarget.querySelector(".viewHint") as HTMLElement; if (h) h.style.color = "#9CA3AF"; }}>
-      {/* Title row */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+      {/* Title row — title left, user count + chevron right */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
         <span style={{ fontSize: 15, fontWeight: 500, color: "#1A1A1A", flex: 1, lineHeight: 1.45 }}>{theme.name}</span>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+          {(theme.persona_count || theme.persona_count_in_control) && (
+            <div style={{ flexShrink: 0, textAlign: "right" }}>
+              <p style={{ fontSize: 22, fontWeight: 500, color: "#1A1A1A", lineHeight: 1, margin: 0 }}>{theme.persona_count ?? theme.persona_count_in_control}</p>
+              <p style={{ fontSize: 11, color: "#9CA3AF", margin: "2px 0 0" }}>users</p>
+            </div>
+          )}
+          <ChevronDown size={14} style={{ color: "#9CA3AF", transition: "transform 0.2s", transform: expanded ? "rotate(180deg)" : "rotate(0deg)" }} />
+        </div>
+      </div>
+      {/* Variant pills — on their own line below the title */}
+      {((category === "resolved" && theme.resolved_by?.length) || (category === "introduced" && theme.introduced_by?.length)) && (
+        <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 8 }}>
           {category === "resolved" && theme.resolved_by?.map((vId) => (
             <Pill key={vId} bg={`${variantColor(variants, vId)}20`} text={variantColor(variants, vId)} style={{ fontSize: 10, padding: "2px 8px" }}>
               Resolved by {variantLabel(variants, vId)}
@@ -465,15 +477,8 @@ function ThemeCard({ theme, category, variants }: { theme: ThemeItem; category: 
               Introduced by {variantLabel(variants, vId)}
             </Pill>
           ))}
-          {(theme.persona_count || theme.persona_count_in_control) && (
-            <div style={{ flexShrink: 0, textAlign: "right" }}>
-              <p style={{ fontSize: 22, fontWeight: 500, color: "#1A1A1A", lineHeight: 1, margin: 0 }}>{theme.persona_count ?? theme.persona_count_in_control}</p>
-              <p style={{ fontSize: 11, color: "#9CA3AF", margin: "2px 0 0" }}>users</p>
-            </div>
-          )}
-          <ChevronDown size={14} style={{ color: "#9CA3AF", transition: "transform 0.2s", transform: expanded ? "rotate(180deg)" : "rotate(0deg)" }} />
         </div>
-      </div>
+      )}
       {/* Description */}
       <p style={{ fontSize: 13, color: "#6B7280", lineHeight: 1.5, margin: "6px 0 0", ...(!expanded ? { display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" } : {}) }}>{theme.description}</p>
       {/* Hint */}

@@ -10,6 +10,11 @@ import type { ComparisonData, VariantDef } from "@/components/comparator/Compari
 import { univestFlowAnalysisData } from "@/data/univest-flow-analysis-data";
 import { univestSimData } from "@/data/univest-sim-data";
 import { univestStudyData } from "@/data/univest-study-data";
+import { univestControlStudy } from "@/data/univest-control-study";
+import { univestV1Study } from "@/data/univest-v1-study";
+import { univestV2Study } from "@/data/univest-v2-study";
+import { univestV3Study } from "@/data/univest-v3-study";
+import { univestV4Study } from "@/data/univest-v4-study";
 import type { SimulationData } from "@/types/simulation";
 import { List, TrendingDown, Layers, ChevronDown, GitCompareArrows } from "lucide-react";
 
@@ -31,93 +36,95 @@ const dmSans = DM_Sans({
 
 const COMPARISON_DATA: ComparisonData = {
   metadata: {
-    simulation_id: "sim_20260411_checkout",
-    simulation_name: "SaaS Checkout Flow",
-    created_at: "2026-04-11T14:30:00Z",
-    persona_count: 15,
-    screen_count: 5,
-    flow_screens: ["Plan Selection", "Account Creation", "Pricing / Summary", "Payment", "Confirmation"],
+    simulation_id: "UNIVEST_ACTIVATION_COMPARISON",
+    simulation_name: "Univest Post-Signup Activation Flow",
+    created_at: "2026-04-12T14:30:00Z",
+    persona_count: 50,
+    screen_count: 1,
+    flow_screens: ["Activation Screen"],
   },
   variants: [
-    { id: "control", label: "Control", is_control: true, color: "#8B8FA3", description: "Current production checkout flow" },
-    { id: "a", label: "Variant A", is_control: false, color: "#6366F1", description: "Progressive disclosure + multi-step form" },
-    { id: "b", label: "Variant B", is_control: false, color: "#0D9488", description: "Guided recommendation + progressive pricing" },
-    { id: "c", label: "Variant C", is_control: false, color: "#E8913A", description: "Control base + inline upsells + competitor comparison" },
+    { id: "control", label: "Control", is_control: true, color: "#8B8FA3", description: "Bottom-modal popup with 'Start Trial Now' — no ₹1 anywhere on screen" },
+    { id: "a", label: "Variant 1", is_control: false, color: "#6366F1", description: "Full-screen dark theme, Recent Wins carousel, explicit ₹1 sticky CTA" },
+    { id: "b", label: "Variant 2", is_control: false, color: "#0D9488", description: "Crown header, ₹1 + refund banner, blurred trade card, black CTA" },
+    { id: "c", label: "Variant 3", is_control: false, color: "#10B981", description: "V2 layout + green CTA — single change vs Variant 2" },
+    { id: "d", label: "Variant 4", is_control: false, color: "#E8913A", description: "Dual CTA stack: outline 'Unlock FREE trade' + sticky green '₹1 Trial'" },
   ],
   metrics: {
-    control: { sus: 58, seq: 4.1, completion_rate: 62, friction_count: 7, avg_sentiment: 0.35 },
-    a: { sus: 71, seq: 5.4, completion_rate: 78, friction_count: 4, avg_sentiment: 0.58 },
-    b: { sus: 76, seq: 5.8, completion_rate: 81, friction_count: 3, avg_sentiment: 0.67 },
-    c: { sus: 68, seq: 5.1, completion_rate: 74, friction_count: 5, avg_sentiment: 0.48 },
+    control: { sus: 58.4, seq: 3.2, completion_rate: 22, friction_count: 3, avg_sentiment: -0.32 },
+    a: { sus: 68.7, seq: 4.6, completion_rate: 38, friction_count: 3, avg_sentiment: 0.08 },
+    b: { sus: 64.2, seq: 4.1, completion_rate: 30, friction_count: 3, avg_sentiment: -0.04 },
+    c: { sus: 70.4, seq: 4.9, completion_rate: 36, friction_count: 3, avg_sentiment: 0.18 },
+    d: { sus: 73.6, seq: 5.2, completion_rate: 44, friction_count: 3, avg_sentiment: 0.32 },
   },
   verdict: {
-    recommended_variant: "b",
+    recommended_variant: "d",
     recommendation_type: "ship_with_modifications",
     modifications: [
-      "Add 'Compare all plans' escape hatch at plan selection for power users",
-      "Replace Variant B's account creation form with Variant A's multi-step approach (reduced from 4 to 3 steps)",
+      "Replace the blurred Live Trade card with a real closed trade showing entry, exit, days held, and rupee gain",
+      "Make the dual CTAs functionally different — let 'Unlock FREE trade' show one real trade for free, reserve ₹1 sticky CTA for full activation",
     ],
     verdict_text:
-      "Variant B resolves the most Control friction (5 of 7 issues) without introducing critical new ones. Its progressive pricing approach eliminated sticker shock entirely — the single highest-impact improvement across all variants. However, it patronizes power users in the plan selection step. The recommended path is Variant B's core flow with a 'compare all plans' escape hatch for experienced buyers, plus Variant A's multi-step form approach (reduced from 4 to 3 steps) for account creation.",
+      "Variant 4 is the highest-converting screen in the study (44%) and the only design that meaningfully cracks the Skeptical Investor segment (25%, up from 8% in Control). The dual-CTA stack lets users self-segment into 'explore first' or 'commit now', and the sticky '₹1 Trial' button makes price impossible to miss. The recommended path is Variant 4's dual-CTA layout with the blurred trade card replaced by a real closed trade, and the outline 'Unlock FREE trade' CTA made functionally different from the ₹1 activation.",
     confidence: {
       personas_preferring_winner: 12,
       total_personas: 15,
-      dissenting_segments: ["Power Users"],
+      dissenting_segments: ["Skeptical Investor"],
     },
   },
   theme_movement: {
     persistent: [
-      { id: "theme_persist_01", name: "Brand trust uncertainty", description: "Personas across all variants expressed hesitation about committing without social proof or trust signals. No variant adequately addressed this.", present_in: ["control", "a", "b", "c"], persona_count: 10, monologue_evidence: null },
-      { id: "theme_persist_02", name: "Return policy anxiety", description: "8 of 15 personas mentioned wanting to know the return policy before completing checkout, regardless of flow design.", present_in: ["control", "a", "b", "c"], persona_count: 8, monologue_evidence: null },
+      { id: "theme_persist_01", name: "Blurred trade card alienates Skeptical Investors", description: "Across Variants 2, 3, and 4, the blurred Live Trade card is immediately recognised as a curiosity gimmick by sophisticated investors. No variant resolved this — it remains the single largest unsolved trust drag.", present_in: ["b", "c", "d"], persona_count: 12, monologue_evidence: { persona_name: "Skeptical Investor", persona_archetype: "Active F&O trader, SEBI-circular reader", monologues: { b: "Blurred entry price, blurred target price, clear +14.32% — this is a fake card.", c: "Same gimmick from before. The green button doesn't fix a fake card.", d: "Two buttons doesn't fix one fake card. I'd rather have one real trade." } } },
+      { id: "theme_persist_02", name: "Abstract metrics underperform concrete past wins", description: "Variants 2, 3, and 4 replaced Variant 1's named recent wins (TMPV, ZOMATO, RELIANCE) with abstract metrics (85%+ Accuracy, 3500+ Trades). Curious Beginners consistently wanted at least one named stock to anchor on.", present_in: ["b", "c", "d"], persona_count: 8, monologue_evidence: null },
     ],
     resolved: [
-      { id: "theme_resolv_01", name: "Price sticker shock", description: "Control triggered 'sticker shock' in 9 of 15 personas at the summary screen. Variant B's progressive price breakdown eliminated this entirely. Variant A reduced it partially.", present_in: ["control", "a", "c"], absent_in: ["b"], resolved_by: ["b"], persona_count_in_control: 9, monologue_evidence: { persona_name: "Sarah", persona_archetype: "Price-sensitive, 32", monologues: { control: "Wait — $247? Where did that come from? I was expecting around $180. I need to go back and figure out what's adding up here.", b: "Okay, so $149 base plus $59 for premium features plus $39 setup — that makes sense, I saw each of these as I went." } } },
-      { id: "theme_resolv_02", name: "Cognitive overload at plan selection", description: "Control's 4-column comparison table overwhelmed 11 personas. Both A (progressive disclosure) and B (guided recommendation) solved this differently.", present_in: ["control", "c"], absent_in: ["a", "b"], resolved_by: ["a", "b"], persona_count_in_control: 11, monologue_evidence: { persona_name: "James", persona_archetype: "Non-technical, 45", monologues: { control: "There are so many columns... I'm just going to pick the middle one and hope it's right.", b: "Oh nice, it's asking me what I need and then suggesting one. That's much easier." } } },
-      { id: "theme_resolv_03", name: "Form fatigue", description: "Control's single long form triggered abandonment thoughts in 6 personas. Variant A's multi-step form with progress bar resolved this.", present_in: ["control", "b", "c"], absent_in: ["a"], resolved_by: ["a"], persona_count_in_control: 6, monologue_evidence: { persona_name: "Priya", persona_archetype: "Busy professional, 38", monologues: { control: "This is a LOT of fields. I don't have time for this right now, I'll come back later.", a: "Step 2 of 4 — okay, each step is short. I can do this." } } },
+      { id: "theme_resolv_01", name: "Price opacity on the activation screen", description: "Control never showed ₹1 anywhere — 78% of users couldn't tell if 'Start Trial Now' was free or paid. Every subsequent variant resolved this by making the price explicit in the CTA or banner.", present_in: ["control"], absent_in: ["a", "b", "c", "d"], resolved_by: ["a", "b", "c", "d"], persona_count_in_control: 39, monologue_evidence: { persona_name: "Curious Beginner", persona_archetype: "First-time advisory user, 1-2 SIPs", monologues: { control: "Trial means free, right? But sometimes apps say trial and then charge you. I'll close this for now.", a: "₹1 on the button — that's clear. I'll do it." } } },
+      { id: "theme_resolv_02", name: "CTA visibility failure (black on dark)", description: "Variant 2's black CTA blended into the dark background. 22% of users either missed it or tapped the banner mistakenly. Variant 3 fixed this with a single CSS change to green.", present_in: ["b"], absent_in: ["c", "d"], resolved_by: ["c", "d"], persona_count_in_control: 11, monologue_evidence: { persona_name: "Curious Beginner", persona_archetype: "First-time advisory user", monologues: { b: "Where do I tap to actually start? The black button blends in with the background.", c: "I see the green button immediately. I don't even have to think — that's where I tap." } } },
+      { id: "theme_resolv_03", name: "Modal interrupts before value preview", description: "Control's bottom-modal popup slammed over a greyed-out Live Trades screen. 62% of users felt interrupted. Variants 1-4 replaced this with full-screen activation layouts.", present_in: ["control"], absent_in: ["a", "b", "c", "d"], resolved_by: ["a", "b", "c", "d"], persona_count_in_control: 31, monologue_evidence: { persona_name: "Skeptical Investor", persona_archetype: "Active trader", monologues: { control: "I downloaded this to look at the live trades. Why is there a popup on top of them before I've even seen anything?" } } },
     ],
     introduced: [
-      { id: "theme_intro_01", name: "Paradox of choice in recommendations", description: "Variant B's guided recommendation flow backfired for power users (4 personas) who felt patronized and wanted to see all options.", present_in: ["b"], absent_in: ["control", "a", "c"], introduced_by: ["b"], persona_count: 4, monologue_evidence: { persona_name: "Dev", persona_archetype: "Power user, 28", monologues: { b: "Don't tell me what I need — just show me the comparison table. I know what I'm looking for." } } },
-      { id: "theme_intro_02", name: "Progress anxiety", description: "Variant A's multi-step form made 3 personas anxious about how many steps remained, despite the progress bar.", present_in: ["a"], absent_in: ["control", "b", "c"], introduced_by: ["a"], persona_count: 3, monologue_evidence: { persona_name: "Linda", persona_archetype: "Anxious buyer, 55", monologues: { a: "Step 2 of 4... four steps? That feels like a lot. How long is this going to take?" } } },
-      { id: "theme_intro_03", name: "Upsell distrust", description: "Variant C's inline upsells triggered distrust in 7 personas who felt the flow was optimizing for revenue over their needs.", present_in: ["c"], absent_in: ["control", "a", "b"], introduced_by: ["c"], persona_count: 7, monologue_evidence: { persona_name: "Marcus", persona_archetype: "Skeptical, 41", monologues: { c: "And now they're trying to sell me add-ons mid-checkout. This feels like those airline booking sites." } } },
+      { id: "theme_intro_01", name: "Countdown timer manipulation perception", description: "Variant 1's '04:34 Left' countdown timer converted Bargain Hunters but backfired with 41% of Skeptical Investors who read it as a high-pressure dark pattern.", present_in: ["a"], absent_in: ["control", "b", "c", "d"], introduced_by: ["a"], persona_count: 6, monologue_evidence: { persona_name: "Skeptical Investor", persona_archetype: "Active F&O trader", monologues: { a: "If the offer is real, it'll still be there in an hour. The timer makes me less likely to trust it, not more." } } },
+      { id: "theme_intro_02", name: "Dual CTA label mismatch", description: "Variant 4's 'Unlock FREE trade' and 'Start Free Trial @ ₹1' imply two different flows but both lead to the same ₹1 activation. 33% of users noticed the discrepancy.", present_in: ["d"], absent_in: ["control", "a", "b", "c"], introduced_by: ["d"], persona_count: 5, monologue_evidence: { persona_name: "Curious Beginner", persona_archetype: "First-time advisory user", monologues: { d: "If both lead to ₹1, why have two buttons? Just say it once." } } },
+      { id: "theme_intro_03", name: "Green CTA softens premium positioning", description: "Variant 3's green CTA improved visibility but reduced the premium feel that Trust Seekers valued in Variant 2's black CTA. Trust Seeker conversion dropped from 50% to 40%.", present_in: ["c"], absent_in: ["control", "a", "b", "d"], introduced_by: ["c"], persona_count: 4, monologue_evidence: { persona_name: "Trust Seeker", persona_archetype: "Conservative, premium-seeking investor", monologues: { c: "I liked the black button — it felt more serious. Green is friendlier but cheaper-looking." } } },
     ],
   },
   screen_comparison: [
-    { screen_name: "Plan Selection", screen_index: 0, divergence: "high", divergence_score: 0.82, summaries: { control: "Overwhelming. 11 personas described the comparison table as 'noisy' or 'confusing.' Most defaulted to middle tier without understanding differences.", a: "Progressive disclosure worked. Personas engaged more but 3 felt the accordion was 'hiding information.'", b: "Guided flow was the strongest. 10 of 15 felt 'understood.' But 4 power users resented the hand-holding.", c: "Similar to control but with added feature highlights. Marginal improvement. Upsell prompts started here and set a negative tone early." } },
-    { screen_name: "Account Creation", screen_index: 1, divergence: "medium", divergence_score: 0.51, summaries: { control: "Long single form. 6 personas expressed fatigue. 2 considered abandoning.", a: "Multi-step form with progress bar. Reduced fatigue. 3 personas felt anxious about step count.", b: "Same as control but with social login options. Minor improvement. Not a meaningful differentiator.", c: "Same as control. No changes. Inherited all friction." } },
-    { screen_name: "Pricing / Summary", screen_index: 2, divergence: "high", divergence_score: 0.89, summaries: { control: "Sticker shock. 9 personas surprised by total. Mental math and back-navigation impulses.", a: "Better labeling but still showed total at end. Reduced shock somewhat (5 personas still surprised).", b: "Progressive breakdown throughout flow. No sticker shock. Strongest screen across all variants.", c: "Added comparison to 'similar products' — 5 personas found this helpful, 4 found it manipulative." } },
-    { screen_name: "Payment", screen_index: 3, divergence: "low", divergence_score: 0.23, summaries: { control: "Functional but clinical. No trust signals. 4 personas hesitated.", a: "Added security badges. Marginal improvement.", b: "Added security badges + order summary sidebar. Strongest trust signals.", c: "Added payment plan options. Appreciated by 6 personas but 3 felt it signaled the product was expensive." } },
-    { screen_name: "Confirmation", screen_index: 4, divergence: "medium", divergence_score: 0.47, summaries: { control: "Minimal. 'Thank you for your order.' 8 personas felt underwhelmed.", a: "Added next steps and timeline. Better but still transactional.", b: "Added next steps + personalized onboarding preview. Strongest emotional finish.", c: "Added referral prompt immediately. 5 personas felt it was 'too soon to ask.'" } },
+    { screen_name: "Trust / Header Section", screen_index: 0, divergence: "high", divergence_score: 0.78, summaries: { control: "SEBI / Google / ET trust badges on a modal. SEBI number rendered in tiny 10pt grey text. 44% found badges reassuring but Skeptical Investors dismissed them as paid placements.", a: "SEBI number more visible. 914/62 win-loss ratio and 'India's Trusted Advisory' header. All-time accuracy 84.7% claim dismissed by Skeptical Investors as statistically implausible.", b: "Crown logo + 'India's Trusted Advisory' lockup. 3-column metrics (SEBI Reg / 85%+ Accuracy / 3500+ Trades). Premium feel resonated with Trust Seekers. No concrete past wins.", c: "Same as Variant 2. Crown + abstract metrics. No changes.", d: "Same as Variant 2/3. Crown + abstract metrics. No changes." } },
+    { screen_name: "Proof / Trade Evidence", screen_index: 1, divergence: "high", divergence_score: 0.86, summaries: { control: "No trade evidence shown. Greyed-out Live Trades visible behind the modal but inaccessible.", a: "Recent Wins carousel with TMPV +12.93%, ZOMATO +₹23,435, RELIANCE +12.93%. Most persuasive element — 71% of converters cited a specific stock. But carousel format created cognitive overload for 58%.", b: "Single blurred Live Trade card with +14.32% visible. Worked as curiosity gap for Curious Beginners (35% wanted to unlock) but felt manipulative to Skeptical Investors.", c: "Same blurred card as V2. Now the primary unsolved trust problem — 49% recognised it as a gimmick.", d: "Same blurred card. Impact diluted by strong CTA stack but still 8% drop among Skeptical Investors." } },
+    { screen_name: "Pricing Communication", screen_index: 2, divergence: "high", divergence_score: 0.91, summaries: { control: "No price anywhere on screen. 'Start Trial Now' CTA with 'FREE' headline. 78% of users couldn't tell if it was free or paid. 34% abandoned.", a: "Explicit '₹1' in the sticky CTA ('START FREE TRIAL @ ₹1'). Resolved 67% of Control's pricing distrust. Minor 'FREE vs ₹1' label contradiction.", b: "'Activate @ ₹1 & get instant refund' banner — strongest pricing reassurance in the study. 64% cited refund as deciding factor. But black CTA was visually subordinate.", c: "Same refund banner as V2 + green CTA. Price + refund + visible button = cleanest combo for Bargain Hunters (62% conversion).", d: "Sticky green '₹1 Trial' CTA always visible at bottom. Most persistent pricing signal — 82% cited it. 'Unlock FREE trade' outline button above for exploration." } },
+    { screen_name: "Primary CTA", screen_index: 3, divergence: "high", divergence_score: 0.88, summaries: { control: "'Start Trial Now' button inside a modal. Functional but clinical. No price, no urgency, no risk-reversal.", a: "Sticky green 'START FREE TRIAL @ ₹1' CTA at bottom with countdown timer. Timer converted Bargain Hunters but repelled 41% of Skeptical Investors.", b: "Black 'Unlock FREE trade →' CTA on dark background. 22% drop — primary action was visually subordinate to the refund banner above it.", c: "Same layout as V2 but CTA changed to green. Hunt time dropped from 4-6s to under 1s. Conversion rose 6 points vs V2.", d: "Dual CTA stack: outline 'Unlock FREE trade →' in card area + sticky green 'Start Free Trial @ ₹1 →' at bottom. 56% felt the choice gave them control." } },
   ],
   persona_journeys: [
-    { persona_id: "persona_03", name: "Sarah", age: 32, archetype: "Price-sensitive, comparison shopper", avatar_emoji: "👩‍💻", segment: "Price-Sensitive Users", preferred_variant: "b", narrative: "Completed the Control flow but described it as 'exhausting' — spent 3 minutes on the pricing screen doing mental math. In Variant B, she described the same checkout as 'surprisingly smooth' because each price component was introduced as she made choices. In Variant A, she finished faster but her monologue reveals lingering doubt: 'I think that was right... but I'm not 100% sure what I'm paying for the premium features.' Variant C triggered her comparison instincts — she started thinking about alternatives." },
-    { persona_id: "persona_07", name: "Dev", age: 28, archetype: "Power user, technical buyer", avatar_emoji: "🧑‍💻", segment: "Power Users", preferred_variant: "a", narrative: "Actively frustrated by Variant B's guided flow — 'I already know I want the enterprise tier, just let me select it.' Completed Control fastest despite its friction because he ignored the comparison table entirely. Variant A was his sweet spot: progressive disclosure let him drill into API limits and integrations. Variant C's upsells were dismissed instantly — 'I can see through this.'" },
-    { persona_id: "persona_12", name: "Linda", age: 55, archetype: "Anxious first-time buyer", avatar_emoji: "👩‍🏫", segment: "First-Time Buyers", preferred_variant: "b", narrative: "Nearly abandoned Control at the plan selection screen — 'I don't understand the difference between these plans and I'm afraid of picking the wrong one.' Variant B transformed her experience: the guided questions made her feel 'like someone was helping me choose.' Variant A's multi-step form triggered step-count anxiety. Variant C's upsells made her feel 'pressured and uncertain.'" },
+    { persona_id: "persona_skeptic", name: "Skeptical Investor", age: 35, archetype: "Active F&O trader, SEBI-circular reader", avatar_emoji: "🧐", segment: "Skeptical Investor", preferred_variant: "d", narrative: "Converted in exactly one variant — Variant 4 — and grudgingly. Dismissed Control's hidden price instantly ('Trial without a price means hidden charge'). In Variant 1, the SEBI number and recent wins briefly held attention but the countdown timer broke the spell. Variants 2 and 3's blurred trade card was the dealbreaker ('Show me a real trade or don't'). In Variant 4, the sticky ₹1 CTA eventually wore down resistance: 'I still don't believe the 84.7% claim, but ₹1 with a refund is essentially free. Worth ₹1 to find out.'" },
+    { persona_id: "persona_beginner", name: "Curious Beginner", age: 26, archetype: "1-2 SIPs, first-time advisory user", avatar_emoji: "🤔", segment: "Curious Beginner", preferred_variant: "d", narrative: "Struggled in Control — couldn't decode the offer and closed the modal to 'look around'. In Variant 1, ZOMATO's +₹23k was the turning point ('I bought it last year — if they nailed that, I should listen') but the information overload pushed many out. Variants 2 and 3 were calmer but the missing concrete wins left them unanchored. In Variant 4, the persistent ₹1 sticky CTA finally removed pricing anxiety, though some experienced mild choice paralysis with the dual buttons." },
+    { persona_id: "persona_bargain", name: "Bargain Hunter", age: 29, archetype: "Tries any ₹1 trial", avatar_emoji: "�", segment: "Bargain Hunter", preferred_variant: "d", narrative: "The most reliable converters across all variants. Tapped Control's 'Start Trial Now' within 4 seconds and cheerfully paid ₹1 when it appeared. In Variant 1, the ₹1 + timer combo produced 54% conversion in 11 seconds average. Variant 2's refund clause was their love language but the invisible CTA cost a few. Variant 3 (green CTA + refund + ₹1) hit 62%. Variant 4 reached 69% — approaching the natural ceiling. Average time on screen: 7 seconds." },
+    { persona_id: "persona_trust", name: "Trust Seeker", age: 48, archetype: "Conservative, premium-seeking investor", avatar_emoji: "�️", segment: "Trust Seeker", preferred_variant: "d", narrative: "Converted at 40% in Control thanks to the trust badges alone. In Variant 1, the SEBI number + recent wins pushed them to 60% — their peak. Variant 2's crown branding + refund clause hit 50% despite the CTA visibility issue. Variant 3's green CTA dropped them to 40% — the green felt 'less premium'. Variant 4 restored the balance: the outline button kept the premium tone while the sticky ₹1 CTA gave pricing confidence. 'Best of both worlds — looks premium and tells me the price.'" },
   ],
   segment_verdicts: [
-    { segment_name: "Price-Sensitive Users", persona_count: 5, winner: "b", narrative: "Strongly prefer Variant B. The progressive pricing breakdown eliminated the uncertainty that drove 4 of 5 to consider abandoning in Control. Variant A helped somewhat but still revealed the total too late. Variant C's comparison-to-competitors actually backfired — it made 3 of them start price-shopping elsewhere.", metrics_by_variant: { control: { sus: 52, seq: 3.8, completion_rate: 55 }, a: { sus: 65, seq: 5.0, completion_rate: 72 }, b: { sus: 78, seq: 6.1, completion_rate: 88 }, c: { sus: 60, seq: 4.5, completion_rate: 65 } } },
-    { segment_name: "Power Users", persona_count: 4, winner: "a", narrative: "Prefer Variant A's progressive disclosure because it let them drill into details on their terms. Variant B's guided recommendation felt patronizing — all 4 expressed frustration at not seeing the full comparison upfront. They tolerated Control better than B, which is a notable signal.", metrics_by_variant: { control: { sus: 62, seq: 4.5, completion_rate: 75 }, a: { sus: 79, seq: 5.9, completion_rate: 90 }, b: { sus: 64, seq: 4.8, completion_rate: 78 }, c: { sus: 70, seq: 5.2, completion_rate: 80 } } },
-    { segment_name: "First-Time Buyers", persona_count: 4, winner: "b", narrative: "Overwhelmingly prefer Variant B. The guided flow reduced decision anxiety that was acute in Control. Variant A's multi-step form helped but didn't address the core 'which plan?' uncertainty. Variant C's upsells amplified their existing hesitation.", metrics_by_variant: { control: { sus: 48, seq: 3.5, completion_rate: 45 }, a: { sus: 66, seq: 5.1, completion_rate: 70 }, b: { sus: 82, seq: 6.3, completion_rate: 90 }, c: { sus: 58, seq: 4.2, completion_rate: 60 } } },
-    { segment_name: "Busy Professionals", persona_count: 2, winner: "a", narrative: "Variant A's multi-step form with clear progress indicators matched their 'get this done efficiently' mindset. They appreciated knowing exactly how much was left. Variant B's guided flow felt slow to them — 'just let me check out.'", metrics_by_variant: { control: { sus: 60, seq: 4.2, completion_rate: 65 }, a: { sus: 75, seq: 5.8, completion_rate: 85 }, b: { sus: 70, seq: 5.4, completion_rate: 80 }, c: { sus: 66, seq: 5.0, completion_rate: 75 } } },
+    { segment_name: "Skeptical Investor", persona_count: 12, winner: "d", narrative: "Best conversion in Variant 4 (25%) — triple Control (8%). The sticky ₹1 CTA finally cracked the segment by making the price persistently visible. The blurred trade card remains the bottleneck — replacing it would push this segment past 35%.", metrics_by_variant: { control: { sus: 49.2, seq: 2.4, completion_rate: 8 }, a: { sus: 58.4, seq: 3.6, completion_rate: 17 }, b: { sus: 53.6, seq: 3.1, completion_rate: 8 }, c: { sus: 58.7, seq: 3.6, completion_rate: 17 }, d: { sus: 64.2, seq: 4.4, completion_rate: 25 } } },
+    { segment_name: "Curious Beginner", persona_count: 15, winner: "d", narrative: "Conversion rose from 7% (Control) to 33% (Variant 4). The persistent ₹1 CTA removed pricing anxiety. Missing concrete past wins (present in Variant 1 but absent in V2-V4) remains a bottleneck — adding one named recent win would push past 40%.", metrics_by_variant: { control: { sus: 53.8, seq: 2.8, completion_rate: 7 }, a: { sus: 65.2, seq: 4.2, completion_rate: 27 }, b: { sus: 60.4, seq: 3.7, completion_rate: 20 }, c: { sus: 67.3, seq: 4.8, completion_rate: 27 }, d: { sus: 71.0, seq: 5.0, completion_rate: 33 } } },
+    { segment_name: "Bargain Hunter", persona_count: 13, winner: "d", narrative: "Highest single-segment conversion in the entire study: 69% in Variant 4. The ₹1 sticky + dual CTA + refund combination collapsed all friction. Average time on screen: 7 seconds. No further changes needed — 69% approaches the natural ceiling.", metrics_by_variant: { control: { sus: 64.1, seq: 3.9, completion_rate: 38 }, a: { sus: 74.6, seq: 5.3, completion_rate: 54 }, b: { sus: 70.8, seq: 4.8, completion_rate: 46 }, c: { sus: 78.4, seq: 5.7, completion_rate: 62 }, d: { sus: 81.7, seq: 5.9, completion_rate: 69 } } },
+    { segment_name: "Trust Seeker", persona_count: 10, winner: "a", narrative: "Peak conversion was Variant 1 (60%) thanks to the prominent SEBI number and recent wins carousel. Variant 4 restored parity with Variant 2 (50%) by combining premium crown branding with a sticky ₹1 CTA. The green CTA in Variant 3 dropped them to 40% — the green felt less premium.", metrics_by_variant: { control: { sus: 67.3, seq: 4.1, completion_rate: 40 }, a: { sus: 78.1, seq: 5.4, completion_rate: 60 }, b: { sus: 73.2, seq: 4.9, completion_rate: 50 }, c: { sus: 75.1, seq: 5.4, completion_rate: 40 }, d: { sus: 78.4, seq: 5.5, completion_rate: 50 } } },
   ],
   friction_provenance: [
-    { id: "friction_01", friction: "Plan comparison cognitive overload", screen: "Plan Selection", status: "resolved", resolved_by: ["a", "b"], presence: { control: "present", a: "absent", b: "absent", c: "present" } },
-    { id: "friction_02", friction: "Price sticker shock at summary", screen: "Pricing / Summary", status: "resolved", resolved_by: ["b"], presence: { control: "present", a: "partial", b: "absent", c: "present" } },
-    { id: "friction_03", friction: "Form fatigue on account creation", screen: "Account Creation", status: "resolved", resolved_by: ["a"], presence: { control: "present", a: "absent", b: "present", c: "present" } },
-    { id: "friction_04", friction: "Missing trust signals at payment", screen: "Payment", status: "resolved", resolved_by: ["b"], presence: { control: "present", a: "partial", b: "absent", c: "partial" } },
-    { id: "friction_05", friction: "Underwhelming confirmation experience", screen: "Confirmation", status: "resolved", resolved_by: ["b"], presence: { control: "present", a: "partial", b: "absent", c: "present" } },
-    { id: "friction_06", friction: "Guided flow patronizes power users", screen: "Plan Selection", status: "introduced", introduced_by: ["b"], presence: { control: "absent", a: "absent", b: "present", c: "absent" } },
-    { id: "friction_07", friction: "Progress bar step-count anxiety", screen: "Account Creation", status: "introduced", introduced_by: ["a"], presence: { control: "absent", a: "present", b: "absent", c: "absent" } },
-    { id: "friction_08", friction: "Inline upsell distrust", screen: "Plan Selection", status: "introduced", introduced_by: ["c"], presence: { control: "absent", a: "absent", b: "absent", c: "present" } },
-    { id: "friction_09", friction: "Brand trust uncertainty", screen: "Payment", status: "persistent", presence: { control: "present", a: "present", b: "present", c: "present" } },
-    { id: "friction_10", friction: "Return policy anxiety", screen: "Pricing / Summary", status: "persistent", presence: { control: "present", a: "present", b: "present", c: "present" } },
+    { id: "friction_01", friction: "Price opacity — no ₹1 visible on screen", screen: "Activation CTA", status: "resolved", resolved_by: ["a", "b", "c", "d"], presence: { control: "present", a: "absent", b: "absent", c: "absent", d: "absent" } },
+    { id: "friction_02", friction: "Modal interrupts before value preview", screen: "Activation Modal", status: "resolved", resolved_by: ["a", "b", "c", "d"], presence: { control: "present", a: "absent", b: "absent", c: "absent", d: "absent" } },
+    { id: "friction_03", friction: "Payment screen ₹1 surprise (expectation violation)", screen: "Payment", status: "resolved", resolved_by: ["a", "b", "c", "d"], presence: { control: "present", a: "absent", b: "absent", c: "absent", d: "absent" } },
+    { id: "friction_04", friction: "CTA visibility failure (black on dark background)", screen: "Primary CTA", status: "resolved", resolved_by: ["c", "d"], presence: { control: "absent", a: "absent", b: "present", c: "absent", d: "absent" } },
+    { id: "friction_05", friction: "Blurred trade card — trust gimmick perception", screen: "Trade Evidence", status: "persistent", presence: { control: "absent", a: "absent", b: "present", c: "present", d: "present" } },
+    { id: "friction_06", friction: "Abstract metrics without concrete past wins", screen: "Header", status: "persistent", presence: { control: "absent", a: "absent", b: "present", c: "present", d: "present" } },
+    { id: "friction_07", friction: "Countdown timer manipulation perception", screen: "Header", status: "introduced", introduced_by: ["a"], presence: { control: "absent", a: "present", b: "absent", c: "absent", d: "absent" } },
+    { id: "friction_08", friction: "Cognitive overload — too many content blocks", screen: "Full Screen", status: "introduced", introduced_by: ["a"], presence: { control: "absent", a: "present", b: "absent", c: "absent", d: "absent" } },
+    { id: "friction_09", friction: "Dual CTA label mismatch — both lead to same ₹1 flow", screen: "CTA Stack", status: "introduced", introduced_by: ["d"], presence: { control: "absent", a: "absent", b: "absent", c: "absent", d: "present" } },
+    { id: "friction_10", friction: "Green CTA softens premium positioning for Trust Seekers", screen: "Primary CTA", status: "introduced", introduced_by: ["c"], presence: { control: "absent", a: "absent", b: "absent", c: "present", d: "absent" } },
   ],
   recommendations: [
-    { id: "rec_01", recommendation: "Add trust signals (testimonials, security badges, press logos) to plan selection and payment screens", type: "persistent_fix", applies_to: ["all"], priority: "high", rice_score: 84, rationale: "Addresses brand trust uncertainty — the #1 persistent theme across all variants. No flow redesign solved this because it's a content/credibility gap, not a UX gap." },
-    { id: "rec_02", recommendation: "Add return policy and cancellation terms as a persistent, accessible element", type: "persistent_fix", applies_to: ["all"], priority: "high", rice_score: 78, rationale: "8 of 15 personas actively looked for this regardless of flow. Its absence created preventable anxiety." },
-    { id: "rec_03", recommendation: "Ship Variant B's progressive pricing approach", type: "ship", applies_to: ["b"], priority: "high", rice_score: 91, rationale: "Eliminated sticker shock entirely. Strongest single-screen improvement across all variants." },
-    { id: "rec_04", recommendation: "Ship Variant A's multi-step form but reduce to 3 steps", type: "ship", applies_to: ["a"], priority: "medium", rice_score: 65, rationale: "The multi-step approach worked but 4 steps triggered anxiety. Combining account + payment into one step would reduce to 3 and address the concern." },
-    { id: "rec_05", recommendation: "Make Variant B's guided flow skippable for power users", type: "variant_fix", applies_to: ["b"], priority: "medium", rice_score: 60, rationale: "Add a 'Compare all plans' escape hatch. 4 power users were frustrated by the guided path — a simple link resolves this without losing the benefit for first-time buyers." },
-    { id: "rec_06", recommendation: "Remove Variant C's inline upsells entirely", type: "variant_fix", applies_to: ["c"], priority: "high", rice_score: 72, rationale: "Net negative. 7 of 15 personas reacted negatively. The distrust it creates outweighs any revenue lift." },
+    { id: "rec_01", recommendation: "Replace the blurred Live Trade card with a real closed trade showing entry, exit, days held, and rupee gain", type: "persistent_fix", applies_to: ["all"], priority: "high", rice_score: 86, rationale: "The blurred card is the single largest unsolved friction point across V2/V3/V4. Skeptical Investors immediately recognise it as a gimmick and disengage. Replacing it with a real trade would push Skeptical Investor conversion from 25% to 35%+ and overall conversion from 44% to 48-50%." },
+    { id: "rec_02", recommendation: "Add one named concrete recent win (e.g., 'ZOMATO +₹23,435 in 3 days') above the trade card", type: "persistent_fix", applies_to: ["all"], priority: "high", rice_score: 78, rationale: "Variant 1's Recent Wins were the most persuasive element in the study (71% cited a stock by name). V2-V4 stripped these out for cleaner design. Adding even one back would increase Curious Beginner conversion by 5-10 points." },
+    { id: "rec_03", recommendation: "Ship Variant 4's dual-CTA stack with sticky ₹1 bottom button", type: "ship", applies_to: ["d"], priority: "high", rice_score: 91, rationale: "Highest overall conversion (44%), best SUS score (73.6, Grade B), and the only variant that meaningfully cracks Skeptical Investors (25%). The sticky CTA is the highest-leverage element added in the study." },
+    { id: "rec_04", recommendation: "Make the dual CTAs functionally different — let 'Unlock FREE trade' show one real trade for free", type: "variant_fix", applies_to: ["d"], priority: "medium", rice_score: 65, rationale: "33% of users noticed that both CTAs lead to the same ₹1 flow and read it as mildly deceptive. Making 'Unlock FREE trade' genuinely free would increase Curious Beginner conversion from 33% to 42%+." },
+    { id: "rec_05", recommendation: "Add a refund SLA ('Refund within 60s to source. No questions asked.') to the activation banner", type: "persistent_fix", applies_to: ["all"], priority: "medium", rice_score: 60, rationale: "The 'instant refund' clause is the strongest pricing reassurance in the study (64% cited it). But Skeptical Investors questioned the timing. An explicit SLA would close the remaining refund-disbelief gap." },
+    { id: "rec_06", recommendation: "Use a dark-green or teal CTA colour instead of bright green to preserve premium positioning", type: "variant_fix", applies_to: ["c", "d"], priority: "medium", rice_score: 55, rationale: "Trust Seekers dropped from 50% (V2 black CTA) to 40% (V3 green CTA). A dark-green or teal would maintain visibility while restoring the premium tone that Trust Seekers value." },
   ],
 };
 
@@ -125,12 +132,19 @@ const COMPARISON_DATA: ComparisonData = {
    PER-VARIANT DATA LOOKUP
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* All variants use the same underlying data for now — swap when real data arrives */
-function getVariantData(_variantId: string) {
+/* All variants use the same sim/flow data for now — study data is per-variant */
+function getVariantData(variantId: string) {
+  const studyMap: Record<string, typeof univestControlStudy> = {
+    control: univestControlStudy,
+    a: univestV1Study,
+    b: univestV2Study,
+    c: univestV3Study,
+    d: univestV4Study,
+  };
   return {
     flowAnalysis: univestFlowAnalysisData,
     sim: univestSimData as unknown as SimulationData,
-    study: univestStudyData,
+    study: studyMap[variantId] ?? univestControlStudy,
   };
 }
 
@@ -248,8 +262,6 @@ export default function UnivestDemoPage() {
       ? [{ id: TAB_COMPARISON as TabId, label: "Comparison Analysis", icon: GitCompareArrows }]
       : []),
     { id: TAB_FLOW_DETAILS, label: "Flow Details", icon: List },
-    { id: TAB_FUNNEL, label: "Drop-Off Funnel", icon: TrendingDown },
-    { id: TAB_DEEP_DIVE, label: "Deep Dive", icon: Layers },
   ];
 
   /* Hide the variant dropdown on the comparison tab (it shows all variants) */
@@ -260,32 +272,6 @@ export default function UnivestDemoPage() {
       className={`${playfair.variable} ${dmSans.variable} min-h-screen`}
       style={{ backgroundColor: "#F5F4F2", paddingTop: 52 }}
     >
-      {/* ── Variant pills in header area ── */}
-      {hasMultipleVariants && (
-        <div style={{ padding: "12px 24px 0", display: "flex", justifyContent: "flex-end", gap: 6, flexWrap: "wrap" }}>
-          {variants.map((v) => (
-            <span
-              key={v.id}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                padding: "3px 10px",
-                borderRadius: 99,
-                fontSize: 12,
-                fontWeight: 500,
-                fontFamily: "monospace",
-                background: `${v.color}15`,
-                border: `1px solid ${v.color}30`,
-                color: v.color,
-                whiteSpace: "nowrap",
-              }}
-            >
-              {v.label}
-            </span>
-          ))}
-        </div>
-      )}
-
       {/* ── Tab Bar ── */}
       <div
         className="sticky z-20"
@@ -370,29 +356,6 @@ export default function UnivestDemoPage() {
           )}
         </div>
 
-        {/* ── Drop-Off Funnel Tab ── */}
-        <div
-          className={activeTab === TAB_FUNNEL ? "animate-fadeIn opacity-100" : "hidden"}
-          style={{ animationDuration: "200ms" }}
-        >
-          {activeTab === TAB_FUNNEL && (
-            <div style={{ backgroundColor: "#F5F4F2" }}>
-              <div style={{ padding: "32px 24px 64px" }}>
-                <DropOffFunnel data={variantData.sim} />
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* ── Deep Dive Tab ── */}
-        <div
-          className={activeTab === TAB_DEEP_DIVE ? "animate-fadeIn opacity-100" : "hidden"}
-          style={{ animationDuration: "200ms" }}
-        >
-          {activeTab === TAB_DEEP_DIVE && (
-            <DeepDiveTab data={variantData.flowAnalysis} simulationData={variantData.sim} />
-          )}
-        </div>
       </main>
     </div>
   );
