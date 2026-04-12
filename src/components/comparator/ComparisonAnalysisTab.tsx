@@ -373,7 +373,7 @@ function WinnerScoreStrip({ metrics, variants }: { metrics: Record<string, Metri
           <span style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
             {bestSUSVariant && <Pill bg={`${bestSUSVariant.color}20`} text={bestSUSVariant.color}>{bestSUSVariant.label}</Pill>}
             {ctrlMetrics && <span style={{ fontSize: 13, color: bestSUS.val > ctrlMetrics.sus ? "#10B981" : "#EF4444" }}>
-              {bestSUS.val > ctrlMetrics.sus ? "+" : ""}{bestSUS.val - ctrlMetrics.sus} vs Control
+              {bestSUS.val > ctrlMetrics.sus ? "+" : ""}{Math.round((bestSUS.val - ctrlMetrics.sus) * 10) / 10} vs Control
             </span>}
           </span>
         }
@@ -834,7 +834,9 @@ function SegmentVerdictsSection({ segments, variants }: { segments: SegmentVerdi
         {segments.map((seg, i) => {
           const winner = variantById(variants, seg.winner);
           const winColor = winner?.color ?? "#6B7280";
-          const short = seg.narrative.length > 80 ? seg.narrative.slice(0, 80).trimEnd() + "…" : seg.narrative;
+          // Show the first sentence (up to the first period followed by space or end)
+          const firstDot = seg.narrative.indexOf(". ");
+          const short = firstDot > 0 && firstDot < 140 ? seg.narrative.slice(0, firstDot + 1) : seg.narrative.length > 120 ? seg.narrative.slice(0, seg.narrative.lastIndexOf(" ", 120)) + "…" : seg.narrative;
           return (
             <div key={seg.segment_name} onClick={() => setSelId(seg.segment_name)}
               style={{ display: "grid", gridTemplateColumns: "180px 60px 100px 1fr", padding: "16px 24px", borderBottom: i < segments.length - 1 ? "1px solid #F3F4F6" : "none", alignItems: "center", cursor: "pointer", transition: "background 0.15s" }}
