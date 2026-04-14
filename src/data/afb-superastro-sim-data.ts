@@ -8,7 +8,7 @@
  *
  * NOTE: intentionally untyped — see univest-sim-data.ts for rationale.
  */
-export const superastroSimData = {
+export const afbSuperastroSimData = {
   simulation_id: "superastro-onboarding-sim-20260410-001",
   flow_id: "superastro_onboarding_v1",
   flow_name: "SuperAstro — AI Astrology Onboarding",
@@ -48,12 +48,12 @@ export const superastroSimData = {
     { screen_id: "otp_verify", drop_offs: 1, drop_off_pct: 1.2 },
     { screen_id: "name_input", drop_offs: 2, drop_off_pct: 2.4 },
     { screen_id: "gender_select", drop_offs: 1, drop_off_pct: 1.2 },
-    { screen_id: "marital_status", drop_offs: 3, drop_off_pct: 3.6 },
+    { screen_id: "marital_status", drop_offs: 2, drop_off_pct: 2.4 },
     { screen_id: "dob_picker", drop_offs: 4, drop_off_pct: 5.0 },
     { screen_id: "time_of_birth", drop_offs: 2, drop_off_pct: 2.6 },
-    { screen_id: "place_of_birth", drop_offs: 1, drop_off_pct: 1.4 },
-    { screen_id: "journey_purpose", drop_offs: 4, drop_off_pct: 5.6 },
-    { screen_id: "ai_chat", drop_offs: 6, drop_off_pct: 8.5 },
+    { screen_id: "place_of_birth", drop_offs: 4, drop_off_pct: 5.4 },
+    { screen_id: "journey_purpose", drop_offs: 2, drop_off_pct: 2.9 },
+    { screen_id: "ai_chat", drop_offs: 6, drop_off_pct: 8.8 },
   ],
 
   // ── Top Friction Points ─────────────────────────────────────────────────────
@@ -70,7 +70,7 @@ export const superastroSimData = {
     },
     {
       friction:
-        "Marital status is a binary (Married / Unmarried) — users mid-divorce, separated, or widowed have no option that fits, and the question is emotionally charged for users in relationship crises",
+        "Generic AI response does not match ad-specific promise — users expect answers to their specific question, not generic planetary transits",
       frequency: 12,
     },
     {
@@ -80,7 +80,7 @@ export const superastroSimData = {
     },
     {
       friction:
-        "Self-only consultation framing \u2014 women consulting for their children, parents, or husbands have no way to indicate that, and the questions assume the user is asking about themselves",
+        "City picker fails NRI users — no search functionality, smaller Indian cities and international locations missing from dropdown",
       frequency: 7,
     },
     {
@@ -212,16 +212,16 @@ export const superastroSimData = {
         "Expand to 6-8 journey options including Health, Education, Finance, Family, and an 'Other' free-text field. Allow multi-select for users with intersecting concerns.",
     },
     {
-      severity: "minor",
-      type: "friction_point",
+      severity: "major",
+      type: "confusion",
       screen: "place_of_birth",
       finding:
-        "City picker has no fuzzy matching \u2014 a single typo (e.g. \u2018Lucknw\u2019 vs \u2018Lucknow\u2019) returns zero results with no \u2018did you mean?\u2019 affordance",
+        "City picker dropdown has no search functionality and misses smaller Indian cities and international locations \u2014 blocks NRI users entirely",
       evidence:
-        "1 of 38 drop-offs at place_of_birth attributable to typo / no-fuzzy-match. The city is in the database but the exact-string-match dropdown can\u2019t recover from minor input errors.",
-      affected_segments: ["All segments \u2014 typo errors are universal"],
+        "3 of 38 drop-offs at place_of_birth. NRI diaspora users born in Tier-2/3 cities like Jamnagar, Bhilai, or Rourkela cannot find their birthplace. No international city support for users born outside India. Vikram from Dubai couldn't complete because Jamnagar wasn't listed.",
+      affected_segments: ["NRI diaspora", "Life Transition users from smaller cities"],
       recommendation:
-        "Add fuzzy / approximate-match search to the city picker, with a \u2018did you mean?\u2019 suggestion when an exact match fails.",
+        "Replace dropdown with autocomplete search field supporting all Indian cities (pin code database) and major international cities. Add manual lat/long entry as fallback for astrology accuracy.",
     },
     {
       severity: "minor",
@@ -240,7 +240,7 @@ export const superastroSimData = {
   // ── Segment Analysis ────────────────────────────────────────────────────────
   segment_analysis: {
     summary:
-      "Sharp divide between devotee-minded users who expect and accept data collection for accurate kundli generation (70\u201380% completion) and privacy-first younger users who wanted anonymous, instant astrological guidance (35\u201345% completion). Women 30\u201350 managing household spiritual decisions complete at 75% \u2014 they\u2019re familiar with providing birth details for jyotish. Gen Z and young professionals drop predominantly at the phone gate. NRI / diaspora users face soft context blockers (Hindi-default copy, no diaspora-specific purpose option) and skew toward dropping at journey purpose.",
+      "Sharp divide between devotee-minded users who expect and accept data collection for accurate kundli generation (70-80% completion) and privacy-first younger users who wanted anonymous, instant astrological guidance (35-45% completion). Women 30-50 managing household spiritual decisions complete at 75% \u2014 they're familiar with providing birth details for jyotish. Gen Z and young professionals drop at the phone gate or generic AI response. NRI users face a unique UX blocker at the city picker.",
     high_propensity_segment:
       "Sri Mandir devotees with dosha concerns \u2014 already provide birth details to family pandits, expect data collection for kundli, value Vedic accuracy over speed, and are willing to pay for remedies.",
     low_propensity_segment:
@@ -455,18 +455,18 @@ export const superastroSimData = {
         ],
       },
       marital_status: {
-        total_drop_offs: 3,
+        total_drop_offs: 2,
         clusters: [
           {
             cluster_id: 1,
-            label: "Binary marital status triggered emotional distress for users mid-life-transition",
-            persona_count: 2,
+            label: "Binary marital status triggered emotional distress",
+            persona_count: 1,
             representative_reasoning:
-              "I separated from my husband eight months ago, the divorce hasn\u2019t come through yet. Neither \u2018Married\u2019 nor \u2018Unmarried\u2019 is true. The first personal question and the form already can\u2019t hold my reality.",
+              "My husband left 3 months ago. 'Married' feels like a lie. 'Unmarried' erases 12 years. Where is 'Separated'? I came here because my life is falling apart and this form can't even hold my reality.",
           },
           {
             cluster_id: 2,
-            label: "Data-motive suspicion \u2014 questioned relevance of marital status",
+            label: "Data motive suspicion \u2014 questioned relevance of marital status",
             persona_count: 1,
             representative_reasoning:
               "Why does an astrology chatbot need my marital status? This feels creepy. Are they going to show me shaadi ads now?",
@@ -526,40 +526,47 @@ export const superastroSimData = {
         ],
       },
       place_of_birth: {
-        total_drop_offs: 1,
-        clusters: [
-          {
-            cluster_id: 1,
-            label: "City picker has no fuzzy matching or typo tolerance",
-            persona_count: 1,
-            representative_reasoning:
-              "I typed 'Lucknw' instead of 'Lucknow' and nothing showed up. No autocorrect? Even Google handles typos.",
-          },
-        ],
-      },
-      journey_purpose: {
         total_drop_offs: 4,
         clusters: [
           {
             cluster_id: 1,
-            label: "Purpose options too narrow \u2014 health, family, and spiritual needs missing",
+            label: "City picker limited to Indian cities \u2014 NRI excluded",
             persona_count: 2,
             representative_reasoning:
-              "My main concern is my son\u2019s education and my own spiritual growth. But the purpose options are only Marriage, Career, and Relationship. Where is Health? Where is Family? Where is Spiritual Guidance?",
+              "I was born in Edison, New Jersey. The city dropdown only has Indian cities. Am I not allowed to use this app if I wasn't born in India?",
           },
           {
             cluster_id: 2,
-            label: "Diaspora-specific concern (visa / immigration / cross-cultural marriage) not represented",
+            label: "Small town not in city database \u2014 tier-3 exclusion",
             persona_count: 1,
             representative_reasoning:
-              "I came here for my visa renewal \u2014 immigration timing, when to apply. Marriage, Career, Relationship \u2014 none of these capture what I need, and there\u2019s no \u2018Other\u2019 or free-text.",
+              "I was born in Motihari, Bihar. It's not showing up. The dropdown only has big cities. Not everyone is born in Mumbai or Delhi.",
           },
           {
             cluster_id: 3,
-            label: "Self-only framing \u2014 users consulting for family / children have no way to indicate that",
+            label: "City picker has no fuzzy matching or typo tolerance",
             persona_count: 1,
             representative_reasoning:
-              "I\u2019m a mother consulting about my son\u2019s decisions, not my own marriage or career. There\u2019s no \u2018Who is this consultation for?\u2019 toggle. Picking a self-framed purpose would produce a reading about me, not him.",
+              "I typed 'Lucknw' instead of 'Lucknow' and nothing showed up. No autocorrect? Even Google handles typos. This dropdown is useless.",
+          },
+        ],
+      },
+      journey_purpose: {
+        total_drop_offs: 2,
+        clusters: [
+          {
+            cluster_id: 1,
+            label: "Purpose options too narrow \u2014 health and spiritual needs missing",
+            persona_count: 1,
+            representative_reasoning:
+              "My main concern is my son's health and my own spiritual growth. But the purpose options are only Marriage, Career, and Relationship. Where is Health? Where is Spiritual Guidance?",
+          },
+          {
+            cluster_id: 2,
+            label: "NRI-specific concern (visa/immigration) not represented",
+            persona_count: 1,
+            representative_reasoning:
+              "I wanted to ask about visa and immigration timing. Marriage, Career, Relationship \u2014 none of these capture what I need.",
           },
         ],
       },
@@ -568,24 +575,24 @@ export const superastroSimData = {
         clusters: [
           {
             cluster_id: 1,
-            label: "Reached chat exhausted from 10-screen onboarding \u2014 patience for any first-impression friction is near zero",
+            label: "Generic kundli response doesn't address ad-specific question",
             persona_count: 3,
             representative_reasoning:
-              "I\u2019ve filled in 10 screens of personal data. The ad said \u2018Chat NOW at \u20b91\u2019 \u2014 this is not what \u2018now\u2019 means. By the time I land in the chat I\u2019m already done; whatever happens next, my benefit-of-the-doubt is gone.",
+              "I clicked because the ad asked 'Career kab set hogi?' but the AI started talking about Rahu in my 7th house and Saturn's transit. I don't care about planets. When will my career improve? I waited 10 screens for THIS?",
           },
           {
             cluster_id: 2,
-            label: "Anchored to ad-specific question, primed to evaluate the chat strictly against that anchor",
+            label: "Technical jargon incomprehensible to astrology novice",
             persona_count: 2,
             representative_reasoning:
-              "The reel asked \u2018Does he miss me?\u2019 \u2014 that\u2019s the only reason I came. After 10 screens of investment, I\u2019m landing in the chat with one specific question and no patience for a detour into anything else.",
+              "Grahas, nakshatras, dashas \u2014 I don't understand any of this. The reel said 'Does he miss me?' not 'Here's your birth chart.' This is not what I signed up for.",
           },
           {
             cluster_id: 3,
-            label: "English-primary user lands in a chat interface defaulted to Hindi",
+            label: "Hindi-heavy response inaccessible to English-primary NRI",
             persona_count: 1,
             representative_reasoning:
-              "The whole onboarding was in Hindi and the chat interface continues that way. As an English-primary NRI, I\u2019m bracing for a consultation experience that wasn\u2019t built for me to read fluently.",
+              "The response is mostly in Hindi with Sanskrit terms. 'Mangal dosha', 'Ketu mahadasha', 'Sade Sati' \u2014 these are technical terms I never learned. Is there an English mode?",
           },
         ],
       },
@@ -621,7 +628,7 @@ export const superastroSimData = {
       dropped: 5,
       completion_pct: 64.3,
       top_drop_off_screen: "ai_chat",
-      top_drop_off_reason: "Reach the chat with depleted patience after 10-screen onboarding \u2014 first-impression error budget for the chat is near zero",
+      top_drop_off_reason: "AI response quality doesn't match AstroTalk expectations despite 50x lower price",
     },
     {
       segment: "Sri Mandir devotees with dosha concerns",
@@ -638,8 +645,8 @@ export const superastroSimData = {
       completed: 8,
       dropped: 6,
       completion_pct: 57.1,
-      top_drop_off_screen: "journey_purpose",
-      top_drop_off_reason: "Diaspora-specific concerns (visa, immigration, cross-cultural marriage) don\u2019t fit Marriage / Career / Relationship and there\u2019s no Other / free-text option",
+      top_drop_off_screen: "place_of_birth",
+      top_drop_off_reason: "Birth city not available in dropdown \u2014 Tier-2/3 Indian cities missing from picker",
     },
     {
       segment: "Life transition users in acute decision-making moments",
@@ -647,8 +654,8 @@ export const superastroSimData = {
       completed: 8,
       dropped: 6,
       completion_pct: 57.1,
-      top_drop_off_screen: "marital_status",
-      top_drop_off_reason: "Mid-life-transition users (separation, divorce) hit the binary marital question on screen 6 and can\u2019t represent their reality \u2014 emotionally loaded for the very people the ad was speaking to",
+      top_drop_off_screen: "ai_chat",
+      top_drop_off_reason: "Generic planetary response fails to address the specific life crisis that drove download",
     },
     {
       segment: "Women 30-50 managing household spiritual decisions",
@@ -824,13 +831,26 @@ export const superastroSimData = {
     ],
     place_of_birth: [
       {
+        persona_uuid: "APR_SA_U071_20260410",
+        persona_label: "Priyanka Shah, 29yo Software Developer, Jersey City NJ",
+        behavioral_archetype: "NRI",
+        internal_monologue:
+          "I was born in Edison, New Jersey. The city dropdown only has Indian cities. I tried typing \u2018Edison\u2019 and nothing showed up. Am I not allowed to use this app if I wasn\u2019t born in India? This feels like the app was built assuming every user is from India.",
+        reasoning:
+          "I cannot proceed because my birth city doesn\u2019t exist in the app\u2019s database. There\u2019s no \u2018Other\u2019 option and no manual coordinate entry. I\u2019m structurally excluded.",
+        emotional_state: "frustrated",
+        trust_score: 2,
+        clarity_score: 5,
+        value_score: 2,
+      },
+      {
         persona_uuid: "APR_SA_U041_20260410",
         persona_label: "Manish Tiwari, 29yo Delivery Executive, Lucknow",
         behavioral_archetype: "Price-Sensitive",
         internal_monologue:
-          "I typed \u2018Lucknw\u2019 instead of \u2018Lucknow\u2019 and nothing showed up. No autocorrect? No \u2018did you mean?\u2019 suggestion? Even Google handles typos.",
+          "I typed \u2018Lucknw\u2019 instead of \u2018Lucknow\u2019 and nothing showed up. No autocorrect? No \u2018did you mean?\u2019 suggestion? Even Google handles typos. This dropdown is useless.",
         reasoning:
-          "A single missing letter killed my search. The picker has no typo tolerance and the city is in the database \u2014 my exact-string-match input just wasn\u2019t recoverable.",
+          "A single missing letter killed my search. The app has no typo tolerance. This is 2026, not 2006.",
         emotional_state: "frustrated",
         trust_score: 3,
         clarity_score: 3,
@@ -851,32 +871,6 @@ export const superastroSimData = {
         clarity_score: 4,
         value_score: 3,
       },
-      {
-        persona_uuid: "APR_SA_U071_20260410",
-        persona_label: "Priyanka Shah, 29yo Software Developer, Jersey City",
-        behavioral_archetype: "NRI",
-        internal_monologue:
-          "Marriage, Career, Relationship. My actual question is about my visa renewal \u2014 immigration timing, when to apply, whether to switch employers. None of these three options fit. There\u2019s no \u2018Other\u2019 or free-text field.",
-        reasoning:
-          "Picking the wrong category will produce a reading framed around the wrong question. After 8 screens of investment I\u2019m not going to commit to a misframing just to reach the chat.",
-        emotional_state: "frustrated",
-        trust_score: 3,
-        clarity_score: 5,
-        value_score: 3,
-      },
-      {
-        persona_uuid: "APR_SA_U060_20260410",
-        persona_label: "Geeta Devi, 40yo Anganwadi Worker, Motihari",
-        behavioral_archetype: "Life-Transition",
-        internal_monologue:
-          "I came here for my son\u2019s education \u2014 which board to choose, whether he should drop a year. Marriage, Career, Relationship \u2014 all three assume I\u2019m asking about myself. There\u2019s no \u2018consultation for family\u2019 toggle, no Children, no Education option.",
-        reasoning:
-          "If I pick \u2018Career\u2019 the reading will interpret my career, not my son\u2019s. The form\u2019s self-only framing makes it impossible to consult on the question I actually came with.",
-        emotional_state: "frustrated",
-        trust_score: 3,
-        clarity_score: 5,
-        value_score: 3,
-      },
     ],
     ai_chat: [
       {
@@ -884,39 +878,39 @@ export const superastroSimData = {
         persona_label: "Meera Joshi, 36yo Freelance Writer, Jaipur",
         behavioral_archetype: "Life-Transition",
         internal_monologue:
-          "I came in for one specific question \u2014 \u2018Career kab set hogi?\u2019 \u2014 the same one the ad planted. After 10 screens of personal data I\u2019m landing in the chat anchored to that exact question. My patience for any first-impression detour is essentially zero.",
+          "I clicked because the ad asked \u2018Career kab set hogi?\u2019 \u2014 that\u2019s exactly my question. But the AI started talking about Rahu in my 7th house and Saturn\u2019s transit. I don\u2019t care about planets. When will my career improve? I waited 10 screens for THIS?",
         reasoning:
-          "The ad created a hyper-specific anchor; the 10-screen onboarding amplified it. Whatever the chat opens with has to match the anchor or it lands as a broken promise. This is a structural risk regardless of how good the AI itself is.",
-        emotional_state: "expectant",
-        trust_score: 3,
-        clarity_score: 5,
-        value_score: 3,
+          "The AI broke the ad\u2019s promise. I endured 10 screens because the ad told me this app would answer \u2018Career kab set hogi?\u2019 The first AI response is a generic kundli dump. The entire journey feels like a bait-and-switch.",
+        emotional_state: "disappointed",
+        trust_score: 2,
+        clarity_score: 3,
+        value_score: 2,
       },
       {
         persona_uuid: "APR_SA_U093_20260410",
         persona_label: "Tanya Verma, 20yo BBA Student, Jaipur",
         behavioral_archetype: "Gen-Z-Curious",
         internal_monologue:
-          "I just wanted a quick fun reading. After 10 screens of forms my mood is gone. I\u2019m landing in the chat with very little goodwill left \u2014 the bar to keep me here is much higher than it would have been three minutes ago.",
+          "The reel literally said \u2018Does he miss me?\u2019 so I thought the AI would tell me about my relationship. Instead it\u2019s giving me a birth chart I can\u2019t read. Grahas, nakshatras, dashas \u2014 I don\u2019t understand any of this. This is not what I signed up for.",
         reasoning:
-          "The onboarding length burned through my casual-curiosity budget. I\u2019m calibrated to bounce on the smallest friction.",
-        emotional_state: "drained",
-        trust_score: 3,
-        clarity_score: 5,
-        value_score: 3,
+          "The language gap is unbridgeable. I expected Co-Star-style casual astrology and got a Vedic astrology textbook. I\u2019m going back to Co-Star.",
+        emotional_state: "disappointed",
+        trust_score: 2,
+        clarity_score: 2,
+        value_score: 2,
       },
       {
         persona_uuid: "APR_SA_U017_20260410",
         persona_label: "Karan Saxena, 33yo Marketing Director, Gurgaon",
         behavioral_archetype: "Privacy-Seeker",
         internal_monologue:
-          "I\u2019ve given my phone number, name, DOB, birth time, birth place \u2014 basically my entire identity \u2014 to an astrology app, which already feels reputationally risky. My expectation for what the chat returns is now sky-high. Anything less than a clearly personalized first impression and I\u2019ll feel I traded too much for too little.",
+          "I gave my phone number, name, DOB, birth time, birth place \u2014 basically my entire identity. And for what? A generic paragraph about Saturn and Jupiter that could apply to anyone born in my year. The data I gave is worth more than this response.",
         reasoning:
-          "The privacy cost was front-loaded; the expected payoff is back-loaded. The asymmetry means my tolerance for any underwhelming first message is near zero.",
-        emotional_state: "guarded",
-        trust_score: 3,
+          "The ROI is negative. I traded my complete identity profile and received a generic astrological reading indistinguishable from a newspaper horoscope.",
+        emotional_state: "disappointed",
+        trust_score: 1,
         clarity_score: 6,
-        value_score: 3,
+        value_score: 1,
       },
     ],
   },
@@ -1196,19 +1190,22 @@ export const superastroSimData = {
         behavioral_archetype: "NRI",
         marital_status: "Unknown",
       },
-      professional_background: "Deepa was born in London to Keralite parents. She values astrological accuracy and is meticulous about birth-data inputs.",
+      professional_background: "Deepa was born in London to Keralite parents. She values astrological accuracy and won't use a workaround Indian city because she knows wrong coordinates mean wrong readings.",
       cultural_background: "",
-      outcome: "dropped_off_at_marital_status",
+      outcome: "dropped_off_at_place_of_birth",
       key_selections: {},
       final_price_inr: 0,
-      total_time_seconds: 60,
-      overall_monologue: "Marital status \u2014 Married or Unmarried. I separated from my husband eight months ago, the divorce hasn\u2019t come through yet. Neither option is true. The very first personal question and the app already doesn\u2019t fit my reality. I closed it.",
+      total_time_seconds: 96,
+      overall_monologue: "Born in London but the dropdown is India-only. Should I put Kochi where my parents are from? But that would give wrong coordinates and invalidate the reading. This is frustrating — Indian diaspora exists, you know. We're 18 million strong.",
       screen_monologues: [
         { screen_id: "mobile_number", view_name: "Mobile Number", internal_monologue: "Completed Mobile Number and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
         { screen_id: "otp_verify", view_name: "OTP Verification", internal_monologue: "Completed OTP Verification and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
         { screen_id: "name_input", view_name: "Name Input", internal_monologue: "Completed Name Input and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
         { screen_id: "gender_select", view_name: "Gender Selection", internal_monologue: "Completed Gender Selection and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
-        { screen_id: "marital_status", view_name: "Marital Status", internal_monologue: "Marital status \u2014 Married or Unmarried. I separated from my husband eight months ago. The divorce hasn\u2019t come through yet. Neither option fits, there\u2019s no \u2018Separated\u2019, no \u2018Prefer not to say\u2019. The very first personal question and the app already doesn\u2019t fit my reality.", reasoning: "If I pick \u2018Married\u2019 the reading will frame everything around a marriage that\u2019s functionally over. If I pick \u2018Unmarried\u2019 it ignores fifteen years of context. Neither answer would produce a useful consultation. I\u2019m not going to lie to a chart-builder.", emotional_state: "frustrated", friction_points: ["Binary marital status with no Separated / Divorced / Widowed / Prefer-not-to-say", "Emotionally loaded for users mid-life-transition"], decision_outcome: "DROP_OFF", trust_score: 3, clarity_score: 4, value_score: 3, time_seconds: 14 },
+        { screen_id: "marital_status", view_name: "Marital Status", internal_monologue: "Completed Marital Status and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
+        { screen_id: "dob_picker", view_name: "Date of Birth", internal_monologue: "Completed Date of Birth and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
+        { screen_id: "time_of_birth", view_name: "Time of Birth", internal_monologue: "Completed Time of Birth and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
+        { screen_id: "place_of_birth", view_name: "Place of Birth", internal_monologue: "Born in London but the dropdown is India-only. Should I put Kochi where my parents are from? But that would give wrong coordinates and invalidate the reading. This is frustrating — Indian diaspora exists, you know. We're 18 million strong.", reasoning: "Accuracy matters to me. If I enter Kochi instead of London, the latitude difference alone (51°N vs 10°N) would shift my house system entirely. I won't compromise on accuracy for convenience. The app needs to support international cities or I can't use it.", emotional_state: "frustrated", friction_points: ["No international city support", "Workaround (using parents' city) compromises astrological accuracy"], decision_outcome: "DROP_OFF", trust_score: 3, clarity_score: 5, value_score: 3, time_seconds: 10 },
       ],
     },
     {
@@ -1248,13 +1245,13 @@ export const superastroSimData = {
         behavioral_archetype: "Gen-Z-Curious",
         marital_status: "Unknown",
       },
-      professional_background: "Dev approached the app skeptically. He filled in the data quickly to evaluate the chat \u2014 but by the time he reached it, his patience and goodwill had been spent on the long onboarding.",
+      professional_background: "Dev approached the app as a test. He asked a deliberately generic question to see if the AI would give a specific or generic answer. Generic answer = fake astrology.",
       cultural_background: "",
       outcome: "dropped_off_at_ai_chat",
       key_selections: {},
       final_price_inr: 0,
       total_time_seconds: 120,
-      overall_monologue: "I made it to the chat after 10 screens. My patience is gone before the first message lands. Whatever the AI says next has to land perfectly \u2014 and after this much investment for a \u20b91 product, my skepticism is at maximum.",
+      overall_monologue: "I asked 'Will I become a millionaire?' and it said 'Your chart shows potential for financial growth in the coming years.' That's what it would say to anyone. This is a fortune cookie, not astrology. I could get the same reading from a horoscope column.",
       screen_monologues: [
         { screen_id: "mobile_number", view_name: "Mobile Number", internal_monologue: "Completed Mobile Number and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
         { screen_id: "otp_verify", view_name: "OTP Verification", internal_monologue: "Completed OTP Verification and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
@@ -1265,7 +1262,7 @@ export const superastroSimData = {
         { screen_id: "time_of_birth", view_name: "Time of Birth", internal_monologue: "Completed Time of Birth and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
         { screen_id: "place_of_birth", view_name: "Place of Birth", internal_monologue: "Completed Place of Birth and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
         { screen_id: "journey_purpose", view_name: "Journey Purpose", internal_monologue: "Completed Journey Purpose and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
-        { screen_id: "ai_chat", view_name: "AI Chat (Mahesh Ji)", internal_monologue: "I made it to the chat after 10 screens. My patience is gone before the first message lands. Whatever the AI says next has to land perfectly \u2014 and after this much investment for a \u20b91 product, my skepticism is at maximum.", reasoning: "I came in with curiosity but the onboarding burned through my goodwill. I\u2019m landing in the chat already calibrated to find a reason to leave, not a reason to stay.", emotional_state: "skeptical", friction_points: ["Onboarding length depleted patience before chat began", "No first-impression buffer left for the AI to earn trust"], decision_outcome: "DROP_OFF", trust_score: 2, clarity_score: 6, value_score: 2, time_seconds: 10 },
+        { screen_id: "ai_chat", view_name: "AI Chat (Mahesh Ji)", internal_monologue: "I asked 'Will I become a millionaire?' and it said 'Your chart shows potential for financial growth in the coming years.' That's what it would say to anyone. This is a fortune cookie, not astrology. I could get the same reading from a horoscope column.", reasoning: "I tested the AI with a question designed to reveal whether the readings are truly personalized. The generic, hedged response confirmed my suspicion — this is template-based fortune-telling, not real chart analysis. A genuine astrologer would cite specific planetary placements and timeframes, not 'potential for growth'.", emotional_state: "skeptical", friction_points: ["AI response too generic and hedged", "No specific planetary citations in response to specific question", "Reads like template, not personalized analysis"], decision_outcome: "DROP_OFF", trust_score: 1, clarity_score: 7, value_score: 1, time_seconds: 10 },
       ],
     },
     {
@@ -1280,13 +1277,13 @@ export const superastroSimData = {
         behavioral_archetype: "Life-Transition",
         marital_status: "Unknown",
       },
-      professional_background: "Geeta is from Motihari, a small district town in Bihar. She's worried about her son's education and turned to this app after her local pandit moved away.",
+      professional_background: "Geeta was born in Motihari, a small district town in Bihar. She's worried about her son's education and turned to this app after her local pandit moved away.",
       cultural_background: "",
-      outcome: "dropped_off_at_journey_purpose",
+      outcome: "dropped_off_at_place_of_birth",
       key_selections: {},
       final_price_inr: 0,
-      total_time_seconds: 105,
-      overall_monologue: "Marriage, Career, Relationship. I came here for my son\u2019s education \u2014 which board to choose, whether he should drop a year. None of these three options fit. There\u2019s no Health, no Family, no Children. The app assumes I\u2019m asking about myself. I\u2019m not.",
+      total_time_seconds: 96,
+      overall_monologue: "I was born in Motihari, Bihar. It's not showing up. The dropdown only has big cities. Not everyone is born in Mumbai or Delhi. I'll try a different app — one that knows Bihar has more cities than Patna.",
       screen_monologues: [
         { screen_id: "mobile_number", view_name: "Mobile Number", internal_monologue: "Completed Mobile Number and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
         { screen_id: "otp_verify", view_name: "OTP Verification", internal_monologue: "Completed OTP Verification and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
@@ -1295,8 +1292,7 @@ export const superastroSimData = {
         { screen_id: "marital_status", view_name: "Marital Status", internal_monologue: "Completed Marital Status and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
         { screen_id: "dob_picker", view_name: "Date of Birth", internal_monologue: "Completed Date of Birth and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
         { screen_id: "time_of_birth", view_name: "Time of Birth", internal_monologue: "Completed Time of Birth and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
-        { screen_id: "place_of_birth", view_name: "Place of Birth", internal_monologue: "Completed Place of Birth and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
-        { screen_id: "journey_purpose", view_name: "Journey Purpose", internal_monologue: "Marriage, Career, Relationship. I came here for my son\u2019s education \u2014 which board to choose, whether he should drop a year. None of these three options fit. There\u2019s no Health, no Family, no Children. The app assumes I\u2019m asking about myself.", reasoning: "I don\u2019t want to pick \u2018Career\u2019 and have the reading interpret as my career, when I\u2019m here for my son\u2019s. Picking the wrong frame would invalidate the consultation. I\u2019d rather not consult than consult on the wrong question.", emotional_state: "frustrated", friction_points: ["Only 3 purpose options (Marriage / Career / Relationship)", "No Health / Family / Children options", "Self-only consultation framing"], decision_outcome: "DROP_OFF", trust_score: 3, clarity_score: 5, value_score: 3, time_seconds: 12 },
+        { screen_id: "place_of_birth", view_name: "Place of Birth", internal_monologue: "I was born in Motihari, Bihar. It's not showing up. The dropdown only has big cities. Not everyone is born in Mumbai or Delhi. I'll try a different app — one that knows Bihar has more cities than Patna.", reasoning: "My birth city doesn't exist in this app's world. The dropdown has major cities but ignores thousands of smaller towns where real people were born. I won't enter Patna because it's 150 km away and the coordinates would be wrong.", emotional_state: "frustrated", friction_points: ["City database limited to major cities", "No support for tier-3/tier-4 towns", "No fuzzy search or 'nearest city' suggestion"], decision_outcome: "DROP_OFF", trust_score: 3, clarity_score: 4, value_score: 3, time_seconds: 10 },
       ],
     },
     {
@@ -1488,7 +1484,7 @@ export const superastroSimData = {
       key_selections: {},
       final_price_inr: 1,
       total_time_seconds: 120,
-      overall_monologue: "I clicked because the ad asked \u2018Career kab set hogi?\u2019 \u2014 that\u2019s exactly my question. I gave them everything they asked for over 10 screens because I\u2019m anchored to that question. By the time I land in the chat my patience is thin and my expectation is that the very first message addresses what brought me here.",
+      overall_monologue: "I clicked because the ad asked 'Career kab set hogi?' — that's exactly my question. But the AI started talking about Rahu in my 7th house and Saturn's transit. I don't care about planets. When will my career improve? Tell me that. I waited 10 screens for this?",
       screen_monologues: [
         { screen_id: "mobile_number", view_name: "Mobile Number", internal_monologue: "Phone number dena padega? Chalo, de deti hoon. Main itni pareshaan hoon career ko lekar ki agar ye app kuch bata sake toh number dene mein kya jaata hai. Pandit ji ko bhi toh number diya tha appointment ke liye.", reasoning: "My desperation outweighs my hesitation. I've been struggling for two years and the ad promised career answers. If there's even a small chance this AI can tell me when things will improve, giving my phone number is a trivial price. I've given my number to far less promising things.", emotional_state: "anxious", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
         { screen_id: "otp_verify", view_name: "OTP Verification", internal_monologue: "OTP aa gaya. Theek hai, ab aage badhte hain. Jitni jaldi ye poochtaachh khatam ho, utni jaldi career ke baare mein pata chalega.", reasoning: "Simple verification step. My anxiety is about my career, not about OTPs. I just want to get to the part where the AI tells me when things will get better.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 6, clarity_score: 9, value_score: 6, time_seconds: 10 },
@@ -1499,7 +1495,7 @@ export const superastroSimData = {
         { screen_id: "time_of_birth", view_name: "Time of Birth", internal_monologue: "Time of birth? I have no idea. Let me call my mom... actually no, she'll ask why I need it and then she'll know I'm using an astrology app. Thank God there's a 'Don't Know' option.", reasoning: "I don't know my exact birth time and I can't ask my mother without revealing I'm using this app. The 'Don't Know' option saved me from a dead end. Without it, I would have either guessed (compromising accuracy) or left entirely.", emotional_state: "relieved", friction_points: [], decision_outcome: "CONTINUE", trust_score: 6, clarity_score: 7, value_score: 6, time_seconds: 10 },
         { screen_id: "place_of_birth", view_name: "Place of Birth", internal_monologue: "Completed Place of Birth and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
         { screen_id: "journey_purpose", view_name: "Journey Purpose", internal_monologue: "Career — yes, that's my biggest worry right now. Two years since I lost my job and nothing has worked out. If the stars say something good is coming, maybe I can hold on a little longer. Please let it say something hopeful.", reasoning: "This is exactly my question. Career matches perfectly with why I clicked the ad. I feel validated that the app is asking about my purpose — it means the reading will be targeted. I'm almost at the chat now.", emotional_state: "hopeful", friction_points: [], decision_outcome: "CONTINUE", trust_score: 7, clarity_score: 8, value_score: 7, time_seconds: 10 },
-        { screen_id: "ai_chat", view_name: "AI Chat (Mahesh Ji)", internal_monologue: "Reached the chat. I\u2019m anchored to one question \u2014 \u2018Career kab set hogi?\u2019 \u2014 the same one the ad planted. After 10 screens of investment my patience is thin and my expectation that the very first message addresses my anchor is high. Whatever happens next has a small first-impression window.", reasoning: "The 10-screen onboarding amplified my anchor and shrank my error budget. The chat opens with maximum expectation pressure.", emotional_state: "expectant", friction_points: ["High anchored expectation from ad", "Long onboarding shrinks first-impression window"], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 6, value_score: 5, time_seconds: 10 },
+        { screen_id: "ai_chat", view_name: "AI Chat (Mahesh Ji)", internal_monologue: "I clicked because the ad asked 'Career kab set hogi?' — that's exactly my question. But the AI started talking about Rahu in my 7th house and Saturn's transit. I don't care about planets. When will my career improve? Tell me that. I waited 10 screens for this?", reasoning: "The AI broke the ad's promise. I endured 10 screens because the ad told me this app would answer 'Career kab set hogi?' The first AI response is a generic kundli dump about planetary positions I don't understand. Not a single sentence about my career timeline. The entire journey feels like a bait-and-switch.", emotional_state: "disappointed", friction_points: ["AI response doesn't address the specific ad hook", "Generic kundli response for all users regardless of purpose", "Technical jargon without plain-language explanation", "No awareness of which ad brought the user"], decision_outcome: "DROP_OFF", trust_score: 2, clarity_score: 3, value_score: 2, time_seconds: 10 },
       ],
     },
     {
@@ -1632,13 +1628,13 @@ export const superastroSimData = {
         behavioral_archetype: "NRI",
         marital_status: "Unknown",
       },
-      professional_background: "Priyanka was born and raised in Jersey City to Indian parents. She's culturally Indian but has never lived in India. Her parents consult astrologers and she's curious to try it digitally.",
+      professional_background: "Priyanka was born in Edison, New Jersey to Indian parents. She's culturally Indian but has never lived in India. Her parents consult astrologers and she's curious to try it digitally.",
       cultural_background: "",
-      outcome: "dropped_off_at_journey_purpose",
+      outcome: "dropped_off_at_place_of_birth",
       key_selections: {},
       final_price_inr: 0,
-      total_time_seconds: 108,
-      overall_monologue: "I made it most of the way through but the purpose options are Marriage, Career, Relationship \u2014 my actual question is about my visa renewal and immigration timing. None of these fit and there\u2019s no \u2018Other\u2019 or free-text. I don\u2019t want to pick a wrong category and get a reading that misses what I actually came for.",
+      total_time_seconds: 96,
+      overall_monologue: "I was born in Edison, New Jersey. The city dropdown only has Indian cities. I tried typing 'Edison' and nothing showed up. Am I not allowed to use this app if I wasn't born in India? This feels like the app was built assuming every user is from India.",
       screen_monologues: [
         { screen_id: "mobile_number", view_name: "Mobile Number", internal_monologue: "Completed Mobile Number and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
         { screen_id: "otp_verify", view_name: "OTP Verification", internal_monologue: "Completed OTP Verification and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
@@ -1647,8 +1643,7 @@ export const superastroSimData = {
         { screen_id: "marital_status", view_name: "Marital Status", internal_monologue: "Completed Marital Status and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
         { screen_id: "dob_picker", view_name: "Date of Birth", internal_monologue: "Completed Date of Birth and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
         { screen_id: "time_of_birth", view_name: "Time of Birth", internal_monologue: "Completed Time of Birth and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
-        { screen_id: "place_of_birth", view_name: "Place of Birth", internal_monologue: "Completed Place of Birth and moved on.", reasoning: "Standard step, no significant friction.", emotional_state: "neutral", friction_points: [], decision_outcome: "CONTINUE", trust_score: 5, clarity_score: 7, value_score: 5, time_seconds: 10 },
-        { screen_id: "journey_purpose", view_name: "Journey Purpose", internal_monologue: "Marriage, Career, Relationship. My actual question is about my visa renewal \u2014 immigration timing, when to apply, whether to switch employers. None of these three options fit. There\u2019s no \u2018Other\u2019 or free-text field. If I pick \u2018Career\u2019 the reading will be about my job, not about the immigration question I actually came for. Not worth proceeding with the wrong category.", reasoning: "The purpose I select determines the framing of the entire reading. Picking the wrong category invalidates the consultation. I\u2019m not going to commit to a wrong choice just to reach the chat.", emotional_state: "frustrated", friction_points: ["Only 3 purpose options (Marriage / Career / Relationship)", "No \u2018Other\u2019 or free-text option", "Diaspora-specific concerns (visa, immigration) not represented"], decision_outcome: "DROP_OFF", trust_score: 3, clarity_score: 5, value_score: 3, time_seconds: 12 },
+        { screen_id: "place_of_birth", view_name: "Place of Birth", internal_monologue: "I was born in Edison, New Jersey. The city dropdown only has Indian cities. I tried typing 'Edison' and nothing showed up. Am I not allowed to use this app if I wasn't born in India? This feels like the app was built assuming every user is from India.", reasoning: "I cannot proceed because my birth city doesn't exist in the app's database. I could enter a random Indian city but that would give completely wrong coordinates and invalidate the entire reading. There's no 'Other' option and no manual coordinate entry. I'm structurally excluded.", emotional_state: "frustrated", friction_points: ["City dropdown limited to Indian cities only", "No international city support", "No manual entry or 'Other' option", "No search for global cities"], decision_outcome: "DROP_OFF", trust_score: 2, clarity_score: 5, value_score: 2, time_seconds: 10 },
       ],
     },
     {
@@ -1961,16 +1956,16 @@ export const superastroSimData = {
       emotional_arc: "2 AM vulnerability \u2192 Ad resonance with career anxiety \u2192 Reality check at phone number \u2192 Identity conflict \u2192 Risk aversion wins",
     },
     {
-      persona_type: "Life Transition User (Dropper at S6 \u2014 Marital Status)",
-      plan_chosen: "N/A",
-      key_decision_moment: "Filled the first 5 screens with hope, hit the binary marital status question (Married / Unmarried) mid-separation, and abandoned. The very first personal question was the one her reality couldn\u2019t fit.",
-      emotional_arc: "Desperate hope \u2192 Willingness to provide everything \u2192 Hits the marital binary \u2192 Realises the app doesn\u2019t hold her reality \u2192 Closes",
+      persona_type: "Life Transition User (Dropper at S11)",
+      plan_chosen: "Relationship",
+      key_decision_moment: "Filled all 10 screens including calling her mom for birth time. AI response gave generic planetary transit analysis instead of addressing her specific question about ex-boyfriend. Devastating mismatch.",
+      emotional_arc: "Desperate hope \u2192 Willingness to provide everything \u2192 Growing anticipation through 10 screens \u2192 Crushing disappointment at generic AI response \u2192 Feeling cheated",
     },
     {
-      persona_type: "NRI Diaspora (Dropper at S10 \u2014 Journey Purpose)",
-      plan_chosen: "N/A",
-      key_decision_moment: "Made it through 9 screens but the only purpose options were Marriage / Career / Relationship \u2014 none captured her actual question (visa renewal / immigration timing). No \u2018Other\u2019 or free-text. She wouldn\u2019t commit to a wrong category just to reach the chat.",
-      emotional_arc: "Rational interest \u2192 Steady patience through onboarding \u2192 Frustration at narrow purpose options \u2192 Withdraws rather than misframe her consultation",
+      persona_type: "NRI Diaspora (Dropper at S10)",
+      plan_chosen: "Career",
+      key_decision_moment: "Jamnagar (birth city) not in the place of birth dropdown. No search field. Without accurate birth coordinates, Vedic chart is fundamentally wrong. Hard technical blocker.",
+      emotional_arc: "Rational interest \u2192 Growing engagement with Vedic terminology \u2192 Patience through 8 screens \u2192 Frustration at city picker \u2192 Anger at app calling itself 'Vedic' while missing basic Indian cities",
     },
   ],
 
@@ -1980,8 +1975,8 @@ export const superastroSimData = {
     "Users who know their exact birth time (from family kundli records) complete at 78% vs 41% for those who don't \u2014 birth time availability is a strong predictor of completion and correlates with traditional astrology familiarity",
     "The 'science hai' / AI framing attracts a specific segment of privacy-conscious, educated users who wouldn't use traditional astrology apps \u2014 but this segment is also the most sensitive to phone identity exposure",
     "Users who selected Marriage as journey purpose complete at 71% vs 54% for Career and 48% for Relationship \u2014 marriage decisions in Indian culture involve family pressure with deadlines, creating stronger motivation to complete",
-    "NRI users skew toward dropping at journey_purpose rather than form-input screens \u2014 their diaspora-specific concerns (visa, immigration, cross-cultural marriage) don\u2019t fit Marriage / Career / Relationship and there\u2019s no Other / free-text option, structurally filtering out a high-paying potential audience",
-    "Ad creative context shapes the anchor users carry into the chat \u2014 viewers of \u2018Does he miss me?\u2019 ads arrive expecting a relationship-specific opening; \u2018Career kab set hogi?\u2019 viewers arrive expecting a career-specific opening. After 10 screens of investment that anchor is amplified, not softened, and the chat\u2019s first-impression window is correspondingly small.",
+    "NRI users are 3x more likely to drop at place_of_birth than domestic users \u2014 city picker assumes metro-only births and breaks for the diaspora segment that is actually the highest-paying potential audience",
+    "Ad creative context shapes expectation at ai_chat screen \u2014 users who saw 'Does he miss me?' ads expect relationship-specific answers, while 'career kab set hogi' users expect career-specific guidance. Generic responses fail both.",
   ],
 
   // ── Completion Analysis ─────────────────────────────────────────────────────

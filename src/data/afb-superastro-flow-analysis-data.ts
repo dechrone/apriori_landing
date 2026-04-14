@@ -5,7 +5,7 @@ import type { FlowAnalysisData } from "@/types/flow-analysis";
  * Maps the SuperAstro video ad → onboarding → AI chat flow
  * into the FlowAnalysisData shape consumed by FlowAnalysisView.
  */
-export const superastroFlowAnalysisData: FlowAnalysisData = {
+export const afbSuperastroFlowAnalysisData: FlowAnalysisData = {
   meta: {
     product: "SuperAstro",
     flow: "Video Ad → AI Astrology Onboarding",

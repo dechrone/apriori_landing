@@ -2,9 +2,9 @@
 
 import { Playfair_Display, DM_Sans } from "next/font/google";
 import { FlowAnalysisView } from "@/components/flow-analysis/FlowAnalysisView";
-import { superastroFlowAnalysisData } from "@/data/superastro-flow-analysis-data";
-import { superastroSimData } from "@/data/superastro-sim-data";
-import { superastroStudyData } from "@/data/superastro-study-data";
+import { afbSuperastroFlowAnalysisData } from "@/data/afb-superastro-flow-analysis-data";
+import { afbSuperastroSimData } from "@/data/afb-superastro-sim-data";
+import { afbSuperastroStudyData } from "@/data/afb-superastro-study-data";
 import type { SimulationData } from "@/types/simulation";
 
 const playfair = Playfair_Display({
@@ -32,15 +32,14 @@ const SCREEN_IMAGES: Record<string, string> = {
   ai_chat: "/screens/superastro/10.jpeg",
 };
 
-export default function SuperAstroDemoPage() {
+export default function AfbSuperAstroDemoPage() {
   return (
     <div className={`${playfair.variable} ${dmSans.variable}`} style={{ minHeight: "100vh", background: "#fff" }}>
       <FlowAnalysisView
-        data={superastroFlowAnalysisData}
-        simulationData={superastroSimData as unknown as SimulationData}
-        studyData={superastroStudyData}
+        data={afbSuperastroFlowAnalysisData}
+        simulationData={afbSuperastroSimData as unknown as SimulationData}
+        studyData={afbSuperastroStudyData}
         screenImages={SCREEN_IMAGES}
-        hideDeepDive
       />
     </div>
   );

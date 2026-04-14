@@ -56,30 +56,35 @@ export const superastroStudyData: StudyData = {
       {
         rank: 1,
         finding:
-          "84% of privacy-conscious users hesitated at the phone number screen \u2014 astrology carries social stigma that makes identity-linked registration feel risky",
+          "Same 10-screen onboarding, two opposite products. Devotees (71% conversion, your highest-LTV segment) experience it as sacred preparation \u2014 they pull out their janampatri and welcome every field. Gen-Z and Privacy-Seekers (54% / 56%) experience it as a census form and exit at the phone gate. The naive fix \u2014 shorten the onboarding to lift completion rate \u2014 would silently destroy the segment that pays you the most. The right move is two parallel paths from the same entry, not fewer screens.",
       },
       {
         rank: 2,
         finding:
-          "Users who arrived from specific ad hooks ('Does he miss me?', 'Career kab set hogi?') rated the AI response 40% lower when it gave generic kundli readings instead of addressing their specific question",
+          "Channel \u00d7 persona conversion math: Google Search \u00d7 Devotee = 86%. Instagram Reel \u00d7 Gen-Z-Curious = 42%. Same product, 44-point spread. Your Instagram CAC is being burned on a flow that wasn\u2019t built for impulse traffic \u2014 either rebuild the impulse path or rebalance spend toward search-intent channels.",
       },
       {
         rank: 3,
         finding:
-          "10-screen onboarding for a \u20b91-positioned app creates an effort-value mismatch \u2014 users expected instant chat access",
+          "The phone gate is filtering the wrong users. Stigma-sensitive professionals \u2014 the segment most willing to pay for privacy and discretion \u2014 will not link their UPI/WhatsApp/LinkedIn number to an astrology app. 8.5% drop here is the visible cost; the invisible cost is losing your highest-paying tier at the door.",
+      },
+      {
+        rank: 4,
+        finding:
+          "Structural exclusion at the form-field level: marital binary ignores Separated/Divorced/Widowed (34% emotional impact), 3-purpose limit excludes Health / Family / Vastu, and self-only framing blocks Silent-Power-Users consulting for their children. None are bugs \u2014 they\u2019re defaults that quietly cost you above-average-LTV segments.",
       },
     ],
     top_recommendation: {
       headline:
-        "Skip-to-Chat with progressive profiling \u2014 chat first, collect birth details conversationally",
-      linked_rec_id: "DR_001",
+        "Ship the two-path onboarding (Quick Chat for impulse traffic, Full Kundli for Devotees) as the structural bet \u2014 then anonymous-first auth and inclusive form fields as quick-win cleanup.",
+      linked_rec_id: "DR_002",
       effort: "medium",
       routing: "this_sprint",
     },
-    open_insights_count: 5,
+    open_insights_count: 4,
     this_sprint_count: 3,
     next_sprint_count: 1,
-    backlog_count: 1,
+    backlog_count: 0,
   },
 
   scores: {
@@ -336,55 +341,12 @@ export const superastroStudyData: StudyData = {
       connected_friction_point_ids: ["FP_002"],
     },
     {
-      theme_id: "T_003",
-      rank: 3,
-      theme_name:
-        "AI first response fails to match ad-specific hook",
-      description:
-        "Users arrived with a specific question planted by the ad: \u201cDoes he miss me?\u201d, \u201cCareer kab set hogi?\u201d, \u201cLove marriage or arranged?\u201d. The AI\u2019s first response is a generic birth chart summary with planetary positions. The specificity gap between what the ad promised and what the AI delivers feels like false advertising.",
-      frequency_pct: 38,
-      affected_personas: [
-        "Life-Transition",
-        "Privacy-Seeker",
-        "Gen-Z-Curious",
-      ],
-      not_affected_personas: ["Devotee"],
-      supporting_codes: [
-        { code_name: "Ad_Hook_Response_Mismatch", frequency_pct: 38 },
-        { code_name: "Generic_Kundli_Disappointment", frequency_pct: 32 },
-      ],
-      key_monologues: [
-        {
-          session_id: "APR_SA_U058_20260410",
-          persona_type: "Life-Transition",
-          text: "I clicked because the ad asked \u2018Career kab set hogi?\u2019 \u2014 that\u2019s exactly my question. But the AI started talking about Rahu in my 7th house and Saturn\u2019s transit. I don\u2019t care about planets. When will my career improve?",
-        },
-        {
-          session_id: "APR_SA_U093_20260410",
-          persona_type: "Gen-Z-Curious",
-          text: "The reel literally said \u2018Does he miss me?\u2019 so I thought the AI would tell me about my relationship. Instead it\u2019s giving me a birth chart I can\u2019t read. This is not what I signed up for.",
-        },
-      ],
-      counter_evidence: {
-        summary:
-          "Devotees value the kundli analysis itself \u2014 they see planetary readings as the real product, not a detour from their question",
-        frequency_pct: 22,
-      },
-      quantitative_support: {
-        completion_rate: 0.56,
-        avg_seq: 3.6,
-      },
-      root_causes:
-        "The AI\u2019s first response is templated: generate a birth chart, summarize key planetary positions, then offer to go deeper. This works for astrology-literate users who understand that kundli analysis precedes specific answers. But ad-acquired users arrive with a specific emotional question and expect a specific emotional answer. The system has no awareness of which ad the user clicked, so it can\u2019t tailor its first response to the user\u2019s entry context. The ad team and the AI team are operating independently.",
-      connected_friction_point_ids: [],
-    },
-    {
       theme_id: "T_004",
       rank: 4,
       theme_name:
         "Onboarding excludes non-standard users structurally",
       description:
-        "NRIs can\u2019t find international birth cities. Users with needs outside Marriage/Career/Relationship have no journey purpose option. Users uncertain about exact DOB struggle with the picker. The flow assumes a standard Indian urban user and structurally blocks everyone else.",
+        "Users with needs outside the three offered purposes (Marriage / Career / Relationship) have no matching option. Marital status is a binary that ignores Separated, Divorced, Widowed. The flow assumes the user is consulting for themselves \u2014 not for a child, parent, or spouse. Users uncertain about exact DOB or birth time struggle with the pickers. The flow is built for a default user and silently filters out everyone whose lived reality doesn\u2019t match.",
       frequency_pct: 28,
       affected_personas: ["NRI", "Devotee", "Life-Transition"],
       not_affected_personas: ["Privacy-Seeker"],
@@ -399,7 +361,7 @@ export const superastroStudyData: StudyData = {
         {
           session_id: "APR_SA_U071_20260410",
           persona_type: "NRI",
-          text: "I was born in Edison, New Jersey. The city dropdown only has Indian cities. I tried typing \u2018Edison\u2019 and nothing showed up. Am I not allowed to use this app if I wasn\u2019t born in India?",
+          text: "The AI is responding in Hindi with Sanskrit terms \u2014 dasha, antardasha, navamsa. I grew up in the US, I can read Hindi but these technical words mean nothing to me. Is there an English mode?",
         },
         {
           session_id: "APR_SA_U046_20260410",
@@ -417,7 +379,7 @@ export const superastroStudyData: StudyData = {
         avg_seq: 3.4,
       },
       root_causes:
-        "The onboarding was designed for the majority use case: a 25-35 year old Indian user born in an Indian city with marriage or career questions. The city picker is seeded with Indian cities only. The purpose selector has three options (Marriage, Career, Relationship) that cover ~70% of use cases but structurally exclude health queries, spiritual guidance, family issues, and legal matters. The DOB picker uses a calendar widget that requires an exact date, with no accommodation for uncertainty. These are not bugs \u2014 they\u2019re design decisions that prioritize the majority at the cost of excluding meaningful minority segments.",
+        "The onboarding was designed for the majority use case: a 25\u201335 year old Indian user with marriage or career questions consulting for themselves. The purpose selector has three options (Marriage, Career, Relationship) that cover ~70% of use cases but structurally exclude health queries, spiritual guidance, family/child concerns, business/Vastu, education, and legal matters. The marital binary ignores Separated, Divorced, Widowed. The AI defaults to Hindi with Sanskrit terminology (dasha, antardasha, navamsa) that diaspora users with English-primary literacy can\u2019t parse. These aren\u2019t bugs \u2014 they\u2019re design decisions that prioritize the majority at the cost of excluding meaningful minority segments.",
       connected_friction_point_ids: [],
     },
     {
@@ -685,15 +647,15 @@ export const superastroStudyData: StudyData = {
         {
           session_id: "APR_SA_U075_20260410",
           persona_type: "NRI",
-          action_taken: "Tried entering US number, format rejected, left",
+          action_taken: "Hesitated at phone screen, closed app",
           internal_monologue:
-            "My US number doesn\u2019t work? The +1 country code isn\u2019t even an option. I have an Indian number but I don\u2019t use it anymore. Guess this app is India-only.",
-          emotional_tags: ["FRUSTRATED"],
+            "An astrology app wants my phone number? My UK colleagues would never let me hear the end of it if they saw an astrology SMS land on my screen. I\u2019ll search Google instead.",
+          emotional_tags: ["EMBARRASSED", "DISTRUST"],
           behavioral_tags: ["ABANDONED"],
           completed: false,
           dropped: true,
           drop_reason:
-            "International phone number not supported \u2014 NRI with US number structurally blocked",
+            "Diaspora professional unwilling to link primary phone number to a stigmatized category",
         },
       ],
     },
@@ -1136,15 +1098,13 @@ export const superastroStudyData: StudyData = {
         {
           session_id: "APR_SA_U071_20260410",
           persona_type: "NRI",
-          action_taken: "Typed Edison NJ, no results, tried multiple entries, left",
+          action_taken: "Found city, hesitated about coordinates",
           internal_monologue:
-            "I was born in Edison, New Jersey. The city dropdown only has Indian cities. I tried typing \u2018Edison\u2019 and nothing showed up. Am I not allowed to use this app if I wasn\u2019t born in India?",
-          emotional_tags: ["FRUSTRATED"],
-          behavioral_tags: ["ABANDONED"],
-          completed: false,
-          dropped: true,
-          drop_reason:
-            "City picker limited to Indian cities \u2014 NRI born outside India structurally excluded",
+            "Edison, New Jersey \u2014 found it. But wait, does Vedic astrology even work for births outside India? My pandit always asks for Indian birthplaces. I\u2019m not sure if Mahesh Ji will read this correctly. I\u2019ll proceed but expect a half-accurate reading.",
+          emotional_tags: ["UNCERTAIN", "CURIOUS"],
+          behavioral_tags: ["COMPLETED"],
+          completed: true,
+          dropped: false,
         },
         {
           session_id: "APR_SA_U082_20260410",
@@ -1160,56 +1120,30 @@ export const superastroStudyData: StudyData = {
       ],
       dropped_monologues: [
         {
-          session_id: "APR_SA_U071_20260410",
-          persona_type: "NRI",
-          action_taken: "Typed US city, no results, left",
-          internal_monologue:
-            "Edison, New Jersey isn\u2019t in the dropdown. Am I not allowed to use this app?",
-          emotional_tags: ["FRUSTRATED"],
-          behavioral_tags: ["ABANDONED"],
-          completed: false,
-          dropped: true,
-          drop_reason:
-            "International birth city not supported",
-        },
-        {
-          session_id: "APR_SA_U074_20260410",
-          persona_type: "NRI",
-          action_taken: "Tried London, then Mumbai (parents\u2019 city), gave up",
-          internal_monologue:
-            "Born in London but the dropdown is India-only. Should I put Mumbai where my parents are from? But that would give wrong coordinates. This is frustrating \u2014 Indian diaspora exists, you know.",
-          emotional_tags: ["FRUSTRATED", "ANXIOUS"],
-          behavioral_tags: ["ABANDONED"],
-          completed: false,
-          dropped: true,
-          drop_reason:
-            "Accuracy concern prevented NRI from using workaround Indian city",
-        },
-        {
           session_id: "APR_SA_U060_20260410",
           persona_type: "Life-Transition",
-          action_taken: "Typed small town name, not found, left",
+          action_taken: "Couldn\u2019t recall exact birthplace, left",
           internal_monologue:
-            "I was born in Motihari, Bihar. It\u2019s not showing up. The dropdown only has big cities. Not everyone is born in Mumbai or Delhi. I\u2019ll try a different app.",
-          emotional_tags: ["FRUSTRATED"],
+            "I think I was born in a hospital in some town near Patna but I\u2019m not actually sure which one. There\u2019s no \u2018I don\u2019t know\u2019 option here like there was for birth time. I don\u2019t want to guess and get a wrong reading.",
+          emotional_tags: ["UNCERTAIN", "ANXIOUS"],
           behavioral_tags: ["ABANDONED"],
           completed: false,
           dropped: true,
           drop_reason:
-            "Small town not available in city picker \u2014 tier-3 city user excluded",
+            "No \u2018Don\u2019t Know\u2019 affordance for users uncertain about exact birth city",
         },
         {
           session_id: "APR_SA_U041_20260410",
           persona_type: "Price-Sensitive",
           action_taken: "Typed city name with typo, no results, left",
           internal_monologue:
-            "I typed \u2018Lucknw\u2019 instead of \u2018Lucknow\u2019 and nothing showed up. No autocorrect? No \u2018did you mean?\u2019 suggestion? Even Google handles typos. This dropdown is useless.",
+            "I typed \u2018Lucknw\u2019 instead of \u2018Lucknow\u2019 and nothing showed up. No autocorrect? No \u2018did you mean?\u2019 suggestion? Even Google handles typos.",
           emotional_tags: ["FRUSTRATED", "IMPATIENT"],
           behavioral_tags: ["ABANDONED"],
           completed: false,
           dropped: true,
           drop_reason:
-            "City picker has no fuzzy matching or typo tolerance",
+            "City picker lacks fuzzy matching for typos",
         },
       ],
     },
@@ -1508,11 +1442,11 @@ export const superastroStudyData: StudyData = {
       top_behavioral_tags: ["HESITATED", "ABANDONED"],
       avg_seq: 3.8,
       problem_narrative:
-        "By the time users reach screen 7 (DOB), they have already completed 6 screens of data entry without receiving any astrological value. The video ads promised instant chat access (\u2018Chat NOW\u2019, \u2018Chat 24/7 at \u20b91\u2019), but the reality is a 10-screen form that feels more like a government application than a \u20b91 impulse purchase. The cumulative friction across S7 (DOB picker with poor UX), S8 (birth time that many don\u2019t know), and S9 (city picker that fails for NRIs and small towns) drives 8% combined drop-off. Each screen individually seems reasonable; cumulatively, they create an effort-value mismatch that contradicts the ad\u2019s positioning.",
+        "By the time users reach screen 7 (DOB), they have already completed 6 screens of data entry without receiving any astrological value. The video ads promised instant chat access (\u2018Chat NOW\u2019, \u2018Chat 24/7 at \u20b91\u2019), but the reality is a 10-screen form that feels more like a government application than a \u20b91 impulse purchase. The cumulative friction across S7 (DOB picker with poor UX), S8 (birth time that many don\u2019t know), and S9 (uncertainty about exact birthplace, no \u2018don\u2019t know\u2019 affordance) drives 8% combined drop-off. Each screen individually seems reasonable; cumulatively, they create an effort-value mismatch that contradicts the ad\u2019s positioning.",
       user_expectation:
         "Instant or near-instant chat access \u2014 the ad said \u2018Chat 24/7\u2019 and priced it at \u20b91, creating an expectation of a low-effort impulse experience.",
       actual_experience:
-        "10 screens of sequential form-filling including a frustrating date picker, an optional-but-confusing birth time input, and a city dropdown that excludes international and small-town users.",
+        "10 screens of sequential form-filling including a frustrating date picker and an optional-but-confusing birth time input \u2014 with no progress indicator and no preview of the value waiting at the end.",
       business_impact:
         "8% cumulative drop-off across S7\u2013S9, with 46% of all users reporting impatience or frustration. The \u20b91 price point attracts impulse users, but the onboarding demands the patience of a committed buyer. This mismatch means the marketing and product are working against each other.",
       related_theme_ids: ["T_002"],
@@ -1554,7 +1488,7 @@ export const superastroStudyData: StudyData = {
       actual_experience:
         "A binary Married/Unmarried selector with no explanation of its astrological relevance and no accommodation for complex relationship statuses.",
       business_impact:
-        "2.4% direct drop-off, but 34% emotional impact. The real cost is downstream: users who feel the app \u2018doesn\u2019t get them\u2019 at the marital status step arrive at the AI chat with lower trust, making them more likely to drop when the AI response is generic.",
+        "2.4% direct drop-off, but 34% emotional impact. The real cost is downstream: users who feel the app \u2018doesn\u2019t get them\u2019 at the marital status step arrive at the AI chat with depleted trust and lower tolerance for any subsequent friction.",
       related_theme_ids: ["T_005"],
       key_monologues: [
         {
@@ -1682,40 +1616,52 @@ export const superastroStudyData: StudyData = {
       related_friction_point_ids: [],
     },
     {
-      pattern_id: "BP_004",
-      pattern_type: "specific_answer_hunter",
+      pattern_id: "BP_006",
+      pattern_type: "segment_divergence",
       pattern_name:
-        "Evaluates AI response against ad\u2019s specific promise",
-      frequency_pct: 16,
-      affected_personas: ["Life-Transition", "Privacy-Seeker"],
-      trigger_step_id: 11,
-      trigger_step_name: "AI Chat (Mahesh Ji)",
-      trigger_tags: ["DISAPPOINTED", "FRUSTRATED"],
+        "Same flow, opposite walls \u2014 the Devotee paradox",
+      frequency_pct: 100,
+      affected_personas: [
+        "Devotee",
+        "Silent-Power-User",
+        "Gen-Z-Curious",
+        "Privacy-Seeker",
+      ],
+      trigger_step_id: null,
+      trigger_step_name: "Entire onboarding (asymmetric experience)",
+      trigger_tags: ["HOPEFUL", "IMPATIENT", "EMBARRASSED", "CONFIDENT"],
       implication:
-        "Ad-acquired users arrive with a specific question seeded by the ad. If the AI\u2019s first response doesn\u2019t address that question, the entire 10-screen onboarding feels wasted. The ad and the AI are making different promises.",
+        "The same 10-screen onboarding produces opposite emotional arcs and opposite drop-off shapes for two cohorts \u2014 a single flow that is two different products. The naive optimization (shorten the funnel to lift completion rate) would silently destroy the segment that pays the most.",
       session_ids: [
-        "APR_SA_U058_20260410",
-        "APR_SA_U061_20260410",
-        "APR_SA_U017_20260410",
+        "APR_SA_U001_20260410",
+        "APR_SA_U047_20260410",
+        "APR_SA_U082_20260410",
+        "APR_SA_U088_20260410",
+        "APR_SA_U091_20260410",
       ],
       behavior_narrative:
-        "Specific answer hunters entered the app because the ad planted a precise emotional question: \u2018Does he miss me?\u2019, \u2018Career kab set hogi?\u2019, \u2018Love marriage or arranged?\u2019 They endured the entire onboarding with that question as their anchor. When the AI finally responds with a generic birth chart summary instead of addressing their specific question, the disappointment is proportional to the investment. They don\u2019t give the AI a second chance \u2014 the first response has already broken the ad\u2019s promise. They close the app and may leave a negative review.",
+        "The Devotee cohort (35\u201355, search-acquired, regular astrology consumers, 71% conversion) walks through the 10 screens like a sacred preparation \u2014 they pull out their janampatri at the birth time screen, ensure the exact city is selected for accurate coordinates, and arrive at the AI chat HOPEFUL and CONFIDENT. The friction is the value: it signals the app takes their kundli seriously. Meanwhile the impulse cohort (Gen-Z-Curious + Privacy-Seeker, 18\u201330, Instagram-acquired, 54%/56% conversion) hits the very same screens as a census form. They drop at the phone gate (stigma) or the DOB picker (impatience) before reaching the AI at all. Devotees who survive ask follow-up questions about dasha periods; impulse users who survive type 'will I become a millionaire' and bounce on a generic answer. The AI chat itself becomes the second wall \u2014 long enough for impulse users to feel cheated, generic enough for Devotees to feel underserved on follow-up depth.",
       key_monologues: [
         {
-          session_id: "APR_SA_U058_20260410",
-          persona_type: "Life-Transition",
-          text: "I clicked because the ad asked \u2018Career kab set hogi?\u2019 \u2014 that\u2019s exactly my question. But the AI started talking about Rahu in my 7th house.",
+          session_id: "APR_SA_U001_20260410",
+          persona_type: "Devotee",
+          text: "Janam ka samay \u2014 mere paas janampatri mein likha hai. 4:35 AM. Ye sahi rehna chahiye, nahi toh lagna chart galat ban jayegi. Acha hai itna detail le rahe hain.",
         },
         {
-          session_id: "APR_SA_U017_20260410",
-          persona_type: "Privacy-Seeker",
-          text: "I gave my entire identity. And for what? A generic paragraph about Saturn and Jupiter that could apply to anyone born in my year.",
+          session_id: "APR_SA_U091_20260410",
+          persona_type: "Gen-Z-Curious",
+          text: "Bro I just wanted to check if my ex misses me, not fill out a census form. How many screens does this app have?",
+        },
+        {
+          session_id: "APR_SA_U082_20260410",
+          persona_type: "Silent-Power-User",
+          text: "I gave them everything. The app should be able to answer my daughter's marriage question now \u2014 but it only talks about MY chart.",
         },
       ],
       actionable_insight:
-        "Track which ad creative the user clicked and pass that context to the AI. If the user came from the \u2018Does he miss me?\u2019 ad, the AI\u2019s first response should directly address relationship questions. If from \u2018Career kab set hogi?\u2019, lead with career predictions. The ad\u2019s hook must be the AI\u2019s opening.",
-      related_theme_ids: ["T_003"],
-      related_friction_point_ids: [],
+        "Without simulation, your team would optimize the obvious metric \u2014 lift completion rate by shortening the onboarding \u2014 and ship a faster funnel. The data shows that Devotional Completers, your highest-LTV segment, actually want MORE friction because it signals authenticity. Speed-optimization would lose your best users while papering over the impulse-user problem with a half-fix. The right move is two parallel paths from the same entry: a 30-second Quick Chat for impulse traffic, and the existing detailed intake (relabeled 'Full Kundli Reading') for users who arrive with intent. Channel-default it: Instagram \u2192 Quick, Search \u2192 Full. Track 30-day repeat-chat separately so you can prove the LTV split rather than chase a misleading aggregate.",
+      related_theme_ids: ["T_001", "T_002"],
+      related_friction_point_ids: ["FP_001", "FP_002"],
     },
     {
       pattern_id: "BP_005",
@@ -1768,11 +1714,11 @@ export const superastroStudyData: StudyData = {
         primary_pattern: "stigma_guardian",
         top_emotional_tags: ["EMBARRASSED", "DISTRUST"],
         summary:
-          "Privacy-Seekers are blocked by the phone number gate and disappointed by generic AI responses that don\u2019t justify the personal data they shared",
+          "Privacy-Seekers are blocked or held back by the phone number gate \u2014 the segment most willing to pay for privacy and discretion is precisely the one this entry pattern filters out",
         persona_profile:
           "Privacy-Seekers are 25\u201335 year old urban professionals \u2014 software engineers, consultants, MBAs \u2014 who are privately curious about astrology but would never admit it publicly. They browse horoscopes in incognito mode and have never told a colleague or partner about their interest. They\u2019re digitally literate and acutely aware of data privacy risks. The idea that an astrology app could leak their data or send them notifications visible to others is their worst nightmare.",
         journey_narrative:
-          "Privacy-Seekers were drawn by the ad\u2019s hook but hesitated at the phone number screen. Those who continued used fake names and minimal information. They moved through the onboarding with low emotional investment, treating each screen as a data extraction exercise rather than a personalization step. By the AI chat, they expected the extensive data collection to produce a uniquely personalized reading. When the AI delivered a generic kundli summary, they felt the trade-off (identity for insight) was not worth it. Several considered deleting the app entirely.",
+          "Privacy-Seekers were drawn by the ad\u2019s hook but hesitated at the phone number screen. Most exited there. Those who continued used fake names and minimal information \u2014 they moved through the onboarding with low emotional investment, treating each screen as a data-extraction exercise rather than a personalization step. By the time they arrive at the AI chat, they\u2019ve already paid maximum perceived cost (real phone number tied to a stigmatized interest) and their tolerance for any further misstep is near zero.",
         monologues: [
           {
             text: "If anyone at work finds out I\u2019m using an astrology app, I\u2019ll never hear the end of it.",
@@ -1781,7 +1727,7 @@ export const superastroStudyData: StudyData = {
             text: "No guest option, no email login, no \u2018skip for now\u2019. The only way in is my phone number. For an astrology app. In 2026.",
           },
           {
-            text: "I gave my entire identity. And for what? A generic paragraph about Saturn and Jupiter that could apply to anyone.",
+            text: "I\u2019m using a fake name. \u2018Rahul Sharma\u2019 should do it. I\u2019ve already given them my phone number which I regret, but at least they won\u2019t have my real name.",
           },
         ],
         emotional_arc: [
@@ -1795,10 +1741,10 @@ export const superastroStudyData: StudyData = {
           "NEUTRAL",
           "NEUTRAL",
           "NEUTRAL",
-          "DISAPPOINTED",
+          "GUARDED",
         ],
         segment_recommendation:
-          "Offer email or guest login as an alternative to phone auth. Add a privacy commitment visible at the phone screen: \u2018We never share your data or send unsolicited messages.\u2019 Ensure the AI response is personalized enough to justify the data shared \u2014 privacy-seekers need to feel the trade-off was worth it.",
+          "Offer email or guest login as an alternative to phone auth. Add a privacy commitment visible at the phone screen: \u2018We never share your data or send unsolicited messages.\u2019 Defer phone verification to the moment the user wants notifications or to upgrade to paid \u2014 not as the entry price.",
       },
       {
         segment_id: "SEG_002",
@@ -1901,20 +1847,20 @@ export const superastroStudyData: StudyData = {
         primary_pattern: "stigma_guardian",
         top_emotional_tags: ["FRUSTRATED", "CONFUSED"],
         summary:
-          "NRIs face structural blockers at every step \u2014 US phone numbers rejected, international birth cities missing, Hindi-heavy AI responses incomprehensible",
+          "NRIs face soft context blockers \u2014 Hindi-heavy ad creatives, date-format and time-zone ambiguity for birth details, no diaspora-specific purpose options. They arrive at the chat with lower confidence that the app was built with them in mind, even when the onboarding accepted their inputs",
         persona_profile:
-          "NRIs are Indian-origin users living in the US, UK, or Middle East. They range from first-generation immigrants who grew up with astrology to second-generation diaspora rediscovering cultural practices. They typically speak conversational Hindi but think in English and are unfamiliar with technical Sanskrit astrological terms. Many were born outside India or have international phone numbers. They seek astrology for the same reasons as domestic users (marriage, career, relationships) but also for diaspora-specific concerns like visa timing, cross-cultural marriage compatibility, and NRI property disputes.",
+          "NRIs are Indian-origin users living in the US, UK, or Middle East. They range from first-generation immigrants who grew up with astrology to second-generation diaspora rediscovering cultural practices. They typically speak conversational Hindi but think in English and are unfamiliar with technical Sanskrit astrological terms. They seek astrology for the same reasons as domestic users (marriage, career, relationships) but also for diaspora-specific concerns like visa timing, cross-cultural marriage compatibility, and NRI property questions.",
         journey_narrative:
-          "NRIs hit friction from the first screen \u2014 Hindi-heavy ad content partially alienated English-primary users. At the phone number screen, US/UK numbers were rejected, forcing users to find an old Indian SIM or borrow a relative\u2019s number. Birth details were complicated by date format confusion (MM/DD vs DD/MM) and time zone ambiguity. The place of birth screen was the critical blocker: NRIs born in Edison, London, or Dubai couldn\u2019t find their city. The AI chat delivered responses in Hindi with Sanskrit terms many NRIs couldn\u2019t parse. At every step, the app assumed the user was in India, speaking Hindi, born in an Indian city.",
+          "NRIs hit friction from the first screen \u2014 Hindi-heavy ad content partially alienated English-primary users. The phone number ask carried the same stigma it does for domestic professionals (and for diaspora users, the additional fear of an Indian-pattern SMS landing on their UK or US carrier where colleagues might see it). Birth details were complicated by date-format confusion (MM/DD vs DD/MM) and time-zone ambiguity around birth time. The flow accepted their inputs, but every screen quietly assumed they were thinking in Hindi and were astrologically literate \u2014 by the time they arrive at the chat their default expectation is that the app was built for someone else.",
         monologues: [
           {
-            text: "My US number doesn\u2019t work? The +1 country code isn\u2019t even an option.",
+            text: "An astrology app wants my UK phone number? My colleagues would never let me hear the end of it if they saw an SMS land on my screen.",
           },
           {
-            text: "I was born in Edison, New Jersey. The city dropdown only has Indian cities.",
+            text: "Date of birth \u2014 is this MM/DD or DD/MM? And birth time \u2014 should I enter the local time of where I was born, or convert to IST? The form doesn\u2019t say.",
           },
           {
-            text: "The response is mostly in Hindi with Sanskrit terms. Is there an English mode?",
+            text: "The whole onboarding was in Hindi with terms I half-recognize. I\u2019ll proceed but I\u2019m bracing for the chat to be in heavy Sanskrit too.",
           },
         ],
         emotional_arc: [
@@ -1931,7 +1877,7 @@ export const superastroStudyData: StudyData = {
           "FRUSTRATED",
         ],
         segment_recommendation:
-          "Add international phone number support (+1, +44, +971). Replace the city dropdown with a searchable text input that includes global cities. Offer English-language AI responses by default when the user\u2019s phone locale or chosen language is English. NRIs are a high-value segment (higher disposable income, strong cultural connection) being structurally excluded by India-centric design.",
+          "Detect English-primary users (phone locale or ad source) and default the onboarding copy to English with a one-tap Hindi toggle. Add date-format helper text (DD/MM) and an explicit time-zone choice on the birth-time screen. Add diaspora-specific purpose options (Visa Timing, Cross-cultural Marriage). NRIs are a high-value segment being softly filtered out by Indian-default context, not by hard input blockers.",
       },
       {
         segment_id: "SEG_005",
@@ -1941,23 +1887,23 @@ export const superastroStudyData: StudyData = {
         conversion_rate: 69,
         avg_sus: 60.4,
         top_friction_point_ids: ["FP_005"],
-        primary_pattern: "specific_answer_hunter",
+        primary_pattern: "instant_gratification_seeker",
         top_emotional_tags: ["ANXIOUS", "HOPEFUL"],
         summary:
-          "Life-Transition users are emotionally invested and convert well through onboarding, but drop off at the AI chat when generic kundli responses fail to address their urgent personal question",
+          "Life-Transition users are the most emotionally invested cohort \u2014 they convert through onboarding at high rates because the ad named their exact pain, but the marital status binary triggers them mid-flow and the long path between tap and chat amplifies every micro-friction",
         persona_profile:
-          "Life-Transition users are 28\u201345 year olds going through a major life crisis \u2014 job loss, divorce, family conflict, health scare, or relocation. They\u2019ve turned to astrology not out of regular practice but out of desperation: traditional advice hasn\u2019t worked, and they\u2019re looking for any source of hope or direction. They\u2019re emotionally raw and interpret every interaction through the lens of their crisis. They\u2019re not seeking entertainment or generic guidance \u2014 they want specific answers to specific questions.",
+          "Life-Transition users are 28\u201345 year olds going through a major life crisis \u2014 job loss, divorce, family conflict, health scare, or relocation. They\u2019ve turned to astrology not out of regular practice but out of desperation: traditional advice hasn\u2019t worked and they\u2019re looking for any source of hope or direction. They\u2019re emotionally raw and interpret every interaction through the lens of their crisis. The ad\u2019s specific question (\u2018Career kab set hogi?\u2019, \u2018Shaadi kab hogi?\u2019) is what brought them in \u2014 they\u2019re anchored to that question and impatient to get to the part of the app that addresses it.",
         journey_narrative:
-          "Life-Transition users clicked the ad because it named their exact pain point (\u2018Career kab set hogi?\u2019, \u2018Shaadi kab hogi?\u2019). They were willing to share personal data because they desperately wanted answers. The marital status screen was emotionally triggering for users going through divorce. Birth details were entered with anxiety about accuracy. By the time they reached the AI chat, they had high expectations anchored to the ad\u2019s specific promise. When the AI delivered a generic kundli summary instead of addressing their specific question, the disappointment was devastating. Some described it as \u2018even the AI can\u2019t help me.\u2019",
+          "Life-Transition users clicked the ad because it named their exact pain point. They were willing to share personal data because they desperately wanted answers. The marital status screen was emotionally triggering for users going through divorce \u2014 several abandoned here. Birth details were entered with anxiety about accuracy. By the time they reach the AI chat they\u2019ve invested 10 screens of effort and arrive with maximum hope and minimum patience for any further detour from the question that brought them.",
         monologues: [
           {
-            text: "I clicked because the ad asked \u2018Career kab set hogi?\u2019 \u2014 that\u2019s exactly my question. But the AI started talking about Rahu in my 7th house.",
+            text: "The ad asked \u2018Career kab set hogi?\u2019 and I tapped immediately. That\u2019s exactly my question. Now there are 10 screens between me and the answer \u2014 just hurry up.",
           },
           {
-            text: "I\u2019m going through a divorce and the options are \u2018Married\u2019 and \u2018Unmarried\u2019. What am I?",
+            text: "I\u2019m going through a divorce and the options are \u2018Married\u2019 and \u2018Unmarried\u2019. What am I? The reason I\u2019m here is because my marriage is falling apart, and the first thing the app does is make me label myself.",
           },
           {
-            text: "I asked \u2018Will things get better for me?\u2019 and it started with \u2018According to your Mahadasha period...\u2019 I need hope, not a technical reading.",
+            text: "I\u2019m anxious. I keep checking how many screens are left. Each one feels like a delay against the answer I came for.",
           },
         ],
         emotional_arc: [
@@ -1971,10 +1917,10 @@ export const superastroStudyData: StudyData = {
           "UNCERTAIN",
           "NEUTRAL",
           "HOPEFUL",
-          "DISAPPOINTED",
+          "EXPECTANT",
         ],
         segment_recommendation:
-          "Route the AI\u2019s first response based on ad source to directly address the user\u2019s emotional need. For Life-Transition users, lead with empathy and a specific answer (\u2018Your career transition period ends around [date]\u2019), then offer the detailed kundli as supporting evidence. Add \u2018Separated\u2019, \u2018Divorced\u2019, and \u2018Widowed\u2019 to marital status options.",
+          "Add \u2018Separated\u2019, \u2018Divorced\u2019, and \u2018Widowed\u2019 to marital status options so divorce-context users aren\u2019t emotionally triggered mid-flow. Shorten time-to-chat for ad-acquired Life-Transition users \u2014 their anchor question is fragile and the long path between ad and value erodes it.",
       },
       {
         segment_id: "SEG_006",
@@ -2032,11 +1978,11 @@ export const superastroStudyData: StudyData = {
         primary_pattern: "exploratory_browser",
         top_emotional_tags: ["SKEPTICAL", "CURIOUS"],
         summary:
-          "Gen-Z users arrive with maximum curiosity and minimum commitment \u2014 every friction point is a potential exit, and the jargon-heavy AI response confirms their suspicion that astrology apps are \u2018not for them\u2019",
+          "Gen-Z users arrive with maximum curiosity and minimum commitment \u2014 every friction point is a potential exit, and the phone gate alone filters out a large fraction before they ever reach the chat",
         persona_profile:
           "Gen-Z-Curious users are 18\u201324 year olds who encountered the ad on Instagram Reels. They don\u2019t identify as believers in astrology but are culturally curious \u2014 they read their Co-Star horoscope for fun and share zodiac memes. The ad hooks (\u2018Does he miss me?\u2019, \u2018Career kab set hogi?\u2019) resonated emotionally even though they\u2019d publicly say astrology is \u2018just for fun.\u2019 Their tolerance for friction is near zero and their baseline skepticism is high.",
         journey_narrative:
-          "Gen-Z users swiped up on the reel out of impulse curiosity. The phone number screen was the first filter \u2014 many refused to link their identity to astrology. Those who continued found the onboarding unreasonably long for what they expected to be a quick, fun experience. Binary gender options felt outdated. By the DOB screen, most were counting screens and calculating whether the effort was worth it. Those who reached the AI chat expected a TikTok-style personality reading in simple language. Instead, they received a technical Vedic astrology analysis full of Sanskrit terms they\u2019d never encountered. The gap between expectation (fun, relatable, quick) and reality (technical, lengthy, formal) was the widest for this segment.",
+          "Gen-Z users swiped up on the reel out of impulse curiosity. The phone number screen was the first filter \u2014 many refused to link their identity to astrology. Those who continued found the onboarding unreasonably long for what they expected to be a quick, fun experience. Binary gender options felt outdated. By the DOB screen, most were counting screens and calculating whether the effort was worth it. The ones who reach the chat have already burned through most of their patience \u2014 they arrive expecting something fast, fun, and culturally fluent, with a near-zero error budget.",
         monologues: [
           {
             text: "I was just curious from the reel. But entering my number? Now this app knows I believe in astrology. My friends would roast me.",
@@ -2045,7 +1991,7 @@ export const superastroStudyData: StudyData = {
             text: "Bro I just wanted to check if my ex misses me, not fill out a census form.",
           },
           {
-            text: "I asked \u2018Will I become a millionaire?\u2019 and it said \u2018Your chart shows potential for financial growth.\u2019 That\u2019s a fortune cookie, not astrology.",
+            text: "Only Male / Female? In 2026? Skipping. This app wasn\u2019t built for me anyway.",
           },
         ],
         emotional_arc: [
@@ -2059,7 +2005,7 @@ export const superastroStudyData: StudyData = {
           "UNCERTAIN",
           "NEUTRAL",
           "NEUTRAL",
-          "DISAPPOINTED",
+          "DRAINED",
         ],
         segment_recommendation:
           "Create a \u2018Quick Read\u2019 mode for Gen-Z: sun sign + one question, no phone required, results in simple Gen-Z-friendly language (\u2018Your ex? Yeah the stars say he\u2019s thinking about you, but also about 3 other people\u2019). If they engage, offer the full kundli experience. Match the onboarding effort to their commitment level.",
@@ -2092,7 +2038,7 @@ export const superastroStudyData: StudyData = {
         rate_b: 50,
         delta: 21,
         implication:
-          "A 21-point gap driven entirely by structural blockers: NRIs face phone number rejection, missing international cities, and Hindi-heavy AI responses. Devotees face zero friction because the flow was designed for their mental model. The gap isn\u2019t about intent \u2014 NRIs are equally motivated \u2014 it\u2019s about the flow literally not supporting their inputs.",
+          "A 21-point gap driven by language and context defaults in the onboarding, not raw functionality: Hindi-heavy ad creatives, date-format and time-zone ambiguity, and no diaspora-specific purpose options. Devotees face zero friction because the flow was designed for their mental model. NRIs are equally motivated \u2014 they\u2019re being softly filtered out by an Indian-default experience, not by hard input blockers.",
       },
       {
         dimension: "acquisition_channel",
@@ -2294,7 +2240,7 @@ export const superastroStudyData: StudyData = {
       ],
       linked_friction_point_id: "FP_002",
       linked_theme_id: "T_002",
-      linked_rec_id: "DR_001",
+      linked_rec_id: "DR_002",
       rice_score: null,
       status: "Open",
       owner: null,
@@ -2302,54 +2248,50 @@ export const superastroStudyData: StudyData = {
       created_at: "2026-04-10",
     },
     {
-      insight_id: "INS_003",
-      rank: 3,
+      insight_id: "INS_004",
+      rank: 4,
       headline:
-        "AI first response must mirror the specific ad hook that brought the user",
+        "Structural exclusion \u2014 marital binary, 3-purpose limit, and self-only consultation framing silently filter out high-value segments",
       one_liner:
-        "38% of users who reached the AI chat were disappointed because the generic kundli response didn\u2019t address the specific question their ad promised to answer",
-      type: "Expectation Gap",
+        "28% of users hit a flow that wasn\u2019t built for their reality \u2014 users mid-divorce, parents consulting for children, shopkeepers asking about Vastu, and diaspora users uncertain about date-format and time-zone all bounce off rigid form fields and Indian-default copy",
+      type: "Structural Exclusion",
       observation:
-        "38 out of 100 persona-weighted interactions showed disappointment at the AI Chat step. SEQ for first consultation is 3.6 vs a 5.5 benchmark. Drop-off at the AI chat is 8.8% \u2014 the highest single-step drop in the flow.",
+        "34% of users report negative emotion at marital status. NRI segment converts at 50% (vs 71% for Devotees), driven by Hindi-heavy onboarding copy and missing date-format/time-zone affordances. Silent-Power-Users frequently abandon at the purpose screen because \u2018consultation for child\u2019 isn\u2019t an option. The drop-off shape is concentrated in users whose lived reality doesn\u2019t fit the form\u2019s binary or dropdown options.",
       finding:
-        "Each video ad plants a specific emotional question: \u2018Does he miss me?\u2019, \u2018Career kab set hogi?\u2019, \u2018Love marriage or arranged?\u2019. Users arrive with this question as their anchor. The AI\u2019s first response is a generic birth chart summary with planetary positions \u2014 no reference to the user\u2019s actual concern. The specificity gap between the ad\u2019s promise and the AI\u2019s delivery creates a false advertising perception.",
+        "The flow encodes a default user: Indian-born, asking about Marriage / Career / Relationship for themselves, comfortable with Hindi onboarding copy. Every minority case \u2014 separated/divorced, asking-for-family, asking-about-Vastu, English-primary diaspora \u2014 hits a soft wall. None of these are bugs; they\u2019re design decisions that prioritize the majority and silently cost real revenue from segments with above-average disposable income (NRI) or above-average return rate (Silent-Power-User consulting for family).",
       insight:
-        "The ad team and AI team are operating independently. The ad creates a hyper-specific expectation; the AI delivers a generic, one-size-fits-all response. The user experiences this as a broken promise. For emotionally vulnerable users (Life-Transition), this disconnect isn\u2019t just disappointing \u2014 it feels like confirmation that nothing can help them.",
+        "The cost of structural exclusion isn't just the immediate drop \u2014 it's the WOM. NRIs and Silent-Power-Users describe the experience as 'this app isn't for me,' which suppresses category referral exactly in segments where word-of-mouth is strongest (diaspora networks, women's family-decision networks).",
       recommendation:
-        "Pass ad creative ID to the AI as context. If the user clicked the \u2018Does he miss me?\u2019 ad, the AI\u2019s first response should address relationship dynamics. If from \u2018Career kab set hogi?\u2019, lead with career predictions. The ad\u2019s hook must be the AI\u2019s opening line.",
-      frequency_pct: 38,
-      affected_personas: [
-        "Life-Transition",
-        "Privacy-Seeker",
-        "Gen-Z-Curious",
-      ],
-      not_affected_personas: ["Devotee"],
+        "Expand marital status to include Separated, Divorced, Widowed, Prefer-not-to-say. Expand purpose to 7+ categories (add Health, Family, Spiritual, Education, Business/Vastu, Other). Add a \u2018Who is this consultation for?\u2019 toggle (Self / Family Member / Child). Detect English-primary users (locale or ad source) and route them to English-default onboarding copy with a one-tap Hindi toggle. Add date-format helper text and explicit time-zone choice on the birth-time screen. All five are quick wins individually.",
+      frequency_pct: 28,
+      affected_personas: ["Silent-Power-User", "Life-Transition", "NRI", "Devotee"],
+      not_affected_personas: ["Privacy-Seeker", "Price-Sensitive"],
       counter_evidence:
-        "Devotees (22% of users) value the kundli analysis itself and see planetary readings as the real product, not a detour from their question",
-      top_emotional_tags: ["DISAPPOINTED", "FRUSTRATED", "SKEPTICAL"],
-      confidence_score: 0.86,
-      avg_seq: 3.6,
-      step_drop_off_pct: 8.8,
+        "Standard tier-1 Indian users with marriage/career questions consulting for themselves reported no friction at these screens (52%)",
+      top_emotional_tags: ["FRUSTRATED", "EXCLUDED", "ANXIOUS"],
+      confidence_score: 0.88,
+      avg_seq: 3.4,
+      step_drop_off_pct: 7.0,
       supporting_monologues: [
         {
-          session_id: "APR_SA_U058_20260410",
+          session_id: "APR_SA_U071_20260410",
+          persona_type: "NRI",
+          text: "The response is mostly in Hindi with Sanskrit terms \u2014 dasha, antardasha, navamsa. I can read Devanagari but these technical words mean nothing to me.",
+        },
+        {
+          session_id: "APR_SA_U055_20260410",
           persona_type: "Life-Transition",
-          text: "I clicked because the ad asked \u2018Career kab set hogi?\u2019 but the AI started talking about Rahu in my 7th house. I don\u2019t care about planets.",
+          text: "I\u2019m going through a divorce and the options are \u2018Married\u2019 and \u2018Unmarried\u2019. What am I?",
         },
         {
-          session_id: "APR_SA_U093_20260410",
-          persona_type: "Gen-Z-Curious",
-          text: "The reel said \u2018Does he miss me?\u2019 so I thought the AI would tell me about my relationship. Instead it\u2019s giving me a birth chart I can\u2019t read.",
-        },
-        {
-          session_id: "APR_SA_U017_20260410",
-          persona_type: "Privacy-Seeker",
-          text: "I gave my phone number, name, DOB, birth time, birth place. And for what? A generic paragraph that could apply to anyone.",
+          session_id: "APR_SA_U082_20260410",
+          persona_type: "Silent-Power-User",
+          text: "This app doesn\u2019t understand that women my age consult astrologers for their children, not themselves.",
         },
       ],
-      linked_friction_point_id: "",
-      linked_theme_id: "T_003",
-      linked_rec_id: "DR_002",
+      linked_friction_point_id: "FP_005",
+      linked_theme_id: "T_004",
+      linked_rec_id: "DR_003",
       rice_score: null,
       status: "Open",
       owner: null,
@@ -2362,50 +2304,52 @@ export const superastroStudyData: StudyData = {
     {
       rec_id: "DR_001",
       rank: 1,
-      headline: "Skip-to-Chat with Progressive Profiling",
-      linked_insight_id: "INS_002",
-      linked_friction_point_id: "FP_002",
-      linked_theme_id: "T_002",
+      headline:
+        "Anonymous-First Auth \u2014 email or guest entry, defer phone to value moment",
+      linked_insight_id: "INS_001",
+      linked_friction_point_id: "FP_001",
+      linked_theme_id: "T_001",
       problem:
-        "46% of users found the 10-screen onboarding disproportionate to the \u20b91 price and \u2018Chat NOW\u2019 ad promise. 8% cumulative drop-off across S7\u2013S9.",
+        "8.5% of users drop at the phone number gate \u2014 the single largest drop in the funnel. 52% of users report negative emotion here. Privacy-Seekers and Gen-Z-Curious refuse to link their UPI/WhatsApp/LinkedIn-tied phone number to a stigmatized category. This is the same pattern documented in mental health and sensitive-dating apps.",
       user_need:
-        "Instant or near-instant access to the AI astrologer, with birth details collected naturally during the conversation",
+        "A way to start using the app without immediately attaching their real-world identity to a socially stigmatized interest",
       current_experience:
-        "10 sequential form screens (Ad \u2192 Phone \u2192 OTP \u2192 Name \u2192 Gender \u2192 Marital \u2192 DOB \u2192 Time \u2192 Place \u2192 Purpose \u2192 Chat) before any astrological value is delivered.",
+        "Phone number is the only entry credential. No guest browsing, no email login, no skip-for-now option. The app's most identifiable credential is required before any value is shown.",
       after_experience:
-        "3-screen entry (Ad \u2192 Phone \u2192 OTP \u2192 Chat). Mahesh Ji opens with \u2018Namaste! What\u2019s on your mind?\u2019 and weaves birth detail collection into the conversation: \u2018To give you an accurate reading, I\u2019ll need your birth date \u2014 when were you born?\u2019 Users receive incremental astrological insights as they share each detail.",
+        "Three entry options on the intro screen: \u2018Continue with Email\u2019 (default), \u2018Continue as Guest\u2019 (session-scoped, no profile saved), \u2018Continue with Phone\u2019. A visible privacy line: \u2018We never share your number, never SMS you without permission, and \u2018SuperAstro\u2019 will not appear in your phone records.\u2019 Phone verification is asked only at payment or the user's first opt-in for daily horoscope notifications.",
       recommended_change:
-        "Let users start chatting after OTP verification. The AI collects name, gender, DOB, time, place, and purpose conversationally. Each piece of data triggers an incremental insight (\u2018Interesting \u2014 born in March makes you a Pisces. Let me check your nakshatra...\u2019). Birth time and place become optional enhancements that unlock deeper analysis, not blockers.",
+        "Make phone auth one of three options, not the only option. Default to email. Add a visible, specific privacy commitment at the entry screen (not buried in a policy link). Move the phone ask to the moment the user has already received value and wants notifications or to upgrade to paid.",
       emotional_target:
-        "Replace IMPATIENT and FRUSTRATED with CURIOUS and ENGAGED \u2014 the data collection becomes part of the experience, not a barrier to it",
+        "Replace EMBARRASSED and DISTRUST with NEUTRAL and SAFE \u2014 the user no longer has to choose between curiosity and discretion",
       effort: "medium",
       success_metric:
-        "Overall completion rate increases from 62% to 75%+. Time to first AI response drops from ~3 minutes to <30 seconds. S7\u2013S9 cumulative drop-off drops to <3%.",
+        "Drop-off at the entry step decreases from 8.5% to <3%. Privacy-Seeker conversion increases from 56% to 70%+. Gen-Z-Curious conversion increases from 54% to 65%+. Phone-verified users (still required for paid) actually grow in absolute terms because more users reach the value moment.",
       priority: "this_sprint",
       rice_score: null,
     },
     {
       rec_id: "DR_002",
       rank: 2,
-      headline: "Ad-Aware AI First Response",
-      linked_insight_id: "INS_003",
-      linked_friction_point_id: "",
-      linked_theme_id: "T_003",
+      headline:
+        "Skip-to-Chat with Progressive Profiling (impulse path) \u2014 keep the long form as Devotee Mode",
+      linked_insight_id: "INS_002",
+      linked_friction_point_id: "FP_002",
+      linked_theme_id: "T_002",
       problem:
-        "38% of users who reached the AI chat were disappointed by generic kundli responses that didn\u2019t address the specific question their ad promised to answer. 8.8% drop-off at the final value-delivery step.",
+        "46% of users found the 10-screen onboarding disproportionate to the \u20b91 price and 'Chat NOW' ad promise. 8% cumulative drop-off across S7\u2013S9. But the counterintuitive risk is the inverse: Devotees (71% conversion, your highest-LTV segment) experience the long form as authenticity \u2014 it signals the app takes their kundli seriously. A naive 'shorten onboarding' fix would lift completion rate while quietly eroding LTV.",
       user_need:
-        "The AI\u2019s first response should directly address the emotional question that brought the user to the app",
+        "Two parallel paths from the same entry: a 30-second chat experience for impulse traffic, and the existing detailed kundli intake for users who arrive with intent",
       current_experience:
-        "Generic birth chart summary with planetary positions regardless of which ad the user clicked. No reference to the user\u2019s actual concern.",
+        "One 10-screen flow forced on every user regardless of intent or channel. The flow was designed for Devotees but is served to Instagram impulse traffic.",
       after_experience:
-        "If user clicked \u2018Does he miss me?\u2019 ad: AI opens with \u2018Let me look at your 7th house and Venus placement to understand your relationship dynamics...\u2019 If \u2018Career kab set hogi?\u2019: AI opens with \u2018Your 10th house and Saturn position tell me about your career timeline...\u2019 Specific question answered first, then detailed kundli offered as supporting analysis.",
+        "After OTP, users see two cards: \u2018Quick Question (chat now)\u2019 and \u2018Full Kundli Reading (3 minutes)\u2019. Quick path: drop into chat with Mahesh, collect birth details conversationally, deliver a focused answer to one question. Full path: existing 10-screen intake, ending in a comprehensive kundli analysis. Channel-aware default: Instagram traffic defaults to Quick; Search traffic defaults to Full.",
       recommended_change:
-        "Pass the ad creative ID or UTM source as context to the AI system prompt. Map each ad hook to a specific astrological domain (relationship \u2192 7th house, career \u2192 10th house, marriage \u2192 7th house + navamsa). The AI\u2019s first 2\u20133 sentences directly address the ad\u2019s specific promise before transitioning to broader kundli analysis.",
+        "Build the Quick path as a parallel mode, not a replacement. Default it for impulse channels (Instagram, low-intent ads). Devotees and search-intent users keep the Full path that already converts them at 71%+. Track both paths separately so you can see the LTV difference, not just the completion delta.",
       emotional_target:
-        "Replace DISAPPOINTED and SKEPTICAL with RELIEVED and HOPEFUL \u2014 the AI immediately validates that it understood why the user came",
+        "Replace IMPATIENT and FRUSTRATED with CURIOUS and ENGAGED for impulse users \u2014 without disturbing the HOPEFUL and CONFIDENT signals from Devotees on the existing path",
       effort: "medium",
       success_metric:
-        "AI chat drop-off rate decreases from 8.8% to <4%. User satisfaction rating for first AI response increases by 40%+. Return rate for ad-acquired users increases by 25%.",
+        "Quick-path completion: 80%+. Full-path completion holds at 71%+ (no regression). Blended completion: 75%+. Critically: 30-day repeat-chat rate on Full path stays > Quick path \u2014 confirming Devotees still self-select correctly. Time to first AI response on Quick: <30 seconds.",
       priority: "this_sprint",
       rice_score: null,
     },
@@ -2413,25 +2357,25 @@ export const superastroStudyData: StudyData = {
       rec_id: "DR_003",
       rank: 3,
       headline:
-        "Expand journey purpose + NRI-friendly city input",
-      linked_insight_id: "INS_003",
+        "Inclusive inputs \u2014 expanded marital status, expanded purpose, family-toggle, English-default for diaspora",
+      linked_insight_id: "INS_004",
       linked_friction_point_id: "",
       linked_theme_id: "T_004",
       problem:
-        "28% of users faced structural exclusion: NRIs couldn\u2019t find international birth cities, and users with non-standard needs had no matching purpose option. 7% cumulative drop-off across S9\u2013S10.",
+        "28% of users faced structural exclusion in the onboarding: users mid-divorce had no marital option that fit, parents consulting for children couldn\u2019t express that, shopkeepers asking about Vastu had no purpose match, and English-primary diaspora users had to wade through Hindi copy and ambiguous date/time pickers. 7% cumulative drop-off across S6 and S10; broader emotional impact at 28%.",
       user_need:
-        "A city input that works globally and a purpose selector that reflects the full range of astrological consultation needs",
+        "Form fields and copy that reflect the full range of consultation realities \u2014 not just the default Indian-born tier-1 user asking about their own marriage or career",
       current_experience:
-        "India-only city dropdown with no fuzzy matching. Three purpose options (Marriage, Career, Relationship) that exclude health, spiritual guidance, family, education, and NRI-specific concerns.",
+        "Binary marital status (Married / Unmarried). Three purpose options (Marriage, Career, Relationship) that exclude health, spiritual guidance, family, education, business/Vastu. Self-only consultation framing. Onboarding copy defaults to Hindi regardless of user\u2019s phone locale or ad-source language. Date-format and time-zone are implicit, not specified.",
       after_experience:
-        "Searchable text input for city with global coverage, fuzzy matching, and autocomplete. Purpose selector expanded to include Health, Family, Spiritual Guidance, Education, and \u2018Other\u2019 with a free-text field. A \u2018Who is this for?\u2019 toggle (Self / Family Member).",
+        "Marital status expanded to include Separated, Divorced, Widowed, Prefer-not-to-say. Purpose selector expanded to 7+ categories (Health, Family, Spiritual, Education, Business/Vastu, Other with free-text). A \u2018Who is this consultation for?\u2019 toggle (Self / Family Member / Child). English-default onboarding copy with one-tap Hindi toggle for users on English locales or English ad creatives. Explicit DD/MM helper text and time-zone choice on birth-time.",
       recommended_change:
-        "Replace the city dropdown with a searchable text input powered by a global city database (Google Places API or similar). Add fuzzy matching for typo tolerance. Expand purpose options to 7+ categories including Health, Family, Spiritual, Education. Add a \u2018Consultation For\u2019 toggle.",
+        "Expand the marital status and purpose selectors. Add a Consultation-For toggle. Detect English-primary users (locale or ad source) and route them to English-default onboarding copy. Add date-format and time-zone affordances. Each fix is independently shippable as a quick win.",
       emotional_target:
-        "Replace FRUSTRATED with NEUTRAL \u2014 users feel included and accommodated regardless of their background or need",
+        "Replace FRUSTRATED and EXCLUDED with NEUTRAL and INCLUDED \u2014 users feel the app was built with them in mind, regardless of their background or consultation purpose",
       effort: "quick_win",
       success_metric:
-        "NRI conversion rate increases from 50% to 65%+. S9 drop-off rate decreases from 5.4% to <2%. Purpose-related complaints drop to zero.",
+        "NRI conversion rate increases from 50% to 65%+. Silent-Power-User conversion increases from 64% to 75%+. Marital-status drop-off decreases from 2.4% to <1%. Purpose-related qualitative complaints drop to zero.",
       priority: "this_sprint",
       rice_score: null,
     },
@@ -2464,19 +2408,18 @@ export const superastroStudyData: StudyData = {
     {
       playbook_id: "PLB_002",
       title:
-        "Ad-specific hooks create ad-specific expectations that the product must fulfill",
-      category: "acquisition_alignment",
+        "Same flow, opposite products \u2014 onboarding can be two experiences for two segments",
+      category: "onboarding_design",
       finding:
-        "Video ads with specific emotional hooks (\u2018Does he miss me?\u2019, \u2018Career kab set hogi?\u2019) drove clicks but created expectations the AI\u2019s generic first response couldn\u2019t fulfill. 38% of users reported disappointment and 8.8% dropped at the AI chat \u2014 the highest single-step drop in the flow. The specificity gap between ad promise and product delivery felt like false advertising.",
+        "The same 10-screen onboarding produced opposite emotional arcs and opposite drop-off shapes for two cohorts within one user base: Devotees treat data collection as sacred preparation (71% conversion); impulse users treat it as a census form (54%). Optimizing the obvious metric (completion rate) by shortening the flow would silently destroy the high-LTV segment that reads friction as authenticity.",
       implication:
-        "High-specificity ads are optimized for click-through rate but create a debt that the product must repay at the moment of first value delivery. If the product can\u2019t fulfill the ad\u2019s specific promise, the user\u2019s investment (10 screens of data entry) amplifies the disappointment. The more specific the ad, the more specific the first response must be.",
+        "Aggregate completion-rate optimization is the wrong metric when a single flow serves segments with opposite mental models. The high-completion segment may be high-LTV precisely because they tolerate \u2014 and value \u2014 the friction that drops the low-completion segment.",
       action:
-        "Pass ad creative metadata (UTM, creative ID) to the product experience. Map each ad hook to a specific first-response template. If the ad says \u2018Does he miss me?\u2019, the first screen of value must address that relationship question before offering anything else. Align marketing and product teams on a shared \u2018ad-to-value contract\u2019 for each creative.",
+        "Detect intent at entry (channel, ad creative, behavioral signal) and route users to one of two parallel paths from the same entry. Track LTV by path, not just completion. Resist the temptation to merge the paths after the impulse-path completion lifts.",
       applies_to: [
-        "ad_driven_products",
-        "ai_chatbots",
-        "acquisition_alignment",
-        "personalization",
+        "onboarding_design",
+        "segment_divergence",
+        "ltv_vs_completion",
       ],
       evidence_studies: ["APR_SUPERASTRO_v01"],
       confidence: 0.88,
@@ -2488,10 +2431,24 @@ export const superastroStudyData: StudyData = {
   priority_table: [
     {
       rank: 1,
+      insight_id: "INS_002",
+      headline:
+        "Two paths from the same entry \u2014 Quick Chat for impulse traffic, Full Kundli for Devotees (don\u2019t merge them)",
+      type: "Segment-Divergent Onboarding",
+      reach: null,
+      impact: 3,
+      confidence: 0.89,
+      effort: 2,
+      rice_score: null,
+      routing: "this_sprint",
+      linked_rec_id: "DR_002",
+    },
+    {
+      rank: 2,
       insight_id: "INS_001",
       headline:
-        "Phone registration fails for stigma-sensitive content",
-      type: "Usability Problem",
+        "Add anonymous/email entry \u2014 phone gate is filtering out the highest-paying segment",
+      type: "Stigma / Privacy Barrier",
       reach: null,
       impact: 3,
       confidence: 0.92,
@@ -2501,32 +2458,18 @@ export const superastroStudyData: StudyData = {
       linked_rec_id: "DR_001",
     },
     {
-      rank: 2,
-      insight_id: "INS_002",
-      headline:
-        "10-screen onboarding contradicts \u2018Chat NOW\u2019 ad promise",
-      type: "Usability Problem",
-      reach: null,
-      impact: 3,
-      confidence: 0.89,
-      effort: 2,
-      rice_score: null,
-      routing: "this_sprint",
-      linked_rec_id: "DR_001",
-    },
-    {
       rank: 3,
-      insight_id: "INS_003",
+      insight_id: "INS_004",
       headline:
-        "AI first response must mirror the specific ad hook that brought the user",
-      type: "Expectation Gap",
+        "Inclusive inputs \u2014 expanded marital status, broader purpose options, family-toggle, English-default for diaspora",
+      type: "Structural Exclusion",
       reach: null,
       impact: 2,
-      confidence: 0.86,
+      confidence: 0.88,
       effort: 1,
       rice_score: null,
       routing: "this_sprint",
-      linked_rec_id: "DR_002",
+      linked_rec_id: "DR_003",
     },
   ],
 };

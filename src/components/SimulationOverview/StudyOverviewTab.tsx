@@ -135,32 +135,44 @@ export function StudyOverviewTab({ data }: { data: StudyData }) {
 
 /* ═══ EXEC SUMMARY ═══ */
 function ExecSummaryBanner({ exec }: { exec: StudyData["executive_summary"] }) {
-  /* Build narrative summary from the data */
-  const verdict = `${exec.completion_rate}% completion with a SUS grade of ${exec.sus_grade} (${exec.sus_label})${exec.sus_grade === "D" || exec.sus_grade === "F" ? " — below industry average" : ""}.`;
-  const critical = `${exec.critical_drop_pct}% of users dropped at ${exec.critical_drop_point}`;
-  const findings = exec.top_findings.sort((a, b) => a.rank - b.rank);
-  const secondFinding = findings[1]?.finding || "";
-  const secondPct = secondFinding.match(/(\d+)%/)?.[1];
-  const brokenLine = secondPct
-    ? `Two critical friction points are driving most drop-offs: ${critical.toLowerCase()} and ${secondFinding.toLowerCase().replace(/^\d+%\s*/, `${secondPct}% `)}.`
-    : `The primary friction point: ${critical.toLowerCase()}.`;
+  const findings = [...exec.top_findings].sort((a, b) => a.rank - b.rank);
+  const hero = findings[0];
+  const supporting = findings.slice(1);
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} style={{ background: "#1A1814", borderRadius: 20, padding: "36px 40px", position: "relative", overflow: "hidden", marginBottom: 16 }}>
-      <div style={{ position: "absolute", top: -60, right: -60, width: 200, height: 200, borderRadius: "50%", background: "rgba(232,88,58,0.12)", filter: "blur(80px)", pointerEvents: "none" }} />
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} style={{ background: "#1A1814", borderRadius: 20, padding: "40px 44px", position: "relative", overflow: "hidden", marginBottom: 16 }}>
+      <div style={{ position: "absolute", top: -80, right: -60, width: 280, height: 280, borderRadius: "50%", background: "rgba(232,88,58,0.18)", filter: "blur(90px)", pointerEvents: "none" }} />
       <div style={{ position: "relative" }}>
-        <p style={{ fontSize: 14, fontWeight: 500, color: "#E8583A", letterSpacing: "0.12em", marginBottom: 14 }}>Executive summary</p>
-        <p style={{ fontSize: 16, color: "#FFF", lineHeight: 1.65, marginBottom: 24 }}>
-          {verdict} {brokenLine}
-        </p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {findings.map(f => (
-            <div key={f.rank} style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: "10px 16px", flex: "1 1 260px" }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: "#E8583A", marginBottom: 4 }}>#{f.rank}</p>
-              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.5 }}>{f.finding}</p>
-            </div>
-          ))}
+        {/* Header row: label + meta chips */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 24 }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: "#E8583A", letterSpacing: "0.16em", textTransform: "uppercase", margin: 0 }}>The headline finding</p>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.65)", padding: "4px 10px", borderRadius: 999, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>{exec.completion_rate}% completion</span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.65)", padding: "4px 10px", borderRadius: 999, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>SUS {exec.sus_grade} · {exec.sus_label}</span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.65)", padding: "4px 10px", borderRadius: 999, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>{exec.critical_drop_pct}% drop · {exec.critical_drop_point}</span>
+          </div>
         </div>
+
+        {/* HERO finding — large, single block */}
+        {hero && (
+          <p style={{ fontSize: 24, fontWeight: 500, color: "#FFF", lineHeight: 1.4, letterSpacing: "-0.01em", margin: "0 0 28px", maxWidth: 980 }}>
+            {hero.finding}
+          </p>
+        )}
+
+        {/* Compact supporting findings */}
+        {supporting.length > 0 && (
+          <div>
+            <p style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.45)", letterSpacing: "0.14em", textTransform: "uppercase", margin: "0 0 12px" }}>Also true</p>
+            <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(supporting.length, 3)}, 1fr)`, gap: 10 }}>
+              {supporting.map(f => (
+                <div key={f.rank} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "12px 14px" }}>
+                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.78)", lineHeight: 1.5, margin: 0 }}>{f.finding}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </motion.div>
   );

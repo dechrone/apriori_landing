@@ -33,9 +33,11 @@ interface FlowAnalysisViewProps {
   /** Optional screen image map (screen_id → URL) used by founder-driven demo pages.
    *  Currently unused inside this component but accepted so demo pages compile. */
   screenImages?: Record<string, string>;
+  /** Hide the Deep Dive tab entirely (used by reports that only want Overview + Drop-Off). */
+  hideDeepDive?: boolean;
 }
 
-export function FlowAnalysisView({ data, simulationData, studyData }: FlowAnalysisViewProps) {
+export function FlowAnalysisView({ data, simulationData, studyData, hideDeepDive }: FlowAnalysisViewProps) {
   const [activeTab, setActiveTab] = useState<TabId>(
     simulationData || studyData ? TAB_SIM_OVERVIEW : TAB_OVERVIEW
   );
@@ -47,7 +49,7 @@ export function FlowAnalysisView({ data, simulationData, studyData }: FlowAnalys
     // Legacy Overview - Commented out
     // { id: TAB_OVERVIEW as TabId, label: simulationData ? "Legacy Overview" : "Overview", icon: BarChart3 },
     { id: TAB_DROP_OFF as TabId, label: "Drop-Off Funnel", icon: TrendingDown },
-    { id: TAB_DEEP_DIVE as TabId, label: "Deep Dive", icon: Layers },
+    ...(hideDeepDive ? [] : [{ id: TAB_DEEP_DIVE as TabId, label: "Deep Dive", icon: Layers }]),
   ];
 
   return (
