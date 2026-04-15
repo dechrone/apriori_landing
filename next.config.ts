@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "img.logo.dev" },
     ],
   },
+  async redirects() {
+    return [
+      { source: "/signup", destination: "/joinwaitlist?from=signup", permanent: false },
+      { source: "/signup/:path*", destination: "/joinwaitlist?from=signup", permanent: false },
+      { source: "/sign-up", destination: "/joinwaitlist?from=signup", permanent: false },
+      { source: "/sign-up/:path*", destination: "/joinwaitlist?from=signup", permanent: false },
+    ];
+  },
 };
 
 export default nextConfig;

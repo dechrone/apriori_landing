@@ -23,7 +23,17 @@ const LOGOS: Logo[] = [
 ];
 
 export function WaitlistPage() {
+  const [fromSignup] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return new URLSearchParams(window.location.search).get("from") === "signup";
+  });
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!fromSignup) return;
+    const t = setTimeout(() => setOpen(true), 1400);
+    return () => clearTimeout(t);
+  }, [fromSignup]);
 
   useEffect(() => {
     if (!open) return;
@@ -62,13 +72,42 @@ export function WaitlistPage() {
           className="w-1.5 h-1.5 rounded-full"
           style={{ backgroundColor: "#B8860B" }}
         />
-        <span
-          className="text-[11px] font-medium tracking-[0.16em] uppercase"
-          style={{ color: "#6B6151" }}
-        >
-          Closed alpha
-        </span>
       </div>
+
+      {/* Redirect notice — appears briefly when user lands from /signup */}
+      <AnimatePresence>
+        {fromSignup && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.5, ease: [0.2, 0.65, 0.2, 1] }}
+            className="absolute top-20 md:top-24 left-1/2 -translate-x-1/2 z-20 px-4"
+          >
+            <div
+              className="flex items-center gap-3 pl-4 pr-5 py-2.5 rounded-full whitespace-nowrap"
+              style={{
+                backgroundColor: "rgba(26, 23, 18, 0.92)",
+                color: "#F4EEDF",
+                boxShadow: "0 12px 32px -16px rgba(20,16,8,0.5)",
+                backdropFilter: "blur(6px)",
+              }}
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ backgroundColor: "#E2B55A" }}
+              />
+              <span
+                className="text-[12.5px] font-medium"
+                style={{ letterSpacing: "-0.005em" }}
+              >
+                Apriori is in closed alpha — join the waitlist and we&apos;ll
+                take it from here.
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Hero */}
       <section className="relative flex-1 flex items-center">
@@ -150,7 +189,7 @@ export function WaitlistPage() {
                     e.currentTarget.style.backgroundColor = "#1A1712";
                   }}
                 >
-                  Join the waitlist
+                  Claim 100 free credits
                   <span
                     className="inline-flex items-center justify-center w-5 h-5 rounded-full"
                     style={{ backgroundColor: "rgba(255,255,255,0.18)" }}
@@ -166,7 +205,7 @@ export function WaitlistPage() {
                   // className="hidden sm:inline text-[13px]"
                   style={{ color: "#7A7164", fontWeight: 600 }}
                 >
-                  Your first simulation, on us.
+                  Closed Alpha. 30s to join.
                 </span>
               </div>
             </div>
@@ -196,17 +235,17 @@ function LogoMarquee({ logos }: { logos: Logo[] }) {
         backgroundColor: "#EFE7D2",
       }}
     >
-      <div className="flex items-center gap-10 md:gap-14">
+      <div className="flex flex-col gap-3 md:gap-3.5">
         <div
-          className="pl-8 md:pl-12 whitespace-nowrap text-[10px] font-semibold tracking-[0.24em] uppercase flex-shrink-0"
+          className="pl-8 md:pl-12 whitespace-nowrap text-[10px] font-semibold tracking-[0.24em] uppercase"
           style={{ color: "#8A7F68" }}
         >
-          PMs from
+          Used by PMs at
         </div>
 
         {/* Marquee track */}
         <div
-          className="relative flex-1 overflow-hidden"
+          className="relative w-full overflow-hidden"
           style={{
             maskImage:
               "linear-gradient(to right, transparent 0, black 60px, black calc(100% - 60px), transparent 100%)",
