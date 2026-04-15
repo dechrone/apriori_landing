@@ -58,7 +58,7 @@ export function DemoSection() {
           transition={{ duration: 0.4, delay: 0.3 }}
         >
           <a
-            href="/demo/flent"
+            href="/demo/univest"
             className="group inline-flex items-center gap-2 text-sm font-medium transition-all duration-200"
             style={{ color: "#B8860B" }}
           >

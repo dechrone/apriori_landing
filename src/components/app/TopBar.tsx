@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Bell, Menu, LogOut, ChevronDown } from "lucide-react";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { CreditBadge } from "@/components/app/CreditBadge";
 
 interface TopBarProps {
   title: string;
@@ -72,6 +73,7 @@ export function TopBar({ title, breadcrumb, actions, onMenuClick }: TopBarProps)
       <div className="flex items-center gap-2 sm:gap-4">
         <div className="hidden sm:block">{actions}</div>
         <div className="flex items-center gap-3">
+          <CreditBadge />
           <button className="relative p-2 hover:bg-[#F5F5F5] rounded-lg transition-colors">
             <Bell className="w-5 h-5 text-[#6B7280]" />
           </button>

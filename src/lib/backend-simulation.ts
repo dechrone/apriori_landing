@@ -3,10 +3,26 @@
  * Base URL: localhost:8080 for now (override with NEXT_PUBLIC_BACKEND_URL).
  */
 
+import { auth } from "@/lib/firebase";
+
 const BASE_URL =
   typeof window !== "undefined"
     ? process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000"
     : process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+
+/**
+ * Resolve the current Firebase ID token for authenticated requests.
+ * Throws if the user is not signed in — callers must gate on auth state first.
+ */
+async function authHeaders(): Promise<Record<string, string>> {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Not signed in");
+  const token = await user.getIdToken();
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+}
 
 /**
  * Optional audience plumbing the backend uses for:
@@ -84,7 +100,7 @@ export async function triggerProductFlowSimulation(
 ): Promise<Response> {
   const res = await fetch(`${BASE_URL}/api/v1/simulations/product-flow`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: await authHeaders(),
     body: JSON.stringify({ profileId, ...payload }),
   });
   return res;
@@ -97,7 +113,7 @@ export async function triggerAdPortfolioSimulation(
 ): Promise<Response> {
   const res = await fetch(`${BASE_URL}/api/v1/simulations/ad-portfolio`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: await authHeaders(),
     body: JSON.stringify({ profileId, ...payload }),
   });
   return res;
@@ -112,7 +128,7 @@ export async function triggerProductFlowComparatorSimulation(
     `${BASE_URL}/api/v1/simulations/product-flow-comparator`,
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: await authHeaders(),
       body: JSON.stringify({ profileId, ...payload }),
     }
   );

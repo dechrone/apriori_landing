@@ -21,7 +21,7 @@ export function ConditionalSiteHeader() {
     pathname?.startsWith(prefix)
   );
 
-  if (isAppRoute) {
+  if (isAppRoute || pathname === "/joinwaitlist") {
     return null;
   }
 

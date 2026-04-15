@@ -11,6 +11,7 @@ import {
   Image as ImageIcon,
   Lightbulb,
   Settings,
+  Sparkles,
   X,
   PanelLeftClose,
   PanelLeft,
@@ -27,6 +28,7 @@ const navigation = [
 ];
 
 const secondaryNavigation = [
+  { name: 'Pricing', href: '/pricing', icon: Sparkles },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 

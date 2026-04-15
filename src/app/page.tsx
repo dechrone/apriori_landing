@@ -43,7 +43,7 @@ export default function Home() {
                 <h4 className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-3">Product</h4>
                 <ul className="space-y-2">
                   <li>
-                    <a href="/demo/flent" className="text-sm text-text-secondary hover:text-text-primary transition-colors">
+                    <a href="/demo/univest" className="text-sm text-text-secondary hover:text-text-primary transition-colors">
                       Sample Report
                     </a>
                   </li>

@@ -171,6 +171,16 @@ export default function ProductFlowSimulationPage() {
         audienceTemplateId: formData.audienceTemplateId || undefined,
       });
       if (!res.ok) {
+        if (res.status === 402) {
+          const data = await res.json().catch(() => ({}));
+          const detail = (data as { detail?: { required?: number; available?: number; message?: string } }).detail;
+          showToast(
+            'error',
+            'Out of credits',
+            detail?.message || `You need ${detail?.required ?? '?'} credits but have ${detail?.available ?? 0}. Visit /pricing to upgrade.`,
+          );
+          return;
+        }
         const text = await res.text();
         showToast('error', 'Backend error', text || `Request failed (${res.status}).`);
         return;
