@@ -1,43 +1,46 @@
 import { NextRequest, NextResponse } from "next/server";
-import { adminDb } from "@/lib/firebase-admin";
+import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 
+/**
+ * Landing-page signup endpoint. Inserts a row into public.signups via the
+ * service-role client (bypasses RLS). Dedupes on (lower(email), source).
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { name, email, company, role } = body;
 
-    // Server-side validation
     if (!name || !email || !company || !role) {
-      return NextResponse.json(
-        { error: "All fields are required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
 
-    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const source = "signup-landing";
+    const sb = getSupabaseAdminClient();
 
-    // Check for duplicate email
-    const existing = await adminDb
-      .collection("apriori_signups")
-      .where("email", "==", normalizedEmail)
-      .limit(1)
-      .get();
+    const { data: existing, error: lookupErr } = await sb
+      .from("signups")
+      .select("id")
+      .eq("email", normalizedEmail)
+      .eq("source", source)
+      .limit(1);
 
-    if (!existing.empty) {
+    if (lookupErr) throw lookupErr;
+    if (existing && existing.length > 0) {
       return NextResponse.json(
         { error: "This email is already registered" },
         { status: 409 }
       );
     }
 
-    await adminDb.collection("apriori_signups").add({
-      name: name.trim(),
+    const { error: insertErr } = await sb.from("signups").insert({
+      name: String(name).trim(),
       email: normalizedEmail,
-      company: company.trim(),
-      role,
-      submittedAt: new Date().toISOString(),
-      source: "signup-landing",
+      company: String(company).trim(),
+      role: String(role),
+      source,
     });
+    if (insertErr) throw insertErr;
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

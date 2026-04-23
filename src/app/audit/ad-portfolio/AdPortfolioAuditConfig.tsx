@@ -159,8 +159,9 @@ export function AdPortfolioAuditConfig() {
       },
       budget: a.budget ? `$${a.budget}` : null,
     }));
-    console.log("[Ad Portfolio Audit] Submission payload:", payload);
-    alert("Portfolio analysis submitted! (Mock)\n\nCheck the console for the payload.");
+    // TODO: wire up to /api/v1/simulations/ad-portfolio — audit page is still a mock.
+    void payload;
+    alert("Portfolio analysis submitted! (Mock)");
   }, [ads]);
 
   return (

@@ -6,17 +6,17 @@ import { useRouter } from "next/navigation";
 import { TopBar } from "@/components/app/TopBar";
 import { useAppShell } from "@/components/app/AppShell";
 import { useToast } from "@/components/ui/Toast";
-import { useFirebaseUser } from "@/contexts/FirebaseUserContext";
+import { useUser } from "@/contexts/UserContext";
 import { AudienceFiltersStep } from "@/components/audiences/AudienceFiltersStep";
 import { ArrowLeft, ArrowRight, Users } from "lucide-react";
-import { saveAudience } from "@/lib/firestore";
+import { saveAudience } from "@/lib/db";
 import type { AdvancedFilters } from "@/types/audience-filters";
 
 export default function NewAudiencePage() {
   const { toggleMobileMenu, sidebarCollapsed } = useAppShell();
   const router = useRouter();
   const { showToast } = useToast();
-  const { userId } = useFirebaseUser();
+  const { userId } = useUser();
 
   const [step, setStep] = useState<"details" | "builder">("details");
   const [name, setName] = useState("");

@@ -1,23 +1,21 @@
 /**
- * Trigger backend API when user runs a simulation.
- * Base URL: localhost:8080 for now (override with NEXT_PUBLIC_BACKEND_URL).
+ * Client helpers that call the backend simulation engine.
+ * Auth flows through the Supabase access token (JWT); the backend verifies
+ * it with its SUPABASE_JWT_SECRET.
  */
 
-import { auth } from "@/lib/firebase";
+import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 const BASE_URL =
   typeof window !== "undefined"
     ? process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000"
     : process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
-/**
- * Resolve the current Firebase ID token for authenticated requests.
- * Throws if the user is not signed in — callers must gate on auth state first.
- */
 async function authHeaders(): Promise<Record<string, string>> {
-  const user = auth.currentUser;
-  if (!user) throw new Error("Not signed in");
-  const token = await user.getIdToken();
+  const sb = getSupabaseBrowserClient();
+  const { data } = await sb.auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) throw new Error("Not signed in");
   return {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
@@ -40,8 +38,13 @@ export interface AudienceRoutingHints {
 export interface ProductFlowSimulationPayload extends AudienceRoutingHints {
   name: string;
   audience: string;
-  personaDepth: "low" | "medium" | "high";
+  /** Legacy bucket — kept for back-compat. Ignored when numPersonas is set. */
+  personaDepth?: "low" | "medium" | "high";
+  /** Explicit persona count, 1-50. Free PM wizard hardcodes this to 50. */
+  numPersonas?: number;
   optimizeMetric: string;
+  /** Free-text: what is this flow trying to achieve for the user? */
+  objective?: string;
   selectedFolderIds: string[];
 }
 
@@ -133,4 +136,74 @@ export async function triggerProductFlowComparatorSimulation(
     }
   );
   return res;
+}
+
+// ---------------------------------------------------------------------------
+// Server-persisted simulation results & public sharing
+// ---------------------------------------------------------------------------
+
+export interface ServerSimulationRecord<T = unknown> {
+  simulation_id: string;
+  uid: string;
+  kind: string;
+  name?: string;
+  audience?: string;
+  objective?: string;
+  num_personas?: number;
+  retrieval_mode?: string;
+  public: boolean;
+  public_share_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  result: T;
+}
+
+/** GET /api/v1/simulations/{id} — owner-scoped fetch (auth required). */
+export async function fetchSimulationById<T = unknown>(
+  simulationId: string,
+): Promise<ServerSimulationRecord<T> | null> {
+  const res = await fetch(
+    `${BASE_URL}/api/v1/simulations/${encodeURIComponent(simulationId)}`,
+    { method: "GET", headers: await authHeaders() },
+  );
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`Failed to load simulation (${res.status})`);
+  return (await res.json()) as ServerSimulationRecord<T>;
+}
+
+export interface ShareToggleResponse {
+  simulation_id: string;
+  public: boolean;
+  public_share_id: string | null;
+  share_url_path: string | null;
+}
+
+/** POST /api/v1/simulations/{id}/share?enable=true|false — flip public visibility. */
+export async function toggleSimulationShare(
+  simulationId: string,
+  enable: boolean,
+): Promise<ShareToggleResponse> {
+  const url = new URL(
+    `${BASE_URL}/api/v1/simulations/${encodeURIComponent(simulationId)}/share`,
+  );
+  url.searchParams.set("enable", enable ? "true" : "false");
+  const res = await fetch(url.toString(), {
+    method: "POST",
+    headers: await authHeaders(),
+  });
+  if (!res.ok) throw new Error(`Failed to update sharing (${res.status})`);
+  return (await res.json()) as ShareToggleResponse;
+}
+
+/** GET /api/v1/simulations/shared/{shareId} — no auth; the /r/[shareId] route calls this. */
+export async function fetchSharedSimulation<T = unknown>(
+  shareId: string,
+): Promise<ServerSimulationRecord<T> | null> {
+  const res = await fetch(
+    `${BASE_URL}/api/v1/simulations/shared/${encodeURIComponent(shareId)}`,
+    { method: "GET" },
+  );
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`Failed to load shared simulation (${res.status})`);
+  return (await res.json()) as ServerSimulationRecord<T>;
 }

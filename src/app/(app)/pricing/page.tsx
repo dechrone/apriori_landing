@@ -6,7 +6,8 @@ import { useAppShell } from "@/components/app/AppShell";
 import { Button } from "@/components/ui/Button";
 import { useCreditProfile } from "@/lib/credits";
 
-const CONTACT_EMAIL = "bissarahul01@gmail.com";
+const CONTACT_EMAIL =
+  process.env.NEXT_PUBLIC_CONTACT_EMAIL || "alpha@apriori.work";
 
 interface Tier {
   id: "free" | "pro" | "custom";
@@ -227,7 +228,7 @@ export default function PricingPage() {
                 >
                   Email us
                 </a>{" "}
-                and we'll put together a volume quote within a day.
+                and we&apos;ll put together a volume quote within a day.
               </li>
             </ul>
           </div>

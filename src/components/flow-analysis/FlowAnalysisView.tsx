@@ -6,6 +6,7 @@ import type { SimulationData } from "@/types/simulation";
 import type { StudyData } from "@/types/study";
 import { OverviewTab } from "./OverviewTab";
 import { DeepDiveTab } from "./DeepDiveTab";
+import { ReadingGuide } from "./ReadingGuide";
 import { DropOffFunnel as LegacyDropOffFunnel } from "./DropOffFunnel";
 import { DropOffFunnel as SimDropOffFunnel } from "@/components/DropOffFunnel";
 import { SimulationOverview } from "@/components/SimulationOverview";
@@ -54,6 +55,9 @@ export function FlowAnalysisView({ data, simulationData, studyData, hideDeepDive
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#F5F4F2", paddingTop: 52 }}>
+      {/* First-time reading guide — dismissible, sticky per browser. */}
+      <ReadingGuide />
+
       {/* ── Tab Bar only ── */}
       <div
         className="sticky z-20"

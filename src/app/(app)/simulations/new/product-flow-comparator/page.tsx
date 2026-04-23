@@ -5,7 +5,7 @@ import { TopBar } from '@/components/app/TopBar';
 import { StepProgressBar } from '@/components/simulations/StepProgressBar';
 import { useAppShell } from '@/components/app/AppShell';
 import { useToast } from '@/components/ui/Toast';
-import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
+import { useUser } from '@/contexts/UserContext';
 import {
   ArrowLeft,
   ChevronRight,
@@ -20,8 +20,8 @@ import type { AssetFolder } from '@/types/asset';
 import { getAssetTypeLabel } from '@/types/asset';
 import { triggerProductFlowComparatorSimulation, fetchAudienceTemplates } from '@/lib/backend-simulation';
 import type { AudienceTemplate } from '@/lib/backend-simulation';
-import { getAudiences, getAssetFolders, saveSimulation } from '@/lib/firestore';
-import type { AudienceDoc } from '@/lib/firestore';
+import { getAudiences, getAssetFolders, saveSimulation } from '@/lib/db';
+import type { AudienceDoc } from '@/lib/db';
 import { consumeNDJSONStream } from '@/lib/stream-simulation';
 import type { ComparatorData } from '@/types/comparator';
 
@@ -41,7 +41,7 @@ const METRICS = [
 export default function ProductFlowComparatorSimulationPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
-  const { userId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useUser();
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [running, setRunning] = useState(false);
   const [audiences, setAudiences] = useState<AudienceDoc[]>([]);
@@ -256,7 +256,13 @@ export default function ProductFlowComparatorSimulationPage() {
       showToast('success', 'Comparison complete', 'Redirecting to results.');
       router.push(`/simulations/product-flow-comparator/${docId}`);
     } catch (err) {
-      showToast('error', 'Failed to run simulation', err instanceof Error ? err.message : 'Check backend at localhost:8000.');
+      showToast(
+        'error',
+        'Failed to run simulation',
+        err instanceof Error
+          ? err.message
+          : "We couldn't reach the simulation engine. Please try again in a minute.",
+      );
     } finally {
       setRunning(false);
       setStreamProgress(null);

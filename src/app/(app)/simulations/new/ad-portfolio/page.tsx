@@ -5,7 +5,7 @@ import { TopBar } from '@/components/app/TopBar';
 import { StepProgressBar } from '@/components/simulations/StepProgressBar';
 import { useAppShell } from '@/components/app/AppShell';
 import { useToast } from '@/components/ui/Toast';
-import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
+import { useUser } from '@/contexts/UserContext';
 import {
   ArrowLeft,
   ChevronRight,
@@ -19,8 +19,8 @@ import { useRouter } from 'next/navigation';
 import type { AssetFolder } from '@/types/asset';
 import { getAssetTypeLabel } from '@/types/asset';
 import { triggerAdPortfolioSimulation } from '@/lib/backend-simulation';
-import { getAudiences, getAssetFolders, saveSimulation } from '@/lib/firestore';
-import type { AudienceDoc } from '@/lib/firestore';
+import { getAudiences, getAssetFolders, saveSimulation } from '@/lib/db';
+import type { AudienceDoc } from '@/lib/db';
 import type { AdSimulationResponse } from '@/types/simulation-result';
 
 type Step = 1 | 2;
@@ -30,7 +30,7 @@ const STEP_LABELS = ['Setup', 'Select ad folder'];
 export default function AdPortfolioSimulationPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
-  const { userId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useUser();
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [running, setRunning] = useState(false);
   const [audiences, setAudiences] = useState<AudienceDoc[]>([]);
@@ -101,7 +101,7 @@ export default function AdPortfolioSimulationPage() {
       showToast('error', 'Not signed in', 'Please sign in to run a simulation.');
       return;
     }
-    // Resolve audience ID → natural language description (backend expects text, not Firestore ID)
+    // Resolve audience ID → natural language description (backend expects text, not backend folder ID)
     const selectedAudience = audiences.find((a) => a.id === formData.audience);
     const audienceText =
       selectedAudience?.audienceDescription ||
@@ -142,7 +142,13 @@ export default function AdPortfolioSimulationPage() {
       showToast('success', 'Simulation complete', 'Redirecting to results.');
       router.push(`/simulations/ad-portfolio/${docId}`);
     } catch (err) {
-      showToast('error', 'Failed to run simulation', err instanceof Error ? err.message : 'Check backend at localhost:8080.');
+      showToast(
+        'error',
+        'Failed to run simulation',
+        err instanceof Error
+          ? err.message
+          : "We couldn't reach the simulation engine. Please try again in a minute.",
+      );
     } finally {
       setRunning(false);
     }

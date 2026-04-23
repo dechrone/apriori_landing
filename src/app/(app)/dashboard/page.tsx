@@ -1,17 +1,21 @@
 "use client";
 
 import { TopBar } from '@/components/app/TopBar';
-import { Beaker, Target, GitCompare, Users, Package, ChevronRight, Check, Loader2, PartyPopper } from 'lucide-react';
+import { Beaker, Target, GitCompare, Users, Package, ChevronRight, Check, Loader2, PartyPopper, PlayCircle } from 'lucide-react';
 import { useAppShell } from '@/components/app/AppShell';
 import Link from 'next/link';
 import { useState, useEffect, useCallback } from 'react';
-import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
+import { useUser } from '@/contexts/UserContext';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { WelcomeModal } from '@/components/app/WelcomeModal';
 import {
   getSimulations,
   getAssetFolders,
   getAudiences,
+  getUserProfile,
+  markWelcomeSeen,
   type SimulationDoc,
-} from '@/lib/firestore';
+} from '@/lib/db';
 
 /* ── Helpers ──────────────────────────────────────────────────────────── */
 
@@ -88,8 +92,36 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
 
 export default function DashboardPage() {
   const { toggleMobileMenu } = useAppShell();
-  const { userId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useUser();
+  const { user } = useAuthContext();
   const [showComingSoonModal, setShowComingSoonModal] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  // First-login welcome modal — read flag from user profile
+  useEffect(() => {
+    if (!userId || !profileReady) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const profile = await getUserProfile(userId);
+        if (!cancelled && profile && !profile.hasSeenWelcome) {
+          setShowWelcome(true);
+        }
+      } catch (err) {
+        console.error('Error checking welcome flag:', err);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [userId, profileReady]);
+
+  const dismissWelcome = useCallback(() => {
+    setShowWelcome(false);
+    if (userId) {
+      markWelcomeSeen(userId).catch((err) =>
+        console.error('Error marking welcome seen:', err)
+      );
+    }
+  }, [userId]);
 
   // Recent simulations state
   const [simulations, setSimulations] = useState<SimulationDoc[]>([]);
@@ -324,6 +356,15 @@ export default function DashboardPage() {
             <h2 className="text-xl font-semibold text-[#1A1A1A] mb-6">Quick Actions</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {isNewUser && (
+                <QuickActionCard
+                  icon={<PlayCircle className="w-6 h-6 text-amber-600" />}
+                  title="Try a sample simulation"
+                  description="See a finished run end-to-end before you build your own — 2 min, no setup"
+                  href="/simulations/product-flow/sample"
+                  highlight
+                />
+              )}
               <QuickActionCard
                 icon={<Beaker className="w-6 h-6 text-amber-600" />}
                 title="Run Product Flow Simulation"
@@ -358,6 +399,14 @@ export default function DashboardPage() {
           </section>
         </div>
       </div>
+
+      {/* First-login welcome */}
+      {showWelcome && (
+        <WelcomeModal
+          firstName={user?.displayName?.split(' ')[0]}
+          onDismiss={dismissWelcome}
+        />
+      )}
 
       {/* Coming Soon Modal */}
       {showComingSoonModal && (
@@ -471,14 +520,20 @@ interface QuickActionCardProps {
   description: string;
   href?: string;
   onClick?: () => void;
+  highlight?: boolean;
 }
 
-function QuickActionCard({ icon, title, description, href, onClick }: QuickActionCardProps) {
+function QuickActionCard({ icon, title, description, href, onClick, highlight }: QuickActionCardProps) {
   const content = (
     <div
-      className="bg-white rounded-xl p-6 hover:shadow-md transition-all cursor-pointer"
-      style={{ border: '1px solid #E8E4DE' }}
+      className="bg-white rounded-xl p-6 hover:shadow-md transition-all cursor-pointer relative"
+      style={{ border: highlight ? '1.5px solid #F59E0B' : '1px solid #E8E4DE' }}
     >
+      {highlight && (
+        <span className="absolute -top-2 left-5 text-[10px] font-bold text-white bg-amber-500 rounded-full px-2 py-0.5 uppercase tracking-wider">
+          Start here
+        </span>
+      )}
       <div className="flex items-start gap-4">
         {/* Icon container — all cards use amber */}
         <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-100 transition-colors">

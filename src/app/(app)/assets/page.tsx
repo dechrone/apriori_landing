@@ -12,7 +12,7 @@ import { FolderCardMenu } from '@/components/assets/FolderCardMenu';
 import { FigmaImportModal } from '@/components/figma';
 import { useAppShell } from '@/components/app/AppShell';
 import { useToast } from '@/components/ui/Toast';
-import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
+import { useUser } from '@/contexts/UserContext';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Plus, FolderPlus, FolderOpen, Loader2, CheckCircle2, AlertCircle, Figma } from 'lucide-react';
 import type { AssetFolder, Asset } from '@/types/asset';
@@ -21,7 +21,7 @@ import {
   getAssetFolders,
   saveAssetFolder,
   getAssetsInFolder,
-} from '@/lib/firestore';
+} from '@/lib/db';
 import {
   getFolders,
   createFolder,
@@ -32,8 +32,8 @@ import {
 export default function AssetsPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
-  const { userId, profileReady } = useFirebaseUser();
-  const { user } = useAuthContext();
+  const { userId, profileReady } = useUser();
+  const { user, getAccessToken } = useAuthContext();
   const router = useRouter();
 
   const [folders, setFolders] = useState<AssetFolder[]>([]);
@@ -49,14 +49,14 @@ export default function AssetsPage() {
   const loadFolders = useCallback(async () => {
     if (!userId || !profileReady || !user) return;
     try {
-      const token = await user.getIdToken();
+      const token = await getAccessToken();
       const roots = await getFolders(token);
       setFolders(roots);
       const comparatorIds = roots.filter((f) => f.assetType === 'product-flow-comparator').map((f) => f.id);
       const subfoldersMap: Record<string, AssetFolder[]> = {};
       await Promise.all(
         comparatorIds.map(async (parentId) => {
-          // Sub-folders are still in Firestore (parentId = backend folder ID)
+          // Sub-folders are still in Supabase (parentId = backend folder ID)
           const children = await getAssetFolders(userId, parentId);
           subfoldersMap[parentId] = children;
         })
@@ -99,12 +99,12 @@ export default function AssetsPage() {
     if (!userId || !user) return;
     const now = new Date().toISOString();
     try {
-      const token = await user.getIdToken();
+      const token = await getAccessToken();
       if (assetType === 'product-flow-comparator') {
         // Parent folder via backend API
         const parentFolder = await createFolder(token, { name, assetType: 'product-flow-comparator', description });
         const parentId = parentFolder.id;
-        // Sub-folders stay in Firestore until backend supports parentId
+        // Sub-folders stay in Supabase until backend supports parentId
         const childData: Omit<AssetFolder, 'id'> = {
           name: 'Flow 1',
           assetType: 'product-flow',
@@ -137,7 +137,7 @@ export default function AssetsPage() {
   const handleSaveFolder = async (updates: { name: string; description?: string }) => {
     if (!editModalFolder || !user) return;
     try {
-      const token = await user.getIdToken();
+      const token = await getAccessToken();
       await updateFolder(token, editModalFolder.id, updates);
       setFolders((prev) =>
         prev.map((f) =>
@@ -157,7 +157,7 @@ export default function AssetsPage() {
   const handleDeleteFolder = async () => {
     if (!deleteModalFolder || !user) return;
     try {
-      const token = await user.getIdToken();
+      const token = await getAccessToken();
       await deleteFolder(token, deleteModalFolder.id);
       setFolders((prev) => prev.filter((f) => f.id !== deleteModalFolder.id));
       showToast('success', 'Folder deleted', `"${deleteModalFolder.name}" has been removed.`);

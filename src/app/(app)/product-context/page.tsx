@@ -8,9 +8,9 @@ import { StyledDropdown } from '@/components/ui/StyledDropdown';
 import { Textarea } from '@/components/ui/Textarea';
 import { useToast } from '@/components/ui/Toast';
 import { useAppShell } from '@/components/app/AppShell';
-import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
+import { useUser } from '@/contexts/UserContext';
 import { Loader2, Save } from 'lucide-react';
-import { getProductContext, saveProductContext, type ProductContextData } from '@/lib/firestore';
+import { getProductContext, saveProductContext, type ProductContextData } from '@/lib/db';
 
 const DEFAULT_FORM: ProductContextData = {
   productType: 'saas',
@@ -23,7 +23,7 @@ const DEFAULT_FORM: ProductContextData = {
 export default function ProductContextPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
-  const { userId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useUser();
 
   const [formData, setFormData] = useState<ProductContextData>(DEFAULT_FORM);
   const [loading, setLoading] = useState(true);

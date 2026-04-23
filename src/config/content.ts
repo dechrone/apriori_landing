@@ -387,13 +387,6 @@ export const CONTENT = {
     primaryCTA: "See a Live Report",
     secondaryCTA: "Run It On Your Flow",
   },
-  socialProof: {
-    heading: "Working With Design Partners",
-    companies: [
-      { name: "Blink Money", badge: "Antler-backed" },
-    ],
-    supportingCopy: "Working with design partners in fintech and consumer apps.",
-  },
   workflow: {
     heading: "Three steps. Results in a day.",
     steps: [
@@ -414,24 +407,9 @@ export const CONTENT = {
       },
     ],
   },
-  matrix: {
-    heading: "",
-    subheading: "",
-    quadrants: [
-      { position: "top-left", impact: "", reversibility: "", name: "", description: "", tools: "" },
-      { position: "top-right", impact: "", reversibility: "", name: "", description: "", tools: "", isAprioriZone: true },
-      { position: "bottom-left", impact: "", reversibility: "", name: "", description: "", tools: "" },
-      { position: "bottom-right", impact: "", reversibility: "", name: "", description: "", tools: "" },
-    ],
-  },
-  ledger: {
-    heading: "",
-    subheading: "",
-    entries: [] as { date: string; title: string; description: string; metric: string; status: string }[],
-  },
   finalCTA: {
-    heading: "Send us your screens. Get answers in hours.",
-    subheading: "First simulation is free. If the output is not useful, we part as friends.",
+    heading: "Run your first 50-user simulation. Free.",
+    subheading: "Upload your screens, tell us the goal and audience, get a usability report in minutes. No card required.",
     primaryCTA: "Run a Free Simulation",
     secondaryCTA: "Run It On Your Flow",
     trustElements: [],

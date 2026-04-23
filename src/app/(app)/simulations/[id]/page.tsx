@@ -8,13 +8,18 @@ import { TopBar } from "@/components/app/TopBar";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useAppShell } from "@/components/app/AppShell";
-import { useFirebaseUser } from "@/contexts/FirebaseUserContext";
-import { getSimulation } from "@/lib/firestore";
-import type { SimulationDoc } from "@/lib/firestore";
+import { useUser } from "@/contexts/UserContext";
+import { getSimulation } from "@/lib/db";
+import type { SimulationDoc } from "@/lib/db";
 import type { SimulationData } from "@/types/simulation";
 import type { FlowAnalysisData } from "@/types/flow-analysis";
 import { FlowAnalysisView } from "@/components/flow-analysis/FlowAnalysisView";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Link2, Check } from "lucide-react";
+import {
+  toggleSimulationShare,
+  fetchSimulationById,
+} from "@/lib/backend-simulation";
+import { useToast } from "@/components/ui/Toast";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -30,11 +35,17 @@ const dmSans = DM_Sans({
 
 export default function SimulationDetailsPage() {
   const { toggleMobileMenu } = useAppShell();
-  const { userId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useUser();
+  const { showToast } = useToast();
   const params = useParams();
   const id = typeof params?.id === "string" ? params.id : null;
   const [simulation, setSimulation] = useState<SimulationDoc | null>(null);
   const [loading, setLoading] = useState(true);
+  // Public-share state — hydrated from the backend's ServerSimulationRecord if present.
+  const [shareId, setShareId] = useState<string | null>(null);
+  const [isPublic, setIsPublic] = useState(false);
+  const [shareBusy, setShareBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!userId || !profileReady || !id) {
@@ -45,6 +56,22 @@ export default function SimulationDetailsPage() {
     getSimulation(userId, id)
       .then((doc) => {
         if (!cancelled) setSimulation(doc ?? null);
+        // Try to hydrate share state from the server-persisted record. Non-blocking
+        // and silent — if the server never saved this sim, users just don't see
+        // the share toggle populated, which is fine.
+        const sid = (doc?.result as SimulationData | undefined)?.simulation_id;
+        if (sid) {
+          fetchSimulationById(sid)
+            .then((record) => {
+              if (!cancelled && record) {
+                setIsPublic(!!record.public);
+                setShareId(record.public_share_id ?? null);
+              }
+            })
+            .catch(() => {
+              /* server hasn't stored this sim — toggle still works, just lazily creates on first toggle */
+            });
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -53,6 +80,46 @@ export default function SimulationDetailsPage() {
       cancelled = true;
     };
   }, [userId, profileReady, id]);
+
+  const handleToggleShare = async () => {
+    const sid = (simulation?.result as SimulationData | undefined)?.simulation_id;
+    if (!sid) {
+      showToast(
+        "error",
+        "Can't share this run",
+        "This simulation wasn't persisted on the server. Re-run it to share.",
+      );
+      return;
+    }
+    setShareBusy(true);
+    try {
+      const res = await toggleSimulationShare(sid, !isPublic);
+      setIsPublic(res.public);
+      setShareId(res.public_share_id);
+      if (res.public && res.public_share_id) {
+        const url = `${window.location.origin}/r/${res.public_share_id}`;
+        await navigator.clipboard.writeText(url).catch(() => {});
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+        showToast("success", "Shareable link copied", url);
+      } else {
+        showToast("success", "Link revoked", "Anyone with the old link can no longer view this report.");
+      }
+    } catch (err) {
+      showToast(
+        "error",
+        "Couldn't update sharing",
+        err instanceof Error ? err.message : "Please try again.",
+      );
+    } finally {
+      setShareBusy(false);
+    }
+  };
+
+  const shareUrl =
+    isPublic && shareId && typeof window !== "undefined"
+      ? `${window.location.origin}/r/${shareId}`
+      : null;
 
   const result = simulation?.result as SimulationData | undefined;
   const isProductFlow = simulation?.type === "Product Flow";
@@ -143,12 +210,52 @@ export default function SimulationDetailsPage() {
           onMenuClick={toggleMobileMenu}
           actions={
             <div className="flex items-center gap-3">
+              <button
+                onClick={handleToggleShare}
+                disabled={shareBusy}
+                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-body-sm font-semibold border transition-colors ${
+                  isPublic
+                    ? "bg-accent-gold text-white border-accent-gold hover:bg-accent-gold-hover"
+                    : "bg-white text-text-primary border-border-subtle hover:bg-[#F8F6F1]"
+                } disabled:opacity-60 disabled:cursor-not-allowed`}
+                title={isPublic ? "Click to revoke the public link" : "Click to create a public link"}
+              >
+                {copied ? <Check className="w-4 h-4" /> : <Link2 className="w-4 h-4" />}
+                {copied
+                  ? "Link copied"
+                  : isPublic
+                    ? "Shared — click to revoke"
+                    : "Share report"}
+              </button>
               <div className="inline-flex items-center px-4 py-2 bg-accent-green-bg text-accent-green rounded-xl text-body-sm font-semibold">
                 Complete ({completionRate}% completion · {totalPersonas} personas)
               </div>
             </div>
           }
         />
+        {shareUrl && (
+          <div className="max-w-[1280px] mx-auto px-6 pt-3">
+            <div className="flex items-center gap-2.5 bg-[#FFFBEB] border border-[#FCD34D] rounded-[10px] px-4 py-2.5 text-[13px] text-[#78350F]">
+              <Link2 className="w-3.5 h-3.5 shrink-0" />
+              <span className="flex-1 truncate">
+                Public link:{" "}
+                <a href={shareUrl} className="font-mono underline" target="_blank" rel="noreferrer">
+                  {shareUrl}
+                </a>
+              </span>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(shareUrl).catch(() => {});
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2500);
+                }}
+                className="text-[12px] font-semibold hover:underline shrink-0"
+              >
+                {copied ? "Copied" : "Copy"}
+              </button>
+            </div>
+          </div>
+        )}
         <div className={`${playfair.variable} ${dmSans.variable}`}>
           <FlowAnalysisView data={flowData} simulationData={result} />
         </div>

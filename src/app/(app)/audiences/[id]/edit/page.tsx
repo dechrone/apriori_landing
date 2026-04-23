@@ -6,10 +6,10 @@ import { useRouter, useParams } from "next/navigation";
 import { TopBar } from "@/components/app/TopBar";
 import { useAppShell } from "@/components/app/AppShell";
 import { useToast } from "@/components/ui/Toast";
-import { useFirebaseUser } from "@/contexts/FirebaseUserContext";
+import { useUser } from "@/contexts/UserContext";
 import { AudienceFiltersStep } from "@/components/audiences/AudienceFiltersStep";
 import { ArrowLeft, ArrowRight, Users, Loader2, RefreshCw } from "lucide-react";
-import { getAudience, updateAudience, type AudienceDoc } from "@/lib/firestore";
+import { getAudience, updateAudience, type AudienceDoc } from "@/lib/db";
 import { refreshAudiencePersonas } from "@/lib/backend-simulation";
 import type { AdvancedFilters } from "@/types/audience-filters";
 
@@ -19,7 +19,7 @@ export default function EditAudiencePage() {
   const params = useParams();
   const audienceId = params.id as string;
   const { showToast } = useToast();
-  const { userId } = useFirebaseUser();
+  const { userId } = useUser();
 
   const [loading, setLoading] = useState(true);
   const [audience, setAudience] = useState<AudienceDoc | null>(null);
@@ -132,7 +132,7 @@ export default function EditAudiencePage() {
     setRefreshingPersonas(true);
     try {
       // Backend: POST /api/v1/audiences/{id}/refresh-personas. Invalidates the
-      // Firestore persona cache so the next simulation against this audience
+      // Supabase persona cache so the next simulation against this audience
       // re-runs the full filter-first retrieval pipeline. Idempotent — 200
       // even if nothing was cached.
       await refreshAudiencePersonas(audienceId);

@@ -17,7 +17,24 @@ export type SimulationEvent =
         num_personas: number;
       };
     }
-  | { type: "personas_loaded"; data: { count: number } }
+  | {
+      type: "personas_loaded";
+      data: {
+        count: number;
+        /**
+         * How the audience was resolved. "strict" means filter+semantic hit cleanly;
+         * "relaxed" means we widened the search; "random_fallback" means we
+         * couldn't match at all and are simulating on a random sample.
+         */
+        retrieval_mode?:
+          | "strict"
+          | "relaxed"
+          | "random_fallback"
+          | "cache_hit"
+          | "template";
+        matched_count?: number;
+      };
+    }
   | {
       type: "persona_complete";
       data: {
@@ -53,7 +70,8 @@ export type SimulationEvent =
  */
 export async function consumeNDJSONStream(
   response: Response,
-  onEvent: (event: SimulationEvent) => void
+  onEvent: (event: SimulationEvent) => void,
+  signal?: AbortSignal
 ): Promise<void> {
   if (!response.body) throw new Error("Response has no body");
 
@@ -61,34 +79,49 @@ export async function consumeNDJSONStream(
   const decoder = new TextDecoder();
   let buffer = "";
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
+  const cleanup = () => {
+    try { reader.cancel(); } catch { /* already closed */ }
+  };
 
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split("\n");
-    // Keep the last (possibly incomplete) chunk in the buffer
-    buffer = lines.pop() ?? "";
-
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (!trimmed) continue;
-      try {
-        const event = JSON.parse(trimmed) as SimulationEvent;
-        onEvent(event);
-      } catch {
-        console.warn("[stream] Failed to parse NDJSON line:", trimmed);
-      }
-    }
+  if (signal) {
+    if (signal.aborted) { cleanup(); return; }
+    signal.addEventListener("abort", cleanup, { once: true });
   }
 
-  // Flush any remaining buffered content
-  if (buffer.trim()) {
-    try {
-      const event = JSON.parse(buffer.trim()) as SimulationEvent;
-      onEvent(event);
-    } catch {
-      console.warn("[stream] Failed to parse final NDJSON line:", buffer);
+  try {
+    while (true) {
+      if (signal?.aborted) break;
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+        try {
+          const event = JSON.parse(trimmed) as SimulationEvent;
+          onEvent(event);
+        } catch {
+          console.warn("[stream] Failed to parse NDJSON line:", trimmed);
+          onEvent({ type: "error", data: { message: "Failed to parse streaming event" } });
+        }
+      }
+    }
+
+    if (buffer.trim()) {
+      try {
+        const event = JSON.parse(buffer.trim()) as SimulationEvent;
+        onEvent(event);
+      } catch {
+        console.warn("[stream] Failed to parse final NDJSON line:", buffer);
+      }
+    }
+  } finally {
+    if (signal) {
+      signal.removeEventListener("abort", cleanup);
     }
   }
 }

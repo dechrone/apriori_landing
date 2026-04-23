@@ -23,21 +23,16 @@ export default function FigmaConnectionCard({ fetchDelay = 0 }: FigmaConnectionC
   const fetchStatus = useCallback(async () => {
     try {
       if (!process.env.NEXT_PUBLIC_API_URL) {
-        console.warn('[FigmaCard] NEXT_PUBLIC_API_URL is not set — skipping connection check');
         setStatus({ connected: false });
         return;
       }
 
       const token = await getToken();
       if (!token) {
-        console.warn('[FigmaCard] getToken() returned null — Firebase Auth may not be ready');
         setStatus({ connected: false });
         return;
       }
-      // Log the first 20 chars of the token for debugging
-      console.log('[FigmaCard] Fetching connection status with token:', token.substring(0, 20) + '…');
-      console.log('[FigmaCard] URL:', `${process.env.NEXT_PUBLIC_API_URL}/api/v1/figma/connection`);
-      
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/figma/connection`, {
         headers: {
           'Content-Type': 'application/json',
@@ -45,23 +40,16 @@ export default function FigmaConnectionCard({ fetchDelay = 0 }: FigmaConnectionC
         },
       });
 
-      console.log('[FigmaCard] Response status:', res.status);
-
       if (!res.ok) {
-        const errBody = await res.text();
-        console.error('[FigmaCard] Error response body:', errBody);
         setStatus({ connected: false });
         return;
       }
 
       const data: ConnectionStatus = await res.json();
-      console.log('[FigmaCard] Parsed response:', JSON.stringify(data));
       setStatus(data);
 
-      // If backend says not connected but we just came from OAuth,
-      // retry once more after a longer delay (DB propagation)
+      // After OAuth redirect, the DB write may not have propagated yet — retry once.
       if (!data.connected && fetchDelay > 0) {
-        console.log('[FigmaCard] Not connected yet — will retry in 2s…');
         setTimeout(async () => {
           try {
             const retryToken = await getToken();
@@ -72,19 +60,15 @@ export default function FigmaConnectionCard({ fetchDelay = 0 }: FigmaConnectionC
                 Authorization: `Bearer ${retryToken}`,
               },
             });
-            console.log('[FigmaCard] Retry status:', retryRes.status);
             if (retryRes.ok) {
-              const retryData: ConnectionStatus = await retryRes.json();
-              console.log('[FigmaCard] Retry response:', JSON.stringify(retryData));
-              setStatus(retryData);
+              setStatus(await retryRes.json());
             }
-          } catch (retryErr) {
-            console.error('[FigmaCard] Retry failed:', retryErr);
+          } catch {
+            /* best-effort retry */
           }
         }, 2000);
       }
-    } catch (err) {
-      console.error('[FigmaCard] Connection check failed:', err);
+    } catch {
       setStatus({ connected: false });
     }
   }, [getToken, fetchDelay]);
@@ -101,12 +85,9 @@ export default function FigmaConnectionCard({ fetchDelay = 0 }: FigmaConnectionC
   }, [isLoaded, isSignedIn, fetchDelay, fetchStatus]);
 
   const handleConnect = async () => {
-    if (!process.env.NEXT_PUBLIC_API_URL) {
-      console.error('[FigmaCard] NEXT_PUBLIC_API_URL is not set — cannot initiate Figma OAuth');
-      return;
-    }
+    if (!process.env.NEXT_PUBLIC_API_URL) return;
     const token = await getToken();
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/figma/auth/initiate?firebase_token=${token}`;
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/figma/auth/initiate?access_token=${token}`;
   };
 
   const handleDisconnect = async () => {

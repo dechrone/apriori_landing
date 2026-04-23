@@ -3,7 +3,7 @@
 import { Sidebar } from '@/components/app/Sidebar';
 import { ToastProvider } from '@/components/ui/Toast';
 import { AppShellProvider, useAppShell } from '@/components/app/AppShell';
-import { FirebaseUserProvider } from '@/contexts/FirebaseUserContext';
+import { UserProvider } from '@/contexts/UserContext';
 import { AuthGuard } from '@/components/app/AuthGuard';
 
 function AppLayoutInner({ children }: { children: React.ReactNode }) {
@@ -33,9 +33,9 @@ export default function ClientAppLayout({
     <ToastProvider>
       <AppShellProvider>
         <AuthGuard>
-          <FirebaseUserProvider>
+          <UserProvider>
             <AppLayoutInner>{children}</AppLayoutInner>
-          </FirebaseUserProvider>
+          </UserProvider>
         </AuthGuard>
       </AppShellProvider>
     </ToastProvider>

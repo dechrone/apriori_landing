@@ -7,7 +7,7 @@ import { TopBar } from '@/components/app/TopBar';
 import { Card, CardContent } from '@/components/ui/Card';
 import { useAppShell } from '@/components/app/AppShell';
 import { useToast } from '@/components/ui/Toast';
-import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
+import { useUser } from '@/contexts/UserContext';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { IconButton } from '@/components/ui/Button';
 import {
@@ -49,7 +49,7 @@ import {
   getAssetFolders,
   saveAssetMetadata,
   updateAssetFolder,
-} from '@/lib/firestore';
+} from '@/lib/db';
 import {
   getAssets,
   uploadAssets,
@@ -71,8 +71,8 @@ export default function FolderDetailPage() {
   const searchParams = useSearchParams();
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
-  const { userId, profileReady } = useFirebaseUser();
-  const { user } = useAuthContext();
+  const { userId, profileReady } = useUser();
+  const { user, getAccessToken } = useAuthContext();
 
   const folderId = params.folderId as string;
   const folderName = searchParams.get('name') ?? 'Folder';
@@ -106,7 +106,7 @@ export default function FolderDetailPage() {
     } catch (err) {
       console.error('loadSubfolders error:', err);
       const msg = err instanceof Error ? err.message : 'Unknown error';
-      showToast('error', 'Failed to load flows', msg.includes('index') ? 'A Firestore index may be needed — check the console for a link.' : 'Please refresh.');
+      showToast('error', 'Failed to load flows', msg.includes('index') ? 'A Supabase index may be needed — check the console for a link.' : 'Please refresh.');
     } finally {
       setLoading(false);
     }
@@ -115,7 +115,7 @@ export default function FolderDetailPage() {
   const loadAssets = useCallback(async () => {
     if (!userId || !profileReady || !user) return;
     try {
-      const token = await user.getIdToken();
+      const token = await getAccessToken();
       const data = await getAssets(token, folderId);
       setAssets(data);
     } catch (err) {
@@ -139,14 +139,14 @@ export default function FolderDetailPage() {
     if (!user || assetId.startsWith('pending_')) return;
     setAutoSaveStatus('saving');
     try {
-      const token = await user.getIdToken();
+      const token = await getAccessToken();
       const metadata = asset.productFlowMetadata ?? asset.adCreativeMetadata ?? {};
       await updateAssetMetadata(token, assetId, folderId, metadata);
       setAutoSaveStatus('saved');
       setTimeout(() => setAutoSaveStatus('idle'), 3000);
     } catch (err) {
       console.error('Auto-save error:', err);
-      // Fall back to Firestore save if backend fails
+      // Fall back to Supabase upsert if backend fails
       if (userId) {
         try {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -253,7 +253,7 @@ export default function FolderDetailPage() {
     );
 
     try {
-      const token = await user.getIdToken();
+      const token = await getAccessToken();
       const fileArray = Array.from(files);
       const savedAssets = await uploadAssets(token, uploadFolderId, fileArray);
 
@@ -269,7 +269,7 @@ export default function FolderDetailPage() {
         setAssets((prev) => [...prev, ...savedAssets]);
       }
 
-      // Update folder asset count in Firestore (for readiness badge)
+      // Update folder asset count in Supabase (for readiness badge)
       if (userId) {
         await updateAssetFolder(userId, uploadFolderId, {
           assetCount: assets.length + savedAssets.length,
@@ -351,7 +351,7 @@ export default function FolderDetailPage() {
   const handleInlineDelete = useCallback(async (assetId: string, assetName: string) => {
     if (!user) return;
     try {
-      const token = await user.getIdToken();
+      const token = await getAccessToken();
       await deleteAssetFromBackend(token, assetId, folderId);
       setAssets((prev) => prev.filter((a) => a.id !== assetId));
       showToast('success', 'Asset deleted', `"${assetName}" has been removed.`);
@@ -365,7 +365,7 @@ export default function FolderDetailPage() {
     if (!deleteTarget || !user) return;
     const { id: assetId, name: assetName } = deleteTarget;
     try {
-      const token = await user.getIdToken();
+      const token = await getAccessToken();
       await deleteAssetFromBackend(token, assetId, folderId);
       setAssets((prev) => prev.filter((a) => a.id !== assetId));
       showToast('success', 'Asset deleted', `"${assetName}" has been removed.`);

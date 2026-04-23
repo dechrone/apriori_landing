@@ -159,10 +159,9 @@ export function ProductFlowAuditConfig() {
           audienceMode === "structured" ? structuredAudience : undefined,
       },
     };
-    console.log("[Product Flow Audit] Submission payload:", payload);
-    alert(
-      "Simulation submitted! (Mock)\n\nCheck the console for the payload."
-    );
+    // TODO: wire up to /api/v1/simulations/product-flow — audit page is still a mock.
+    void payload;
+    alert("Simulation submitted! (Mock)");
   }, [steps, audienceMode, freeformICP, structuredAudience]);
 
   return (

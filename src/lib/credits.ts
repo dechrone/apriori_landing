@@ -1,13 +1,13 @@
 /**
- * Credits API client + React hook.
- * Talks to GET /api/v1/auth/me on the backend.
+ * Credit + plan hook. Reads directly from Supabase `profiles` — no backend
+ * hop needed now that auth and credits live in the same DB.
  */
+
+"use client";
 
 import { useCallback, useEffect, useState } from "react";
 import { useAuthContext } from "@/contexts/AuthContext";
-
-const BASE_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+import { fetchCreditProfile as fetchFromDb } from "@/lib/db";
 
 export interface CreditProfile {
   uid: string;
@@ -19,16 +19,17 @@ export interface CreditProfile {
   credits_used: number;
 }
 
-export async function fetchCreditProfile(token: string): Promise<CreditProfile> {
-  const res = await fetch(`${BASE_URL}/api/v1/auth/me`, {
-    method: "GET",
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Failed to load credits (${res.status}): ${text}`);
-  }
-  return res.json();
+export async function fetchCreditProfile(userId: string): Promise<CreditProfile> {
+  const p = await fetchFromDb(userId);
+  return {
+    uid: p.userId,
+    email: p.email,
+    display_name: p.displayName,
+    plan: p.plan,
+    credits_remaining: p.creditsRemaining,
+    credits_total: p.creditsTotal,
+    credits_used: p.creditsUsed,
+  };
 }
 
 /**
@@ -50,8 +51,7 @@ export function useCreditProfile(refreshKey: number = 0) {
     }
     try {
       setLoading(true);
-      const token = await user.getIdToken();
-      const p = await fetchCreditProfile(token);
+      const p = await fetchCreditProfile(user.uid);
       setProfile(p);
       setError(null);
     } catch (e) {

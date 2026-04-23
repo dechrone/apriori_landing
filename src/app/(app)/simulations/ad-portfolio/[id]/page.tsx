@@ -8,9 +8,9 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useAppShell } from "@/components/app/AppShell";
-import { useFirebaseUser } from "@/contexts/FirebaseUserContext";
-import { getSimulation } from "@/lib/firestore";
-import type { SimulationDoc } from "@/lib/firestore";
+import { useUser } from "@/contexts/UserContext";
+import { getSimulation } from "@/lib/db";
+import type { SimulationDoc } from "@/lib/db";
 import type {
   AdSimulationResult,
   SimulationPersona,
@@ -28,7 +28,7 @@ import {
 
 export default function AdPortfolioResultsPage() {
   const { toggleMobileMenu } = useAppShell();
-  const { userId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useUser();
   const params = useParams();
   const id = typeof params?.id === "string" ? params.id : null;
   const [simulation, setSimulation] = useState<SimulationDoc | null>(null);

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { TopBar } from '@/components/app/TopBar';
 import { useAppShell } from '@/components/app/AppShell';
 import { useToast } from '@/components/ui/Toast';
-import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
+import { useUser } from '@/contexts/UserContext';
 import {
   Plus,
   Search,
@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { getSimulations, deleteSimulation, type SimulationDoc } from '@/lib/firestore';
+import { getSimulations, deleteSimulation, type SimulationDoc } from '@/lib/db';
 
 /* ── Sample simulations (always shown) ──────────────────────────────────── */
 
@@ -280,7 +280,7 @@ function FilterDropdown({
 export default function SimulationsPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
-  const { userId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useUser();
   const router = useRouter();
 
   const [typeFilter, setTypeFilter] = useState('all');

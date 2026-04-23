@@ -5,7 +5,7 @@ import { useUser } from '@/lib/auth-stub';
 import FigmaFileBrowser from './FigmaFileBrowser';
 import ScreenPicker from './ScreenPicker';
 import type { ConfirmPayload } from './ScreenPicker';
-import { saveAssetFolder, addAssetDocument } from '@/lib/firestore';
+import { saveAssetFolder, addAssetDocument } from '@/lib/db';
 
 type ModalStep = 'browse' | 'pick-screens' | 'saving';
 
@@ -44,7 +44,7 @@ export default function FigmaImportModal({ isOpen, onClose, onComplete }: Props)
     try {
       const userId = user.id;
 
-      // 1. Create folder in Firestore
+      // 1. Create folder in Supabase
       setProgress('Creating folder...');
       const folderId = await saveAssetFolder(userId, {
         name:              `${payload.fileName} — ${payload.pageName}`,
@@ -58,7 +58,7 @@ export default function FigmaImportModal({ isOpen, onClose, onComplete }: Props)
         status:            'ready',
       });
 
-      // 2. Save each frame as an asset document in Firestore
+      // 2. Save each frame as an asset document in Supabase
       //    The imageUrl from Figma export CDN is stored directly.
       setProgress(`Saving ${payload.frames.length} screens...`);
       await Promise.all(

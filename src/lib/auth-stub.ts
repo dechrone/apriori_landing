@@ -1,19 +1,22 @@
 /**
- * Auth hooks replacing @clerk/nextjs — now backed by Firebase Auth.
- * These are consumed by Figma components and api.ts callers.
+ * Auth hooks consumed by the Figma integration components + api.ts wrapper.
+ * Thin adapter over Supabase auth, exposing a Clerk-ish surface so the
+ * existing callers don't need to change.
  */
 "use client";
 
+import { useCallback } from "react";
 import { useAuthContext } from "@/contexts/AuthContext";
 
 export function useAuth() {
-  const { user, loading } = useAuthContext();
+  const { user, loading, getAccessToken } = useAuthContext();
+
+  const getToken = useCallback(async () => {
+    return getAccessToken();
+  }, [getAccessToken]);
 
   return {
-    getToken: async () => {
-      if (!user) return null;
-      return user.getIdToken();
-    },
+    getToken,
     isLoaded: !loading,
     isSignedIn: !!user,
     userId: user?.uid ?? null,

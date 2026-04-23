@@ -2,15 +2,19 @@ const BASE = process.env.NEXT_PUBLIC_API_URL;
 
 /**
  * Authenticated fetch wrapper.
- * Pass the Firebase ID token obtained via `getToken()` from `useAuth()`.
+ * Pass the Supabase access token obtained via
+ * `useAuthContext().getAccessToken()` (or `useAuth().getToken()`).
  */
 export async function apiFetch<T = unknown>(
   path: string,
-  token: string,
+  token: string | null | undefined,
   options: RequestInit = {},
 ): Promise<T> {
   if (!BASE) {
     throw new Error('NEXT_PUBLIC_API_URL is not configured');
+  }
+  if (!token) {
+    throw new Error('Not signed in');
   }
 
   const res = await fetch(`${BASE}${path}`, {

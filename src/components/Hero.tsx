@@ -85,7 +85,7 @@ export function Hero() {
               <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
             </a>
             <a
-              href="mailto:alpha@apriori.work"
+              href="/signup"
               className="inline-flex items-center gap-2 px-6 py-3 border rounded-lg font-medium text-sm text-text-primary hover:bg-[#F8F6F1] transition-colors duration-200"
               style={{ borderColor: "#D4C9B0" }}
             >

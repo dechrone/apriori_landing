@@ -7,16 +7,16 @@ import { TopBar } from "@/components/app/TopBar";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useAppShell } from "@/components/app/AppShell";
-import { useFirebaseUser } from "@/contexts/FirebaseUserContext";
-import { getSimulation } from "@/lib/firestore";
-import type { SimulationDoc } from "@/lib/firestore";
+import { useUser } from "@/contexts/UserContext";
+import { getSimulation } from "@/lib/db";
+import type { SimulationDoc } from "@/lib/db";
 import type { ComparatorData } from "@/types/comparator";
 import { ComparatorResultView } from "@/components/comparator";
 import { ArrowLeft } from "lucide-react";
 
 export default function ProductFlowComparatorResultsPage() {
   const { toggleMobileMenu } = useAppShell();
-  const { userId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useUser();
   const params = useParams();
   const id = typeof params?.id === "string" ? params.id : null;
   const [simulation, setSimulation] = useState<SimulationDoc | null>(null);

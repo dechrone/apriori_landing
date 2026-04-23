@@ -36,14 +36,14 @@ export function FinalCTA() {
               lineHeight: 1.2,
             }}
           >
-            Send us your screens. Get answers in hours.
+            Run your first 50-user simulation. Free.
           </h2>
           <p className="text-text-secondary mb-8" style={{ fontSize: "1rem", lineHeight: 1.7 }}>
-            First simulation is free. If the output is not useful, we part as friends.
+            Upload your screens, tell us the goal and audience, get a usability report in minutes. No card required.
           </p>
 
           <a
-            href="mailto:alpha@apriori.work"
+            href="/signup"
             className="group inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium text-sm text-white transition-all duration-200 hover:shadow-lg"
             style={{ backgroundColor: "#B8860B" }}
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#9A7209")}

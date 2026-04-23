@@ -1,6 +1,7 @@
 /**
  * Backend HTTP client for the Assets API.
- * All functions require a Firebase ID token obtained via `user.getIdToken()`.
+ * All functions require a Supabase access token (JWT) obtained via
+ * `useAuthContext().getAccessToken()`.
  * Base URL: NEXT_PUBLIC_BACKEND_URL (defaults to http://localhost:8000).
  */
 
@@ -69,11 +70,14 @@ function toAsset(ba: BackendAsset): Asset {
 
 // ─── Shared fetch helper ───────────────────────────────────────────────────────
 
+type Token = string | null | undefined;
+
 async function apiFetch<T>(
-  token: string,
+  token: Token,
   path: string,
   options?: RequestInit
 ): Promise<T> {
+  if (!token) throw new Error("Not signed in");
   let res: Response;
   try {
     res = await fetch(`${BASE_URL}${path}`, {
@@ -83,8 +87,7 @@ async function apiFetch<T>(
         ...(options?.headers ?? {}),
       },
     });
-  } catch (err) {
-    // Network error — backend unreachable
+  } catch {
     throw new Error(
       `Cannot connect to the backend server at ${BASE_URL}. Please ensure it is running.`
     );
@@ -98,7 +101,7 @@ async function apiFetch<T>(
 
 // ─── Folder operations ─────────────────────────────────────────────────────────
 
-export async function getFolders(token: string): Promise<AssetFolder[]> {
+export async function getFolders(token: Token): Promise<AssetFolder[]> {
   const folders = await apiFetch<BackendFolder[]>(
     token,
     "/api/v1/assets/folders"
@@ -107,7 +110,7 @@ export async function getFolders(token: string): Promise<AssetFolder[]> {
 }
 
 export async function createFolder(
-  token: string,
+  token: Token,
   data: { name: string; assetType: AssetType; description?: string }
 ): Promise<AssetFolder> {
   const folder = await apiFetch<BackendFolder>(
@@ -127,7 +130,7 @@ export async function createFolder(
 }
 
 export async function updateFolder(
-  token: string,
+  token: Token,
   folderId: string,
   data: { name?: string; description?: string }
 ): Promise<void> {
@@ -139,7 +142,7 @@ export async function updateFolder(
 }
 
 export async function deleteFolder(
-  token: string,
+  token: Token,
   folderId: string
 ): Promise<void> {
   await apiFetch<unknown>(token, `/api/v1/assets/folders/${folderId}`, {
@@ -150,7 +153,7 @@ export async function deleteFolder(
 // ─── Asset operations ──────────────────────────────────────────────────────────
 
 export async function getAssets(
-  token: string,
+  token: Token,
   folderId: string
 ): Promise<Asset[]> {
   const assets = await apiFetch<BackendAsset[]>(
@@ -161,10 +164,11 @@ export async function getAssets(
 }
 
 export async function uploadAssets(
-  token: string,
+  token: Token,
   folderId: string,
   files: File[]
 ): Promise<Asset[]> {
+  if (!token) throw new Error("Not signed in");
   const formData = new FormData();
   files.forEach((f) => formData.append("files", f));
   const res = await fetch(
@@ -184,7 +188,7 @@ export async function uploadAssets(
 }
 
 export async function updateAssetMetadata(
-  token: string,
+  token: Token,
   assetId: string,
   folderId: string,
   metadata: Partial<ProductFlowMetadata> | Partial<AdCreativeMetadata>
@@ -201,7 +205,7 @@ export async function updateAssetMetadata(
 }
 
 export async function deleteAsset(
-  token: string,
+  token: Token,
   assetId: string,
   folderId: string
 ): Promise<void> {

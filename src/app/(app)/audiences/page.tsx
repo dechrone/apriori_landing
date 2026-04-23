@@ -7,9 +7,9 @@ import { TopBar } from '@/components/app/TopBar';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useAppShell } from '@/components/app/AppShell';
 import { useToast } from '@/components/ui/Toast';
-import { useFirebaseUser } from '@/contexts/FirebaseUserContext';
+import { useUser } from '@/contexts/UserContext';
 import { Plus, Users, MoreVertical, Loader2, Trash2, Pencil } from 'lucide-react';
-import { getAudiences, deleteAudience, type AudienceDoc } from '@/lib/firestore';
+import { getAudiences, deleteAudience, type AudienceDoc } from '@/lib/db';
 import { getActiveCategories } from '@/lib/audience-filter-utils';
 import type { AdvancedFilters, FilterCategory } from '@/types/audience-filters';
 
@@ -65,7 +65,7 @@ function getDescriptionText(audience: AudienceDoc): { text: string; isEmpty: boo
 export default function AudiencesPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
-  const { userId, profileReady } = useFirebaseUser();
+  const { userId, profileReady } = useUser();
   const router = useRouter();
 
   const [audiences, setAudiences] = useState<AudienceDoc[]>([]);

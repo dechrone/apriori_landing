@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Check, Loader2, X } from "lucide-react";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 type Logo = { name: string; domain: string; color: string };
 
@@ -23,11 +22,17 @@ const LOGOS: Logo[] = [
 ];
 
 export function WaitlistPage() {
-  const [fromSignup] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return new URLSearchParams(window.location.search).get("from") === "signup";
-  });
+  // Read the `?from=signup` query param client-side only, AFTER hydration.
+  // Reading it during render would make server (false) and client (true)
+  // disagree and trip React's hydration check.
+  const [fromSignup, setFromSignup] = useState(false);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const flag =
+      new URLSearchParams(window.location.search).get("from") === "signup";
+    setFromSignup(flag);
+  }, []);
 
   useEffect(() => {
     if (!fromSignup) return;
@@ -333,17 +338,17 @@ function WaitlistModal({ onClose }: { onClose: () => void }) {
     setStatus("loading");
     setErrorMsg("");
     try {
-      await addDoc(collection(db, "apriori-collection"), {
+      const sb = getSupabaseBrowserClient();
+      const { error } = await sb.from("signups").insert({
         name: name.trim(),
         email: email.trim().toLowerCase(),
         company: company.trim(),
         role: role.trim(),
         building: building.trim(),
         source: "/joinwaitlist",
-        userAgent:
-          typeof navigator !== "undefined" ? navigator.userAgent : "",
-        createdAt: serverTimestamp(),
+        user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
       });
+      if (error) throw error;
       setStatus("done");
     } catch (err) {
       console.error(err);

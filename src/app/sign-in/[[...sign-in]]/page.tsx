@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 export default function SignInPage() {
-  const { user, loading, signInWithGoogle } = useAuthContext();
+  const { user, loading, signInWithGoogle, configError } = useAuthContext();
   const router = useRouter();
   const [signingIn, setSigningIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,12 +21,12 @@ export default function SignInPage() {
     setSigningIn(true);
     setError(null);
     try {
+      // Supabase OAuth redirects the browser to Google; control won't return
+      // here on success. If we get back, something went wrong locally.
       await signInWithGoogle();
-      router.replace("/dashboard");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Sign-in failed. Please try again.";
-      // Don't show error for user-cancelled popups
-      if (!message.includes("popup-closed-by-user") && !message.includes("cancelled")) {
+      if (!message.toLowerCase().includes("cancelled")) {
         setError(message);
       }
     } finally {
@@ -66,10 +66,22 @@ export default function SignInPage() {
             </div>
           )}
 
+          {/* Config-missing banner (only visible during setup) */}
+          {configError && (
+            <div className="mb-4 p-3 rounded-lg bg-[#FEF3C7]/10 border border-[#F59E0B]/30">
+              <p className="text-[13px] text-[#FBBF24] font-medium">Auth not configured</p>
+              <p className="text-[12px] text-[#FBBF24]/70 mt-1">
+                Set <code>NEXT_PUBLIC_SUPABASE_URL</code> and
+                {" "}<code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> in{" "}
+                <code>.env.local</code>, then restart <code>npm run dev</code>.
+              </p>
+            </div>
+          )}
+
           {/* Google Sign-In Button */}
           <button
             onClick={handleGoogleSignIn}
-            disabled={signingIn}
+            disabled={signingIn || !!configError}
             className="
               w-full flex items-center justify-center gap-3 
               h-12 px-4 rounded-xl
