@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "sync:pool-templates": "node scripts/sync-pool-templates.mjs",
+    "predev": "npm run sync:pool-templates",
+    "prebuild": "npm run sync:pool-templates",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

@@ -17,73 +17,6 @@ export interface SimulationPersona {
   financial_risk_tolerance: string;
 }
 
-// ─── Ad simulation result ───────────────────────────────────────────────────
-
-export interface AdReaction {
-  persona: SimulationPersona;
-  ad_id: string;
-  trust_score: number;
-  relevance_score: number;
-  action: string;
-  intent_level: string;
-  reasoning: string;
-  emotional_response: string;
-  barriers: string[];
-  internal_monologue: string;
-}
-
-export interface AdPerformanceEntry {
-  ad_id: string;
-  total_impressions: number;
-  clicks: number;
-  click_rate: number;
-  high_intent_leads: number;
-  conversion_rate: number;
-  unique_reach: number;
-}
-
-export interface AdResultMetadata {
-  target_group: string;
-  num_personas: number;
-  num_ads: number;
-  total_reactions: number;
-  valid_reactions: number;
-  execution_time_seconds: number;
-  simulation_id: string;
-  simulation_name: string;
-  profile_id: string;
-  audience_id: string;
-  folder_ids: string[];
-  optimize_metric: string;
-}
-
-export interface AdSimulationResult {
-  simulation_type: "ad";
-  personas: SimulationPersona[];
-  reactions: AdReaction[];
-  performance: Record<string, AdPerformanceEntry>;
-  winning_portfolio: unknown[];
-  wasted_spend_alerts: unknown[];
-  visual_heatmap: {
-    rows: string[];
-    cols: string[];
-    matrix: string[][];
-  };
-  validation_summary: {
-    total: number;
-    valid: number;
-    flagged: number;
-    flagged_percentage: number;
-  };
-  metadata: AdResultMetadata;
-}
-
-export interface AdSimulationResponse {
-  status: string;
-  simulation_id: string;
-  result: AdSimulationResult;
-}
-
 // ─── Product flow simulation result ──────────────────────────────────────────
 
 export interface FlowStep {
@@ -152,4 +85,4 @@ export interface ProductFlowSimulationResponse {
   result: ProductFlowSimulationResult;
 }
 
-export type SimulationResponse = AdSimulationResponse | ProductFlowSimulationResponse;
+export type SimulationResponse = ProductFlowSimulationResponse;

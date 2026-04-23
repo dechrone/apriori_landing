@@ -457,3 +457,43 @@ end;
 $$;
 
 revoke execute on function public.grant_credits(uuid, int, text) from public, anon, authenticated;
+
+
+-- =============================================================================
+-- 2026-04-23 — Firebase removal: add columns the backend now persists directly
+-- =============================================================================
+-- The backend used to keep these fields in Firestore. Now both writers (the
+-- Next.js frontend and the FastAPI backend) hit the same Postgres tables, so
+-- every column the backend writes has to live here.
+--
+-- All additions are nullable / defaulted, so existing frontend writes keep
+-- working without code changes.
+-- =============================================================================
+
+-- Backend-issued simulation_id (text uuid hex from FastAPI) needs a unique
+-- (user_id, simulation_id) index so the engine can UPSERT the result blob.
+alter table public.simulations
+  add column if not exists kind             text,
+  add column if not exists audience         text,
+  add column if not exists objective        text,
+  add column if not exists num_personas     int,
+  add column if not exists retrieval_mode   text,
+  add column if not exists public           boolean not null default false,
+  add column if not exists public_share_id  text;
+
+create unique index if not exists simulations_user_sim_id_idx on public.simulations(user_id, simulation_id) where simulation_id is not null;
+create unique index if not exists simulations_public_share_idx on public.simulations(public_share_id) where public_share_id is not null;
+
+-- The backend UPSERTs simulation rows from the engine via simulation_id. Frontend
+-- writes use the uuid `id` instead, so the two writers don't collide.
+
+-- Allow the public-share endpoint to read shared rows without auth. The /r/{id}
+-- route uses an anonymous client; without this, RLS hides the row.
+drop policy if exists "simulations_select_public" on public.simulations;
+create policy "simulations_select_public" on public.simulations
+  for select using (public is true and public_share_id is not null);
+
+-- Asset metadata the backend writes alongside Cloudinary uploads.
+alter table public.assets
+  add column if not exists cloudinary_public_id text,
+  add column if not exists step_number          int not null default 0;

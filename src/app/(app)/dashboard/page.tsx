@@ -1,7 +1,7 @@
 "use client";
 
 import { TopBar } from '@/components/app/TopBar';
-import { Beaker, Target, GitCompare, Users, Package, ChevronRight, Check, Loader2, PartyPopper, PlayCircle } from 'lucide-react';
+import { Beaker, Columns2, GitCompare, Users, Package, ChevronRight, Check, Loader2, PartyPopper, PlayCircle } from 'lucide-react';
 import { useAppShell } from '@/components/app/AppShell';
 import Link from 'next/link';
 import { useState, useEffect, useCallback } from 'react';
@@ -94,7 +94,6 @@ export default function DashboardPage() {
   const { toggleMobileMenu } = useAppShell();
   const { userId, profileReady } = useUser();
   const { user } = useAuthContext();
-  const [showComingSoonModal, setShowComingSoonModal] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
 
   // First-login welcome modal — read flag from user profile
@@ -366,16 +365,16 @@ export default function DashboardPage() {
                 />
               )}
               <QuickActionCard
+                icon={<Columns2 className="w-6 h-6 text-amber-600" />}
+                title="Run Single-Screen A/B"
+                description="Upload two variants and see which one converts better"
+                href="/simulations/new/product-flow-ab"
+              />
+              <QuickActionCard
                 icon={<Beaker className="w-6 h-6 text-amber-600" />}
                 title="Run Product Flow Simulation"
                 description="Simulate user journeys and identify friction points"
                 href="/simulations/new/product-flow"
-              />
-              <QuickActionCard
-                icon={<Target className="w-6 h-6 text-amber-600" />}
-                title="Run Ad Portfolio Simulation"
-                description="Forecast ad performance and creative fatigue"
-                onClick={() => setShowComingSoonModal(true)}
               />
               <QuickActionCard
                 icon={<GitCompare className="w-6 h-6 text-amber-600" />}
@@ -408,36 +407,6 @@ export default function DashboardPage() {
         />
       )}
 
-      {/* Coming Soon Modal */}
-      {showComingSoonModal && (
-        <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-          onClick={() => setShowComingSoonModal(false)}
-        >
-          <div
-            className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="text-center">
-              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">🚪</span>
-              </div>
-              <h3 className="text-2xl font-bold text-[#1A1A1A] mb-2">
-                This door opens soon
-              </h3>
-              <p className="text-[#6B7280] mb-6">
-                Ad Portfolio Simulation is coming soon. Stay tuned for updates!
-              </p>
-              <button
-                onClick={() => setShowComingSoonModal(false)}
-                className="w-full px-6 py-3 bg-amber-600 text-white font-semibold rounded-xl hover:bg-amber-700 transition-colors"
-              >
-                Got it
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

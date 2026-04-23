@@ -276,9 +276,13 @@ export default function ProductFlowSimulationPage() {
         selectedFolderIds: formData.selectedFolderIds,
         // Persona-retrieval routing hints — backend uses these to skip the
         // LLM filter extraction step (template) or reuse a cached cohort
-        // (audienceId). Both are optional.
+        // (audienceId). All optional.
         audienceId: formData.audience || undefined,
         audienceTemplateId: formData.audienceTemplateId || undefined,
+        // Template IDs map 1:1 to backend pool_ids. Passing poolId lets the
+        // audience router skip its pool-picking LLM call and only sub-segment
+        // within the picked pool.
+        poolId: formData.audienceTemplateId || undefined,
       });
       if (!res.ok) {
         if (res.status === 402) {
@@ -744,7 +748,7 @@ function SetupStep({ formData, setFormData, audiences, templates }: SetupStepPro
               <Users className="w-6 h-6 text-[#9CA3AF] mx-auto mb-2" />
               <p className="text-[14px] font-medium text-[#6B7280]">No templates available</p>
               <p className="text-[13px] text-[#9CA3AF] mt-1">
-                Check that the backend is running and has audience templates configured.
+                The shared pool catalog is empty. Check <code>shared/pool_templates.json</code>.
               </p>
             </div>
           ) : (

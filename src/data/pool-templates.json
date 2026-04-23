@@ -1,0 +1,210 @@
+{
+  "version": 1,
+  "note": "Display-only metadata for persona pool templates. Source of truth for frontend + backend. Filter specs live in backend/src/data/pool_templates.py.",
+  "pools": [
+    {
+      "pool_id": "tier1_tech_affluent_in",
+      "display_name": "Tier-1 Tech & Finance Professionals",
+      "description": "Graduate engineers, analysts, and senior professionals in metros. High disposable income, high digital literacy.",
+      "ideal_customer_profile": "Products targeting affluent urban professionals — premium fintech, wealth management, direct-equity platforms, B2B SaaS, premium health / lifestyle subscriptions.",
+      "example_companies": [
+        "Cred",
+        "Groww",
+        "INDmoney",
+        "smallcase",
+        "Zerodha"
+      ],
+      "country": "IN",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "tier1_urban_professional_in",
+      "display_name": "Tier-1 Urban Working Professionals",
+      "description": "Salaried workers in metros across multiple sectors. Middle-to-upper-middle income. Broader than the tech-affluent template.",
+      "ideal_customer_profile": "Mass-premium consumer products — food delivery, fitness, upskilling, insurance, broader fintech (UPI apps, BNPL).",
+      "example_companies": [
+        "Zomato Gold",
+        "Cult.fit",
+        "Razorpay",
+        "Unacademy",
+        "Swiggy One"
+      ],
+      "country": "IN",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "tier2_aspirational_young_in",
+      "display_name": "Tier-2 Aspirational Young Professionals",
+      "description": "Early-career workers (18–30) in tier-2 Indian cities. Graduate or senior-secondary education. Digital-native, price-conscious, aspirational.",
+      "ideal_customer_profile": "Micro-savings, BNPL, credit-building, entry-level investing, upskilling platforms, vernacular social apps.",
+      "example_companies": [
+        "Jar",
+        "smallcase",
+        "Rupeek",
+        "KreditBee",
+        "Slice"
+      ],
+      "country": "IN",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "tier23_middle_india_in",
+      "display_name": "Tier-2/3 Middle India",
+      "description": "Small business owners, skilled tradespeople, shopkeepers, and mid-career salaried workers in tier-2/3 cities.",
+      "ideal_customer_profile": "SMB tools, bookkeeping, vernacular commerce, micro-lending, supply-chain fintech, utility payments.",
+      "example_companies": [
+        "Khatabook",
+        "Meesho",
+        "Dukaan",
+        "BharatPe",
+        "OkCredit"
+      ],
+      "country": "IN",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "tier3_rural_micro_savers_in",
+      "display_name": "Tier-3 + Rural Micro-Savers",
+      "description": "Low-to-middle-income households in small cities and rural India. Informal economy workers, farmers, domestic workers, transport operators.",
+      "ideal_customer_profile": "Micro-savings, gold savings, rural fintech, agri-tech, vernacular utility apps, remittance, insurance.",
+      "example_companies": [
+        "Jar",
+        "Niyo",
+        "Spice Money",
+        "Navi",
+        "Paytm"
+      ],
+      "country": "IN",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "metro_gig_workers_in",
+      "display_name": "Metro Gig & Blue-Collar Workers",
+      "description": "Drivers, delivery workers, skilled trades, and manual-labor workforce in tier-1/2 cities.",
+      "ideal_customer_profile": "Gig-worker fintech, earned-wage access, commuter-focused apps, tool-rental, skill-credentialing.",
+      "example_companies": [
+        "Urban Company",
+        "Jai Kisan",
+        "Ridlr",
+        "Rapido"
+      ],
+      "country": "IN",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "metro_homemakers_in",
+      "display_name": "Metro Homemakers",
+      "description": "Women 25–55 in tier-1/2 cities, primary household decision-makers. Typically married, managing groceries, children's education, family health.",
+      "ideal_customer_profile": "Grocery delivery, kids' education apps, family health insurance, homemaker social commerce, telemedicine.",
+      "example_companies": [
+        "Meesho",
+        "HexaHealth",
+        "BYJU'S",
+        "Practo"
+      ],
+      "country": "IN",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "tier1_retirees_in",
+      "display_name": "Tier-1 Retirees & Seniors",
+      "description": "Graduate seniors (55+) in metros with retirement savings. Health-conscious, increasingly digital.",
+      "ideal_customer_profile": "Senior-care tech, health insurance, telemedicine, estate planning, vernacular social, hobbyist apps.",
+      "example_companies": [
+        "Emoha",
+        "Khyaal",
+        "Practo",
+        "Tata AIG"
+      ],
+      "country": "IN",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "rural_farmers_in",
+      "display_name": "Rural Farmers & Agri-Workers",
+      "description": "Cultivators, farm laborers, farm overseers, and agri-adjacent workers in rural India.",
+      "ideal_customer_profile": "Agri-tech, crop advisory, input marketplaces, farm-credit, rural insurance, FPO-tech.",
+      "example_companies": [
+        "DeHaat",
+        "AgroStar",
+        "Jai Kisan",
+        "Ninjacart"
+      ],
+      "country": "IN",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "tier23_educators_govt_in",
+      "display_name": "Tier-2/3 Educators & Govt Workers",
+      "description": "Teachers, trainers, and government administrative workers in smaller Indian cities. Stable income, high credibility within community.",
+      "ideal_customer_profile": "Edtech for teachers, govt-scheme portals, pension/retirement products, stable-income credit products.",
+      "example_companies": [
+        "Diksha",
+        "Teachmint",
+        "NPSeva",
+        "Unacademy Educator"
+      ],
+      "country": "IN",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "urban_entrepreneurs_in",
+      "display_name": "Urban Entrepreneurs & SMB Owners",
+      "description": "Self-employed business owners, traders, dealers, and entrepreneurs in tier-1/2 cities. Revenue-generating.",
+      "ideal_customer_profile": "B2B SaaS, payment gateways, working-capital loans, GST/accounting tools, e-commerce enablement.",
+      "example_companies": [
+        "Razorpay",
+        "Zoho",
+        "Vyapar",
+        "ClearTax",
+        "Instamojo"
+      ],
+      "country": "IN",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "urban_students_young_adults_in",
+      "display_name": "Urban Students & Early-Career (18–24)",
+      "description": "Graduate / senior-secondary urban young adults in metros and tier-2. First-time users of credit, payments, and investment products.",
+      "ideal_customer_profile": "First-job fintech, student loans, UPI onboarding, early-career credit cards, entry-level investing, online learning.",
+      "example_companies": [
+        "Slice",
+        "Unacademy",
+        "Coursera",
+        "smallcase"
+      ],
+      "country": "IN",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "urban_singles_young_in",
+      "display_name": "Urban Never-Married Young Adults",
+      "description": "Unmarried urban young adults 22–32, metros and tier-2. Active social / dating app demographic.",
+      "ideal_customer_profile": "Dating apps, modern social products, lifestyle subscriptions, mental-health apps, travel / experience products targeting solo users.",
+      "example_companies": [
+        "Bumble India",
+        "Hinge",
+        "TrulyMadly",
+        "Aisle",
+        "Airbnb"
+      ],
+      "country": "IN",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "urban_family_decisionmakers_in",
+      "display_name": "Urban Family Decision-Makers (30–50, Married)",
+      "description": "Married urban adults 30–50 across tier-1/2 cities, any gender, any occupation. Primary family financial + product decision-makers.",
+      "ideal_customer_profile": "Family health insurance, life insurance, kids' edtech, home loans, family-plan subscriptions, tax-saving products, retirement planning.",
+      "example_companies": [
+        "HDFC Life",
+        "Acko",
+        "BYJU'S",
+        "ICICI Pru",
+        "HexaHealth"
+      ],
+      "country": "IN",
+      "target_size": 10000
+    }
+  ]
+}

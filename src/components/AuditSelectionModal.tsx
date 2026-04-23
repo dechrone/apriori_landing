@@ -3,7 +3,7 @@
 import { useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Route, BarChart3 } from "lucide-react";
+import { X, Route } from "lucide-react";
 
 interface AuditSelectionModalProps {
   isOpen: boolean;
@@ -18,14 +18,6 @@ const simulationOptions = [
       "Simulate user journeys through your product screens. See where different personas drop off and why.",
     icon: Route,
     href: "/audit/product-flow",
-  },
-  {
-    id: "ad-portfolio",
-    title: "Ad Portfolio Analysis",
-    description:
-      "Evaluate creative performance across audience segments.",
-    icon: BarChart3,
-    href: "/audit/ad-portfolio",
   },
 ];
 

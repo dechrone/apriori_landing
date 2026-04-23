@@ -26,13 +26,17 @@ async function authHeaders(): Promise<Record<string, string>> {
  * Optional audience plumbing the backend uses for:
  *   - audienceId:         persona cache key (skips LLM filter extraction on repeat runs)
  *   - audienceTemplateId: curated audience template (skips filter extraction entirely)
+ *   - poolId:             pre-selected persona pool (see shared/pool_templates.json) —
+ *                         tells the backend to skip pool-picking in the audience router
+ *                         and only sub-segment within the chosen pool.
  *
- * Both are optional. If neither is supplied, the backend runs the full cold
+ * All three are optional. If none are supplied, the backend runs the full cold
  * retrieval pipeline keyed off `audience` (the free-text description).
  */
 export interface AudienceRoutingHints {
   audienceId?: string;
   audienceTemplateId?: string;
+  poolId?: string;
 }
 
 export interface ProductFlowSimulationPayload extends AudienceRoutingHints {
@@ -48,18 +52,13 @@ export interface ProductFlowSimulationPayload extends AudienceRoutingHints {
   selectedFolderIds: string[];
 }
 
-export interface AdPortfolioSimulationPayload extends AudienceRoutingHints {
-  name: string;
-  audience: string;
-  selectedFolderId: string;
-}
-
 export interface ProductFlowComparatorPayload extends AudienceRoutingHints {
   name: string;
   audience: string;
   personaDepth: "low" | "medium" | "high";
   optimizeMetric: string;
   selectedFolderIds: string[];
+  objective?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -77,14 +76,46 @@ export interface AudienceTemplate {
   filters: Record<string, unknown>;
 }
 
-/** GET /api/v1/audiences/templates */
+/**
+ * Primary source: static JSON at `/shared/pool_templates.json` — no backend
+ * round-trip, no empty-state when the API is down. Shape-compat with the
+ * legacy backend `/audiences/templates` response so the wizard code stays
+ * identical.
+ */
+async function loadLocalPoolTemplates(country?: string): Promise<AudienceTemplate[]> {
+  const { listPoolTemplates } = await import("@/data/pool-templates");
+  const typedCountry = country === "US" || country === "IN" ? country : undefined;
+  return listPoolTemplates(typedCountry).map((p) => ({
+    id: p.pool_id,
+    name: p.display_name,
+    description: p.description,
+    country: p.country,
+    category: p.ideal_customer_profile,
+    target_group_seed: `${p.display_name} — ${p.description}`,
+    pre_cached_uuids_count: p.target_size,
+    filters: {},
+  }));
+}
+
+/**
+ * Fetch curated audience templates.
+ *
+ * Reads from the local shared JSON by default — the picker renders even when
+ * the backend is down. If that ever fails (e.g. bundling mishap), falls back
+ * to the backend endpoint.
+ */
 export async function fetchAudienceTemplates(country?: string): Promise<AudienceTemplate[]> {
-  const url = new URL(`${BASE_URL}/api/v1/audiences/templates`);
-  if (country) url.searchParams.set("country", country);
-  const res = await fetch(url.toString(), { method: "GET" });
-  if (!res.ok) throw new Error(`Failed to load audience templates (${res.status})`);
-  const data = (await res.json()) as { count: number; templates: AudienceTemplate[] };
-  return data.templates ?? [];
+  try {
+    return await loadLocalPoolTemplates(country);
+  } catch (err) {
+    console.warn("[templates] local JSON load failed, falling back to backend:", err);
+    const url = new URL(`${BASE_URL}/api/v1/audiences/templates`);
+    if (country) url.searchParams.set("country", country);
+    const res = await fetch(url.toString(), { method: "GET" });
+    if (!res.ok) throw new Error(`Failed to load audience templates (${res.status})`);
+    const data = (await res.json()) as { count: number; templates: AudienceTemplate[] };
+    return data.templates ?? [];
+  }
 }
 
 /** POST /api/v1/audiences/{id}/refresh-personas — invalidate persona cache */
@@ -102,19 +133,6 @@ export async function triggerProductFlowSimulation(
   payload: ProductFlowSimulationPayload
 ): Promise<Response> {
   const res = await fetch(`${BASE_URL}/api/v1/simulations/product-flow`, {
-    method: "POST",
-    headers: await authHeaders(),
-    body: JSON.stringify({ profileId, ...payload }),
-  });
-  return res;
-}
-
-/** POST /api/v1/simulations/ad-portfolio with profileId + simulation payload */
-export async function triggerAdPortfolioSimulation(
-  profileId: string,
-  payload: AdPortfolioSimulationPayload
-): Promise<Response> {
-  const res = await fetch(`${BASE_URL}/api/v1/simulations/ad-portfolio`, {
     method: "POST",
     headers: await authHeaders(),
     body: JSON.stringify({ profileId, ...payload }),

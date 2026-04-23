@@ -37,16 +37,6 @@ const SAMPLE_SIMULATIONS: SimulationDoc[] = [
     updatedAt: null,
   },
   {
-    id: 'sample-ad',
-    name: 'Sample: Export Credit — Ad Portfolio',
-    type: 'Ad Portfolio',
-    status: 'completed',
-    metric: '11/12 valid reactions · 3 ads',
-    timestamp: 'February 2026',
-    createdAt: null,
-    updatedAt: null,
-  },
-  {
     id: 'sample-comparator',
     name: 'Sample: Flow A vs Flow B — Comparator',
     type: 'Product Flow Comparator',
@@ -82,11 +72,9 @@ const SAMPLE_SIMULATIONS: SimulationDoc[] = [
 
 function getSimulationHref(sim: SimulationDoc) {
   if (sim.id === 'sample') return '/simulations/product-flow/sample';
-  if (sim.id === 'sample-ad') return '/simulations/ad-portfolio/sample';
   if (sim.id === 'sample-comparator') return '/simulations/product-flow-comparator/sample';
   if (sim.id === 'sample-flent') return '/simulations/product-flow/sample-flent';
   if (sim.id === 'sample-hexahealth') return '/simulations/product-flow/sample-hexahealth';
-  if (sim.type === 'Ad Portfolio') return `/simulations/ad-portfolio/${sim.id}`;
   if (sim.type === 'Product Flow Comparator') return `/simulations/product-flow-comparator/${sim.id}`;
   return `/simulations/${sim.id}`;
 }
@@ -130,17 +118,6 @@ function extractPersonaCount(sim: SimulationDoc): number | null {
 
 function extractStats(sim: SimulationDoc): { label: string; value: string; sub?: string }[] {
   const r = sim.result as Record<string, unknown> | undefined;
-
-  if (sim.type === 'Ad Portfolio') {
-    const metric = sim.metric || '';
-    const validMatch = metric.match(/(\d+\/\d+)\s*valid/i);
-    const adsMatch = metric.match(/(\d+)\s*ads?/i);
-    return [
-      { label: 'Valid Reactions', value: validMatch?.[1] || '—', sub: validMatch ? 'valid responses' : undefined },
-      { label: 'Ads tested', value: adsMatch ? `${adsMatch[1]} ads` : '—' },
-      { label: 'Audience', value: '—', sub: 'targeted' },
-    ];
-  }
 
   // Product Flow Comparator
   if (sim.type === 'Product Flow Comparator') {
@@ -193,7 +170,6 @@ function extractStats(sim: SimulationDoc): { label: string; value: string; sub?:
 /* ── Type tag colours ───────────────────────────────────────────────────── */
 const TYPE_TAG_STYLES: Record<string, string> = {
   'Product Flow': 'bg-[#EDE9FE] text-[#5B21B6]',
-  'Ad Portfolio': 'bg-[#DBEAFE] text-[#1D4ED8]',
   'Product Flow Comparator': 'bg-[#F3E8FF] text-[#7C3AED]',
 };
 
@@ -329,7 +305,6 @@ export default function SimulationsPage() {
     const matchType =
       typeFilter === 'all' ||
       (typeFilter === 'product-flow' && s.type === 'Product Flow') ||
-      (typeFilter === 'ad-portfolio' && s.type === 'Ad Portfolio') ||
       (typeFilter === 'comparator' && s.type === 'Product Flow Comparator');
     const matchStatus = statusFilter === 'all' || s.status === statusFilter;
     const matchSearch =
@@ -341,7 +316,7 @@ export default function SimulationsPage() {
     const typeMatch =
       typeFilter === 'all' ||
       (typeFilter === 'product-flow' && s.type === 'Product Flow') ||
-      (typeFilter === 'ad-portfolio' && s.type === 'Ad Portfolio');
+      (typeFilter === 'comparator' && s.type === 'Product Flow Comparator');
     const statusMatch = statusFilter === 'all' || s.status === statusFilter;
     const searchMatch =
       !searchQuery || s.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -423,7 +398,6 @@ export default function SimulationsPage() {
               options={[
                 { value: 'all', label: 'All Types' },
                 { value: 'product-flow', label: 'Product Flow' },
-                { value: 'ad-portfolio', label: 'Ad Portfolio' },
                 { value: 'comparator', label: 'Comparator' },
               ]}
             />
@@ -506,7 +480,7 @@ export default function SimulationsPage() {
                 const personaCount = extractPersonaCount(simulation);
                 const stats = extractStats(simulation);
                 const isRunning = simulation.status === 'running';
-                const isSample = simulation.id === 'sample' || simulation.id === 'sample-ad';
+                const isSample = simulation.id === 'sample' || simulation.id === 'sample-comparator' || simulation.id === 'sample-flent' || simulation.id === 'sample-hexahealth';
                 const isConfirming = confirmDeleteId === simulation.id;
                 const isRemoving = removingId === simulation.id;
 

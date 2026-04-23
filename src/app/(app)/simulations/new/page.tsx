@@ -6,20 +6,15 @@ import { Modal, ModalHeader, ModalBody } from '@/components/ui/Modal';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useAppShell } from '@/components/app/AppShell';
-import { Beaker, Target, GitCompare, ArrowRight } from 'lucide-react';
+import { Beaker, Columns2, GitCompare, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function NewSimulationPage() {
   const { toggleMobileMenu } = useAppShell();
   const [isOpen, setIsOpen] = useState(true);
-  const [showComingSoonModal, setShowComingSoonModal] = useState(false);
   const router = useRouter();
 
   const handleSelectType = (type: string) => {
-    if (type === 'ad-portfolio') {
-      setShowComingSoonModal(true);
-      return;
-    }
     router.push(`/simulations/new/${type}`);
   };
 
@@ -31,7 +26,7 @@ export default function NewSimulationPage() {
   return (
     <>
       <TopBar title="New Simulation" onMenuClick={toggleMobileMenu} />
-      
+
       <div className="p-5 sm:p-8 lg:p-10">
       <Modal isOpen={isOpen} onClose={handleClose} size="large">
         <ModalHeader onClose={handleClose}>
@@ -40,58 +35,28 @@ export default function NewSimulationPage() {
         <ModalBody>
           <div className="space-y-5">
             <SimulationTypeCard
-              icon={<Beaker className="w-12 h-12" />}
-              title="Product Flow Simulation"
-              description="Simulate user journeys and identify friction points in your product flows. Perfect for testing onboarding, checkout, and key conversion paths."
-              onSelect={() => handleSelectType('product-flow')}
+              icon={<Columns2 className="w-12 h-12" />}
+              title="Single-Screen A/B"
+              description="Upload two screen variants and see which converts better. The fastest way to a PM-ready A/B report — two uploads, one minute of setup."
+              recommended
+              onSelect={() => handleSelectType('product-flow-ab')}
             />
             <SimulationTypeCard
-              icon={<Target className="w-12 h-12" />}
-              title="Ad Portfolio Simulation"
-              description="Forecast ad performance and creative fatigue across multiple campaigns. Optimize budget allocation and creative rotation strategies."
-              onSelect={() => handleSelectType('ad-portfolio')}
+              icon={<Beaker className="w-12 h-12" />}
+              title="Product Flow Simulation"
+              description="Simulate user journeys through a multi-screen flow and identify friction points. For testing onboarding, checkout, or key conversion paths with several steps."
+              onSelect={() => handleSelectType('product-flow')}
             />
             <SimulationTypeCard
               icon={<GitCompare className="w-12 h-12" />}
               title="Product Flow Comparator"
-              description="Compare two versions of a product flow side-by-side. Perfect for A/B testing onboarding, checkout, or any user journey variants."
+              description="Compare two full multi-screen flows side-by-side. For A/B-testing an entire funnel, not just a single screen."
               onSelect={() => handleSelectType('product-flow-comparator')}
             />
           </div>
         </ModalBody>
       </Modal>
       </div>
-
-      {/* Coming Soon Modal */}
-      {showComingSoonModal && (
-        <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4"
-          onClick={() => setShowComingSoonModal(false)}
-        >
-          <div
-            className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="text-center">
-              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">🚪</span>
-              </div>
-              <h3 className="text-2xl font-bold text-[#1A1A1A] mb-2">
-                This door opens soon
-              </h3>
-              <p className="text-[#6B7280] mb-6">
-                Ad Portfolio Simulation is coming soon. Stay tuned for updates!
-              </p>
-              <button
-                onClick={() => setShowComingSoonModal(false)}
-                className="w-full px-6 py-3 bg-amber-600 text-white font-semibold rounded-xl hover:bg-amber-700 transition-colors"
-              >
-                Got it
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
@@ -100,12 +65,18 @@ interface SimulationTypeCardProps {
   icon: React.ReactNode;
   title: string;
   description: string;
+  recommended?: boolean;
   onSelect: () => void;
 }
 
-function SimulationTypeCard({ icon, title, description, onSelect }: SimulationTypeCardProps) {
+function SimulationTypeCard({ icon, title, description, recommended, onSelect }: SimulationTypeCardProps) {
   return (
-    <Card hover className="cursor-pointer" onClick={onSelect}>
+    <Card hover className="cursor-pointer relative" onClick={onSelect}>
+      {recommended && (
+        <span className="absolute -top-2 left-4 text-[10px] font-bold text-white bg-amber-500 rounded-full px-2 py-0.5 uppercase tracking-wider">
+          Recommended
+        </span>
+      )}
       <CardContent className="flex items-start gap-5 py-8">
         <div className="text-accent-gold flex-shrink-0">
           {icon}
