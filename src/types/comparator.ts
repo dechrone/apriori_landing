@@ -101,4 +101,11 @@ export interface ComparatorData {
   // Per-flow full simulation data — same shape as SimulationData
   flow_0_data: SimulationData;
   flow_1_data: SimulationData;
+  // Optional: first-screen preview URLs so the report can render the actual
+  // variants side-by-side. Populated by the A/B wizard after upload; absent
+  // on older persisted runs — the report degrades gracefully.
+  variant_screenshots?: {
+    flow_0?: string;
+    flow_1?: string;
+  };
 }

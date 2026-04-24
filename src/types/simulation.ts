@@ -111,6 +111,17 @@ export interface FunnelDropOff {
   screen_id: string;
   drop_offs: number;
   drop_off_pct: number;
+  // Populated when the run was uploaded via Cloudinary assets; empty for legacy runs.
+  screen_url?: string;
+  step_number?: number | null;
+  view_name?: string;
+}
+
+export interface ScreenImageMapEntry {
+  url: string;           // Cloudinary URL; empty string means no image available
+  step_number: number | null;
+  view_name: string;
+  node_type: string;
 }
 
 export interface CompletionAnalysis {
@@ -291,6 +302,9 @@ export interface SimulationData {
   plan_distribution: Record<string, unknown>;
   addon_adoption: Record<string, unknown>;
   funnel_drop_off: FunnelDropOff[];
+  // screen_id → { url, step_number, view_name, node_type }. Ordered by step_number
+  // when the UI needs a funnel-order traversal of screens.
+  screen_image_map?: Record<string, ScreenImageMapEntry>;
   top_friction_points: FrictionPoint[];
   screen_metrics: Record<string, ScreenMetric>;
   executive_summary: string;

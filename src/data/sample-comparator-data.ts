@@ -892,4 +892,12 @@ export const SAMPLE_COMPARATOR_DATA: ComparatorData = {
   // fields like WhatNeedsFixing.priority ("P0" | "P1" | "P2").
   flow_0_data: FLOW_A_DATA as unknown as SimulationData,
   flow_1_data: FLOW_B_DATA as unknown as SimulationData,
+  variant_screenshots: {
+    // Light Unsplash phone mockups — stand-ins for the sample route only;
+    // real runs attach Cloudinary URLs from the A/B wizard.
+    flow_0:
+      "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=640&q=80",
+    flow_1:
+      "https://images.unsplash.com/photo-1556742212-5b321f3c261b?auto=format&fit=crop&w=640&q=80",
+  },
 };

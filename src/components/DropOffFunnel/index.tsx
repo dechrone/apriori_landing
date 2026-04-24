@@ -11,19 +11,9 @@ export interface DropOffFunnelProps {
   data: SimulationData;
 }
 
-/* ── Screen image map ── */
-const SCREEN_IMAGE_MAP: Record<string, string> = {
-  mobile_number: "/superastro-screens/Screen 1.png",
-  otp_verify: "/superastro-screens/Screen 2.png",
-  name_input: "/superastro-screens/Screen 3.png",
-  gender_select: "/superastro-screens/Screen 4.png",
-  marital_status: "/superastro-screens/Screen 5.png",
-  dob_picker: "/superastro-screens/Screen 6.png",
-  time_of_birth: "/superastro-screens/Screen 7.png",
-  place_of_birth: "/superastro-screens/Screen 8.png",
-  journey_purpose: "/superastro-screens/Screen 9.png",
-  ai_chat: "/superastro-screens/Screen 10.png",
-};
+/* Screen image URLs now ride in data.screen_image_map, keyed by screen_id.
+   Legacy hardcoded SuperAstro paths have been removed — a run without an
+   image map renders the same fallback empty state as before. */
 
 function dropBadgeStyle(screen: { is_biggest_drop: boolean; has_drop_offs: boolean }) {
   if (screen.is_biggest_drop) return { bg: "#FEE2E2", color: "#DC2626", border: "#FCA5A5" };
@@ -158,25 +148,35 @@ export function DropOffFunnel({ data }: DropOffFunnelProps) {
 
         {/* ── RIGHT: Screen Screenshot ── */}
         <div style={{ width: 280, flexShrink: 0, position: "sticky", top: 120 }} className="dropoff-screen-col">
-          {activeScreenId && SCREEN_IMAGE_MAP[activeScreenId] ? (
-            <div style={{ background: "#FFF", borderRadius: 16, border: "1px solid #E5E7EB", overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
-              <div style={{ padding: "10px 14px", borderBottom: "1px solid #F3F4F6", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#6B7280" }}>Screen {activeScreen?.step_number}</span>
-                <span style={{ fontSize: 11, color: "#9CA3AF" }}>{activeScreen?.view_name}</span>
+          {(() => {
+            const screenImageUrl = activeScreenId
+              ? data.screen_image_map?.[activeScreenId]?.url || ""
+              : "";
+            if (activeScreenId && screenImageUrl) {
+              return (
+                <div style={{ background: "#FFF", borderRadius: 16, border: "1px solid #E5E7EB", overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+                  <div style={{ padding: "10px 14px", borderBottom: "1px solid #F3F4F6", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: "#6B7280" }}>Screen {activeScreen?.step_number}</span>
+                    <span style={{ fontSize: 11, color: "#9CA3AF" }}>{activeScreen?.view_name}</span>
+                  </div>
+                  <div style={{ padding: 10 }}>
+                    <img
+                      src={screenImageUrl}
+                      alt={(activeScreen?.view_name || "Screen") + " screenshot"}
+                      style={{ width: "100%", height: "auto", borderRadius: 8, display: "block" }}
+                    />
+                  </div>
+                </div>
+              );
+            }
+            return (
+              <div style={{ background: "#F9FAFB", borderRadius: 16, padding: 40, textAlign: "center", border: "1px dashed #D1D5DB" }}>
+                <p style={{ fontSize: 13, color: "#9CA3AF" }}>
+                  {activeScreenId ? "No screenshot available for this screen" : "Select a screen to preview"}
+                </p>
               </div>
-              <div style={{ padding: 10 }}>
-                <img
-                  src={SCREEN_IMAGE_MAP[activeScreenId]}
-                  alt={activeScreen?.view_name + " screen"}
-                  style={{ width: "100%", height: "auto", borderRadius: 8, display: "block" }}
-                />
-              </div>
-            </div>
-          ) : (
-            <div style={{ background: "#F9FAFB", borderRadius: 16, padding: 40, textAlign: "center", border: "1px dashed #D1D5DB" }}>
-              <p style={{ fontSize: 13, color: "#9CA3AF" }}>Select a screen to preview</p>
-            </div>
-          )}
+            );
+          })()}
         </div>
       </div>
 

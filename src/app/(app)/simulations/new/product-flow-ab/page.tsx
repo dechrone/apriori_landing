@@ -271,6 +271,13 @@ export default function ProductFlowABSimulationPage() {
       }
 
       const data = comparisonData as ComparatorData;
+      // Attach the uploaded variant previews so the report can show the
+      // actual screens side-by-side. URLs come from the Cloudinary-backed
+      // asset upload response above.
+      data.variant_screenshots = {
+        flow_0: assetsA[0]?.url,
+        flow_1: assetsB[0]?.url,
+      };
       const metric = `${data.winner?.flow_name ?? 'Winner'} leads`;
       const docId = await saveSimulation(userId, {
         type: 'Product Flow Comparator',

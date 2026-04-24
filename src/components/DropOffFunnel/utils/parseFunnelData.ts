@@ -41,6 +41,10 @@ function resolveViewName(
 ): string {
   const personaDetails: PersonaDetail[] = (data.persona_details ?? []) as PersonaDetail[];
 
+  // 0. screen_image_map carries the uploaded view_name — the PM's own label.
+  const mapped = data.screen_image_map?.[screenId]?.view_name;
+  if (mapped) return mapped;
+
   // 1. Try persona_details screen_monologues first (most reliable)
   for (const p of personaDetails) {
     if (!p.screen_monologues) continue;
@@ -133,15 +137,28 @@ export function parseFunnelData(data: SimulationData): FunnelScreen[] {
   }
 
   // Build ordered screen list.
-  // Primary source: screen_metrics keys (these come from the flow traversal and are
-  // already in the correct flow order — first screen visited first).
-  // Merge in any funnel_drop_off screens that aren't in screen_metrics.
-  // funnel_drop_off is NOT reliable for ordering — it's often sorted by drop count.
+  // Primary source: screen_image_map, which carries the PM's actual upload order
+  // via step_number. Falls back to screen_metrics key order, then funnel keys
+  // sorted by extracted number — in that order — so older runs that predate
+  // screen_image_map keep working.
+  const imageMap = data.screen_image_map ?? {};
+  const imageMapKeys = Object.keys(imageMap);
   const metricsKeys = Object.keys(screenMetrics);
   const funnelKeys = funnelDropOff.map((item) => item.screen_id);
 
   let screenIds: string[];
-  if (metricsKeys.length > 0) {
+  if (imageMapKeys.length > 0) {
+    screenIds = [...imageMapKeys].sort((a, b) => {
+      const an = imageMap[a]?.step_number;
+      const bn = imageMap[b]?.step_number;
+      if (an != null && bn != null) return an - bn;
+      if (an != null) return -1;
+      if (bn != null) return 1;
+      return extractStepNumber(a) - extractStepNumber(b);
+    });
+    for (const sid of metricsKeys) if (!screenIds.includes(sid)) screenIds.push(sid);
+    for (const sid of funnelKeys) if (!screenIds.includes(sid)) screenIds.push(sid);
+  } else if (metricsKeys.length > 0) {
     screenIds = [...metricsKeys];
     for (const sid of funnelKeys) {
       if (!screenIds.includes(sid)) screenIds.push(sid);
