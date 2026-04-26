@@ -4,7 +4,7 @@
  */
 
 import type { SimulationData } from "@/types/simulation";
-import type { ComparatorData } from "@/types/comparator";
+import type { AbReport } from "@/types/ab-report";
 
 export type SimulationEvent =
   | {
@@ -61,7 +61,7 @@ export type SimulationEvent =
       type: "flow_insights_ready";
       data: { flow_id: string; flow_name: string; insights: SimulationData };
     }
-  | { type: "comparison_ready"; data: ComparatorData }
+  | { type: "comparison_ready"; data: AbReport }
   | { type: "error"; data: { message: string; flow_id?: string } };
 
 /**

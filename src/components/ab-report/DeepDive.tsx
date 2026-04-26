@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import type { PersonaDeepDive, PersonaVariantExperience } from "@/components/sample-single-screen/types";
+import type { PersonaDeepDive, PersonaVariantExperience } from "@/types/ab-report";
 
 /* ── Tokens ── */
 const AVATAR_COLORS = [
@@ -236,7 +236,7 @@ interface Props {
   personas: PersonaDeepDive[];
 }
 
-export function SingleScreenDeepDive({ personas }: Props) {
+export function AbReportDeepDive({ personas }: Props) {
   const [outcomeFilter, setOutcomeFilter] = useState<OutcomeFilter>("all");
   const [segmentFilter, setSegmentFilter] = useState<SegmentFilter>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);

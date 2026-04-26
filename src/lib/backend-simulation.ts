@@ -55,7 +55,10 @@ export interface ProductFlowSimulationPayload extends AudienceRoutingHints {
 export interface ProductFlowComparatorPayload extends AudienceRoutingHints {
   name: string;
   audience: string;
+  /** Legacy bucket — kept for back-compat. Ignored when numPersonas is set. */
   personaDepth: "low" | "medium" | "high";
+  /** Explicit persona count per variant. Overrides personaDepth when present. */
+  numPersonas?: number;
   optimizeMetric: string;
   selectedFolderIds: string[];
   objective?: string;

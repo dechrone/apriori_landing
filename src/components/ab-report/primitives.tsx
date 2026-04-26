@@ -11,9 +11,7 @@ import {
   MessageSquareQuote,
   Users,
 } from "lucide-react";
-import type {
-  ScreenElement,
-} from "./types";
+import type { ScreenElement } from "@/types/ab-report";
 
 /* ═══════════════════════════════════════════
    TOKENS

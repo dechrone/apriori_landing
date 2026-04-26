@@ -9,14 +9,31 @@ import {
   Users,
   Package,
   Image as ImageIcon,
-  Lightbulb,
   Settings,
   Sparkles,
   X,
   PanelLeftClose,
   PanelLeft,
+  MessageCircle,
 } from 'lucide-react';
 import { useAppShell } from '@/components/app/AppShell';
+import { useTalkToUs } from '@/components/app/TalkToUs';
+
+function TalkToUsNavItem({ collapsed }: { collapsed: boolean }) {
+  const { open } = useTalkToUs();
+  return (
+    <button
+      type="button"
+      onClick={open}
+      className={`flex items-center w-full rounded-lg text-sm font-medium text-[#374151] hover:bg-[#F5F5F5] transition-[background] duration-150 ease-in-out ${
+        collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5'
+      }`}
+    >
+      <MessageCircle className="w-5 h-5 flex-shrink-0 text-[#9CA3AF]" />
+      {!collapsed && <span>Talk to us</span>}
+    </button>
+  );
+}
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -24,7 +41,6 @@ const navigation = [
   { name: 'Audiences', href: '/audiences', icon: Users },
   { name: 'Product Context', href: '/product-context', icon: Package },
   { name: 'Assets', href: '/assets', icon: ImageIcon },
-  { name: 'Insights', href: '/insights', icon: Lightbulb },
 ];
 
 const secondaryNavigation = [
@@ -63,11 +79,11 @@ function NavItem({
         flex items-center rounded-lg text-sm transition-[background] duration-150 ease-in-out
         ${collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5'}
         ${active
-          ? 'bg-amber-50 text-amber-700 font-semibold'
+          ? 'bg-indigo-50 text-indigo-700 font-semibold'
           : 'text-[#374151] hover:bg-[#F5F5F5] font-medium'}
       `}
     >
-      <Icon className={`w-5 h-5 flex-shrink-0 ${active ? 'text-amber-600' : 'text-[#9CA3AF]'}`} />
+      <Icon className={`w-5 h-5 flex-shrink-0 ${active ? 'text-indigo-600' : 'text-[#9CA3AF]'}`} />
       {!collapsed && <span>{label}</span>}
     </Link>
   );
@@ -109,7 +125,7 @@ export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4">
+      <nav className="flex-1 px-3 py-4 flex flex-col">
         {/* Main Menu */}
         <div className="space-y-0.5">
           {!collapsed && (
@@ -185,6 +201,29 @@ export function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
               />
             </div>
           ))}
+        </div>
+
+        {/* Talk to us — bottom of nav */}
+        <div className="mt-auto pt-6">
+          <div
+            className="relative"
+            onMouseEnter={(e) => {
+              if (collapsed) {
+                setHoveredItem('Talk to us');
+                const rect = e.currentTarget.getBoundingClientRect();
+                setTooltipPosition({
+                  top: rect.top + rect.height / 2,
+                  left: rect.right + 8,
+                });
+              }
+            }}
+            onMouseLeave={() => {
+              setHoveredItem(null);
+              setTooltipPosition(null);
+            }}
+          >
+            <TalkToUsNavItem collapsed={collapsed} />
+          </div>
         </div>
       </nav>
 

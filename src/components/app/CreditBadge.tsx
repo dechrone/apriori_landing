@@ -39,14 +39,14 @@ export function CreditBadge() {
       }`}
     >
       <Zap
-        className={`w-3.5 h-3.5 ${low ? "text-[#DC2626]" : "text-[#F59E0B]"}`}
+        className={`w-3.5 h-3.5 ${low ? "text-[#DC2626]" : "text-[#4F46E5]"}`}
       />
       <span>
         {credits_remaining}
         <span className="text-[#9CA3AF] font-normal"> / {credits_total}</span>
       </span>
       {plan !== "free" && (
-        <span className="ml-1 text-[11px] uppercase tracking-wide text-[#F59E0B]">
+        <span className="ml-1 text-[11px] uppercase tracking-wide text-[#4F46E5]">
           {plan}
         </span>
       )}

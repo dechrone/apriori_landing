@@ -1,5 +1,6 @@
 {
   "meta": {
+    "simulation_id": "sample-single-screen-univest-trial",
     "study_name": "Univest Trial Activation — Single-Screen A/B",
     "client": "Univest (SEBI-registered advisory)",
     "screen_label": "Trial activation screen",
@@ -87,8 +88,13 @@
   ],
 
   "annotated_screens": {
-    "variant_a": {
-      "image_path": "/single-screen-sample/screen 4 a.png",
+    "screens": [
+      {
+        "id": "trial-activation",
+        "index": 0,
+        "screen_label": "Trial activation screen",
+        "variant_a": {
+          "image_path": "/single-screen-sample/screen 4 a.png",
       "elements": [
         {
           "id": "a-hdr",
@@ -214,6 +220,8 @@
         }
       ]
     }
+      }
+    ]
   },
 
   "persona_split": [
