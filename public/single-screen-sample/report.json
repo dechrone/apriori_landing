@@ -1,0 +1,706 @@
+{
+  "meta": {
+    "study_name": "Univest Trial Activation — Single-Screen A/B",
+    "client": "Univest (SEBI-registered advisory)",
+    "screen_label": "Trial activation screen",
+    "persona_count": 40,
+    "runs_per_persona": 3,
+    "generated_at": "2026-04-24T09:15:00.000Z"
+  },
+
+  "verdict": {
+    "sentence": "Ship B's ₹1 trial with instant-refund line and the crown-led headline, but replace the 04:34 countdown with A's SEBI + ET trust row and keep A's plain black CTA.",
+    "confidence": "high"
+  },
+
+  "ship_list": [
+    {
+      "id": "ship-01",
+      "action": "keep",
+      "source_variant": "B",
+      "feature": "₹1 activation with instant refund",
+      "rationale": "Reverses risk framing for cautious retail users — token commitment without fear.",
+      "bullet": "Keep ₹1 activation with instant refund — reverses risk framing for cautious users.",
+      "confidence": "high",
+      "markdown": "- [ ] Keep B's ₹1 activation with instant refund — reverses risk framing for cautious retail users"
+    },
+    {
+      "id": "ship-02",
+      "action": "kill",
+      "source_variant": "B",
+      "feature": "04:34 countdown timer",
+      "rationale": "Reads as boiler-room pressure to experienced F&O traders and analytical skeptics.",
+      "bullet": "Kill the 04:34 countdown timer — reads as boiler-room to experienced traders.",
+      "confidence": "high",
+      "markdown": "- [ ] Kill B's 04:34 countdown timer — reads as boiler-room pressure to experienced F&O traders"
+    },
+    {
+      "id": "ship-03",
+      "action": "keep",
+      "source_variant": "A",
+      "feature": "SEBI + ET Now + 4.6★ trust row",
+      "rationale": "Strongest lift in the study — SEBI registration was the single most-cited reason to trust Univest.",
+      "bullet": "Keep A's SEBI + ET Now + 4.6★ trust row above the CTA.",
+      "confidence": "high",
+      "markdown": "- [ ] Keep A's SEBI-registered + ET Now + 4.6★ Play Store trust row directly above the CTA"
+    },
+    {
+      "id": "ship-04",
+      "action": "revisit",
+      "source_variant": "B",
+      "feature": "Crown icon",
+      "rationale": "Lifts aspirational segment but feels gimmicky to skeptics — test against a plain Pro badge.",
+      "bullet": "Revisit crown icon — lifts aspirational segment, feels gimmicky to skeptics.",
+      "confidence": "medium",
+      "markdown": "- [ ] Revisit B's crown icon — A/B test against a plain \"Pro\" badge; splits aspirational vs. analytical"
+    },
+    {
+      "id": "ship-05",
+      "action": "keep",
+      "source_variant": "A",
+      "feature": "Black \"Start Trial Now\" CTA",
+      "rationale": "Outperforms B's green gradient on perceived legitimacy — reads as institutional and calm.",
+      "bullet": "Keep A's black \"Start Trial Now\" CTA — outperforms B's green gradient on clarity.",
+      "confidence": "medium",
+      "markdown": "- [ ] Keep A's solid black \"Start Trial Now\" CTA over B's green gradient — higher perceived legitimacy"
+    },
+    {
+      "id": "ship-06",
+      "action": "kill",
+      "source_variant": "B",
+      "feature": "Blurred live-trade preview cards",
+      "rationale": "Personas read them as FOMO bait, not evidence — experienced users assumed hidden losing trades.",
+      "bullet": "Kill blurred live-trade preview cards — feels like gated FOMO, not proof.",
+      "confidence": "medium",
+      "markdown": "- [ ] Kill B's blurred live-trade preview cards — personas read them as FOMO bait, not evidence"
+    },
+    {
+      "id": "ship-07",
+      "action": "revisit",
+      "source_variant": "neither",
+      "feature": "Post-trial price disclosure",
+      "rationale": "Neither variant shows ₹2,999/yr renewal — both lost cautious personas on this gap.",
+      "bullet": "Add explicit post-trial price (₹2,999/yr) above CTA to kill pricing anxiety.",
+      "confidence": "low",
+      "markdown": "- [ ] Add explicit post-trial price disclosure (e.g. \"₹2,999/yr after 7 days\") above the CTA — neither variant has it"
+    }
+  ],
+
+  "annotated_screens": {
+    "variant_a": {
+      "image_path": "/single-screen-sample/screen 4 a.png",
+      "elements": [
+        {
+          "id": "a-hdr",
+          "label": "Modal headline",
+          "anchor": { "x": 0.5, "y": 0.24 },
+          "verdict": "lift",
+          "callout": "22 personas read this as a service offer, not a pitch",
+          "persona_count": 22,
+          "summary": "Straightforward framing; cautious personas read it as a service offer, not a sales pitch."
+        },
+        {
+          "id": "a-sub",
+          "label": "Pro features list",
+          "anchor": { "x": 0.5, "y": 0.36 },
+          "verdict": "lift",
+          "callout": "14 anchored on the research-calls value prop",
+          "persona_count": 14,
+          "summary": "Bulleted value (research calls, F&O picks) anchored experienced traders but felt dense to first-timers."
+        },
+        {
+          "id": "a-trust",
+          "label": "Trust badges row (SEBI / ET Now / 4.6★)",
+          "anchor": { "x": 0.5, "y": 0.50 },
+          "verdict": "lift",
+          "callout": "31 personas — strongest lift in the entire study",
+          "persona_count": 31,
+          "summary": "Strongest lift in the whole study; SEBI registration was the single most-cited reason to trust Univest."
+        },
+        {
+          "id": "a-price",
+          "label": "Inline price text \"Free for 7 days\"",
+          "anchor": { "x": 0.35, "y": 0.62 },
+          "verdict": "tradeoff",
+          "callout": "12 hesitated at the missing post-trial price",
+          "persona_count": 12,
+          "summary": "Experienced users asked \"free, then what?\" — no post-trial price shown; cautious users liked the absence of ₹."
+        },
+        {
+          "id": "a-cta",
+          "label": "Primary CTA — black \"Start Trial Now\"",
+          "anchor": { "x": 0.5, "y": 0.73 },
+          "verdict": "lift",
+          "callout": "26 saw the black CTA as institutional and calm",
+          "persona_count": 26,
+          "summary": "Plain black button read as institutional and calm — several personas contrasted it with \"Groww-style\" legitimacy."
+        },
+        {
+          "id": "a-legal",
+          "label": "Footer legal \"Auto-renews unless cancelled\"",
+          "anchor": { "x": 0.5, "y": 0.84 },
+          "verdict": "drag",
+          "callout": "11 imagined hidden charges after day 7",
+          "persona_count": 11,
+          "summary": "Auto-renew line triggered distrust in cautious segment — several imagined hidden charges after day 7."
+        }
+      ]
+    },
+    "variant_b": {
+      "image_path": "/single-screen-sample/screen 4 b.png",
+      "elements": [
+        {
+          "id": "b-crown",
+          "label": "Crown icon + \"Univest Pro\" lockup",
+          "anchor": { "x": 0.5, "y": 0.12 },
+          "verdict": "tradeoff",
+          "callout": "Split — 9 loved the status cue, 11 found it gimmicky",
+          "persona_count": 18,
+          "summary": "Aspirational first-timers loved the status cue; analytical evaluators called it \"gaudy\" and \"Telegram-tipster energy.\""
+        },
+        {
+          "id": "b-hdr",
+          "label": "Headline \"Unlock Pro for ₹1\"",
+          "anchor": { "x": 0.5, "y": 0.22 },
+          "verdict": "lift",
+          "callout": "24 personas anchored their decision on the ₹1 price",
+          "persona_count": 24,
+          "summary": "The ₹1 number did the work — concrete, low, and culturally familiar as a token-commitment price."
+        },
+        {
+          "id": "b-refund",
+          "label": "\"Instant refund on cancel\" reassurance",
+          "anchor": { "x": 0.5, "y": 0.32 },
+          "verdict": "lift",
+          "callout": "29 personas — single biggest lift in Variant B",
+          "persona_count": 29,
+          "summary": "Single biggest lift in B — explicitly reversed the \"will they make it hard to cancel?\" fear."
+        },
+        {
+          "id": "b-timer",
+          "label": "Countdown timer (04:34)",
+          "anchor": { "x": 0.5, "y": 0.42 },
+          "verdict": "drag",
+          "callout": "23 read this as a scam tactic",
+          "persona_count": 23,
+          "summary": "Experienced traders flagged it as boiler-room pressure; first-timers mildly accelerated — net drag on trust."
+        },
+        {
+          "id": "b-preview",
+          "label": "Blurred live-trade preview cards",
+          "anchor": { "x": 0.5, "y": 0.56 },
+          "verdict": "tradeoff",
+          "callout": "Split — 6 curious, 10 assumed hidden losses",
+          "persona_count": 15,
+          "summary": "Readable as \"proof behind paywall\" for some; others read the blur as hiding losing trades."
+        },
+        {
+          "id": "b-cta",
+          "label": "Green gradient CTA \"Activate for ₹1\"",
+          "anchor": { "x": 0.5, "y": 0.74 },
+          "verdict": "lift",
+          "callout": "21 converted when they saw ₹1 in the button",
+          "persona_count": 21,
+          "summary": "₹1 embedded in the button copy converted hesitation into a tap — price objection dissolved at point of action."
+        },
+        {
+          "id": "b-legal",
+          "label": "Fine print under CTA",
+          "anchor": { "x": 0.5, "y": 0.85 },
+          "verdict": "drag",
+          "callout": "8 assumed the renewal price was deliberately buried",
+          "persona_count": 8,
+          "summary": "Too small to reassure; skeptics assumed the renewal price was deliberately buried."
+        }
+      ]
+    }
+  },
+
+  "persona_split": [
+    {
+      "segment": "Cautious first-time triers",
+      "persona_count": 14,
+      "preferred_variant": "B",
+      "reactions": {
+        "loved": [
+          { "name": "₹1 activation with instant refund", "source": "B" },
+          { "name": "premium crown icon", "source": "B" }
+        ],
+        "disliked": [
+          { "name": "pricing opacity (no post-trial price)", "source": "both" }
+        ],
+        "tolerated": [
+          { "name": "04:34 countdown timer", "source": "B" }
+        ],
+        "mixed": [
+          { "name": "blurred live-trade preview cards", "source": "B" }
+        ],
+        "needs": [
+          { "name": "transparent post-trial pricing", "source": "neither" }
+        ]
+      },
+      "interpretation": "Risk reversal removes the activation barrier; curiosity about hidden trades pulls them in despite the blur."
+    },
+    {
+      "segment": "Experienced retail traders",
+      "persona_count": 14,
+      "preferred_variant": "A",
+      "reactions": {
+        "loved": [
+          { "name": "SEBI + ET Now + 4.6★ trust row", "source": "A" },
+          { "name": "black \"Start Trial Now\" CTA", "source": "A" }
+        ],
+        "disliked": [
+          { "name": "04:34 countdown timer", "source": "B" },
+          { "name": "blurred live-trade preview cards", "source": "B" }
+        ],
+        "tolerated": [
+          { "name": "₹1 activation with instant refund", "source": "B" }
+        ],
+        "needs": [
+          { "name": "transparent post-trial pricing", "source": "neither" }
+        ]
+      },
+      "interpretation": "Third-party proof is table stakes for anyone who trades daily; urgency cues pattern-match to tip-seller scams."
+    },
+    {
+      "segment": "Analytically-skeptical evaluators",
+      "persona_count": 12,
+      "preferred_variant": "A",
+      "reactions": {
+        "loved": [
+          { "name": "SEBI + ET Now + 4.6★ trust row", "source": "A" }
+        ],
+        "disliked": [
+          { "name": "04:34 countdown timer", "source": "B" },
+          { "name": "premium crown icon", "source": "B" },
+          { "name": "blurred live-trade preview cards", "source": "B" }
+        ],
+        "needs": [
+          { "name": "transparent post-trial pricing", "source": "neither" },
+          { "name": "verifiable performance data", "source": "neither" }
+        ]
+      },
+      "interpretation": "Stacked urgency cues trip every scam heuristic at once; a single verifiable credential outweighs any number of persuasion tricks."
+    }
+  ],
+
+  "friction_provenance": {
+    "variant_a": [
+      {
+        "type": "Post-trial price opacity",
+        "severity": "high",
+        "persona_count": 17,
+        "note": "\"Free for 7 days\" — but what's day 8? Unanswered question blocks cautious users."
+      },
+      {
+        "type": "Auto-renewal distrust",
+        "severity": "medium",
+        "persona_count": 11,
+        "note": "Footer \"auto-renews unless cancelled\" read as a trap by cautious personas."
+      },
+      {
+        "type": "Low-stakes dismissal",
+        "severity": "medium",
+        "persona_count": 9,
+        "note": "Modal + X made it too easy to close before the trust row loaded attention."
+      },
+      {
+        "type": "Feature list density",
+        "severity": "low",
+        "persona_count": 6,
+        "note": "Pro-features bullets felt dense for first-time investors unfamiliar with F&O calls."
+      }
+    ],
+    "variant_b": [
+      {
+        "type": "Timer suspicion",
+        "severity": "high",
+        "persona_count": 23,
+        "note": "04:34 countdown flagged as artificial scarcity by traders and skeptics."
+      },
+      {
+        "type": "Crown feels gimmicky",
+        "severity": "medium",
+        "persona_count": 13,
+        "note": "Crown icon pattern-matched to Telegram tipster groups for analytical users."
+      },
+      {
+        "type": "Blurred preview = hiding",
+        "severity": "medium",
+        "persona_count": 10,
+        "note": "Blurred trade cards read as concealing losses, not teasing wins, to experienced users."
+      },
+      {
+        "type": "Missing regulatory proof",
+        "severity": "high",
+        "persona_count": 19,
+        "note": "No SEBI mention visible on-screen — critical absence for Indian stock-advisory context."
+      },
+      {
+        "type": "Fine-print renewal price",
+        "severity": "low",
+        "persona_count": 7,
+        "note": "Renewal figure too small; skeptics assumed deliberate burial."
+      }
+    ]
+  },
+
+  "monologue_diff": [
+    {
+      "persona_id": "p-017",
+      "persona_name": "Priya Sharma",
+      "segment": "Cautious first-time retail investors",
+      "variant_a_monologue": "Okay… seven days free, sounds fine, but then what? It says auto-renew — how much are they gonna charge me? I'll just close this and look it up later.",
+      "variant_b_monologue": "₹1 only? And instant refund if I cancel? That's basically nothing. Fine, let me just try it — worst case I lose a rupee, not a week of my salary.",
+      "inflection": "The instant-refund line killed the auto-renew fear; ₹1 made the commitment feel reversible.",
+      "decision_a": "hesitate",
+      "decision_b": "convert"
+    },
+    {
+      "persona_id": "p-024",
+      "persona_name": "Rahul Mehta",
+      "segment": "Experienced retail traders",
+      "variant_a_monologue": "SEBI-registered, 4.6 on Play Store, ET Now — alright, they're legit. Black button, no drama. I know what Pro gets me, let me just start the trial and see the research calls.",
+      "variant_b_monologue": "Four minutes thirty-four seconds? Bro, come on. And a crown icon? This looks like one of those Telegram F&O groups. I've seen this movie. Closing.",
+      "inflection": "Timer + crown pattern-matched to tipster scams; A's SEBI badge did the opposite work in one glance.",
+      "decision_a": "convert",
+      "decision_b": "abandon"
+    },
+    {
+      "persona_id": "p-031",
+      "persona_name": "Aditya Iyer",
+      "segment": "Analytically-skeptical evaluators",
+      "variant_a_monologue": "Hmm, trust badges are real at least — SEBI reg number I can verify. But they won't tell me the renewal price on the screen itself? That's a tell. I'll start the trial but I'm setting a reminder to cancel day six.",
+      "variant_b_monologue": "Countdown timer, blurred \"live trades\", crown — this is three scam-adjacent patterns stacked on one screen. I don't care that it's a rupee, the framing is wrong. Hard pass.",
+      "inflection": "Stacked urgency cues tripped every heuristic at once; A passed the sniff test despite its own opacity.",
+      "decision_a": "hesitate",
+      "decision_b": "abandon"
+    }
+  ],
+
+  "deep_dive": {
+    "personas": [
+      {
+        "id": "p1",
+        "name": "Priya Sharma",
+        "segment": "Cautious first-time triers",
+        "archetype": "Risk-averse saver",
+        "occupation": "HR executive",
+        "age": 28,
+        "city": "Pune",
+        "income_band": "₹6–10L",
+        "tags": ["Low digital literacy", "No F&O experience", "Long-term SIP investor", "Joint family"],
+        "behavior_summary": "Priya invests only through SIPs her father set up. Any screen that feels like a 'scheme' triggers an instant back-tap.",
+        "variant_a": {
+          "outcome": "hesitate",
+          "monologue": "Okay… 'Start Trial Now' — trial of what exactly? Seven days free is fine, but it says auto-renew. How much after that? I'm not giving my card details without knowing the price. Let me screenshot this and ask my cousin.",
+          "primary_emotion": "anxious",
+          "why": "Missing post-trial price created an information gap her risk-averse instinct couldn't bridge alone.",
+          "liked": ["SEBI + ET Now + 4.6★ trust row"],
+          "disliked": ["pricing opacity (no post-trial price)"]
+        },
+        "variant_b": {
+          "outcome": "convert",
+          "monologue": "₹1 only? And instant refund if I cancel? That's basically nothing — like paying ₹1 for a samosa trial. Fine, let me just try it. Worst case I lose one rupee, not one week of salary.",
+          "primary_emotion": "intrigued",
+          "why": "₹1 + instant-refund collapsed the risk calculus — token commitment felt culturally familiar and reversible.",
+          "liked": ["₹1 activation with instant refund"],
+          "disliked": ["04:34 countdown timer"]
+        },
+        "overall_reflection": {
+          "text": "Priya's split shows the ₹1 + instant-refund framing does the heavy lifting for risk-averse first-timers — it makes the commitment feel reversible in a way that 'free trial' alone cannot.",
+          "leaning": "B"
+        }
+      },
+      {
+        "id": "p2",
+        "name": "Sneha Kulkarni",
+        "segment": "Cautious first-time triers",
+        "archetype": "Aspirational beginner",
+        "occupation": "School teacher",
+        "age": 32,
+        "city": "Nagpur",
+        "income_band": "₹4–6L",
+        "tags": ["Medium digital literacy", "Mutual funds only", "Goal-based investor", "Single income household"],
+        "behavior_summary": "Sneha wants to grow beyond SIPs but doesn't trust anything that looks like a 'stock tip' channel. The crown icon in B actually pulled her in — she read it as premium, not gimmicky.",
+        "variant_a": {
+          "outcome": "hesitate",
+          "monologue": "SEBI registered is good, but this looks like every other app. 'Start Trial Now' — trial of what level of service? The features list is too dense, I don't know what F&O picks even means.",
+          "primary_emotion": "confused",
+          "why": "Feature-list density overwhelmed a user unfamiliar with trading terminology.",
+          "liked": ["SEBI + ET Now + 4.6★ trust row"],
+          "disliked": ["Pro features list"]
+        },
+        "variant_b": {
+          "outcome": "convert",
+          "monologue": "Ooh, 'Univest Pro' with that crown — feels premium, like I'm upgrading to something special. And only ₹1? With instant refund? Let me just try. The blurred cards make me curious about what's behind them.",
+          "primary_emotion": "intrigued",
+          "why": "Crown icon activated aspirational framing; ₹1 pricing created a 'why not' moment.",
+          "liked": ["premium crown icon", "₹1 activation with instant refund"],
+          "disliked": []
+        },
+        "overall_reflection": {
+          "text": "Sneha's response shows the crown icon isn't universally gimmicky — for aspirational beginners, it signals 'upgrade' rather than 'scam'. The ₹1 + crown combo is uniquely effective for this sub-segment.",
+          "leaning": "B"
+        }
+      },
+      {
+        "id": "p3",
+        "name": "Meera Reddy",
+        "segment": "Cautious first-time triers",
+        "archetype": "Safety-first planner",
+        "occupation": "Government clerk",
+        "age": 35,
+        "city": "Hyderabad",
+        "income_band": "₹4–6L",
+        "tags": ["Low digital literacy", "FD and gold only", "Risk-averse", "Two kids"],
+        "behavior_summary": "Meera has never invested in equities. She opened Univest because a colleague mentioned it but will abandon anything that feels like gambling.",
+        "variant_a": {
+          "outcome": "abandon",
+          "monologue": "I don't understand half of this. Research calls? F&O? This is for traders, not for me. And 'auto-renews unless cancelled' — no thanks, I've been burnt by those gym subscriptions before.",
+          "primary_emotion": "overwhelmed",
+          "why": "Terminal mismatch between feature-heavy copy and a user with zero equity experience.",
+          "liked": [],
+          "disliked": ["Pro features list", "pricing opacity (no post-trial price)"]
+        },
+        "variant_b": {
+          "outcome": "hesitate",
+          "monologue": "₹1 is nothing, I know… and they say instant refund. But that countdown timer — why is it ticking? Are they rushing me? Let me think about this. Maybe I'll come back tomorrow if the offer is still there.",
+          "primary_emotion": "suspicious",
+          "why": "₹1 framing almost worked but the countdown timer clashed with her need for deliberation time.",
+          "liked": ["₹1 activation with instant refund"],
+          "disliked": ["04:34 countdown timer"]
+        },
+        "overall_reflection": {
+          "text": "Meera nearly converted on B but the timer killed it. She represents the cautious sub-segment where ₹1 alone isn't enough — they also need the absence of pressure cues.",
+          "leaning": "B"
+        }
+      },
+      {
+        "id": "p4",
+        "name": "Kavita Joshi",
+        "segment": "Cautious first-time triers",
+        "archetype": "Peer-influenced newcomer",
+        "occupation": "Freelance designer",
+        "age": 26,
+        "city": "Indore",
+        "income_band": "₹3–5L",
+        "tags": ["High digital literacy", "New to investing", "Instagram-savvy", "Lives alone"],
+        "behavior_summary": "Kavita downloaded Univest after a friend's Instagram story. She's digitally fluent but financially naive — she'll tap anything that looks modern and low-risk.",
+        "variant_a": {
+          "outcome": "hesitate",
+          "monologue": "This looks clean but boring? 'Start Trial Now' — giving me nothing to be excited about. SEBI badge is nice I guess but I don't even know what SEBI does. Where's the hook?",
+          "primary_emotion": "dismissive",
+          "why": "Trust signals didn't resonate with low financial literacy; plain UI lacked engagement hook.",
+          "liked": [],
+          "disliked": ["Pro features list"]
+        },
+        "variant_b": {
+          "outcome": "convert",
+          "monologue": "₹1 for Pro? Crown icon looks premium — like upgrading to Spotify Premium. Instant refund, cool. The blurred trades make me curious. Tapping 'Activate' before I overthink it.",
+          "primary_emotion": "excited",
+          "why": "Premium framing mapped to familiar freemium patterns; acted on impulse before objections formed.",
+          "liked": ["premium crown icon", "₹1 activation with instant refund", "blurred preview cards"],
+          "disliked": []
+        },
+        "overall_reflection": {
+          "text": "Kavita shows why the crown + ₹1 combo works for digital-native newcomers — it maps to app upgrade patterns they already trust, bypassing the need for financial-credential recognition.",
+          "leaning": "B"
+        }
+      },
+      {
+        "id": "p5",
+        "name": "Rahul Mehta",
+        "segment": "Experienced retail traders",
+        "archetype": "Active F&O trader",
+        "occupation": "Software engineer",
+        "age": 31,
+        "city": "Bengaluru",
+        "income_band": "₹18–25L",
+        "tags": ["High digital literacy", "5yr F&O experience", "Uses Zerodha + Sensibull", "Data-driven"],
+        "behavior_summary": "Rahul trades F&O weekly and evaluates every advisory tool against Zerodha's Varsity benchmarks. Trust is binary — either you have SEBI credentials or you don't.",
+        "variant_a": {
+          "outcome": "convert",
+          "monologue": "SEBI-registered, 4.6 on Play Store, ET Now — alright, they're legit. Black button, no drama. I know what Pro gets me — let me start the trial and see if the research calls are better than what I get on Sensibull.",
+          "primary_emotion": "confident",
+          "why": "Trust row provided exact credentials he evaluates first; clean CTA confirmed seriousness.",
+          "liked": ["SEBI + ET Now + 4.6★ trust row", "black \"Start Trial Now\" CTA"],
+          "disliked": []
+        },
+        "variant_b": {
+          "outcome": "abandon",
+          "monologue": "Four minutes thirty-four seconds? Bro, come on. And a crown icon? This looks like one of those Telegram F&O groups my junior keeps sharing. I've seen this movie before. Closing.",
+          "primary_emotion": "dismissive",
+          "why": "Timer + crown stacked two scam-adjacent patterns that instantly triggered pattern-matching.",
+          "liked": [],
+          "disliked": ["04:34 countdown timer", "premium crown icon", "blurred preview cards"]
+        },
+        "overall_reflection": {
+          "text": "Rahul's response is the clearest signal in the study: experienced traders need credentials first, engagement second. The timer + crown combo is a dealbreaker for this segment.",
+          "leaning": "A"
+        }
+      },
+      {
+        "id": "p6",
+        "name": "Vikram Desai",
+        "segment": "Experienced retail traders",
+        "archetype": "Conservative equity investor",
+        "occupation": "CA, own practice",
+        "age": 42,
+        "city": "Ahmedabad",
+        "income_band": "₹25L+",
+        "tags": ["High digital literacy", "10yr equity experience", "Value investor", "Family of four"],
+        "behavior_summary": "Vikram manages his own and his family's portfolios. He reads annual reports before investing and treats advisory tools as research supplements, not decision-makers.",
+        "variant_a": {
+          "outcome": "convert",
+          "monologue": "SEBI number is right there — I'll verify it on their website later. ET Now partnership adds credibility. The black CTA is refreshingly un-salesy. Let me see what their research team actually produces.",
+          "primary_emotion": "pragmatic",
+          "why": "Verifiable SEBI credential was the singular trust signal he needed; clean design reinforced seriousness.",
+          "liked": ["SEBI + ET Now + 4.6★ trust row", "black \"Start Trial Now\" CTA"],
+          "disliked": []
+        },
+        "variant_b": {
+          "outcome": "abandon",
+          "monologue": "₹1 trial? I'm not price-sensitive, I want quality. The countdown timer is a red flag — legitimate advisory firms don't pressure you with fake scarcity. Where's your SEBI registration? Nowhere. Done.",
+          "primary_emotion": "unimpressed",
+          "why": "High-income investors aren't motivated by price anchoring; missing credentials signalled unprofessionalism.",
+          "liked": [],
+          "disliked": ["04:34 countdown timer", "premium crown icon"]
+        },
+        "overall_reflection": {
+          "text": "Vikram confirms that for high-income experienced investors, trust credentials are table stakes and price anchoring is noise. The SEBI row alone would have saved Variant B.",
+          "leaning": "A"
+        }
+      },
+      {
+        "id": "p7",
+        "name": "Arjun Nair",
+        "segment": "Experienced retail traders",
+        "archetype": "Momentum trader",
+        "occupation": "Business analyst",
+        "age": 29,
+        "city": "Chennai",
+        "income_band": "₹12–18L",
+        "tags": ["High digital literacy", "3yr trading experience", "Options-focused", "Uses TradingView"],
+        "behavior_summary": "Arjun trades options intraday and evaluates tools by signal accuracy. He's less credential-sensitive than older traders but still rejects obvious marketing tricks.",
+        "variant_a": {
+          "outcome": "convert",
+          "monologue": "4.6 stars, SEBI registered, ET Now — checks out. Feature list mentions F&O picks, which is exactly what I need. Plain CTA, no games. Starting the trial to test their intraday calls.",
+          "primary_emotion": "focused",
+          "why": "Feature list spoke directly to his F&O use case; trust row provided sufficient validation.",
+          "liked": ["SEBI + ET Now + 4.6★ trust row", "Pro features list"],
+          "disliked": []
+        },
+        "variant_b": {
+          "outcome": "abandon",
+          "monologue": "Timer ticking down, blurred trade cards — so what am I getting? Show me the actual trade history, not blurred screenshots. This feels like those 'join my channel' ads on TradingView. Pass.",
+          "primary_emotion": "skeptical",
+          "why": "Blurred preview cards were counterproductive for a user who evaluates tools by verifiable records.",
+          "liked": [],
+          "disliked": ["blurred preview cards", "04:34 countdown timer"]
+        },
+        "overall_reflection": {
+          "text": "Arjun's split reinforces that experienced traders evaluate tools by evidence quality, not price. Blurred cards actively harmed B's case by suggesting something to hide.",
+          "leaning": "A"
+        }
+      },
+      {
+        "id": "p8",
+        "name": "Deepa Krishnan",
+        "segment": "Experienced retail traders",
+        "archetype": "Risk-managed swing trader",
+        "occupation": "Product manager",
+        "age": 34,
+        "city": "Mumbai",
+        "income_band": "₹20–30L",
+        "tags": ["High digital literacy", "4yr swing trading", "Uses Smallcase", "Married, no kids"],
+        "behavior_summary": "Deepa trades weekly swings on Smallcase and evaluates advisory platforms by risk management frameworks, not just returns. She values transparency over persuasion.",
+        "variant_a": {
+          "outcome": "convert",
+          "monologue": "SEBI registered — that's the first thing I check. ET Now is a credible media partner. Black button says 'we're serious, not salesy'. Research calls could complement my Smallcase approach. Starting trial.",
+          "primary_emotion": "confident",
+          "why": "Trust signals aligned with her due-diligence checklist; understated design matched expectations.",
+          "liked": ["SEBI + ET Now + 4.6★ trust row", "black \"Start Trial Now\" CTA"],
+          "disliked": ["pricing opacity (no post-trial price)"]
+        },
+        "variant_b": {
+          "outcome": "hesitate",
+          "monologue": "₹1 is fine, instant refund is smart — but that timer is making me uneasy. And where's the SEBI registration? I always check that. The crown feels off for a financial product. Let me check their website separately.",
+          "primary_emotion": "cautious",
+          "why": "Missing SEBI credentials forced her to seek validation elsewhere, breaking the conversion flow.",
+          "liked": ["₹1 activation with instant refund"],
+          "disliked": ["04:34 countdown timer", "premium crown icon"]
+        },
+        "overall_reflection": {
+          "text": "Deepa's hesitation on B despite liking the ₹1 offer shows that for experienced traders, missing credentials create friction that no pricing trick can overcome.",
+          "leaning": "A"
+        }
+      },
+      {
+        "id": "p9",
+        "name": "Aditya Iyer",
+        "segment": "Analytically-skeptical evaluators",
+        "archetype": "Methodical evaluator",
+        "occupation": "Data scientist",
+        "age": 33,
+        "city": "Bengaluru",
+        "income_band": "₹25L+",
+        "tags": ["Very high digital literacy", "Quant background", "Backtests everything", "Single"],
+        "behavior_summary": "Aditya doesn't trust any advisory claim without verifiable data. He'll run a Sharpe ratio calculation before paying for any service and treats marketing tricks as negative signals.",
+        "variant_a": {
+          "outcome": "hesitate",
+          "monologue": "Hmm, SEBI registration is real — I can verify that number. 4.6 stars on Play Store is fine but can be gamed. Where's the actual track record? Win rate? Average return? I'll start the trial but I'm setting a reminder to cancel on day six.",
+          "primary_emotion": "analytical",
+          "why": "Trust badges passed initial filter but absence of quantitative performance data prevented full commitment.",
+          "liked": ["SEBI + ET Now + 4.6★ trust row"],
+          "disliked": ["pricing opacity (no post-trial price)"]
+        },
+        "variant_b": {
+          "outcome": "abandon",
+          "monologue": "Countdown timer, blurred 'live trades', crown — this is three scam-adjacent patterns stacked on one screen. I don't care that it's a rupee, the framing is wrong. If your product is good, you don't need countdown tricks. Hard pass.",
+          "primary_emotion": "contemptuous",
+          "why": "Stacked persuasion tactics triggered a cascade of negative heuristics — combined, unmistakable pattern.",
+          "liked": [],
+          "disliked": ["04:34 countdown timer", "blurred preview cards", "premium crown icon"]
+        },
+        "overall_reflection": {
+          "text": "Aditya represents the analytical extreme — where stacked persuasion cues don't just fail, they actively destroy credibility. Even A only earned a reluctant trial.",
+          "leaning": "neither"
+        }
+      },
+      {
+        "id": "p10",
+        "name": "Sonal Gupta",
+        "segment": "Analytically-skeptical evaluators",
+        "archetype": "Due-diligence researcher",
+        "occupation": "Management consultant",
+        "age": 38,
+        "city": "Gurgaon",
+        "income_band": "₹30L+",
+        "tags": ["High digital literacy", "MBA", "Compares 5+ options before deciding", "Nuclear family"],
+        "behavior_summary": "Sonal evaluates every financial product like a consulting engagement — she needs a clear value prop, competitive positioning, and verifiable claims before committing even ₹1.",
+        "variant_a": {
+          "outcome": "hesitate",
+          "monologue": "SEBI registered — noted. ET Now partnership — that's a signal. But 'Start Trial Now' without telling me the post-trial price is a dark pattern. I want to know ₹2,999/yr or whatever it is before I give you my payment method.",
+          "primary_emotion": "suspicious",
+          "why": "Deliberate omission of post-trial pricing was read as a dark pattern, undermining trust just built.",
+          "liked": ["SEBI + ET Now + 4.6★ trust row"],
+          "disliked": ["pricing opacity (no post-trial price)"]
+        },
+        "variant_b": {
+          "outcome": "abandon",
+          "monologue": "Crown icon, countdown, blurred trades, ₹1 — this is a masterclass in dark patterns. Every element is designed to bypass rational evaluation. That's exactly why I won't engage. If I wanted impulse purchases, I'd go to DMart.",
+          "primary_emotion": "disdainful",
+          "why": "Entire persuasion stack decoded as deliberate manipulation; consulting background made her uniquely attuned.",
+          "liked": [],
+          "disliked": ["04:34 countdown timer", "blurred preview cards", "premium crown icon"]
+        },
+        "overall_reflection": {
+          "text": "Sonal's response is the sharpest indictment of Variant B — she decoded the entire persuasion architecture and rejected it on principle. Even A only earned grudging consideration.",
+          "leaning": "neither"
+        }
+      }
+    ]
+  }
+}

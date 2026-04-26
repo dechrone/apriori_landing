@@ -896,3 +896,21 @@ body:has(.dashboard-theme) {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Friction section — single-screen report */
+.friction-card:hover {
+  border-color: #9CA3AF !important;
+}
+.friction-card:hover .friction-view-hint {
+  color: #1A1A1A !important;
+}
+@media (max-width: 1024px) {
+  .friction-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+@media (max-width: 640px) {
+  .friction-inner-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
