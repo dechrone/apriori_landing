@@ -6,7 +6,7 @@ import { Modal, ModalHeader, ModalBody } from '@/components/ui/Modal';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useAppShell } from '@/components/app/AppShell';
-import { Beaker, Columns2, GitCompare, ArrowRight } from 'lucide-react';
+import { Columns2, GitCompare, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function NewSimulationPage() {
@@ -37,20 +37,14 @@ export default function NewSimulationPage() {
             <SimulationTypeCard
               icon={<Columns2 className="w-12 h-12" />}
               title="Single-Screen A/B"
-              description="Upload two screen variants and see which converts better. The fastest way to a PM-ready A/B report — two uploads, one minute of setup."
+              description="Upload two screen variants and see which converts better. Two uploads, one minute of setup — the fastest way to a PM-ready A/B report."
               recommended
               onSelect={() => handleSelectType('product-flow-ab')}
             />
             <SimulationTypeCard
-              icon={<Beaker className="w-12 h-12" />}
-              title="Product Flow Simulation"
-              description="Simulate user journeys through a multi-screen flow and identify friction points. For testing onboarding, checkout, or key conversion paths with several steps."
-              onSelect={() => handleSelectType('product-flow')}
-            />
-            <SimulationTypeCard
               icon={<GitCompare className="w-12 h-12" />}
-              title="Product Flow Comparator"
-              description="Compare two full multi-screen flows side-by-side. For A/B-testing an entire funnel, not just a single screen."
+              title="Full-Flow A/B"
+              description="Compare two full multi-screen journeys side-by-side. For A/B-testing an entire funnel — onboarding, checkout, or any conversion path."
               onSelect={() => handleSelectType('product-flow-comparator')}
             />
           </div>
@@ -73,7 +67,7 @@ function SimulationTypeCard({ icon, title, description, recommended, onSelect }:
   return (
     <Card hover className="cursor-pointer relative" onClick={onSelect}>
       {recommended && (
-        <span className="absolute -top-2 left-4 text-[10px] font-bold text-white bg-amber-500 rounded-full px-2 py-0.5 uppercase tracking-wider">
+        <span className="absolute -top-2 left-4 text-[10px] font-bold text-white bg-indigo-500 rounded-full px-2 py-0.5 uppercase tracking-wider">
           Recommended
         </span>
       )}

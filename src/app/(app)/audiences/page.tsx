@@ -320,7 +320,7 @@ export default function AudiencesPage() {
         {audiences.length > 0 && (
           <div className="fixed bottom-6 right-6 lg:right-10 z-30">
             <Link href="/audiences/new">
-              <span className="inline-flex items-center gap-2 h-12 px-5 text-[14px] font-semibold text-white bg-[#F59E0B] rounded-[24px] hover:bg-[#D97706] transition-all duration-200 shadow-[0_4px_12px_rgba(245,158,11,0.35)] hover:shadow-[0_6px_16px_rgba(245,158,11,0.45)]">
+              <span className="inline-flex items-center gap-2 h-12 px-5 text-[14px] font-semibold text-white bg-[#4F46E5] rounded-[24px] hover:bg-[#4338CA] transition-all duration-200 shadow-[0_4px_12px_rgba(79,70,229,0.35)] hover:shadow-[0_6px_16px_rgba(79,70,229,0.45)]">
                 <Plus className="w-[18px] h-[18px]" />
                 Create Audience
               </span>

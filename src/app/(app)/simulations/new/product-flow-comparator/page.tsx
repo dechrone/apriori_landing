@@ -23,7 +23,7 @@ import type { AudienceTemplate } from '@/lib/backend-simulation';
 import { getAudiences, getAssetFolders, saveSimulation } from '@/lib/db';
 import type { AudienceDoc } from '@/lib/db';
 import { consumeNDJSONStream } from '@/lib/stream-simulation';
-import type { ComparatorData } from '@/types/comparator';
+import type { AbReport } from '@/types/ab-report';
 
 type Step = 1 | 2 | 3;
 
@@ -166,7 +166,9 @@ export default function ProductFlowComparatorSimulationPage() {
       const res = await triggerProductFlowComparatorSimulation(userId, {
         name: formData.name,
         audience: audienceText,
+        // 20 personas per flow — matches the credit math (1 credit = persona × screen).
         personaDepth: 'medium',
+        numPersonas: 20,
         optimizeMetric: formData.optimizeMetric,
         selectedFolderIds: subFolderIds,
         // Persona-retrieval routing hints — same semantics as single-flow page.
@@ -191,7 +193,7 @@ export default function ProductFlowComparatorSimulationPage() {
         return;
       }
 
-      let comparisonData: ComparatorData | null = null;
+      let comparisonData: AbReport | null = null;
       let streamError: string | null = null;
       const flowNames: Record<string, string> = {};
 
@@ -242,15 +244,15 @@ export default function ProductFlowComparatorSimulationPage() {
         return;
       }
 
-      const data = comparisonData as ComparatorData;
-      const metric = `${data.winner?.flow_name ?? 'Winner'} leads`;
+      const data = comparisonData as AbReport;
+      const metric = data.verdict.sentence.split('.')[0] || 'A/B comparison';
       const docId = await saveSimulation(userId, {
         type: 'Product Flow Comparator',
         status: 'completed',
-        name: formData.name || 'Product Flow Comparator Run',
+        name: formData.name || data.meta.study_name || 'Product Flow Comparator Run',
         metric,
         timestamp: new Date().toLocaleDateString(undefined, { dateStyle: 'medium' }),
-        simulationId: data.comparison_id,
+        simulationId: data.meta.simulation_id,
         result: data,
       });
       showToast('success', 'Comparison complete', 'Redirecting to results.');
@@ -301,7 +303,7 @@ export default function ProductFlowComparatorSimulationPage() {
           {running && streamProgress && (
             <div className="bg-white border border-[#E8E4DE] rounded-[14px] p-7">
               <div className="flex items-center gap-3 mb-5">
-                <Loader2 className="w-5 h-5 animate-spin text-[#F59E0B]" />
+                <Loader2 className="w-5 h-5 animate-spin text-[#4F46E5]" />
                 <p className="text-[15px] font-semibold text-[#1A1A1A]">
                   {streamProgress.phase === 'saving'
                     ? 'Saving comparison results…'
@@ -325,7 +327,7 @@ export default function ProductFlowComparatorSimulationPage() {
                       {flow.personasTotal > 0 && (
                         <div className="h-1.5 bg-[#E5E7EB] rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-[#F59E0B] rounded-full transition-all duration-300"
+                            className="h-full bg-[#4F46E5] rounded-full transition-all duration-300"
                             style={{ width: `${Math.round((flow.personasDone / flow.personasTotal) * 100)}%` }}
                           />
                         </div>
@@ -395,7 +397,7 @@ export default function ProductFlowComparatorSimulationPage() {
                 flex items-center gap-2 text-[15px] font-semibold rounded-xl px-7 py-[13px]
                 transition-all duration-200
                 ${canProceedCurrent && !running
-                  ? 'bg-[#F59E0B] text-white shadow-[0_2px_8px_rgba(245,158,11,0.3)] hover:bg-[#D97706] hover:shadow-[0_4px_12px_rgba(245,158,11,0.35)]'
+                  ? 'bg-[#4F46E5] text-white shadow-[0_2px_8px_rgba(79,70,229,0.3)] hover:bg-[#4338CA] hover:shadow-[0_4px_12px_rgba(79,70,229,0.35)]'
                   : 'bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed shadow-none'
                 }
               `}
@@ -417,8 +419,8 @@ export default function ProductFlowComparatorSimulationPage() {
           75% { transform: translateX(4px); }
         }
         @keyframes pulse-glow {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.4); }
-          50% { box-shadow: 0 0 0 8px rgba(245,158,11,0); }
+          0%, 100% { box-shadow: 0 0 0 0 rgba(79,70,229,0.4); }
+          50% { box-shadow: 0 0 0 8px rgba(79,70,229,0); }
         }
       `}</style>
     </>
@@ -462,7 +464,7 @@ function SetupStep({ formData, setFormData, audiences, templates }: SetupStepPro
           value={formData.name}
           onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
           placeholder="e.g., Onboarding V1 vs V2 Comparison"
-          className="w-full text-[15px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 focus:border-[#F59E0B] focus:shadow-[0_0_0_3px_rgba(245,158,11,0.12)] focus:outline-none transition-all"
+          className="w-full text-[15px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 focus:border-[#4F46E5] focus:shadow-[0_0_0_3px_rgba(79,70,229,0.12)] focus:outline-none transition-all"
         />
       </div>
 
@@ -515,7 +517,7 @@ function SetupStep({ formData, setFormData, audiences, templates }: SetupStepPro
                 href="/audiences"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block text-[13px] font-semibold text-[#F59E0B] hover:text-[#D97706] hover:underline mt-3"
+                className="inline-block text-[13px] font-semibold text-[#4F46E5] hover:text-[#4338CA] hover:underline mt-3"
               >
                 → Create an audience
               </a>
@@ -540,15 +542,15 @@ function SetupStep({ formData, setFormData, audiences, templates }: SetupStepPro
                     className={`
                       text-left rounded-xl border-[1.5px] px-[18px] py-4 transition-all duration-150 cursor-pointer flex items-start gap-3
                       ${isSelected
-                        ? 'border-[#F59E0B] bg-[#FFFBEB]'
-                        : 'border-[#E5E7EB] bg-white hover:border-[#F59E0B] hover:bg-[#FFFBEB]'
+                        ? 'border-[#4F46E5] bg-[#EEF2FF]'
+                        : 'border-[#E5E7EB] bg-white hover:border-[#4F46E5] hover:bg-[#EEF2FF]'
                       }
                     `}
                   >
                     <div className="mt-0.5 flex-shrink-0">
                       <div
                         className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
-                          ${isSelected ? 'border-[#F59E0B] bg-[#F59E0B]' : 'border-[#D1D5DB] bg-white'}`}
+                          ${isSelected ? 'border-[#4F46E5] bg-[#4F46E5]' : 'border-[#D1D5DB] bg-white'}`}
                       >
                         {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                       </div>
@@ -591,15 +593,15 @@ function SetupStep({ formData, setFormData, audiences, templates }: SetupStepPro
                   className={`
                     text-left rounded-xl border-[1.5px] px-[18px] py-4 transition-all duration-150 cursor-pointer flex items-start gap-3
                     ${isSelected
-                      ? 'border-[#F59E0B] bg-[#FFFBEB]'
-                      : 'border-[#E5E7EB] bg-white hover:border-[#F59E0B] hover:bg-[#FFFBEB]'
+                      ? 'border-[#4F46E5] bg-[#EEF2FF]'
+                      : 'border-[#E5E7EB] bg-white hover:border-[#4F46E5] hover:bg-[#EEF2FF]'
                     }
                   `}
                 >
                   <div className="mt-0.5 flex-shrink-0">
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
-                        ${isSelected ? 'border-[#F59E0B] bg-[#F59E0B]' : 'border-[#D1D5DB] bg-white'}`}
+                        ${isSelected ? 'border-[#4F46E5] bg-[#4F46E5]' : 'border-[#D1D5DB] bg-white'}`}
                     >
                       {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                     </div>
@@ -683,7 +685,7 @@ function AssetSelectionStep({ formData, setFormData, allFolders, readyFolders }:
             href="/assets"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block text-[13px] font-semibold text-[#F59E0B] hover:text-[#D97706] hover:underline mt-3"
+            className="inline-block text-[13px] font-semibold text-[#4F46E5] hover:text-[#4338CA] hover:underline mt-3"
           >
             → Go to Assets
           </a>
@@ -706,15 +708,15 @@ function AssetSelectionStep({ formData, setFormData, allFolders, readyFolders }:
                     ${!isReady
                       ? 'opacity-50 cursor-not-allowed border-[#E5E7EB] bg-[#FAFAFA]'
                       : isSelected
-                        ? 'border-[#F59E0B] bg-[#FFFBEB] cursor-pointer'
-                        : 'border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#F59E0B] hover:bg-[#FFFBEB] cursor-pointer'
+                        ? 'border-[#4F46E5] bg-[#EEF2FF] cursor-pointer'
+                        : 'border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#4F46E5] hover:bg-[#EEF2FF] cursor-pointer'
                     }
                   `}
                 >
                   <div className="flex items-center justify-between">
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
-                        ${isSelected ? 'border-[#F59E0B] bg-[#F59E0B]' : 'border-[#D1D5DB] bg-white'}`}
+                        ${isSelected ? 'border-[#4F46E5] bg-[#4F46E5]' : 'border-[#D1D5DB] bg-white'}`}
                     >
                       {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                     </div>
@@ -736,7 +738,7 @@ function AssetSelectionStep({ formData, setFormData, allFolders, readyFolders }:
                         Ready for Simulation
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#92400E] bg-[#FEF3C7] rounded-full px-2.5 py-0.5">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#3730A3] bg-[#E0E7FF] rounded-full px-2.5 py-0.5">
                         <AlertCircle className="w-3 h-3" />
                         Needs step numbers
                       </span>
@@ -811,15 +813,15 @@ function ParametersStep({ formData, setFormData, audienceName, selectedFolders, 
                   ${isComingSoon
                     ? 'border-[#E5E7EB] bg-[#F9FAFB] opacity-50 cursor-not-allowed'
                     : isSelected
-                      ? 'border-[#F59E0B] bg-[#FFFBEB] cursor-pointer'
-                      : 'border-[#E5E7EB] bg-white hover:border-[#F59E0B] hover:bg-[#FFFBEB] cursor-pointer'
+                      ? 'border-[#4F46E5] bg-[#EEF2FF] cursor-pointer'
+                      : 'border-[#E5E7EB] bg-white hover:border-[#4F46E5] hover:bg-[#EEF2FF] cursor-pointer'
                   }
                 `}
                 disabled={isComingSoon}
               >
                 <div
                   className={`w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all
-                    ${isComingSoon ? 'border-[#D1D5DB] bg-[#F3F4F6]' : isSelected ? 'border-[#F59E0B] bg-[#F59E0B]' : 'border-[#D1D5DB] bg-white'}`}
+                    ${isComingSoon ? 'border-[#D1D5DB] bg-[#F3F4F6]' : isSelected ? 'border-[#4F46E5] bg-[#4F46E5]' : 'border-[#D1D5DB] bg-white'}`}
                 >
                   {isSelected && !isComingSoon && <div className="w-[7px] h-[7px] rounded-full bg-white" />}
                 </div>
@@ -891,7 +893,7 @@ function ParametersStep({ formData, setFormData, audienceName, selectedFolders, 
               flex items-center gap-2 text-[15px] font-semibold rounded-xl px-6 py-3
               transition-all duration-200
               ${canProceed && !running
-                ? 'bg-[#F59E0B] text-white shadow-[0_2px_8px_rgba(245,158,11,0.3)] hover:bg-[#D97706] hover:shadow-[0_4px_12px_rgba(245,158,11,0.35)]'
+                ? 'bg-[#4F46E5] text-white shadow-[0_2px_8px_rgba(79,70,229,0.3)] hover:bg-[#4338CA] hover:shadow-[0_4px_12px_rgba(79,70,229,0.35)]'
                 : 'bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed shadow-none'
               }
             `}

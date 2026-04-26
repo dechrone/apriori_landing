@@ -1,13 +1,26 @@
 "use client";
 
 import { TopBar } from '@/components/app/TopBar';
-import { Beaker, Columns2, GitCompare, Users, Package, ChevronRight, Check, Loader2, PartyPopper, PlayCircle } from 'lucide-react';
+import {
+  ArrowRight,
+  Check,
+  ChevronRight,
+  Columns2,
+  GitCompare,
+  Loader2,
+  PartyPopper,
+  PlayCircle,
+  Sparkles,
+  Zap,
+} from 'lucide-react';
 import { useAppShell } from '@/components/app/AppShell';
 import Link from 'next/link';
 import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '@/contexts/UserContext';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { WelcomeModal } from '@/components/app/WelcomeModal';
+import { useCreditProfile } from '@/lib/credits';
+import { useTalkToUs } from '@/components/app/TalkToUs';
 import {
   getSimulations,
   getAssetFolders,
@@ -16,8 +29,6 @@ import {
   markWelcomeSeen,
   type SimulationDoc,
 } from '@/lib/db';
-
-/* ── Helpers ──────────────────────────────────────────────────────────── */
 
 function extractCreatedAt(sim: SimulationDoc): Date | null {
   const ca = sim.createdAt as { toDate?: () => Date; seconds?: number } | null;
@@ -33,70 +44,42 @@ function relativeTime(date: Date | null): string {
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / 60000);
   if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+  if (diffMins < 60) return `${diffMins}m ago`;
   const diffHrs = Math.floor(diffMins / 60);
-  if (diffHrs < 24) return `${diffHrs} hour${diffHrs > 1 ? 's' : ''} ago`;
+  if (diffHrs < 24) return `${diffHrs}h ago`;
   const diffDays = Math.floor(diffHrs / 24);
-  if (diffDays < 30) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  if (diffDays < 30) return `${diffDays}d ago`;
   const diffMonths = Math.floor(diffDays / 30);
-  return `${diffMonths} month${diffMonths > 1 ? 's' : ''} ago`;
+  return `${diffMonths}mo ago`;
 }
 
 function getSimulationHref(sim: SimulationDoc) {
   if (sim.type === 'Ad Portfolio') return `/simulations/ad-portfolio/${sim.id}`;
-  if (sim.type === 'Product Flow Comparator') return `/simulations/product-flow-comparator/${sim.id}`;
+  if (sim.type === 'Product Flow Comparator')
+    return `/simulations/product-flow-comparator/${sim.id}`;
   return `/simulations/${sim.id}`;
 }
-
-/* ── Onboarding step definition ───────────────────────────────────────── */
 
 interface OnboardingStep {
   key: string;
   label: string;
-  doneLabel: string;
   href?: string;
 }
 
 const ONBOARDING_STEPS: OnboardingStep[] = [
-  {
-    key: 'workspace',
-    label: 'Create your workspace',
-    doneLabel: 'Workspace created',
-  },
-  {
-    key: 'assets',
-    label: 'Upload your first assets',
-    doneLabel: 'Assets uploaded — nice!',
-    href: '/assets',
-  },
-  {
-    key: 'audience',
-    label: 'Define your target audience',
-    doneLabel: 'Audience defined — great!',
-    href: '/audiences',
-  },
-  {
-    key: 'simulation',
-    label: 'Run your first simulation',
-    doneLabel: 'Simulation launched!',
-    href: '/simulations/new',
-  },
-  {
-    key: 'review',
-    label: 'Review simulation results',
-    doneLabel: "Results reviewed — you're all set!",
-  },
+  { key: 'workspace', label: 'Workspace ready' },
+  { key: 'audience', label: 'Pick or define your audience', href: '/audiences' },
+  { key: 'simulation', label: 'Run your first A/B', href: '/simulations/new/product-flow-ab' },
+  { key: 'review', label: 'Read the verdict' },
 ];
-
-/* ── Main page component ──────────────────────────────────────────────── */
 
 export default function DashboardPage() {
   const { toggleMobileMenu } = useAppShell();
   const { userId, profileReady } = useUser();
   const { user } = useAuthContext();
+  const { profile: creditProfile } = useCreditProfile();
   const [showWelcome, setShowWelcome] = useState(false);
 
-  // First-login welcome modal — read flag from user profile
   useEffect(() => {
     if (!userId || !profileReady) return;
     let cancelled = false;
@@ -110,430 +93,490 @@ export default function DashboardPage() {
         console.error('Error checking welcome flag:', err);
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [userId, profileReady]);
 
   const dismissWelcome = useCallback(() => {
     setShowWelcome(false);
     if (userId) {
       markWelcomeSeen(userId).catch((err) =>
-        console.error('Error marking welcome seen:', err)
+        console.error('Error marking welcome seen:', err),
       );
     }
   }, [userId]);
 
-  // Recent simulations state
   const [simulations, setSimulations] = useState<SimulationDoc[]>([]);
   const [simsLoading, setSimsLoading] = useState(true);
 
-  // Onboarding checklist state
   const [completedSteps, setCompletedSteps] = useState<Record<string, boolean>>({
     workspace: true,
-    assets: false,
     audience: false,
     simulation: false,
     review: false,
   });
-  const [onboardingLoading, setOnboardingLoading] = useState(true);
 
   const allDone = Object.values(completedSteps).every(Boolean);
-
-  // A user is "new" until they've run at least one simulation
   const isNewUser = !simsLoading && simulations.length === 0;
-  // Show onboarding only for new users (no simulations)
-  const showOnboarding = isNewUser && !simsLoading;
-
-  // Fetch dashboard data
-  const fetchDashboardData = useCallback(async () => {
-    if (!userId || !profileReady) return;
-
-    try {
-      const [sims, folders, audiences] = await Promise.all([
-        getSimulations(userId),
-        getAssetFolders(userId),
-        getAudiences(userId),
-      ]);
-
-      // Recent simulations — take top 4
-      setSimulations(sims.slice(0, 4));
-      setSimsLoading(false);
-
-      // Onboarding progress
-      const hasAssets = folders.length > 0;
-      const hasAudience = audiences.length > 0;
-      const hasSimulation = sims.length > 0;
-      const hasCompletedSim = sims.some((s) => s.status === 'completed');
-
-      setCompletedSteps({
-        workspace: true,
-        assets: hasAssets,
-        audience: hasAudience,
-        simulation: hasSimulation,
-        review: hasCompletedSim,
-      });
-      setOnboardingLoading(false);
-    } catch (err) {
-      console.error('Error fetching dashboard data:', err);
-      setSimsLoading(false);
-      setOnboardingLoading(false);
-    }
-  }, [userId, profileReady]);
+  const showOnboarding = !allDone && !simsLoading;
 
   useEffect(() => {
-    fetchDashboardData();
-  }, [fetchDashboardData]);
+    if (!userId || !profileReady) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const [sims, folders, audiences] = await Promise.all([
+          getSimulations(userId),
+          getAssetFolders(userId),
+          getAudiences(userId),
+        ]);
+        if (cancelled) return;
+        setSimulations(sims.slice(0, 5));
+        setSimsLoading(false);
+        setCompletedSteps({
+          workspace: true,
+          audience: audiences.length > 0 || folders.length > 0,
+          simulation: sims.length > 0,
+          review: sims.some((s) => s.status === 'completed'),
+        });
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err);
+        if (!cancelled) setSimsLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, profileReady]);
 
-  // Find next suggested step (first incomplete)
-  const nextStepIndex = ONBOARDING_STEPS.findIndex((s) => !completedSteps[s.key]);
+  const firstName = user?.displayName?.split(' ')[0];
+  const completedCount = Object.values(completedSteps).filter(Boolean).length;
 
   return (
     <>
       <TopBar title="Dashboard" onMenuClick={toggleMobileMenu} />
 
       <div className="p-5 sm:p-8 lg:p-10">
-        <div className="max-w-[1600px] mx-auto space-y-10">
+        <div className="max-w-[1200px] mx-auto space-y-8">
+          <HeroBanner firstName={firstName} creditProfile={creditProfile} />
 
-          {/* ─── Getting Started (top for new users, hidden once they have sims) ─── */}
+          <PrimaryActions />
+
           {showOnboarding && (
-            <section>
-              <div className="mb-6">
-                <h2 className="text-xl font-semibold text-[#1A1A1A]">Getting started</h2>
-              </div>
-
-              {onboardingLoading ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="w-6 h-6 animate-spin text-[#9CA3AF]" />
-                </div>
-              ) : allDone ? (
-                <div
-                  className="bg-white rounded-xl p-8 text-center"
-                  style={{ border: '1px solid #E8E4DE' }}
-                >
-                  <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <PartyPopper className="w-7 h-7 text-emerald-600" />
-                  </div>
-                  <h3 className="text-lg font-bold text-[#1A1A1A] mb-1">All set! 🎉</h3>
-                  <p className="text-sm text-[#6B7280]">
-                    You&apos;ve completed all the setup steps. You&apos;re ready to simulate at full power.
-                  </p>
-                </div>
-              ) : (
-                <div
-                  className="bg-white rounded-xl overflow-hidden"
-                  style={{ border: '1px solid #E8E4DE' }}
-                >
-                  {ONBOARDING_STEPS.map((step, i, arr) => {
-                    const isDone = completedSteps[step.key];
-                    const isNext = i === nextStepIndex;
-
-                    return (
-                      <div
-                        key={step.key}
-                        className={`flex items-center gap-4 px-6 py-4 transition-colors ${
-                          isNext ? 'bg-amber-50/40' : ''
-                        }`}
-                        style={{
-                          borderBottom: i < arr.length - 1 ? '1px solid #F3F4F6' : 'none',
-                        }}
-                      >
-                        {/* Status circle */}
-                        <div
-                          className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
-                            isDone
-                              ? 'bg-emerald-500'
-                              : isNext
-                              ? 'border-2 border-amber-400'
-                              : 'border-2 border-[#E5E7EB]'
-                          }`}
-                        >
-                          {isDone && <Check className="w-3 h-3 text-white" />}
-                        </div>
-
-                        {/* Label */}
-                        <span
-                          className={`text-sm flex-1 ${
-                            isDone
-                              ? 'text-[#9CA3AF] line-through'
-                              : isNext
-                              ? 'text-[#1A1A1A] font-semibold'
-                              : 'text-[#1A1A1A] font-medium'
-                          }`}
-                        >
-                          {isDone ? step.doneLabel : step.label}
-                        </span>
-
-                        {/* CTA — for incomplete steps with href */}
-                        {!isDone && step.href && (
-                          <Link
-                            href={step.href}
-                            className={`text-xs font-semibold transition-colors ${
-                              isNext
-                                ? 'text-amber-600 hover:text-amber-700'
-                                : 'text-amber-600/60 hover:text-amber-600'
-                            }`}
-                          >
-                            Start →
-                          </Link>
-                        )}
-
-                        {/* For "Review simulation results" — link to latest completed sim */}
-                        {!isDone && step.key === 'review' && simulations.length > 0 && (
-                          <Link
-                            href={getSimulationHref(
-                              simulations.find((s) => s.status === 'completed') || simulations[0]
-                            )}
-                            className="text-xs font-semibold text-amber-600/60 hover:text-amber-600 transition-colors"
-                          >
-                            View results →
-                          </Link>
-                        )}
-                      </div>
-                    );
-                  })}
-
-                  {/* Progress bar */}
-                  <div className="px-6 py-3 bg-[#FAFAF8]" style={{ borderTop: '1px solid #F3F4F6' }}>
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1 h-1.5 bg-[#E5E7EB] rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-                          style={{
-                            width: `${(Object.values(completedSteps).filter(Boolean).length / ONBOARDING_STEPS.length) * 100}%`,
-                          }}
-                        />
-                      </div>
-                      <span className="text-xs text-[#9CA3AF] font-medium whitespace-nowrap">
-                        {Object.values(completedSteps).filter(Boolean).length} of {ONBOARDING_STEPS.length}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </section>
+            <OnboardingChecklist
+              steps={ONBOARDING_STEPS}
+              completed={completedSteps}
+              completedCount={completedCount}
+              total={ONBOARDING_STEPS.length}
+              isNewUser={isNewUser}
+            />
           )}
 
-          {/* ─── Recent Simulations (shown only when user has sims) ─── */}
           {!isNewUser && (
-            <section>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-[#1A1A1A]">Recent Simulations</h2>
-                <Link
-                  href="/simulations"
-                  className="text-sm font-medium text-amber-600 hover:text-amber-700 flex items-center gap-1"
-                >
-                  View all <ChevronRight className="w-4 h-4" />
-                </Link>
-              </div>
-
-              {simsLoading ? (
-                <div className="flex items-center justify-center py-16">
-                  <Loader2 className="w-6 h-6 animate-spin text-[#9CA3AF]" />
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {simulations.map((sim) => {
-                    const createdDate = extractCreatedAt(sim);
-                    return (
-                      <Link key={sim.id} href={getSimulationHref(sim)}>
-                        <SimulationCard
-                          type={sim.type}
-                          status={sim.status}
-                          title={sim.name}
-                          metric={sim.metric}
-                          timestamp={createdDate ? relativeTime(createdDate) : sim.timestamp || ''}
-                        />
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
-            </section>
+            <RecentSimulations
+              simulations={simulations}
+              loading={simsLoading}
+            />
           )}
 
-          {/* ─── Quick Actions ─── */}
-          <section>
-            <h2 className="text-xl font-semibold text-[#1A1A1A] mb-6">Quick Actions</h2>
+          {allDone && !isNewUser && simulations.length > 0 && (
+            <AllSetCard />
+          )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {isNewUser && (
-                <QuickActionCard
-                  icon={<PlayCircle className="w-6 h-6 text-amber-600" />}
-                  title="Try a sample simulation"
-                  description="See a finished run end-to-end before you build your own — 2 min, no setup"
-                  href="/simulations/product-flow/sample"
-                  highlight
-                />
-              )}
-              <QuickActionCard
-                icon={<Columns2 className="w-6 h-6 text-amber-600" />}
-                title="Run Single-Screen A/B"
-                description="Upload two variants and see which one converts better"
-                href="/simulations/new/product-flow-ab"
-              />
-              <QuickActionCard
-                icon={<Beaker className="w-6 h-6 text-amber-600" />}
-                title="Run Product Flow Simulation"
-                description="Simulate user journeys and identify friction points"
-                href="/simulations/new/product-flow"
-              />
-              <QuickActionCard
-                icon={<GitCompare className="w-6 h-6 text-amber-600" />}
-                title="Run Flow Comparator"
-                description="Compare two product flow variants side-by-side"
-                href="/simulations/new/product-flow-comparator"
-              />
-              <QuickActionCard
-                icon={<Users className="w-6 h-6 text-amber-600" />}
-                title="Update Target Audience"
-                description="Refine your audience segments and personas"
-                href="/audiences"
-              />
-              <QuickActionCard
-                icon={<Package className="w-6 h-6 text-amber-600" />}
-                title="Add Product Context"
-                description="Update your product information and constraints"
-                href="/product-context"
-              />
-            </div>
-          </section>
+          <TalkToUsFooter />
         </div>
       </div>
 
-      {/* First-login welcome */}
       {showWelcome && (
-        <WelcomeModal
-          firstName={user?.displayName?.split(' ')[0]}
-          onDismiss={dismissWelcome}
-        />
+        <WelcomeModal firstName={firstName} onDismiss={dismissWelcome} />
       )}
-
     </>
   );
 }
 
-/* ─── Sub-components ─── */
-
-interface SimulationCardProps {
-  type: string;
-  status: 'draft' | 'running' | 'completed' | 'failed';
-  title: string;
-  metric: string;
-  timestamp: string;
-}
-
-function SimulationCard({ type, status, title, metric, timestamp }: SimulationCardProps) {
-  const statusStyles: Record<string, { badge: string; metric: string }> = {
-    completed: {
-      badge: 'bg-emerald-50 text-emerald-700',
-      metric: 'text-emerald-700 bg-emerald-50',
-    },
-    running: {
-      badge: 'bg-amber-50 text-amber-700',
-      metric: 'text-[#374151] bg-[#F3F4F6]',
-    },
-    draft: {
-      badge: 'bg-[#F3F4F6] text-[#6B7280]',
-      metric: 'text-[#6B7280] bg-[#F3F4F6]',
-    },
-    failed: {
-      badge: 'bg-red-50 text-red-700',
-      metric: 'text-red-700 bg-red-50',
-    },
-  };
-
-  const styles = statusStyles[status] || statusStyles.draft;
+function HeroBanner({
+  firstName,
+  creditProfile,
+}: {
+  firstName?: string;
+  creditProfile: { credits_remaining: number; credits_total: number; plan: string } | null;
+}) {
+  const remaining = creditProfile?.credits_remaining ?? 0;
+  const total = creditProfile?.credits_total ?? 200;
+  const used = Math.max(0, total - remaining);
+  const usedPct = total > 0 ? Math.min(100, Math.round((used / total) * 100)) : 0;
+  const runsLeft = Math.floor(remaining / 40);
 
   return (
-    <div
-      className="bg-white rounded-xl p-6 hover:shadow-md transition-shadow cursor-pointer"
-      style={{ border: '1px solid #E8E4DE' }}
+    <section
+      className="relative overflow-hidden rounded-[18px] bg-white border border-[#E8E4DE] px-6 sm:px-8 py-6"
+      style={{
+        boxShadow: '0 1px 4px rgba(15,23,42,0.04), 0 8px 28px rgba(15,23,42,0.05)',
+      }}
     >
-      {/* Top row: type label + status badge */}
-      <div className="flex items-start justify-between mb-4">
-        <span className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wide">
-          {type}
-        </span>
-        <span
-          className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${styles.badge}`}
-        >
-          {status}
-        </span>
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+        <div className="min-w-0">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#94A3B8]">
+            Welcome back{firstName ? `,` : ''}
+          </p>
+          <h1 className="mt-1 text-[26px] sm:text-[30px] font-bold text-[#0F172A] leading-tight">
+            {firstName ? `Hey ${firstName} — ready to ship?` : 'Ready to ship something better?'}
+          </h1>
+          <p className="mt-2 text-[14px] text-[#64748B] max-w-[520px] leading-relaxed">
+            Run a synthetic-user A/B in under two minutes. Upload screens, pick an
+            audience, and see what real users would say.
+          </p>
+        </div>
+
+        <div className="flex items-stretch gap-3 sm:gap-4">
+          <CreditTile
+            label="Credits left"
+            value={remaining}
+            sublabel={`${runsLeft} A/B run${runsLeft === 1 ? '' : 's'} available`}
+          />
+          <CreditTile
+            label="This cycle"
+            value={used}
+            sublabel={`${usedPct}% of ${total} used`}
+            barPct={usedPct}
+            tone="muted"
+          />
+        </div>
       </div>
+    </section>
+  );
+}
 
-      {/* Simulation name */}
-      <h3
-        className="font-semibold text-[#1A1A1A] mb-3"
-        style={{ fontSize: '15px' }}
-      >
-        {title}
-      </h3>
-
-      {/* Prediction / status badge */}
-      <div className="mb-3">
-        <span
-          className={`inline-flex items-center text-sm font-medium px-3 py-1 rounded-lg ${styles.metric}`}
-        >
-          {metric}
+function CreditTile({
+  label,
+  value,
+  sublabel,
+  barPct,
+  tone = 'primary',
+}: {
+  label: string;
+  value: number;
+  sublabel: string;
+  barPct?: number;
+  tone?: 'primary' | 'muted';
+}) {
+  return (
+    <div
+      className={`min-w-[160px] rounded-[12px] px-4 py-3 ${
+        tone === 'primary'
+          ? 'bg-[var(--accent-amber-dim)] border border-[var(--accent-gold)]/20'
+          : 'bg-[#F8FAFC] border border-[#E2E8F0]'
+      }`}
+    >
+      <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">
+        {label}
+      </p>
+      <div className="flex items-baseline gap-1.5 mt-1">
+        <span className="text-[26px] font-bold text-[#0F172A] leading-none tabular-nums">
+          {value}
         </span>
+        {tone === 'primary' && (
+          <Zap className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
+        )}
       </div>
-
-      {/* Timestamp */}
-      <p className="text-xs text-[#9CA3AF]">{timestamp}</p>
+      <p className="text-[12px] text-[#64748B] mt-1.5 leading-snug">{sublabel}</p>
+      {typeof barPct === 'number' && (
+        <div className="mt-2 h-1 bg-[#E2E8F0] rounded-full overflow-hidden">
+          <div
+            className="h-full bg-[var(--accent-gold)] rounded-full transition-all"
+            style={{ width: `${barPct}%` }}
+          />
+        </div>
+      )}
     </div>
   );
 }
 
-interface QuickActionCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  href?: string;
-  onClick?: () => void;
-  highlight?: boolean;
+function PrimaryActions() {
+  return (
+    <section>
+      <div className="flex items-baseline justify-between mb-4">
+        <h2 className="text-[18px] font-semibold text-[#0F172A]">Run a simulation</h2>
+        <Link
+          href="/simulations/product-flow/sample"
+          className="inline-flex items-center gap-1 text-[13px] font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
+        >
+          <PlayCircle className="w-3.5 h-3.5" />
+          See a sample first
+        </Link>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <ActionCard
+          icon={<Columns2 className="w-5 h-5 text-[var(--accent-gold)]" />}
+          title="Single-Screen A/B"
+          subtitle="Upload two variants. Get a verdict in under 2 minutes."
+          credits="40 credits · 20 personas × 2 screens"
+          recommended
+          href="/simulations/new/product-flow-ab"
+        />
+        <ActionCard
+          icon={<GitCompare className="w-5 h-5 text-[var(--accent-gold)]" />}
+          title="Full-Flow A/B"
+          subtitle="Compare two end-to-end journeys. See where each loses users."
+          credits="From 80 credits · scales with screens"
+          href="/simulations/new/product-flow-comparator"
+        />
+      </div>
+    </section>
+  );
 }
 
-function QuickActionCard({ icon, title, description, href, onClick, highlight }: QuickActionCardProps) {
-  const content = (
-    <div
-      className="bg-white rounded-xl p-6 hover:shadow-md transition-all cursor-pointer relative"
-      style={{ border: highlight ? '1.5px solid #F59E0B' : '1px solid #E8E4DE' }}
+function ActionCard({
+  icon,
+  title,
+  subtitle,
+  credits,
+  href,
+  recommended,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  subtitle: string;
+  credits: string;
+  href: string;
+  recommended?: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      className={`group relative block rounded-[14px] bg-white p-5 transition-all hover:-translate-y-[1px] ${
+        recommended
+          ? 'border-[1.5px] border-[var(--accent-gold)] shadow-[0_8px_24px_rgba(79,70,229,0.10)]'
+          : 'border border-[#E8E4DE] hover:border-[#CBD5E1] hover:shadow-[0_4px_14px_rgba(15,23,42,0.06)]'
+      }`}
     >
-      {highlight && (
-        <span className="absolute -top-2 left-5 text-[10px] font-bold text-white bg-amber-500 rounded-full px-2 py-0.5 uppercase tracking-wider">
+      {recommended && (
+        <span className="absolute -top-2.5 left-5 inline-flex items-center gap-1 text-[10px] font-bold tracking-wider uppercase text-white bg-[var(--accent-gold)] rounded-full px-2.5 py-1">
+          <Sparkles className="w-3 h-3" />
           Start here
         </span>
       )}
-      <div className="flex items-start gap-4">
-        {/* Icon container — all cards use amber */}
-        <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-100 transition-colors">
-          {icon}
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-[10px] bg-[var(--accent-amber-dim)] flex items-center justify-center flex-shrink-0">
+            {icon}
+          </div>
+          <div className="min-w-0">
+            <h3 className="text-[16px] font-semibold text-[#0F172A] leading-tight">
+              {title}
+            </h3>
+            <p className="text-[13px] text-[#64748B] mt-1 leading-relaxed">
+              {subtitle}
+            </p>
+            <p className="text-[12px] text-[#94A3B8] mt-2 font-medium">{credits}</p>
+          </div>
         </div>
-
-        {/* Text — right of icon */}
-        <div className="flex-1">
-          <h3
-            className="font-semibold text-[#1A1A1A] mb-1"
-            style={{ fontSize: '15px' }}
-          >
-            {title}
-          </h3>
-          <p className="text-sm text-[#4B5563]">{description}</p>
-        </div>
+        <ArrowRight className="w-4 h-4 text-[#94A3B8] flex-shrink-0 mt-1.5 group-hover:translate-x-0.5 group-hover:text-[var(--accent-gold)] transition-all" />
       </div>
-    </div>
+    </Link>
   );
+}
 
-  if (onClick) {
-    return (
-      <div onClick={onClick} className="group">
-        {content}
-      </div>
-    );
-  }
+function OnboardingChecklist({
+  steps,
+  completed,
+  completedCount,
+  total,
+  isNewUser,
+}: {
+  steps: OnboardingStep[];
+  completed: Record<string, boolean>;
+  completedCount: number;
+  total: number;
+  isNewUser: boolean;
+}) {
+  if (!isNewUser && completedCount === total) return null;
+  const nextStepIndex = steps.findIndex((s) => !completed[s.key]);
 
   return (
-    <Link href={href || '#'} className="group">
-      {content}
-    </Link>
+    <section>
+      <div className="flex items-baseline justify-between mb-3">
+        <h2 className="text-[18px] font-semibold text-[#0F172A]">
+          {isNewUser ? 'Get started in 4 steps' : 'Finish setup'}
+        </h2>
+        <span className="text-[12px] font-medium text-[#64748B]">
+          {completedCount} of {total}
+        </span>
+      </div>
+      <div className="bg-white rounded-[14px] border border-[#E8E4DE] overflow-hidden">
+        {steps.map((step, i) => {
+          const isDone = completed[step.key];
+          const isNext = i === nextStepIndex;
+          return (
+            <div
+              key={step.key}
+              className={`flex items-center gap-3 px-5 py-3.5 ${
+                i < steps.length - 1 ? 'border-b border-[#F1F5F9]' : ''
+              } ${isNext ? 'bg-[var(--accent-amber-dim)]/30' : ''}`}
+            >
+              <div
+                className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                  isDone
+                    ? 'bg-emerald-500'
+                    : isNext
+                      ? 'border-[2px] border-[var(--accent-gold)]'
+                      : 'border-[2px] border-[#E2E8F0]'
+                }`}
+              >
+                {isDone && <Check className="w-3 h-3 text-white" />}
+              </div>
+              <span
+                className={`text-[14px] flex-1 ${
+                  isDone
+                    ? 'text-[#94A3B8] line-through'
+                    : isNext
+                      ? 'text-[#0F172A] font-semibold'
+                      : 'text-[#334155] font-medium'
+                }`}
+              >
+                {step.label}
+              </span>
+              {!isDone && step.href && (
+                <Link
+                  href={step.href}
+                  className={`text-[12px] font-semibold transition-colors ${
+                    isNext
+                      ? 'text-[var(--accent-gold)] hover:text-[var(--accent-gold-hover)]'
+                      : 'text-[#94A3B8] hover:text-[var(--accent-gold)]'
+                  }`}
+                >
+                  {isNext ? 'Start →' : 'Open →'}
+                </Link>
+              )}
+            </div>
+          );
+        })}
+        <div className="px-5 py-2.5 bg-[#FAFAF8] border-t border-[#F1F5F9]">
+          <div className="h-1 bg-[#E2E8F0] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+              style={{ width: `${(completedCount / total) * 100}%` }}
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function RecentSimulations({
+  simulations,
+  loading,
+}: {
+  simulations: SimulationDoc[];
+  loading: boolean;
+}) {
+  return (
+    <section>
+      <div className="flex items-baseline justify-between mb-3">
+        <h2 className="text-[18px] font-semibold text-[#0F172A]">Recent runs</h2>
+        <Link
+          href="/simulations"
+          className="inline-flex items-center gap-1 text-[13px] font-medium text-[var(--accent-gold)] hover:text-[var(--accent-gold-hover)] transition-colors"
+        >
+          View all <ChevronRight className="w-4 h-4" />
+        </Link>
+      </div>
+      {loading ? (
+        <div className="bg-white rounded-[14px] border border-[#E8E4DE] py-12 flex items-center justify-center">
+          <Loader2 className="w-5 h-5 animate-spin text-[#94A3B8]" />
+        </div>
+      ) : simulations.length === 0 ? null : (
+        <div className="bg-white rounded-[14px] border border-[#E8E4DE] overflow-hidden">
+          {simulations.map((sim, i) => {
+            const createdDate = extractCreatedAt(sim);
+            return (
+              <Link
+                key={sim.id}
+                href={getSimulationHref(sim)}
+                className={`flex items-center gap-4 px-5 py-3.5 hover:bg-[#FAFAF8] transition-colors ${
+                  i < simulations.length - 1 ? 'border-b border-[#F1F5F9]' : ''
+                }`}
+              >
+                <StatusDot status={sim.status} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[14px] font-semibold text-[#0F172A] truncate leading-tight">
+                    {sim.name}
+                  </p>
+                  <p className="text-[12px] text-[#64748B] mt-0.5 truncate">
+                    {sim.type} · {sim.metric}
+                  </p>
+                </div>
+                <span className="text-[12px] text-[#94A3B8] flex-shrink-0 hidden sm:inline">
+                  {createdDate ? relativeTime(createdDate) : sim.timestamp || ''}
+                </span>
+                <ChevronRight className="w-4 h-4 text-[#CBD5E1] flex-shrink-0" />
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function StatusDot({ status }: { status: SimulationDoc['status'] }) {
+  const styles: Record<string, { dot: string; ring: string }> = {
+    completed: { dot: 'bg-emerald-500', ring: 'bg-emerald-100' },
+    running: { dot: 'bg-[var(--accent-gold)]', ring: 'bg-[var(--accent-amber-dim)]' },
+    draft: { dot: 'bg-[#94A3B8]', ring: 'bg-[#F1F5F9]' },
+    failed: { dot: 'bg-red-500', ring: 'bg-red-100' },
+  };
+  const s = styles[status] || styles.draft;
+  return (
+    <span className={`relative inline-flex w-7 h-7 rounded-full ${s.ring} items-center justify-center flex-shrink-0`}>
+      <span className={`w-2 h-2 rounded-full ${s.dot}`} />
+      {status === 'running' && (
+        <span className={`absolute inline-flex w-2 h-2 rounded-full ${s.dot} animate-ping opacity-60`} />
+      )}
+    </span>
+  );
+}
+
+function AllSetCard() {
+  return (
+    <section>
+      <div className="bg-white rounded-[14px] border border-[#E8E4DE] p-6 text-center">
+        <div className="w-12 h-12 mx-auto rounded-full bg-emerald-100 flex items-center justify-center mb-3">
+          <PartyPopper className="w-6 h-6 text-emerald-600" />
+        </div>
+        <h3 className="text-[16px] font-semibold text-[#0F172A]">You&apos;re all set</h3>
+        <p className="text-[13px] text-[#64748B] mt-1">
+          Keep iterating — every run sharpens the verdict.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function TalkToUsFooter() {
+  const { open } = useTalkToUs();
+  return (
+    <section>
+      <div className="flex items-center justify-between gap-4 rounded-[14px] border border-dashed border-[#CBD5E1] bg-white px-5 py-4">
+        <div className="min-w-0">
+          <p className="text-[14px] font-semibold text-[#0F172A]">
+            Hit a wall? Have a half-formed idea?
+          </p>
+          <p className="text-[12px] text-[#64748B] mt-0.5">
+            We read every message — and we&apos;re fast.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={open}
+          className="inline-flex items-center gap-2 text-[13px] font-semibold rounded-[10px] px-4 py-2.5 text-white bg-[var(--accent-gold)] hover:bg-[var(--accent-gold-hover)] transition-colors flex-shrink-0"
+        >
+          Talk to us
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+    </section>
   );
 }

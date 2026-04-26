@@ -175,7 +175,7 @@ const TYPE_TAG_STYLES: Record<string, string> = {
 
 const STATUS_TAG_STYLES: Record<string, string> = {
   completed: 'bg-[#D1FAE5] text-[#065F46]',
-  running: 'bg-[#FEF3C7] text-[#92400E]',
+  running: 'bg-[#E0E7FF] text-[#3730A3]',
   draft: 'bg-[#F3F4F6] text-[#6B7280]',
   failed: 'bg-[#FEE2E2] text-[#991B1B]',
 };
@@ -218,7 +218,7 @@ function FilterDropdown({
           flex items-center gap-2 border-[1.5px] rounded-[10px] px-3.5 py-[10px] bg-white
           text-[14px] text-[#374151] cursor-pointer whitespace-nowrap min-w-[130px]
           transition-colors duration-150
-          ${open ? 'border-[#F59E0B]' : 'border-[#E5E7EB] hover:border-[#D1D5DB]'}
+          ${open ? 'border-[#4F46E5]' : 'border-[#E5E7EB] hover:border-[#D1D5DB]'}
         `}
       >
         <span className="flex-1 text-left">{selectedLabel}</span>
@@ -237,7 +237,7 @@ function FilterDropdown({
               onClick={() => { onChange(opt.value); setOpen(false); }}
               className={`
                 block w-full text-left px-3.5 py-2 text-[14px] transition-colors
-                ${opt.value === value ? 'text-[#F59E0B] font-semibold bg-[#FFFBEB]' : 'text-[#374151] hover:bg-[#F9FAFB]'}
+                ${opt.value === value ? 'text-[#4F46E5] font-semibold bg-[#EEF2FF]' : 'text-[#374151] hover:bg-[#F9FAFB]'}
               `}
             >
               {opt.label}
@@ -373,7 +373,7 @@ export default function SimulationsPage() {
               className={`
                 flex items-center gap-2.5 flex-1 min-w-[200px] border-[1.5px] rounded-[10px] px-3.5 py-[10px] bg-[#FAFAFA]
                 transition-all duration-150
-                ${searchFocused ? 'border-[#F59E0B] shadow-[0_0_0_3px_rgba(245,158,11,0.1)]' : 'border-[#E5E7EB]'}
+                ${searchFocused ? 'border-[#4F46E5] shadow-[0_0_0_3px_rgba(79,70,229,0.1)]' : 'border-[#E5E7EB]'}
               `}
             >
               <Search className="w-4 h-4 text-[#9CA3AF] flex-shrink-0" />
@@ -426,15 +426,15 @@ export default function SimulationsPage() {
           {/* ═══ LOADING ═══ */}
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-[#F59E0B]" />
+              <Loader2 className="w-8 h-8 animate-spin text-[#4F46E5]" />
             </div>
           ) : listToShow.length === 0 ? (
             /* ═══ EMPTY STATES ═══ */
             hasFilters ? (
               /* Filtered empty */
               <div className="flex flex-col items-center justify-center mt-[60px]">
-                <div className="w-16 h-16 rounded-full bg-[#FEF3C7] flex items-center justify-center">
-                  <Search className="w-8 h-8 text-[#F59E0B]" />
+                <div className="w-16 h-16 rounded-full bg-[#E0E7FF] flex items-center justify-center">
+                  <Search className="w-8 h-8 text-[#4F46E5]" />
                 </div>
                 <h2 className="text-[20px] font-semibold text-[#1A1A1A] mt-4">
                   No simulations match your filters
@@ -444,7 +444,7 @@ export default function SimulationsPage() {
                 </p>
                 <button
                   onClick={clearFilters}
-                  className="text-[14px] font-semibold text-[#F59E0B] hover:text-[#D97706] mt-6 transition-colors"
+                  className="text-[14px] font-semibold text-[#4F46E5] hover:text-[#4338CA] mt-6 transition-colors"
                 >
                   Clear filters
                 </button>
@@ -452,8 +452,8 @@ export default function SimulationsPage() {
             ) : (
               /* Fully empty */
               <div className="flex flex-col items-center justify-center mt-[60px]">
-                <div className="w-16 h-16 rounded-full bg-[#FEF3C7] flex items-center justify-center">
-                  <PlayCircle className="w-8 h-8 text-[#F59E0B]" />
+                <div className="w-16 h-16 rounded-full bg-[#E0E7FF] flex items-center justify-center">
+                  <PlayCircle className="w-8 h-8 text-[#4F46E5]" />
                 </div>
                 <h2 className="text-[20px] font-semibold text-[#1A1A1A] mt-4">
                   No simulations yet
@@ -463,7 +463,7 @@ export default function SimulationsPage() {
                 </p>
                 <Link
                   href="/simulations/new"
-                  className="inline-flex items-center gap-2 mt-6 h-11 px-5 text-[14px] font-semibold text-white bg-[#F59E0B] rounded-[24px] hover:bg-[#D97706] transition-all duration-200 shadow-[0_4px_12px_rgba(245,158,11,0.35)]"
+                  className="inline-flex items-center gap-2 mt-6 h-11 px-5 text-[14px] font-semibold text-white bg-[#4F46E5] rounded-[24px] hover:bg-[#4338CA] transition-all duration-200 shadow-[0_4px_12px_rgba(79,70,229,0.35)]"
                 >
                   <Plus className="w-[18px] h-[18px]" />
                   New Simulation
@@ -502,7 +502,7 @@ export default function SimulationsPage() {
                         transition-all duration-200 ease-in-out
                         hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:-translate-y-[1px]
                         ${isRunning
-                          ? 'border-[1.5px] border-[#FDE68A]'
+                          ? 'border-[1.5px] border-[#C7D2FE]'
                           : 'border border-[#E8E4DE] hover:border-[#E0DCD6]'
                         }
                       `}
@@ -548,8 +548,8 @@ export default function SimulationsPage() {
                               >
                                 {isRunning && (
                                   <span className="relative flex h-1.5 w-1.5">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-400" />
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75" />
+                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-indigo-400" />
                                   </span>
                                 )}
                                 {simulation.status}
@@ -644,10 +644,10 @@ export default function SimulationsPage() {
                             {isRunning && (
                               <>
                                 <span className="text-[#D1D5DB]">·</span>
-                                <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-amber-600">
+                                <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-indigo-600">
                                   <span className="relative flex h-1.5 w-1.5">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-400" />
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75" />
+                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-indigo-400" />
                                   </span>
                                   Running...
                                 </span>
@@ -657,13 +657,13 @@ export default function SimulationsPage() {
 
                           {/* Running state progress bar */}
                           {isRunning && (
-                            <div className="bg-[#FEF3C7] rounded-lg px-3.5 py-[10px] mt-3 flex items-center gap-2.5">
-                              <div className="w-4 h-4 border-2 border-[#F59E0B] border-t-transparent rounded-full animate-spin flex-shrink-0" />
-                              <span className="text-[13px] font-medium text-[#92400E]">
+                            <div className="bg-[#E0E7FF] rounded-lg px-3.5 py-[10px] mt-3 flex items-center gap-2.5">
+                              <div className="w-4 h-4 border-2 border-[#4F46E5] border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                              <span className="text-[13px] font-medium text-[#3730A3]">
                                 Simulation in progress…
                               </span>
                               {relative && (
-                                <span className="text-[12px] text-[#D97706] ml-auto">
+                                <span className="text-[12px] text-[#4338CA] ml-auto">
                                   Started {relative.toLowerCase()}
                                 </span>
                               )}
@@ -695,7 +695,7 @@ export default function SimulationsPage() {
                                 e.stopPropagation();
                                 router.push(href);
                               }}
-                              className="inline-flex items-center gap-[5px] text-[13px] font-semibold text-[#F59E0B] hover:text-[#D97706] transition-colors duration-150 p-0 bg-transparent border-none cursor-pointer"
+                              className="inline-flex items-center gap-[5px] text-[13px] font-semibold text-[#4F46E5] hover:text-[#4338CA] transition-colors duration-150 p-0 bg-transparent border-none cursor-pointer"
                             >
                               View Details
                               <ChevronRight className="w-4 h-4" />
@@ -713,7 +713,7 @@ export default function SimulationsPage() {
           {/* ═══ FAB ═══ */}
           <div className="fixed bottom-6 right-6 lg:right-10 z-30">
             <Link href="/simulations/new">
-              <span className="inline-flex items-center gap-2 h-12 px-5 text-[14px] font-semibold text-white bg-[#F59E0B] rounded-[24px] hover:bg-[#D97706] transition-all duration-200 shadow-[0_4px_12px_rgba(245,158,11,0.35)] hover:shadow-[0_6px_16px_rgba(245,158,11,0.45)]">
+              <span className="inline-flex items-center gap-2 h-12 px-5 text-[14px] font-semibold text-white bg-[#4F46E5] rounded-[24px] hover:bg-[#4338CA] transition-all duration-200 shadow-[0_4px_12px_rgba(79,70,229,0.35)] hover:shadow-[0_6px_16px_rgba(79,70,229,0.45)]">
                 <Plus className="w-[18px] h-[18px]" />
                 New Simulation
               </span>

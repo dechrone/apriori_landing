@@ -26,7 +26,7 @@ import type { AudienceTemplate } from '@/lib/backend-simulation';
 import { saveSimulation, getSimulations } from '@/lib/db';
 import { consumeNDJSONStream } from '@/lib/stream-simulation';
 import { OBJECTIVE_PRESETS, CUSTOM_OBJECTIVE_ID } from '@/data/objective-presets';
-import type { ComparatorData } from '@/types/comparator';
+import type { AbReport } from '@/types/ab-report';
 
 interface PendingVariant {
   file: File;
@@ -191,8 +191,10 @@ export default function ProductFlowABSimulationPage() {
       const res = await triggerProductFlowComparatorSimulation(userId, {
         name: runName,
         audience: audienceText,
-        // 5 personas per variant keeps a first A/B inside the 100-credit free-plan grant.
-        personaDepth: 'low',
+        // 20 personas × 2 single-screen variants = 40 credits — five free runs
+        // fit inside the 200-credit monthly grant.
+        personaDepth: 'medium',
+        numPersonas: 20,
         optimizeMetric: 'activation',
         selectedFolderIds: [folderA.id, folderB.id],
         audienceTemplateId,
@@ -218,7 +220,7 @@ export default function ProductFlowABSimulationPage() {
         return;
       }
 
-      let comparisonData: ComparatorData | null = null;
+      let comparisonData: AbReport | null = null;
       let streamError: string | null = null;
 
       await consumeNDJSONStream(res, (event) => {
@@ -270,22 +272,15 @@ export default function ProductFlowABSimulationPage() {
         return;
       }
 
-      const data = comparisonData as ComparatorData;
-      // Attach the uploaded variant previews so the report can show the
-      // actual screens side-by-side. URLs come from the Cloudinary-backed
-      // asset upload response above.
-      data.variant_screenshots = {
-        flow_0: assetsA[0]?.url,
-        flow_1: assetsB[0]?.url,
-      };
-      const metric = `${data.winner?.flow_name ?? 'Winner'} leads`;
+      const data = comparisonData as AbReport;
+      const metric = data.verdict.sentence.split('.')[0] || 'A/B comparison';
       const docId = await saveSimulation(userId, {
         type: 'Product Flow Comparator',
         status: 'completed',
         name: runName,
         metric,
         timestamp: new Date().toLocaleDateString(undefined, { dateStyle: 'medium' }),
-        simulationId: data.comparison_id,
+        simulationId: data.meta.simulation_id,
         result: data,
       });
       showToast('success', 'A/B complete', 'Redirecting to results.');
@@ -329,7 +324,7 @@ export default function ProductFlowABSimulationPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g., Onboarding CTA — red vs. green"
-                  className="w-full text-[15px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 focus:border-[#F59E0B] focus:shadow-[0_0_0_3px_rgba(245,158,11,0.12)] focus:outline-none transition-all"
+                  className="w-full text-[15px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 focus:border-[#4F46E5] focus:shadow-[0_0_0_3px_rgba(79,70,229,0.12)] focus:outline-none transition-all"
                 />
               </div>
 
@@ -386,7 +381,7 @@ export default function ProductFlowABSimulationPage() {
                     value={customObjective}
                     onChange={(e) => setCustomObjective(e.target.value)}
                     placeholder="Describe what you're comparing and what to look for…"
-                    className="w-full mt-3 text-[14px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 min-h-[90px] focus:border-[#F59E0B] focus:shadow-[0_0_0_3px_rgba(245,158,11,0.12)] focus:outline-none transition-all resize-y"
+                    className="w-full mt-3 text-[14px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 min-h-[90px] focus:border-[#4F46E5] focus:shadow-[0_0_0_3px_rgba(79,70,229,0.12)] focus:outline-none transition-all resize-y"
                   />
                 )}
               </div>
@@ -419,15 +414,15 @@ export default function ProductFlowABSimulationPage() {
                             text-left rounded-xl border-[1.5px] px-[18px] py-4 transition-all duration-150 cursor-pointer flex items-start gap-3
                             ${
                               isSelected
-                                ? 'border-[#F59E0B] bg-[#FFFBEB]'
-                                : 'border-[#E5E7EB] bg-white hover:border-[#F59E0B] hover:bg-[#FFFBEB]'
+                                ? 'border-[#4F46E5] bg-[#EEF2FF]'
+                                : 'border-[#E5E7EB] bg-white hover:border-[#4F46E5] hover:bg-[#EEF2FF]'
                             }
                           `}
                         >
                           <div className="mt-0.5 flex-shrink-0">
                             <div
                               className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
-                                ${isSelected ? 'border-[#F59E0B] bg-[#F59E0B]' : 'border-[#D1D5DB] bg-white'}`}
+                                ${isSelected ? 'border-[#4F46E5] bg-[#4F46E5]' : 'border-[#D1D5DB] bg-white'}`}
                             >
                               {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                             </div>
@@ -473,7 +468,7 @@ export default function ProductFlowABSimulationPage() {
                     transition-all duration-200
                     ${
                       canSubmit
-                        ? 'bg-[#F59E0B] text-white shadow-[0_2px_8px_rgba(245,158,11,0.3)] hover:bg-[#D97706] hover:shadow-[0_4px_12px_rgba(245,158,11,0.35)]'
+                        ? 'bg-[#4F46E5] text-white shadow-[0_2px_8px_rgba(79,70,229,0.3)] hover:bg-[#4338CA] hover:shadow-[0_4px_12px_rgba(79,70,229,0.35)]'
                         : 'bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed shadow-none'
                     }
                   `}
@@ -490,7 +485,7 @@ export default function ProductFlowABSimulationPage() {
               Testing a multi-screen flow?{' '}
               <Link
                 href="/simulations/new/product-flow-comparator"
-                className="font-medium text-[#F59E0B] hover:underline"
+                className="font-medium text-[#4F46E5] hover:underline"
               >
                 Try the full Flow Comparator
               </Link>
@@ -527,21 +522,21 @@ function DemoHero() {
       href="/demo/univest"
       target="_blank"
       rel="noopener noreferrer"
-      className="block bg-gradient-to-br from-[#FFFBEB] to-[#FEF3C7] border-[1.5px] border-[#FDE68A] rounded-[14px] p-5 mb-6 hover:from-[#FEF3C7] hover:to-[#FDE68A] transition-all group"
+      className="block bg-gradient-to-br from-[#EEF2FF] to-[#E0E7FF] border-[1.5px] border-[#C7D2FE] rounded-[14px] p-5 mb-6 hover:from-[#E0E7FF] hover:to-[#C7D2FE] transition-all group"
     >
       <div className="flex items-start gap-4">
-        <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center flex-shrink-0 border border-[#FDE68A]">
-          <Columns2 className="w-5 h-5 text-amber-700" />
+        <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center flex-shrink-0 border border-[#C7D2FE]">
+          <Columns2 className="w-5 h-5 text-indigo-700" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[14px] font-semibold text-[#92400E] mb-0.5">
+          <p className="text-[14px] font-semibold text-[#3730A3] mb-0.5">
             See what an A/B report looks like — 30 seconds
           </p>
-          <p className="text-[13px] text-[#78350F] leading-[1.5]">
+          <p className="text-[13px] text-[#312E81] leading-[1.5]">
             A finished Univest onboarding comparison. Opens in a new tab.
           </p>
         </div>
-        <ExternalLink className="w-4 h-4 text-amber-700 flex-shrink-0 mt-1 group-hover:translate-x-0.5 transition-transform" />
+        <ExternalLink className="w-4 h-4 text-indigo-700 flex-shrink-0 mt-1 group-hover:translate-x-0.5 transition-transform" />
       </div>
     </a>
   );
@@ -566,15 +561,15 @@ function ObjectiveOption({ label, selected, onSelect }: ObjectiveOptionProps) {
         w-full text-left rounded-xl border-[1.5px] px-4 py-3 transition-all duration-150 cursor-pointer
         ${
           selected
-            ? 'border-[#F59E0B] bg-[#FFFBEB]'
-            : 'border-[#E5E7EB] bg-white hover:border-[#F59E0B] hover:bg-[#FFFBEB]'
+            ? 'border-[#4F46E5] bg-[#EEF2FF]'
+            : 'border-[#E5E7EB] bg-white hover:border-[#4F46E5] hover:bg-[#EEF2FF]'
         }
       `}
     >
       <div className="flex items-center gap-3">
         <div
           className={`w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all
-            ${selected ? 'border-[#F59E0B] bg-[#F59E0B]' : 'border-[#D1D5DB] bg-white'}`}
+            ${selected ? 'border-[#4F46E5] bg-[#4F46E5]' : 'border-[#D1D5DB] bg-white'}`}
         >
           {selected && <div className="w-[7px] h-[7px] rounded-full bg-white" />}
         </div>
@@ -645,8 +640,8 @@ function VariantUploader({ label, variant, onFile, onClear }: VariantUploaderPro
             flex flex-col items-center justify-center gap-2 cursor-pointer
             ${
               dragOver
-                ? 'border-[#F59E0B] bg-[#FFFBEB]'
-                : 'border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#F59E0B] hover:bg-[#FFFBEB]'
+                ? 'border-[#4F46E5] bg-[#EEF2FF]'
+                : 'border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#4F46E5] hover:bg-[#EEF2FF]'
             }
           `}
         >
@@ -690,7 +685,7 @@ function ProgressPanel({ uploading, streamProgress }: ProgressPanelProps) {
   return (
     <div className="bg-white border border-[#E8E4DE] rounded-[14px] p-7">
       <div className="flex items-center gap-3 mb-5">
-        <Loader2 className="w-5 h-5 animate-spin text-[#F59E0B]" />
+        <Loader2 className="w-5 h-5 animate-spin text-[#4F46E5]" />
         <p className="text-[15px] font-semibold text-[#1A1A1A]">{phaseLabel}</p>
       </div>
       {streamProgress && Object.keys(streamProgress.flows).length > 0 && (
@@ -708,7 +703,7 @@ function ProgressPanel({ uploading, streamProgress }: ProgressPanelProps) {
               {flow.personasTotal > 0 && (
                 <div className="h-1.5 bg-[#E5E7EB] rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-[#F59E0B] rounded-full transition-all duration-300"
+                    className="h-full bg-[#4F46E5] rounded-full transition-all duration-300"
                     style={{
                       width: `${Math.round((flow.personasDone / flow.personasTotal) * 100)}%`,
                     }}

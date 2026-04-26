@@ -417,8 +417,8 @@ export default function FolderDetailPage() {
                 >
                   <Card hover className="border-l-[3px] border-l-accent-gold h-full">
                     <CardContent className="flex items-center gap-4 py-6">
-                      <div className="w-12 h-12 shrink-0 rounded-[8px] bg-[#F59E0B]/10 flex items-center justify-center">
-                        <FolderOpen className="w-6 h-6 text-[#F59E0B]" />
+                      <div className="w-12 h-12 shrink-0 rounded-[8px] bg-[#4F46E5]/10 flex items-center justify-center">
+                        <FolderOpen className="w-6 h-6 text-[#4F46E5]" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <h3 className="text-[15px] font-semibold text-[#1A1A1A]">{sub.name}</h3>
@@ -453,7 +453,7 @@ export default function FolderDetailPage() {
                   h-14 flex items-center justify-center gap-[10px] cursor-pointer
                   border-2 border-dashed rounded-[12px] transition-all duration-150 mb-4
                   ${dragOver
-                    ? 'border-[#F59E0B] border-solid bg-[#FFFBEB]'
+                    ? 'border-[#4F46E5] border-solid bg-[#EEF2FF]'
                     : 'border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#D1D5DB]'}
                 `}
                 onClick={handleUploadClick}
@@ -461,8 +461,8 @@ export default function FolderDetailPage() {
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
               >
-                <UploadCloud className={`w-4 h-4 ${dragOver ? 'text-[#92400E]' : 'text-[#9CA3AF]'}`} />
-                <span className={`text-[13px] ${dragOver ? 'text-[#92400E]' : 'text-[#9CA3AF]'}`}>
+                <UploadCloud className={`w-4 h-4 ${dragOver ? 'text-[#3730A3]' : 'text-[#9CA3AF]'}`} />
+                <span className={`text-[13px] ${dragOver ? 'text-[#3730A3]' : 'text-[#9CA3AF]'}`}>
                   Drop more screens here, or click to add
                 </span>
               </div>
@@ -472,7 +472,7 @@ export default function FolderDetailPage() {
                 className={`
                   border-2 border-dashed rounded-[14px] p-7 text-center cursor-pointer transition-all duration-150
                   ${dragOver
-                    ? 'border-[#F59E0B] border-solid bg-[#FFFBEB]'
+                    ? 'border-[#4F46E5] border-solid bg-[#EEF2FF]'
                     : 'border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#D1D5DB]'}
                 `}
                 onClick={handleUploadClick}
@@ -480,8 +480,8 @@ export default function FolderDetailPage() {
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
               >
-                <UploadCloud className={`w-8 h-8 mx-auto mb-2 ${dragOver ? 'text-[#F59E0B]' : 'text-[#9CA3AF]'}`} />
-                <p className={`text-[14px] font-medium ${dragOver ? 'text-[#92400E]' : 'text-[#6B7280]'}`}>
+                <UploadCloud className={`w-8 h-8 mx-auto mb-2 ${dragOver ? 'text-[#4F46E5]' : 'text-[#9CA3AF]'}`} />
+                <p className={`text-[14px] font-medium ${dragOver ? 'text-[#3730A3]' : 'text-[#6B7280]'}`}>
                   Drop screens here, or click to browse
                 </p>
                 <p className="text-[12px] text-[#9CA3AF] mt-1">
@@ -506,7 +506,7 @@ export default function FolderDetailPage() {
                     </div>
                     <div className="mt-2 h-1 bg-[#E5E7EB] rounded-full overflow-hidden">
                       <div
-                        className={`h-full rounded-full transition-all duration-300 ${uf.status === 'done' ? 'bg-[#10B981]' : uf.status === 'error' ? 'bg-[#EF4444]' : 'bg-[#F59E0B]'}`}
+                        className={`h-full rounded-full transition-all duration-300 ${uf.status === 'done' ? 'bg-[#10B981]' : uf.status === 'error' ? 'bg-[#EF4444]' : 'bg-[#4F46E5]'}`}
                         style={{ width: `${uf.progress}%` }}
                       />
                     </div>
@@ -639,10 +639,10 @@ export default function FolderDetailPage() {
                               e.stopPropagation();
                               setSelectedAsset(asset);
                             }}
-                            className="flex items-center gap-1.5 bg-[#FEF3C7] rounded-[6px] px-[10px] py-1.5 mt-[10px] w-full text-left hover:bg-[#FDE68A] transition-colors"
+                            className="flex items-center gap-1.5 bg-[#E0E7FF] rounded-[6px] px-[10px] py-1.5 mt-[10px] w-full text-left hover:bg-[#C7D2FE] transition-colors"
                           >
-                            <AlertCircle className="w-3.5 h-3.5 text-[#D97706] shrink-0" />
-                            <span className="text-[12px] font-medium text-[#92400E]">
+                            <AlertCircle className="w-3.5 h-3.5 text-[#4338CA] shrink-0" />
+                            <span className="text-[12px] font-medium text-[#3730A3]">
                               Add caption
                             </span>
                           </button>
@@ -714,7 +714,7 @@ export default function FolderDetailPage() {
 
               {/* Right: Upload button */}
               <button
-                className="inline-flex items-center gap-2 px-5 py-[10px] text-[14px] font-semibold text-white bg-[#F59E0B] rounded-[10px] hover:bg-[#D97706] transition-colors shadow-[0_4px_12px_rgba(245,158,11,0.35)]"
+                className="inline-flex items-center gap-2 px-5 py-[10px] text-[14px] font-semibold text-white bg-[#4F46E5] rounded-[10px] hover:bg-[#4338CA] transition-colors shadow-[0_4px_12px_rgba(79,70,229,0.35)]"
                 onClick={handleUploadClick}
               >
                 <Plus className="w-[18px] h-[18px]" />

@@ -262,6 +262,31 @@ create policy "signups_insert_anon" on public.signups for insert with check (tru
 
 
 -- =============================================================================
+-- feedback (in-app "Talk to us" submissions — issues, ideas, questions)
+--   * Inserted by /api/feedback route via the service-role client. No RLS
+--     policy exposes rows to clients; team reads via the Supabase dashboard
+--     or SQL.
+-- =============================================================================
+create table if not exists public.feedback (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid references public.profiles(id) on delete set null,
+  email       text,
+  kind        text not null check (kind in ('issue', 'idea', 'question')),
+  message     text not null,
+  path        text,
+  status      text not null default 'open' check (status in ('open', 'triaged', 'resolved')),
+  created_at  timestamptz not null default now()
+);
+
+create index if not exists feedback_user_idx    on public.feedback(user_id, created_at desc);
+create index if not exists feedback_status_idx  on public.feedback(status, created_at desc);
+
+alter table public.feedback enable row level security;
+-- No client policies — only the service role (used by the API route) can read
+-- or insert. This keeps user reports private to the Apriori team.
+
+
+-- =============================================================================
 -- touch_updated_at() — generic trigger to bump updated_at
 -- =============================================================================
 create or replace function public.touch_updated_at()

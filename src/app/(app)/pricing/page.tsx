@@ -29,13 +29,13 @@ const TIERS: Tier[] = [
     price: "₹0",
     cadence: "forever",
     description:
-      "Explore Apriori with a handful of runs. No card required.",
-    credits: "100 credits",
-    personas: "Up to 10 synthetic users",
+      "Run 5 single-screen A/B tests every month. No card required.",
+    credits: "200 credits / month",
+    personas: "5 free A/B runs · 20 personas each",
     features: [
-      "100 credits on signup",
-      "Run 1 product-flow simulation of 10 personas",
-      "Full insights report and segment analysis",
+      "200 credits every month",
+      "5 single-screen A/B runs (20 personas × 2 screens)",
+      "Full friction + segment analysis",
       "Curated audience templates (IN + US)",
     ],
     cta: "Current plan",
@@ -46,14 +46,13 @@ const TIERS: Tier[] = [
     price: "₹499",
     cadence: "per month",
     description:
-      "For product teams shipping multiple flows. Enough headroom for weekly iteration.",
+      "For product teams shipping weekly. Headroom for full-flow A/B and bigger cohorts.",
     credits: "2,500 credits / month",
-    personas: "Up to 250 synthetic users / month",
+    personas: "~60 single-screen A/Bs or ~12 full-flow runs",
     highlight: true,
     features: [
       "2,500 credits every month",
-      "Run ~25 simulations at the default depth",
-      "A/B comparator with business-impact translation",
+      "Full-flow A/B with business-impact translation",
       "Priority LLM queue during load",
       "Email support",
     ],
@@ -95,12 +94,12 @@ function TierCard({ tier, activePlan }: { tier: Tier; activePlan: string }) {
     <div
       className={`relative flex flex-col rounded-[20px] border bg-white p-7 ${
         tier.highlight
-          ? "border-[#F59E0B] shadow-[0_12px_32px_rgba(245,158,11,0.18)]"
+          ? "border-[#4F46E5] shadow-[0_12px_32px_rgba(79,70,229,0.18)]"
           : "border-[#E8E4DE]"
       }`}
     >
       {tier.highlight && (
-        <div className="absolute -top-3 left-7 flex items-center gap-1.5 rounded-full bg-[#F59E0B] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
+        <div className="absolute -top-3 left-7 flex items-center gap-1.5 rounded-full bg-[#4F46E5] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
           <Sparkles className="w-3 h-3" />
           Most popular
         </div>
@@ -119,7 +118,7 @@ function TierCard({ tier, activePlan }: { tier: Tier; activePlan: string }) {
           <span className="text-[13px] text-[#9CA3AF]">/ {tier.cadence}</span>
         </div>
         <div className="mt-2 flex items-center gap-1.5 text-[13px] text-[#374151]">
-          <Zap className="w-3.5 h-3.5 text-[#F59E0B]" />
+          <Zap className="w-3.5 h-3.5 text-[#4F46E5]" />
           <span className="font-medium">{tier.credits}</span>
           <span className="text-[#9CA3AF]">·</span>
           <span className="text-[#6B7280]">{tier.personas}</span>
@@ -176,15 +175,15 @@ export default function PricingPage() {
               Simple, usage-based pricing.
             </h2>
             <p className="mt-2 text-[15px] text-[#6B7280]">
-              Every simulation costs 10 credits per synthetic user. Start on the
-              free tier, upgrade when you need more runs, and reach out any time
-              you need a custom volume.
+              1 credit = 1 persona on 1 screen. A single-screen A/B with 20
+              personas across two variants is 40 credits — and the free tier
+              gives you 200 credits a month, enough for five A/B runs.
             </p>
           </div>
 
           {profile && (
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E8E4DE] bg-white px-4 py-2 text-[13px] text-[#374151]">
-              <Zap className="w-3.5 h-3.5 text-[#F59E0B]" />
+              <Zap className="w-3.5 h-3.5 text-[#4F46E5]" />
               <span className="font-medium">
                 {profile.credits_remaining} / {profile.credits_total}
               </span>
@@ -206,13 +205,17 @@ export default function PricingPage() {
             </h3>
             <ul className="mt-3 space-y-2 text-[13px] text-[#374151]">
               <li>
-                <span className="font-medium">1 persona = 10 credits.</span>{" "}
-                A default product-flow run (10 personas) costs 100 credits.
+                <span className="font-medium">1 credit = 1 persona × 1 screen.</span>{" "}
+                Charge scales with the work you actually run.
               </li>
               <li>
-                <span className="font-medium">A/B comparisons</span> cost 10
-                credits per persona per variant — every persona traverses every
-                flow you submit.
+                <span className="font-medium">Single-screen A/B</span> on 20
+                personas across two variants is 20 × 2 = 40 credits.
+              </li>
+              <li>
+                <span className="font-medium">Full-flow A/B</span> charges per
+                screen in each flow — 20 personas across two 5-screen flows is
+                20 × 10 = 200 credits.
               </li>
               <li>
                 <span className="font-medium">Refunds</span> are automatic if a
@@ -221,7 +224,7 @@ export default function PricingPage() {
               <li>
                 Need something different?{" "}
                 <a
-                  className="font-medium text-[#F59E0B] hover:underline"
+                  className="font-medium text-[#4F46E5] hover:underline"
                   href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
                     "Apriori custom plan",
                   )}`}

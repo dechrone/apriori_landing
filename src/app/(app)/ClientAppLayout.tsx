@@ -5,6 +5,7 @@ import { ToastProvider } from '@/components/ui/Toast';
 import { AppShellProvider, useAppShell } from '@/components/app/AppShell';
 import { UserProvider } from '@/contexts/UserContext';
 import { AuthGuard } from '@/components/app/AuthGuard';
+import { TalkToUsProvider } from '@/components/app/TalkToUs';
 
 function AppLayoutInner({ children }: { children: React.ReactNode }) {
   const { mobileMenuOpen, setMobileMenuOpen } = useAppShell();
@@ -34,7 +35,9 @@ export default function ClientAppLayout({
       <AppShellProvider>
         <AuthGuard>
           <UserProvider>
-            <AppLayoutInner>{children}</AppLayoutInner>
+            <TalkToUsProvider>
+              <AppLayoutInner>{children}</AppLayoutInner>
+            </TalkToUsProvider>
           </UserProvider>
         </AuthGuard>
       </AppShellProvider>

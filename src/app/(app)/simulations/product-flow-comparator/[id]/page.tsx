@@ -10,8 +10,8 @@ import { useAppShell } from "@/components/app/AppShell";
 import { useUser } from "@/contexts/UserContext";
 import { getSimulation } from "@/lib/db";
 import type { SimulationDoc } from "@/lib/db";
-import type { ComparatorData } from "@/types/comparator";
-import { ComparatorResultView } from "@/components/comparator";
+import type { AbReport } from "@/types/ab-report";
+import { AbReportView } from "@/components/ab-report/AbReportView";
 import { ArrowLeft } from "lucide-react";
 
 export default function ProductFlowComparatorResultsPage() {
@@ -40,13 +40,13 @@ export default function ProductFlowComparatorResultsPage() {
     };
   }, [userId, profileReady, id]);
 
-  const data = simulation?.result as ComparatorData | undefined;
+  const data = simulation?.result as AbReport | undefined;
 
   if (loading) {
     return (
       <>
         <TopBar
-          title="Flow Comparison"
+          title="A/B Comparison"
           breadcrumb="Loading…"
           onMenuClick={toggleMobileMenu}
         />
@@ -57,11 +57,11 @@ export default function ProductFlowComparatorResultsPage() {
     );
   }
 
-  if (!simulation || !data || !data.flows_compared || data.flows_compared.length < 2) {
+  if (!simulation || !data || !data.meta || !data.annotated_screens?.screens) {
     return (
       <>
         <TopBar
-          title="Flow Comparison"
+          title="A/B Comparison"
           breadcrumb="Not found"
           onMenuClick={toggleMobileMenu}
         />
@@ -69,7 +69,7 @@ export default function ProductFlowComparatorResultsPage() {
           <Card>
             <CardContent className="py-12 text-center">
               <p className="text-body text-text-secondary mb-4">
-                Comparator result not found or missing per-flow data.
+                A/B report not found or saved in an old format.
               </p>
               <Link href="/simulations">
                 <Button variant="secondary">
@@ -84,25 +84,5 @@ export default function ProductFlowComparatorResultsPage() {
     );
   }
 
-  const title = `${data.flows_compared[0].flow_name} vs ${data.flows_compared[1].flow_name}`;
-  const flow0Rate = data.scorecards.flow_0?.completion_rate_pct ?? 0;
-  const flow1Rate = data.scorecards.flow_1?.completion_rate_pct ?? 0;
-
-  return (
-    <>
-      <TopBar
-        title={simulation.name || title}
-        breadcrumb={`Product Flow · Comparator · ${simulation.timestamp}`}
-        onMenuClick={toggleMobileMenu}
-        actions={
-          <div className="flex items-center gap-3">
-            <div className="inline-flex items-center px-4 py-2 bg-[#F3E8FF] text-[#7C3AED] rounded-xl text-sm font-semibold">
-              Comparator ({flow0Rate}% vs {flow1Rate}%)
-            </div>
-          </div>
-        }
-      />
-      <ComparatorResultView data={data} />
-    </>
-  );
+  return <AbReportView data={data} />;
 }
