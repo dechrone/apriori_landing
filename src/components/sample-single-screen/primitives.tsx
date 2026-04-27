@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import type {
   ScreenElement,
-} from "./types";
+} from "@/types/ab-report";
 
 /* ═══════════════════════════════════════════
    TOKENS
