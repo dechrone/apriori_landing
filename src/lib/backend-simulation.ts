@@ -135,12 +135,18 @@ export async function triggerProductFlowSimulation(
   profileId: string,
   payload: ProductFlowSimulationPayload
 ): Promise<Response> {
-  const res = await fetch(`${BASE_URL}/api/v1/simulations/product-flow`, {
-    method: "POST",
-    headers: await authHeaders(),
-    body: JSON.stringify({ profileId, ...payload }),
-  });
-  return res;
+  const headers = await authHeaders();
+  try {
+    return await fetch(`${BASE_URL}/api/v1/simulations/product-flow`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ profileId, ...payload }),
+    });
+  } catch {
+    throw new Error(
+      `Cannot connect to the backend server at ${BASE_URL}. Please check your network and try again.`
+    );
+  }
 }
 
 /** POST /api/v1/simulations/product-flow-comparator with profileId + simulation payload */
@@ -148,15 +154,21 @@ export async function triggerProductFlowComparatorSimulation(
   profileId: string,
   payload: ProductFlowComparatorPayload
 ): Promise<Response> {
-  const res = await fetch(
-    `${BASE_URL}/api/v1/simulations/product-flow-comparator`,
-    {
-      method: "POST",
-      headers: await authHeaders(),
-      body: JSON.stringify({ profileId, ...payload }),
-    }
-  );
-  return res;
+  const headers = await authHeaders();
+  try {
+    return await fetch(
+      `${BASE_URL}/api/v1/simulations/product-flow-comparator`,
+      {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ profileId, ...payload }),
+      }
+    );
+  } catch {
+    throw new Error(
+      `Cannot connect to the backend server at ${BASE_URL}. Please check your network and try again.`
+    );
+  }
 }
 
 // ---------------------------------------------------------------------------

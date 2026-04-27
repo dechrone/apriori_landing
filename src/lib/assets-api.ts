@@ -171,14 +171,21 @@ export async function uploadAssets(
   if (!token) throw new Error("Not signed in");
   const formData = new FormData();
   files.forEach((f) => formData.append("files", f));
-  const res = await fetch(
-    `${BASE_URL}/api/v1/assets/folders/${folderId}/assets`,
-    {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
-    }
-  );
+  let res: Response;
+  try {
+    res = await fetch(
+      `${BASE_URL}/api/v1/assets/folders/${folderId}/assets`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      }
+    );
+  } catch {
+    throw new Error(
+      `Cannot connect to the backend server at ${BASE_URL}. Please check your network and try again.`
+    );
+  }
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(text || `Upload failed: ${res.status}`);

@@ -117,12 +117,20 @@ export default function ProductFlowABSimulationPage() {
     }
   };
 
+  // Revoke any leftover preview URLs on unmount only. Replacing or clearing a
+  // variant already revokes the prior URL inline (see handleFile / clearVariant);
+  // depending on [variantA, variantB] would revoke both URLs whenever either
+  // changed, leaving the other slot's preview broken.
+  const variantARef = useRef<PendingVariant | null>(null);
+  const variantBRef = useRef<PendingVariant | null>(null);
+  variantARef.current = variantA;
+  variantBRef.current = variantB;
   useEffect(
     () => () => {
-      if (variantA) URL.revokeObjectURL(variantA.previewUrl);
-      if (variantB) URL.revokeObjectURL(variantB.previewUrl);
+      if (variantARef.current) URL.revokeObjectURL(variantARef.current.previewUrl);
+      if (variantBRef.current) URL.revokeObjectURL(variantBRef.current.previewUrl);
     },
-    [variantA, variantB],
+    [],
   );
 
   const handleSubmit = async () => {
@@ -157,23 +165,33 @@ export default function ProductFlowABSimulationPage() {
       // Comparator endpoint treats each folder as a separate flow. For a
       // single-screen A/B, we create one folder per variant with a single
       // screen in each.
-      const [folderA, folderB] = await Promise.all([
-        createFolder(token, {
-          name: `${runName} · Variant A`,
-          assetType: 'product-flow',
-          description: 'Variant A',
-        }),
-        createFolder(token, {
-          name: `${runName} · Variant B`,
-          assetType: 'product-flow',
-          description: 'Variant B',
-        }),
-      ]);
+      let folderA, folderB;
+      try {
+        [folderA, folderB] = await Promise.all([
+          createFolder(token, {
+            name: `${runName} · Variant A`,
+            assetType: 'product-flow',
+            description: 'Variant A',
+          }),
+          createFolder(token, {
+            name: `${runName} · Variant B`,
+            assetType: 'product-flow',
+            description: 'Variant B',
+          }),
+        ]);
+      } catch (e) {
+        throw new Error(`Couldn't create the variant folders: ${e instanceof Error ? e.message : 'unknown error'}`);
+      }
 
-      const [assetsA, assetsB] = await Promise.all([
-        uploadAssets(token, folderA.id, [variantA!.file]),
-        uploadAssets(token, folderB.id, [variantB!.file]),
-      ]);
+      let assetsA, assetsB;
+      try {
+        [assetsA, assetsB] = await Promise.all([
+          uploadAssets(token, folderA.id, [variantA!.file]),
+          uploadAssets(token, folderB.id, [variantB!.file]),
+        ]);
+      } catch (e) {
+        throw new Error(`Couldn't upload the variant screens: ${e instanceof Error ? e.message : 'unknown error'}`);
+      }
 
       await Promise.all([
         updateAssetMetadata(token, assetsA[0].id, folderA.id, { stepNumber: 1 }).catch(
@@ -188,19 +206,24 @@ export default function ProductFlowABSimulationPage() {
       setRunning(true);
       setStreamProgress({ flows: {}, phase: 'starting' });
 
-      const res = await triggerProductFlowComparatorSimulation(userId, {
-        name: runName,
-        audience: audienceText,
-        // 20 personas × 2 single-screen variants = 40 credits — five free runs
-        // fit inside the 200-credit monthly grant.
-        personaDepth: 'medium',
-        numPersonas: 20,
-        optimizeMetric: 'activation',
-        selectedFolderIds: [folderA.id, folderB.id],
-        audienceTemplateId,
-        poolId: audienceTemplateId,
-        objective: resolvedObjective,
-      });
+      let res: Response;
+      try {
+        res = await triggerProductFlowComparatorSimulation(userId, {
+          name: runName,
+          audience: audienceText,
+          // 20 personas × 2 single-screen variants = 40 credits — five free runs
+          // fit inside the 200-credit monthly grant.
+          personaDepth: 'medium',
+          numPersonas: 20,
+          optimizeMetric: 'activation',
+          selectedFolderIds: [folderA.id, folderB.id],
+          audienceTemplateId,
+          poolId: audienceTemplateId,
+          objective: resolvedObjective,
+        });
+      } catch (e) {
+        throw new Error(`Couldn't start the simulation: ${e instanceof Error ? e.message : 'unknown error'}`);
+      }
 
       if (!res.ok) {
         if (res.status === 402) {
