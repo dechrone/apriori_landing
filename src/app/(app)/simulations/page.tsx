@@ -25,48 +25,7 @@ import { getSimulations, deleteSimulation, type SimulationDoc } from '@/lib/db';
 
 /* ── Sample simulations (always shown) ──────────────────────────────────── */
 
-const SAMPLE_SIMULATIONS: SimulationDoc[] = [
-  {
-    id: 'sample',
-    name: 'Sample: LAMF Onboarding — Flow 1',
-    type: 'Product Flow',
-    status: 'completed',
-    metric: 'Completion rate · 40%',
-    timestamp: 'February 2026',
-    createdAt: null,
-    updatedAt: null,
-  },
-  {
-    id: 'sample-comparator',
-    name: 'Sample: Flow A vs Flow B — Comparator',
-    type: 'Product Flow Comparator',
-    status: 'completed',
-    metric: '62% vs 44% · 50 personas',
-    timestamp: 'March 2026',
-    createdAt: null,
-    updatedAt: null,
-  },
-  {
-    id: 'sample-flent',
-    name: 'Sample: Flent Secured — Rent Payment Onboarding',
-    type: 'Product Flow',
-    status: 'completed',
-    metric: 'Completion rate · 62%',
-    timestamp: 'April 2026',
-    createdAt: null,
-    updatedAt: null,
-  },
-  {
-    id: 'sample-hexahealth',
-    name: 'Sample: HexaHealth — Piles Treatment Consultation',
-    type: 'Product Flow',
-    status: 'completed',
-    metric: 'Completion rate · 54%',
-    timestamp: 'April 2026',
-    createdAt: null,
-    updatedAt: null,
-  },
-];
+const SAMPLE_SIMULATIONS: SimulationDoc[] = [];
 
 /* ── Helpers ────────────────────────────────────────────────────────────── */
 
