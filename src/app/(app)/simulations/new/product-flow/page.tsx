@@ -270,8 +270,8 @@ export default function ProductFlowSimulationPage() {
         name: formData.name,
         objective: formData.objective.trim(),
         audience: audienceText,
-        // Free PM tool: always a 50-persona run. numPersonas beats personaDepth on the backend.
-        numPersonas: 50,
+        // Free PM tool: always a 25-persona run. numPersonas beats personaDepth on the backend.
+        numPersonas: 25,
         optimizeMetric: formData.optimizeMetric,
         selectedFolderIds: formData.selectedFolderIds,
         // Persona-retrieval routing hints — backend uses these to skip the
@@ -1176,7 +1176,7 @@ function ParametersStep({ formData, setFormData, audienceName, selectedFolders, 
             { label: 'Objective', value: formData.objective.trim() || '—' },
             { label: 'Audience', value: audienceName || '—' },
             { label: 'Assets', value: folderSummary },
-            { label: 'Synthetic users', value: '50 personas' },
+            { label: 'Synthetic users', value: '25 personas' },
           ].map((row, idx, arr) => (
             <div
               key={row.label}

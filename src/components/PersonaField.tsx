@@ -9,10 +9,10 @@ import { motion } from "framer-motion";
  */
 
 const personas = [
-  { id: 0, label: "Priya, 28", desc: "First-time renter", thought: "This pricing feels too enterprise for me.", row: 0, col: 0 },
-  { id: 1, label: "Amit, 35", desc: "Salaried professional", thought: "Where do I upload my documents?", row: 0, col: 1 },
-  { id: 2, label: "Sneha, 24", desc: "Gig worker", thought: "I don\u2019t trust this page yet.", row: 0, col: 2 },
-  { id: 3, label: "Raj, 42", desc: "Small business owner", thought: "Why am I being asked for my PAN number here?", row: 1, col: 0 },
+  { id: 0, label: "Pearl, 28", desc: "First-time renter", thought: "This pricing feels too enterprise for me.", row: 0, col: 0 },
+  { id: 1, label: "Robert, 35", desc: "Salaried professional", thought: "Where do I upload my documents?", row: 0, col: 1 },
+  { id: 2, label: "Sarah, 24", desc: "Gig worker", thought: "I don\u2019t trust this page yet.", row: 0, col: 2 },
+  { id: 3, label: "John, 42", desc: "Small business owner", thought: "Why am I being asked for my PAN number here?", row: 1, col: 0 },
   { id: 4, label: "Meera, 31", desc: "Working mother", thought: "This is exactly what I need.", row: 1, col: 1 },
   { id: 5, label: "Karan, 22", desc: "College student", thought: "Too many steps. I will come back later.", row: 1, col: 2 },
 ];

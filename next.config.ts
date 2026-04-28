@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "logo.clearbit.com" },
       { protocol: "https", hostname: "img.logo.dev" },
+      { protocol: "https", hostname: "res.cloudinary.com" },
     ],
   },
   async redirects() {
