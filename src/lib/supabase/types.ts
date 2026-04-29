@@ -92,6 +92,10 @@ export interface SimulationRow {
   timestamp_label: string | null;
   simulation_id: string | null;
   result: Json | null;
+  /** simul2design Multiverse Synthesis Engine output. Populated server-side by
+   * the comparator route on `synthesis_ready` (~5 min after `comparison_ready`).
+   * Null until the cascade runs. See SynthesisReadyData in @/types/ab-report. */
+  synthesis: Json | null;
   credits_spent: number;
   created_at: string;
   updated_at: string;

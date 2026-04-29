@@ -25,7 +25,7 @@ export const AUDIENCE_SECTIONS: AudienceSectionConfig[] = [
     label: 'Identity & Context',
     shortLabel: 'Identity',
     whyWeAsk:
-      'Anchors the persona in a real-world business context. Sets authority, influence, and decision power—which impacts risk tolerance and speed in simulations.',
+      'Anchors the persona in a real-world business context. Sets authority, influence, and decision power, which impacts risk tolerance and speed in simulations.',
     required: true,
   },
   {

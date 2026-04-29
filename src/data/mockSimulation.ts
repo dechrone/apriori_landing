@@ -272,7 +272,7 @@ export const MOCK_PERSONAS: PersonaDetail[] = [
         internal_monologue:
           "The final structure is clear. I've read the terms. Going ahead.",
         reasoning:
-          "The blended structure is fine — I understand it since I researched LAMF beforehand.",
+          "The blended structure is fine, I understand it since I researched LAMF beforehand.",
         emotional_state: "Confident",
         trust_score: 8,
         clarity_score: 8,
@@ -315,7 +315,7 @@ export const MOCK_PERSONAS: PersonaDetail[] = [
     final_price_inr: null,
     total_time_seconds: 45,
     overall_monologue:
-      "My son showed me this app. The first thing it wants is my PAN card. I told him — no, this is how fraud happens.",
+      "My son showed me this app. The first thing it wants is my PAN card. I told him, no, this is how fraud happens.",
     screen_monologues: [
       {
         screen_id: "view_1",
@@ -333,7 +333,7 @@ export const MOCK_PERSONAS: PersonaDetail[] = [
           "Asking for PAN number immediately triggers scam fear",
           "No bank or government seal visible",
           "No explanation of what the company does before asking for data",
-          "The interface is in English — I cannot read everything properly",
+          "The interface is in English, I cannot read everything properly",
         ],
         selected_choice: "DROP_OFF",
         decision_outcome: "DROP_OFF",

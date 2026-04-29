@@ -25,7 +25,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
     { id: "S8", label: "Time of Birth", order: 8 },
     { id: "S9", label: "Place of Birth", order: 9 },
     { id: "S10", label: "Journey Purpose", order: 10 },
-    { id: "S11", label: "AI Chat — Mahesh Ji", order: 11 },
+    { id: "S11", label: "AI Chat, Mahesh Ji", order: 11 },
   ],
 
   funnel: [
@@ -48,7 +48,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
       screen: "S2",
       title: "Phone number gate for stigmatized interest",
       detail:
-        "Users arrived from video ads about astrology but must share phone number with unknown app. Astrology carries social stigma — sharing a phone number creates a permanent link between identity and a 'non-scientific' interest. 8 of 38 drop-offs here.",
+        "Users arrived from video ads about astrology but must share phone number with unknown app. Astrology carries social stigma, sharing a phone number creates a permanent link between identity and a 'non-scientific' interest. 8 of 38 drop-offs here.",
       affectedPersonas: [
         "Neha S.",
         "Arjun K.",
@@ -80,7 +80,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
     {
       id: "RC3",
       screen: "S10",
-      title: "Journey purpose options too narrow — only 3 choices",
+      title: "Journey purpose options too narrow, only 3 choices",
       detail:
         "Users concerned about health, education, finances, property, or Vastu have no matching option. They must pick the closest option or leave.",
       affectedPersonas: ["Suresh P.", "Ramesh T.", "Lakshmi K.", "Geeta V."],
@@ -108,9 +108,9 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
 
   oneBet: {
     title:
-      "Skip-to-Chat with Progressive Profiling — let users chat with Mahesh immediately, collect birth details conversationally",
+      "Skip-to-Chat with Progressive Profiling, let users chat with Mahesh immediately, collect birth details conversationally",
     rationale:
-      "The core insight is that SuperAstro's onboarding is structured like a hospital intake form, but users arrived expecting an instant chat experience ('Chat NOW', 'Chat 24/7 at just ₹1'). 10 screens of data entry before any value delivery creates a fundamental expectation mismatch. The fix isn't removing screens — it's reordering value delivery. Let users start chatting immediately after phone+OTP (2 screens), then have Mahesh ask for birth details naturally during conversation ('To read your stars, I'll need your birth details — when were you born?'). This preserves data collection while delivering value first.",
+      "The core insight is that SuperAstro's onboarding is structured like a hospital intake form, but users arrived expecting an instant chat experience ('Chat NOW', 'Chat 24/7 at just ₹1'). 10 screens of data entry before any value delivery creates a fundamental expectation mismatch. The fix isn't removing screens, it's reordering value delivery. Let users start chatting immediately after phone+OTP (2 screens), then have Mahesh ask for birth details naturally during conversation ('To read your stars, I'll need your birth details, when were you born?'). This preserves data collection while delivering value first.",
     effort: "Medium-High",
     impact: "High",
     projectedCompletion: "78–82%",
@@ -186,15 +186,15 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
   },
 
   dropReasons: {
-    S1: "Video ad didn't resonate — not interested in astrology or already using AstroTalk",
-    S2: "Won't share phone number for astrology — social stigma and privacy concerns",
+    S1: "Video ad didn't resonate, not interested in astrology or already using AstroTalk",
+    S2: "Won't share phone number for astrology, social stigma and privacy concerns",
     S3: "OTP not received or changed mind during wait",
-    S6: "Marital status question feels triggering — family pressure about marriage",
+    S6: "Marital status question feels triggering, family pressure about marriage",
     S7: "DOB picker too complex on small screen / uncertain about exact date",
     S8: "Don't know time of birth and didn't notice the Skip button",
     S9: "Uncertain about exact birthplace and no \u2018don\u2019t know\u2019 affordance",
     S10: "None of the 3 journey options (Marriage/Career/Relationship) match my need",
-    S11: "AI response is generic — doesn't address the specific question from the ad",
+    S11: "AI response is generic, doesn't address the specific question from the ad",
   },
 
   dropPersonas: {
@@ -223,7 +223,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
   patterns: [
     {
       stat: "16/100",
-      title: "Won't share phone number for astrology — stigma barrier",
+      title: "Won't share phone number for astrology, stigma barrier",
       description:
         "Privacy-conscious users (especially young professionals) refuse to link their phone number to an astrology app. They'd never admit to consulting an astrologer, and a phone number creates a permanent, traceable link.",
     },
@@ -243,7 +243,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
       stat: "9/100",
       title: "Journey purpose options exclude common needs",
       description:
-        "Health concerns, education decisions, Vastu queries, financial timing — these common astrology use cases have no option on the purpose screen.",
+        "Health concerns, education decisions, Vastu queries, financial timing, these common astrology use cases have no option on the purpose screen.",
     },
     {
       stat: "7/100",
@@ -268,13 +268,13 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
     },
     {
       quote:
-        "The ad literally said 'Does he miss me?' — that's EXACTLY what I wanted to know. I filled 10 screens of data. Name, DOB, time, place, everything. Then the AI gives me a generic paragraph about Venus in my 7th house. Tell me if he misses me or not! That's what the ad promised.",
+        "The ad literally said 'Does he miss me?', that's EXACTLY what I wanted to know. I filled 10 screens of data. Name, DOB, time, place, everything. Then the AI gives me a generic paragraph about Venus in my 7th house. Tell me if he misses me or not! That's what the ad promised.",
       attribution: "24yo Marketing Exec · Dropped at S11",
       dropScreen: "S11",
     },
     {
       quote:
-        "I wanted to ask about my shop's Vastu — the new store I'm opening in Chandni Chowk. But the options are Marriage, Career, Relationship. Where's 'Business'? Where's 'Property'? I picked Career because it's closest but that's not what I need.",
+        "I wanted to ask about my shop's Vastu, the new store I'm opening in Chandni Chowk. But the options are Marriage, Career, Relationship. Where's 'Business'? Where's 'Property'? I picked Career because it's closest but that's not what I need.",
       attribution: "47yo Shop Owner · Dropped at S10",
       dropScreen: "S10",
     },
@@ -296,7 +296,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
       lamfExp: "N/A",
       urgency: "Medium (relationship anxiety)",
       need: "Is this the right person to marry?",
-      fear: "None strong enough to stop — ₹1 price and 'scientific' framing overcame stigma",
+      fear: "None strong enough to stop, ₹1 price and 'scientific' framing overcame stigma",
       outcome: "completed",
       journey: [
         {
@@ -305,11 +305,11 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 6,
           clarityScore: 7,
           gutReaction:
-            "'Astrology koi guess nahi, ek science hai' — okay, that's a different framing. Not the usual 'pandit ji will solve all problems' energy. The science angle makes me less embarrassed about tapping.",
+            "'Astrology koi guess nahi, ek science hai', okay, that's a different framing. Not the usual 'pandit ji will solve all problems' energy. The science angle makes me less embarrassed about tapping.",
           reasoning:
             "Ad B's rationalist framing specifically targets privacy-seeking professionals who'd be embarrassed by traditional astrology marketing. The 'science' framing gives her a narrative: she's not being superstitious, she's exploring patterns.",
-          frictionPoints: ["Still an astrology ad — mild embarrassment"],
-          missing: "Nothing critical — the framing worked",
+          frictionPoints: ["Still an astrology ad, mild embarrassment"],
+          missing: "Nothing critical, the framing worked",
         },
         {
           screen: "S2",
@@ -317,7 +317,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 5,
           clarityScore: 6,
           gutReaction:
-            "Phone number... ugh. But it's ₹1 and I'm using a secondary number anyway. Sri Mandir ecosystem — that's a real company at least. Fine.",
+            "Phone number... ugh. But it's ₹1 and I'm using a secondary number anyway. Sri Mandir ecosystem, that's a real company at least. Fine.",
           reasoning:
             "The ₹1 price point lowers perceived risk. She uses a secondary number for app signups, which mitigates her privacy concern. Sri Mandir branding provides some institutional trust.",
           frictionPoints: [
@@ -344,7 +344,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 5,
           clarityScore: 8,
           gutReaction:
-            "Name entry. Okay, standard. I'll use my real name — they need it for the kundli anyway.",
+            "Name entry. Okay, standard. I'll use my real name, they need it for the kundli anyway.",
           reasoning:
             "Understands that astrology requires a name. Low friction because expectation aligns with the ask.",
           frictionPoints: [],
@@ -356,7 +356,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 5,
           clarityScore: 7,
           gutReaction:
-            "Gender selection. Female. Simple enough. Though I notice there's no non-binary option — not surprising for a Vedic astrology app.",
+            "Gender selection. Female. Simple enough. Though I notice there's no non-binary option, not surprising for a Vedic astrology app.",
           reasoning:
             "Quick screen, low friction. The UX designer in her notices the limited options but doesn't block on it.",
           frictionPoints: ["Only Male/Female options"],
@@ -380,7 +380,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 5,
           clarityScore: 7,
           gutReaction:
-            "Date of birth. 14th March 1997. Easy — I know this by heart. Mummy got my kundli made when I was born, so I know all this data.",
+            "Date of birth. 14th March 1997. Easy, I know this by heart. Mummy got my kundli made when I was born, so I know all this data.",
           reasoning:
             "Birth details are expected for Vedic astrology. She has this information readily available from her family kundli.",
           frictionPoints: [],
@@ -392,11 +392,11 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 5,
           clarityScore: 6,
           gutReaction:
-            "Time of birth — 6:42 AM. Thank god mummy kept the hospital certificate. I know people who don't know this. There is a Skip button but I want an accurate reading.",
+            "Time of birth, 6:42 AM. Thank god mummy kept the hospital certificate. I know people who don't know this. There is a Skip button but I want an accurate reading.",
           reasoning:
             "Has birth time from hospital records via family. Motivated to enter it for accuracy. Notices the Skip button as good UX but doesn't need it.",
           frictionPoints: [],
-          missing: "Nothing — she has the data",
+          missing: "Nothing, she has the data",
         },
         {
           screen: "S9",
@@ -404,7 +404,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 5,
           clarityScore: 7,
           gutReaction:
-            "Place of birth — Mumbai. Found it immediately in the picker. Big city advantage.",
+            "Place of birth, Mumbai. Found it immediately in the picker. Big city advantage.",
           reasoning:
             "Major city, no picker issues. This screen is frictionless for metro users.",
           frictionPoints: [],
@@ -416,11 +416,11 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 5,
           clarityScore: 7,
           gutReaction:
-            "Journey purpose — Marriage. Finally, the option that matches my question. 'Relationship' is close but 'Marriage' is exactly right. I want to know about compatibility with Rahul.",
+            "Journey purpose, Marriage. Finally, the option that matches my question. 'Relationship' is close but 'Marriage' is exactly right. I want to know about compatibility with Rahul.",
           reasoning:
             "Her need maps directly to one of the three options. Perfect fit for this user.",
           frictionPoints: [],
-          missing: "Nothing — her use case is covered",
+          missing: "Nothing, her use case is covered",
         },
         {
           screen: "S11",
@@ -430,7 +430,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           gutReaction:
             "Namaste Priyanka! Based on your kundli... Manglik status: partial Manglik. Okay, that's actually specific. My mom always worried about this. Venus in 7th house suggests strong romantic inclinations... this feels personalized enough. Not bad for ₹1.",
           reasoning:
-            "The AI response references her actual chart data (Manglik status, Venus placement) which feels personalized. The marriage-focused reading aligns with her selected journey purpose. The ₹1 price point means her expectations are calibrated low — and the response exceeds them.",
+            "The AI response references her actual chart data (Manglik status, Venus placement) which feels personalized. The marriage-focused reading aligns with her selected journey purpose. The ₹1 price point means her expectations are calibrated low, and the response exceeds them.",
           frictionPoints: [
             "Could be more specific about compatibility",
             "Doesn't mention partner's chart",
@@ -458,11 +458,11 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 5,
           clarityScore: 7,
           gutReaction:
-            "'Career kab set hogi? Chat 24/7 at just ₹1.' It's 2 AM and I can't sleep because of this Razorpay offer. ₹1 is nothing. Let me just check what this AI says — it's probably BS but I'm desperate enough to try.",
+            "'Career kab set hogi? Chat 24/7 at just ₹1.' It's 2 AM and I can't sleep because of this Razorpay offer. ₹1 is nothing. Let me just check what this AI says, it's probably BS but I'm desperate enough to try.",
           reasoning:
             "Late-night anxiety lowers his rationality barrier. The ₹1 price makes it feel like a zero-risk experiment. The career-specific ad hook matches his exact mental state.",
-          frictionPoints: ["Mild embarrassment — 'I don't believe in this stuff'"],
-          missing: "Nothing — the ad caught him at peak vulnerability",
+          frictionPoints: ["Mild embarrassment, 'I don't believe in this stuff'"],
+          missing: "Nothing, the ad caught him at peak vulnerability",
         },
         {
           screen: "S2",
@@ -482,7 +482,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           missing:
             "Guest chat option, anonymous access, or at minimum reassurance that the app name won't appear in phone records",
           dropReason:
-            "Won't share phone number with astrology app — fear of professional embarrassment if colleagues discover it.",
+            "Won't share phone number with astrology app, fear of professional embarrassment if colleagues discover it.",
         },
       ],
     },
@@ -494,7 +494,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
       city: "Delhi",
       lamfExp: "N/A",
       urgency: "High (breakup 2 weeks ago)",
-      need: "Specific answer about ex-boyfriend — does he miss me?",
+      need: "Specific answer about ex-boyfriend, does he miss me?",
       fear: "AI won't actually answer her question",
       outcome: "dropped",
       dropScreen: "S11",
@@ -505,11 +505,11 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 7,
           clarityScore: 8,
           gutReaction:
-            "'Does he miss me? Shaadi kab hogi? Chat NOW' — YES. This is exactly what I need right now. Finally someone who can tell me if Sahil still thinks about me.",
+            "'Does he miss me? Shaadi kab hogi? Chat NOW', YES. This is exactly what I need right now. Finally someone who can tell me if Sahil still thinks about me.",
           reasoning:
             "Ad C's emotional hooks perfectly match her post-breakup state. The ad feels like it was written for her specific situation. High emotional resonance overrides any skepticism.",
           frictionPoints: [],
-          missing: "Nothing — the ad is perfectly targeted",
+          missing: "Nothing, the ad is perfectly targeted",
         },
         {
           screen: "S2",
@@ -517,7 +517,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 6,
           clarityScore: 7,
           gutReaction:
-            "Phone number, fine. I don't care who knows I use astrology — half my friends check their horoscope on InstaAstro anyway. Just let me chat with the astrologer.",
+            "Phone number, fine. I don't care who knows I use astrology, half my friends check their horoscope on InstaAstro anyway. Just let me chat with the astrologer.",
           reasoning:
             "No stigma barrier for her demographic. Astrology is normalized in her social circle. Urgency is high enough that phone number is a trivial ask.",
           frictionPoints: [],
@@ -540,7 +540,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 6,
           clarityScore: 8,
           gutReaction:
-            "Name — Pooja Kumari. Obviously. Hurry up, I want to ask about Sahil.",
+            "Name, Pooja Kumari. Obviously. Hurry up, I want to ask about Sahil.",
           reasoning:
             "Impatient but compliant. Each screen feels like a barrier between her and the answer she needs.",
           frictionPoints: ["Just one more screen... right?"],
@@ -555,7 +555,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
             "Female. Tap. Next. Come on, kitne screens hain?",
           reasoning:
             "Growing impatience but still moving forward. The emotional need is strong.",
-          frictionPoints: ["No progress bar — how many more screens?"],
+          frictionPoints: ["No progress bar, how many more screens?"],
           missing: "Step counter or progress indicator",
         },
         {
@@ -579,9 +579,9 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 5,
           clarityScore: 7,
           gutReaction:
-            "Date of birth — 8th September 2001. Fine. I know Virgos are overthinking this breakup. Tell me something I don't know.",
+            "Date of birth, 8th September 2001. Fine. I know Virgos are overthinking this breakup. Tell me something I don't know.",
           reasoning:
-            "Provides data readily. Making astrological connections already — she's an engaged user.",
+            "Provides data readily. Making astrological connections already, she's an engaged user.",
           frictionPoints: [],
           missing: "Nothing",
         },
@@ -596,7 +596,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
             "Doesn't know exact time but doesn't want to skip for fear of inaccurate results. Enters an approximation.",
           frictionPoints: [
             "Doesn't know exact birth time",
-            "Skip button unclear — will it affect accuracy?",
+            "Skip button unclear, will it affect accuracy?",
           ],
           missing: "Clarity on how birth time affects the reading",
         },
@@ -606,7 +606,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 5,
           clarityScore: 7,
           gutReaction:
-            "Place of birth — Delhi. Found it. Almost there, I can feel it.",
+            "Place of birth, Delhi. Found it. Almost there, I can feel it.",
           reasoning: "Major city, no picker issues. Momentum building.",
           frictionPoints: [],
           missing: "Nothing",
@@ -617,7 +617,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 5,
           clarityScore: 6,
           gutReaction:
-            "Journey purpose — 'Relationship'. FINALLY a screen that actually relates to why I'm here. But I wish I could just type 'does he miss me?' instead of picking a generic category.",
+            "Journey purpose, 'Relationship'. FINALLY a screen that actually relates to why I'm here. But I wish I could just type 'does he miss me?' instead of picking a generic category.",
           reasoning:
             "The option exists but feels too broad. She has a very specific question and a category label doesn't capture her intent.",
           frictionPoints: ["Category too broad for specific question"],
@@ -631,7 +631,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           gutReaction:
             "Namaste Pooja! Based on your kundli, Venus is in your 7th house which indicates strong romantic energy. Your current Mahadasha suggests a period of emotional transformation... WHAT? I don't care about my Mahadasha! Does. He. Miss. Me. That's literally what the ad said. 10 screens of my personal data and you can't answer one simple question? I'm uninstalling this.",
           reasoning:
-            "The AI response is technically accurate astrology but completely misaligned with her emotional need and the ad's promise. She endured 10 screens of data entry because the ad said 'Does he miss me?' — and the AI never addresses that question. The gap between ad promise and delivered experience is maximum. Trust collapses instantly.",
+            "The AI response is technically accurate astrology but completely misaligned with her emotional need and the ad's promise. She endured 10 screens of data entry because the ad said 'Does he miss me?', and the AI never addresses that question. The gap between ad promise and delivered experience is maximum. Trust collapses instantly.",
           frictionPoints: [
             "Generic kundli response instead of answering her specific question",
             "No acknowledgment of the question that brought her here",
@@ -664,11 +664,11 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 7,
           clarityScore: 6,
           gutReaction:
-            "'Sare jawab aapki kundali mein hai' — haan bilkul. Meri maa hamesha kehti thi ki kundli se sab pata chalta hai. ₹1 mein? AstroTalk pe toh ₹15/min lete hain. Let me try this.",
+            "'Sare jawab aapki kundali mein hai', haan bilkul. Meri maa hamesha kehti thi ki kundli se sab pata chalta hai. ₹1 mein? AstroTalk pe toh ₹15/min lete hain. Let me try this.",
           reasoning:
             "Deep cultural belief in kundli. The ₹1 price compared to AstroTalk's per-minute pricing is a strong hook. Sri Mandir ecosystem resonates with his devotional lifestyle.",
           frictionPoints: [],
-          missing: "Nothing — strong cultural alignment",
+          missing: "Nothing, strong cultural alignment",
         },
         {
           screen: "S2",
@@ -676,9 +676,9 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 6,
           clarityScore: 6,
           gutReaction:
-            "Phone number de deta hoon. Sri Mandir ka app hai, trustworthy hoga. Waise bhi mera number toh sabko pata hai — dukaan pe likha hua hai.",
+            "Phone number de deta hoon. Sri Mandir ka app hai, trustworthy hoga. Waise bhi mera number toh sabko pata hai, dukaan pe likha hua hai.",
           reasoning:
-            "No privacy concern — his phone number is literally on his shop signboard. Sri Mandir brand provides trust. No stigma about astrology in his social context.",
+            "No privacy concern, his phone number is literally on his shop signboard. Sri Mandir brand provides trust. No stigma about astrology in his social context.",
           frictionPoints: [],
           missing: "Nothing",
         },
@@ -723,7 +723,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           clarityScore: 7,
           gutReaction:
             "Married. 22 saal ho gaye. Next.",
-          reasoning: "No emotional trigger — married and comfortable with it.",
+          reasoning: "No emotional trigger, married and comfortable with it.",
           frictionPoints: [],
           missing: "Nothing",
         },
@@ -733,9 +733,9 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 6,
           clarityScore: 7,
           gutReaction:
-            "Date of birth — 15th August 1978. Independence Day baby! Har pandit ko yeh yaad rehta hai.",
+            "Date of birth, 15th August 1978. Independence Day baby! Har pandit ko yeh yaad rehta hai.",
           reasoning:
-            "Knows his birth details well — has had multiple kundlis made over his life.",
+            "Knows his birth details well, has had multiple kundlis made over his life.",
           frictionPoints: [],
           missing: "Nothing",
         },
@@ -745,7 +745,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 6,
           clarityScore: 6,
           gutReaction:
-            "Time of birth — subah 5:30. Mummy ne bola tha Brahma muhurt mein paida hua tha. Good omen.",
+            "Time of birth, subah 5:30. Mummy ne bola tha Brahma muhurt mein paida hua tha. Good omen.",
           reasoning:
             "Knows birth time from family oral tradition. Enters it confidently.",
           frictionPoints: [],
@@ -757,7 +757,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 6,
           clarityScore: 7,
           gutReaction:
-            "Place of birth — Delhi. Mil gaya. Easy.",
+            "Place of birth, Delhi. Mil gaya. Easy.",
           reasoning: "Born in Delhi, no picker issues.",
           frictionPoints: [],
           missing: "Nothing",
@@ -768,11 +768,11 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 3,
           clarityScore: 3,
           gutReaction:
-            "Journey purpose — Marriage, Career, Relationship. Arey bhai, mujhe Vastu ke baare mein poochna hai! Nayi dukaan khol raha hoon Chandni Chowk mein. Property ka muhurat chahiye. Career se kya matlab? Yeh toh sab bacchon ke options hain. Business kahaan hai? Property kahaan hai? Health kahaan hai? Main kya karoon, Career pe click karoon? Woh toh galat answer dega. Bakwas app hai.",
+            "Journey purpose, Marriage, Career, Relationship. Arey bhai, mujhe Vastu ke baare mein poochna hai! Nayi dukaan khol raha hoon Chandni Chowk mein. Property ka muhurat chahiye. Career se kya matlab? Yeh toh sab bacchon ke options hain. Business kahaan hai? Property kahaan hai? Health kahaan hai? Main kya karoon, Career pe click karoon? Woh toh galat answer dega. Bakwas app hai.",
           reasoning:
             "His need (Vastu guidance for a new shop) doesn't map to any of the three options. 'Career' is the closest but means something completely different to a 47-year-old shop owner. The narrow options signal that this app wasn't built for his use case, despite the ad's broad 'Sare jawab aapki kundali mein hai' promise.",
           frictionPoints: [
-            "Only 3 journey options — none match his need",
+            "Only 3 journey options, none match his need",
             "No Business, Property, Vastu, or Health option",
             "No free-text alternative",
             "Feels like the app is only for young people's relationship problems",
@@ -803,11 +803,11 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 6,
           clarityScore: 7,
           gutReaction:
-            "'Astrology koi guess nahi, ek science hai' — interesting. I've been meaning to get a proper Vedic reading ever since I moved to Dubai. Back home, Dadaji's pandit would do it every year. The scientific framing makes me feel less silly about trying an app.",
+            "'Astrology koi guess nahi, ek science hai', interesting. I've been meaning to get a proper Vedic reading ever since I moved to Dubai. Back home, Dadaji's pandit would do it every year. The scientific framing makes me feel less silly about trying an app.",
           reasoning:
             "NRI nostalgia for Vedic traditions combined with the 'scientific' framing that appeals to his tech background. Disconnected from family pandit due to distance.",
           frictionPoints: ["Mild skepticism about AI astrology"],
-          missing: "Nothing — curiosity is enough at ₹1",
+          missing: "Nothing, curiosity is enough at ₹1",
         },
         {
           screen: "S2",
@@ -815,7 +815,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 5,
           clarityScore: 6,
           gutReaction:
-            "Indian phone number required? I still have my Airtel number active — use it for all Indian apps. ₹1 is literally nothing. Let me try.",
+            "Indian phone number required? I still have my Airtel number active, use it for all Indian apps. ₹1 is literally nothing. Let me try.",
           reasoning:
             "Maintains an Indian number, so no technical barrier. Low price removes any hesitation.",
           frictionPoints: ["What if they only support Indian numbers?"],
@@ -827,7 +827,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 5,
           clarityScore: 7,
           gutReaction:
-            "OTP on Indian number — works fine over WhatsApp. Quick.",
+            "OTP on Indian number, works fine over WhatsApp. Quick.",
           reasoning: "No friction, OTP received on Indian number.",
           frictionPoints: [],
           missing: "Nothing",
@@ -872,7 +872,7 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 5,
           clarityScore: 7,
           gutReaction:
-            "Date of birth — 22nd November 1990. Scorpio season, as my wife keeps reminding me.",
+            "Date of birth, 22nd November 1990. Scorpio season, as my wife keeps reminding me.",
           reasoning: "Has birth date readily available. Moving through.",
           frictionPoints: [],
           missing: "Nothing",
@@ -883,11 +883,11 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 5,
           clarityScore: 5,
           gutReaction:
-            "Time of birth — I think it was morning? Let me check... I actually have a photo of my janm patri on my phone. 7:12 AM. Exact.",
+            "Time of birth, I think it was morning? Let me check... I actually have a photo of my janm patri on my phone. 7:12 AM. Exact.",
           reasoning:
             "NRIs often keep digital copies of birth documents. Has the data, enters it confidently.",
           frictionPoints: ["Had to search phone for exact time"],
-          missing: "Nothing — he found it",
+          missing: "Nothing, he found it",
         },
         {
           screen: "S9",
@@ -895,9 +895,9 @@ export const superastroFlowAnalysisData: FlowAnalysisData = {
           trustScore: 2,
           clarityScore: 2,
           gutReaction:
-            "Place of birth — let me search for Jamnagar. J-A-M... it's a dropdown? Not a search field? I can see Ahmedabad, Rajkot, Surat, Vadodara... but no Jamnagar. Jamnagar is a city with 6 lakh people! It has an Air Force base! How is it not in the list? I can't just pick 'Rajkot' — that's 200 km away, the chart would be completely wrong. The coordinates matter for an accurate kundli. This is useless.",
+            "Place of birth, let me search for Jamnagar. J-A-M... it's a dropdown? Not a search field? I can see Ahmedabad, Rajkot, Surat, Vadodara... but no Jamnagar. Jamnagar is a city with 6 lakh people! It has an Air Force base! How is it not in the list? I can't just pick 'Rajkot', that's 200 km away, the chart would be completely wrong. The coordinates matter for an accurate kundli. This is useless.",
           reasoning:
-            "The city picker has a limited dropdown of major cities. Jamnagar, despite being a significant city, isn't included. For Vedic astrology, birth location coordinates directly affect the chart — an incorrect city would produce an inaccurate kundli. As someone who understands astrology's dependence on precise birth data, he can't approximate.",
+            "The city picker has a limited dropdown of major cities. Jamnagar, despite being a significant city, isn't included. For Vedic astrology, birth location coordinates directly affect the chart, an incorrect city would produce an inaccurate kundli. As someone who understands astrology's dependence on precise birth data, he can't approximate.",
           frictionPoints: [
             "Dropdown instead of searchable text field",
             "Limited to major cities only",

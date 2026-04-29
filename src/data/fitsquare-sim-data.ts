@@ -9,7 +9,7 @@ import type { SimulationData } from "@/types/simulation";
 export const fitSquareSimData: SimulationData = {
   simulation_id: "fs-gym-sim-20260402-001",
   flow_id: "fitsquare_onboarding_v1",
-  flow_name: "Fit Square — Pay-Per-Session Gym Aggregator Onboarding",
+  flow_name: "Fit Square, Pay-Per-Session Gym Aggregator Onboarding",
   generated_at: "2026-04-02T14:00:00.000000+00:00",
 
   // ── Summary ─────────────────────────────────────────────────────────────────
@@ -60,7 +60,7 @@ export const fitSquareSimData: SimulationData = {
   top_friction_points: [
     {
       friction:
-        "₹1,599 minimum commitment for untested gym sessions — no way to try a single session first",
+        "₹1,599 minimum commitment for untested gym sessions, no way to try a single session first",
       frequency: 12,
     },
     {
@@ -70,12 +70,12 @@ export const fitSquareSimData: SimulationData = {
     },
     {
       friction:
-        "Phone number required before seeing gym inventory — users want to browse first",
+        "Phone number required before seeing gym inventory, users want to browse first",
       frequency: 7,
     },
     {
       friction:
-        "Unfamiliar per-session model — unclear if sessions expire or can be shared",
+        "Unfamiliar per-session model, unclear if sessions expire or can be shared",
       frequency: 6,
     },
     {
@@ -90,7 +90,7 @@ export const fitSquareSimData: SimulationData = {
     },
     {
       friction:
-        "No gym walkthrough photos or equipment lists on detail page — users unsure of gym quality",
+        "No gym walkthrough photos or equipment lists on detail page, users unsure of gym quality",
       frequency: 3,
     },
   ],
@@ -199,7 +199,7 @@ export const fitSquareSimData: SimulationData = {
 
   // ── Executive Summary ───────────────────────────────────────────────────────
   executive_summary:
-    "60% of users complete the Fit Square onboarding-to-payment flow, but there's a stark income divide: fitness enthusiasts and young professionals convert at 80-100%, while budget-conscious workers drop off at 80%. The ₹1,599 minimum 30-session pack is the single biggest barrier — users who've never tried per-session gym access won't commit ₹1,599 sight unseen. The phone number gate before showing gym inventory costs 8% of users who want to browse first, decide later.",
+    "60% of users complete the Fit Square onboarding-to-payment flow, but there's a stark income divide: fitness enthusiasts and young professionals convert at 80-100%, while budget-conscious workers drop off at 80%. The ₹1,599 minimum 30-session pack is the single biggest barrier, users who've never tried per-session gym access won't commit ₹1,599 sight unseen. The phone number gate before showing gym inventory costs 8% of users who want to browse first, decide later.",
 
   // ── Usability Findings ──────────────────────────────────────────────────────
   usability_findings: [
@@ -220,7 +220,7 @@ export const fitSquareSimData: SimulationData = {
       type: "trust_issue",
       screen: "phone_number",
       finding:
-        "Phone number gate before gym browsing creates trust barrier — users want to see inventory before registering",
+        "Phone number gate before gym browsing creates trust barrier, users want to see inventory before registering",
       evidence:
         "4 personas dropped off at phone_number (8%). Three explicitly stated they wanted to browse gyms before sharing personal information. Privacy-conscious Budget Workers and Mumbai Migrants over-indexed on this drop-off.",
       affected_segments: ["The Skeptic", "The Cautious Explorer"],
@@ -232,7 +232,7 @@ export const fitSquareSimData: SimulationData = {
       type: "friction_point",
       screen: "plan_selection",
       finding:
-        "No single-session trial option — users unfamiliar with per-session model won't commit to 30 sessions",
+        "No single-session trial option, users unfamiliar with per-session model won't commit to 30 sessions",
       evidence:
         "9 personas across segments mentioned wanting to try a single session before committing. Even some completers expressed hesitation and noted they would have preferred a trial.",
       affected_segments: [
@@ -264,7 +264,7 @@ export const fitSquareSimData: SimulationData = {
       type: "confusion",
       screen: "gym_detail",
       finding:
-        "Gym detail page lacks walkthrough photos, equipment lists, and crowd-time data — users unsure of quality",
+        "Gym detail page lacks walkthrough photos, equipment lists, and crowd-time data, users unsure of quality",
       evidence:
         "2 personas dropped off at gym_detail citing inability to assess gym quality. 5 additional completers noted they wished they could see equipment and peak-hour data.",
       affected_segments: ["The Enthusiast", "The Pragmatist"],
@@ -278,20 +278,20 @@ export const fitSquareSimData: SimulationData = {
     summary:
       "Clear income and familiarity divide: fitness-active users and young urban professionals (digital literacy 7+, income ₹40K+/mo) convert at 80-100%, while budget-conscious workers (income ₹15-25K/mo) and city migrants unfamiliar with local gyms convert at 20-40%. The per-session model resonates strongly with existing gym-goers but confuses first-timers.",
     high_propensity_segment:
-      "Fitness Enthusiasts and Young Bangalore Natives — already active, familiar with local gyms, understand the per-session value proposition. Digital literacy 7+, income ₹40K+/mo. 100% and 80% conversion respectively.",
+      "Fitness Enthusiasts and Young Bangalore Natives, already active, familiar with local gyms, understand the per-session value proposition. Digital literacy 7+, income ₹40K+/mo. 100% and 80% conversion respectively.",
     low_propensity_segment:
-      "Budget-Conscious Workers — ₹1,599 represents 5-10% of monthly income with no way to test the service first. Phone number requirement before browsing creates trust barrier. Only 20% conversion rate.",
+      "Budget-Conscious Workers, ₹1,599 represents 5-10% of monthly income with no way to test the service first. Phone number requirement before browsing creates trust barrier. Only 20% conversion rate.",
   },
 
   // ── Flow Assessment ─────────────────────────────────────────────────────────
   flow_assessment: {
     overall_verdict:
-      "The ₹1,599 minimum commitment kills conversion for price-sensitive segments. Users who already go to gyms love the per-session flexibility, but new-to-gym users see ₹1,599 as a gamble on an unfamiliar model. The flow's biggest structural flaw is gating gym browsing behind phone registration — the product's strongest selling point (nearby gym inventory) is hidden until after users have committed personal data.",
+      "The ₹1,599 minimum commitment kills conversion for price-sensitive segments. Users who already go to gyms love the per-session flexibility, but new-to-gym users see ₹1,599 as a gamble on an unfamiliar model. The flow's biggest structural flaw is gating gym browsing behind phone registration, the product's strongest selling point (nearby gym inventory) is hidden until after users have committed personal data.",
     what_works: [
       {
         element: "Onboarding carousel (screens 1-3)",
         why: "Clean visual explanation of the per-session model builds understanding quickly",
-        for_whom: "All segments — even drop-offs rated onboarding screens 7+ on clarity",
+        for_whom: "All segments, even drop-offs rated onboarding screens 7+ on clarity",
       },
       {
         element: "Gym browse and detail screens",
@@ -300,14 +300,14 @@ export const fitSquareSimData: SimulationData = {
       },
       {
         element: "Per-session pricing concept",
-        why: "Fitness enthusiasts immediately grasp the value — pay only when you go, no wasted monthly fees",
+        why: "Fitness enthusiasts immediately grasp the value, pay only when you go, no wasted monthly fees",
         for_whom: "Fitness Enthusiasts, Young Bangalore/Mumbai Natives",
       },
     ],
     what_needs_fixing: [
       {
         element: "Plan selection minimum commitment",
-        problem: "₹1,599 for 30 sessions is the only entry point — no trial or smaller pack",
+        problem: "₹1,599 for 30 sessions is the only entry point, no trial or smaller pack",
         for_whom: "Budget-Conscious Workers, Mumbai Migrants, first-time gym users",
         fix: "Add a 10-session starter pack at ₹499 and a free first-session trial",
         priority: "P0",
@@ -330,9 +330,9 @@ export const fitSquareSimData: SimulationData = {
     usability_score: 6,
     emotional_journey_map: {
       completers:
-        "Curious (onboarding) → Mildly annoyed (phone gate) → Reassured (OTP works smoothly) → Neutral (profile) → Slightly wary (permissions) → Excited (gym browse — 'oh there's one near me!') → Interested (gym detail) → Hesitant (plan pricing) → Resolved (checkout — 'let me try this out') → Hopeful (payment complete)",
+        "Curious (onboarding) → Mildly annoyed (phone gate) → Reassured (OTP works smoothly) → Neutral (profile) → Slightly wary (permissions) → Excited (gym browse, 'oh there's one near me!') → Interested (gym detail) → Hesitant (plan pricing) → Resolved (checkout, 'let me try this out') → Hopeful (payment complete)",
       drop_offs:
-        "Curious (onboarding) → Suspicious (phone gate — 'why do they need this?') → [EXIT] OR Interested (gym browse) → Disappointed (no good gyms nearby) → [EXIT] OR Hopeful (gym detail) → Shocked (plan pricing — '₹1,599?!') → Frustrated ('no smaller pack?') → [EXIT]",
+        "Curious (onboarding) → Suspicious (phone gate, 'why do they need this?') → [EXIT] OR Interested (gym browse) → Disappointed (no good gyms nearby) → [EXIT] OR Hopeful (gym detail) → Shocked (plan pricing, '₹1,599?!') → Frustrated ('no smaller pack?') → [EXIT]",
     },
   },
 
@@ -353,10 +353,10 @@ export const fitSquareSimData: SimulationData = {
           },
           {
             cluster_id: 2,
-            label: "Per-session model unfamiliar — want monthly subscription option",
+            label: "Per-session model unfamiliar, want monthly subscription option",
             persona_count: 2,
             representative_reasoning:
-              "I don't understand this per-session thing. Every gym I know charges monthly. Why can't I just pay ₹800/month like my old gym? 30 sessions sounds complicated — do they expire? Can I share with my wife?",
+              "I don't understand this per-session thing. Every gym I know charges monthly. Why can't I just pay ₹800/month like my old gym? 30 sessions sounds complicated, do they expire? Can I share with my wife?",
           },
         ],
       },
@@ -492,7 +492,7 @@ export const fitSquareSimData: SimulationData = {
       completion_pct: 60,
       top_drop_off_screen: "checkout_basic",
       top_drop_off_reason:
-        "Per-session model unfamiliar — want monthly subscription option",
+        "Per-session model unfamiliar, want monthly subscription option",
     },
     {
       segment: "Young Bangalore Native",
@@ -688,7 +688,7 @@ export const fitSquareSimData: SimulationData = {
         internal_monologue:
           "₹1,599 for 30 sessions? That's more than my weekly grocery budget. I earn ₹18,000 a month and I was hoping this would be cheaper than a regular gym. My friend said 'pay per session' so I thought maybe ₹50-100 per visit, walk in when I want. But ₹1,599 upfront for a pack? I'll just continue doing push-ups at the park near Jayanagar 4th Block.",
         reasoning:
-          "Minimum commitment of ₹1,599 is 8.9% of monthly income — unacceptable for an untested service",
+          "Minimum commitment of ₹1,599 is 8.9% of monthly income, unacceptable for an untested service",
         emotional_state: "frustrated",
         trust_score: 4,
         clarity_score: 5,
@@ -699,7 +699,7 @@ export const fitSquareSimData: SimulationData = {
         persona_label: "35yo Government Clerk, Thane, Mumbai",
         behavioral_archetype: "The Pragmatist",
         internal_monologue:
-          "I was interested in the concept — pay only when you go, no wasted monthly fees. But ₹1,599 for the cheapest pack? My gym near Thane station charges ₹700/month. Yes it's basic, but I know the trainer and I go 4 times a week. This per-session thing works out to ₹53 per session but I need to commit to 30 sessions upfront. What if I only go 15 times? Then it's ₹107 per session — worse than my current gym.",
+          "I was interested in the concept, pay only when you go, no wasted monthly fees. But ₹1,599 for the cheapest pack? My gym near Thane station charges ₹700/month. Yes it's basic, but I know the trainer and I go 4 times a week. This per-session thing works out to ₹53 per session but I need to commit to 30 sessions upfront. What if I only go 15 times? Then it's ₹107 per session, worse than my current gym.",
         reasoning:
           "Unfamiliar pricing model with unclear value compared to existing monthly gym membership",
         emotional_state: "skeptical",
@@ -714,7 +714,7 @@ export const fitSquareSimData: SimulationData = {
         internal_monologue:
           "₹1,599? Bro, I deliver food for Swiggy and my daily earning is ₹600-800. I can't spend two days of earnings on gym sessions. I thought this was a cheap pay-as-you-go thing. The gym they're showing near Electronic City looked decent but this price is for rich IT people, not for me.",
         reasoning:
-          "Price point completely mismatched with income level — ₹1,599 represents 2+ days of earnings",
+          "Price point completely mismatched with income level, ₹1,599 represents 2+ days of earnings",
         emotional_state: "disappointed",
         trust_score: 5,
         clarity_score: 6,
@@ -725,9 +725,9 @@ export const fitSquareSimData: SimulationData = {
         persona_label: "26yo Content Writer, HSR Layout, Bangalore",
         behavioral_archetype: "The Pragmatist",
         internal_monologue:
-          "I like the idea and the gym near HSR Layout BDA Complex looks clean. But I'm not sure about committing to 30 sessions. I've downloaded 3 fitness apps before and used each for about 2 weeks. ₹1,599 is not a lot for me but I know myself — I might use 10 sessions and waste the rest. Wish there was a 10-session trial pack.",
+          "I like the idea and the gym near HSR Layout BDA Complex looks clean. But I'm not sure about committing to 30 sessions. I've downloaded 3 fitness apps before and used each for about 2 weeks. ₹1,599 is not a lot for me but I know myself, I might use 10 sessions and waste the rest. Wish there was a 10-session trial pack.",
         reasoning:
-          "Self-aware about fitness commitment patterns — minimum 30-session pack feels too large for trial",
+          "Self-aware about fitness commitment patterns, minimum 30-session pack feels too large for trial",
         emotional_state: "hesitant",
         trust_score: 6,
         clarity_score: 5,
@@ -742,7 +742,7 @@ export const fitSquareSimData: SimulationData = {
         internal_monologue:
           "Why does a gym app need my phone number before I can even see which gyms are there? I installed this because someone at work said there's a gym near Bommanahalli for cheap. But now they want my number first? Last time I gave my number to an app, I got calls from insurance agents for 3 months. Just show me the gyms and I'll register if I find something good.",
         reasoning:
-          "Past negative experience with phone number sharing — wants to validate value before providing personal data",
+          "Past negative experience with phone number sharing, wants to validate value before providing personal data",
         emotional_state: "suspicious",
         trust_score: 3,
         clarity_score: 6,
@@ -755,7 +755,7 @@ export const fitSquareSimData: SimulationData = {
         internal_monologue:
           "I don't give my number to apps. My friend showed me this app and it looked nice but I only have one phone and one number. If they start sending SMS and calls, I can't block them easily. I'll ask my friend to show me the gyms on his phone first.",
         reasoning:
-          "Single phone number — protective of it, low trust in app-based services",
+          "Single phone number, protective of it, low trust in app-based services",
         emotional_state: "wary",
         trust_score: 2,
         clarity_score: 7,
@@ -766,9 +766,9 @@ export const fitSquareSimData: SimulationData = {
         persona_label: "32yo Logistics Coordinator, Andheri East, Mumbai",
         behavioral_archetype: "The Cautious Explorer",
         internal_monologue:
-          "I'm new to Mumbai — moved from Lucknow 8 months ago. I was hoping to see if there's a decent gym near my office in Andheri East. But they want my phone number before showing me anything? I'm already getting 20 spam calls a day on my new Mumbai number. Let me check Google Maps for gyms near me instead.",
+          "I'm new to Mumbai, moved from Lucknow 8 months ago. I was hoping to see if there's a decent gym near my office in Andheri East. But they want my phone number before showing me anything? I'm already getting 20 spam calls a day on my new Mumbai number. Let me check Google Maps for gyms near me instead.",
         reasoning:
-          "Recent city migrant already overwhelmed with spam — phone gate is the last straw",
+          "Recent city migrant already overwhelmed with spam, phone gate is the last straw",
         emotional_state: "annoyed",
         trust_score: 3,
         clarity_score: 7,
@@ -779,7 +779,7 @@ export const fitSquareSimData: SimulationData = {
         persona_label: "24yo College Student, Koramangala, Bangalore",
         behavioral_archetype: "The Pragmatist",
         internal_monologue:
-          "I saw this on Instagram reels — 'pay per session gym in Bangalore'. Cool concept. But I just want to check if there's something near my PG in Koramangala 6th Block. Why do I need to register before browsing? Even Zomato lets me see restaurants without logging in. I'll come back when I actually want to go to the gym.",
+          "I saw this on Instagram reels, 'pay per session gym in Bangalore'. Cool concept. But I just want to check if there's something near my PG in Koramangala 6th Block. Why do I need to register before browsing? Even Zomato lets me see restaurants without logging in. I'll come back when I actually want to go to the gym.",
         reasoning:
           "Compares UX to well-known apps that allow browsing without registration",
         emotional_state: "mildly frustrated",
@@ -794,9 +794,9 @@ export const fitSquareSimData: SimulationData = {
         persona_label: "28yo HR Executive, Yelahanka, Bangalore",
         behavioral_archetype: "The Cautious Explorer",
         internal_monologue:
-          "I went through the whole registration process and now I see the gym list. The nearest one is 4.2 km away in Sahakara Nagar. That's a 20-minute auto ride — ₹80 each way. So my 'per-session' cost is actually ₹53 + ₹160 transport = ₹213. For that I might as well join the small gym in my apartment complex. This app is useless for Yelahanka.",
+          "I went through the whole registration process and now I see the gym list. The nearest one is 4.2 km away in Sahakara Nagar. That's a 20-minute auto ride, ₹80 each way. So my 'per-session' cost is actually ₹53 + ₹160 transport = ₹213. For that I might as well join the small gym in my apartment complex. This app is useless for Yelahanka.",
         reasoning:
-          "No gyms within acceptable distance — total cost including transport defeats the value proposition",
+          "No gyms within acceptable distance, total cost including transport defeats the value proposition",
         emotional_state: "disappointed",
         trust_score: 5,
         clarity_score: 7,
@@ -807,7 +807,7 @@ export const fitSquareSimData: SimulationData = {
         persona_label: "26yo BPO Associate, Malad, Mumbai",
         behavioral_archetype: "The Cautious Explorer",
         internal_monologue:
-          "The gyms showing up near Malad are all small places I've seen from outside — Muscle Factory, Fitness Zone. They look like they have 2 treadmills and some dumbbells. I was expecting this to list gyms like Cult Fit or Anytime Fitness. For ₹53 per session I want air conditioning at least. These look like ₹500/month gyms charging premium through an app.",
+          "The gyms showing up near Malad are all small places I've seen from outside, Muscle Factory, Fitness Zone. They look like they have 2 treadmills and some dumbbells. I was expecting this to list gyms like Cult Fit or Anytime Fitness. For ₹53 per session I want air conditioning at least. These look like ₹500/month gyms charging premium through an app.",
         reasoning:
           "Gym quality on platform doesn't match expectation set by app's premium branding",
         emotional_state: "underwhelmed",
@@ -820,9 +820,9 @@ export const fitSquareSimData: SimulationData = {
         persona_label: "34yo Accountant, Hebbal, Bangalore",
         behavioral_archetype: "The Cautious Explorer",
         internal_monologue:
-          "Only 3 gyms showing in Hebbal area and two of them have 3.2 star ratings. The one decent-looking gym is near Manyata Tech Park — opposite direction from my home. I'd need a specific gym near Kempapura main road. Maybe this app hasn't launched properly in North Bangalore yet. I'll check back in a few months.",
+          "Only 3 gyms showing in Hebbal area and two of them have 3.2 star ratings. The one decent-looking gym is near Manyata Tech Park, opposite direction from my home. I'd need a specific gym near Kempapura main road. Maybe this app hasn't launched properly in North Bangalore yet. I'll check back in a few months.",
         reasoning:
-          "Insufficient gym coverage in user's specific locality — low confidence in platform maturity",
+          "Insufficient gym coverage in user's specific locality, low confidence in platform maturity",
         emotional_state: "unimpressed",
         trust_score: 4,
         clarity_score: 7,
@@ -835,9 +835,9 @@ export const fitSquareSimData: SimulationData = {
         persona_label: "25yo Marketing Executive, Bandra West, Mumbai",
         behavioral_archetype: "The Cautious Explorer",
         internal_monologue:
-          "I clicked on this gym near Bandra station. The photos look okay but there's no information about women's batches, trainer qualifications, or peak hours. As a woman, I need to know if this place is safe and comfortable at the time I'd go — 7 PM after work. I'm not walking into an unknown gym based on 3 photos and a 4.1 rating.",
+          "I clicked on this gym near Bandra station. The photos look okay but there's no information about women's batches, trainer qualifications, or peak hours. As a woman, I need to know if this place is safe and comfortable at the time I'd go, 7 PM after work. I'm not walking into an unknown gym based on 3 photos and a 4.1 rating.",
         reasoning:
-          "Insufficient safety/comfort information for female user — gym detail page lacks critical trust signals",
+          "Insufficient safety/comfort information for female user, gym detail page lacks critical trust signals",
         emotional_state: "cautious",
         trust_score: 4,
         clarity_score: 5,
@@ -848,7 +848,7 @@ export const fitSquareSimData: SimulationData = {
         persona_label: "38yo Operations Manager, Whitefield, Bangalore",
         behavioral_archetype: "The Pragmatist",
         internal_monologue:
-          "The gym in ITPL Road looks like a decent mid-range place. But ₹53 per session for this? I can see from the photos it's not a premium gym — no swimming pool, no sauna, basic equipment. At my age I need proper machines for my knee rehab exercises. The trainer shown is some 22-year-old kid. I need a physiotherapy-trained trainer. This isn't for someone like me.",
+          "The gym in ITPL Road looks like a decent mid-range place. But ₹53 per session for this? I can see from the photos it's not a premium gym, no swimming pool, no sauna, basic equipment. At my age I need proper machines for my knee rehab exercises. The trainer shown is some 22-year-old kid. I need a physiotherapy-trained trainer. This isn't for someone like me.",
         reasoning:
           "Gym quality and trainer credentials insufficient for specific health/age requirements",
         emotional_state: "dismissive",
@@ -866,7 +866,7 @@ export const fitSquareSimData: SimulationData = {
         "₹1,599 minimum 30-session commitment is prohibitive for first-time and budget users",
       screen: "plan_selection",
       recommendation:
-        "Add a free single-session trial (₹0 first visit) — lets users try before committing to any pack",
+        "Add a free single-session trial (₹0 first visit), lets users try before committing to any pack",
       estimated_impact: "high",
       feasibility: "high",
       impact_feasibility_score: 9,
@@ -876,10 +876,10 @@ export const fitSquareSimData: SimulationData = {
     },
     {
       root_cause:
-        "Phone number gate blocks users from seeing gym inventory — value prop hidden behind registration",
+        "Phone number gate blocks users from seeing gym inventory, value prop hidden behind registration",
       screen: "phone_number",
       recommendation:
-        "Let users browse gyms before phone registration — move phone gate after gym_browse screen",
+        "Let users browse gyms before phone registration, move phone gate after gym_browse screen",
       estimated_impact: "high",
       feasibility: "high",
       impact_feasibility_score: 8,
@@ -892,7 +892,7 @@ export const fitSquareSimData: SimulationData = {
         "No entry-level pricing option for users who want to test the service",
       screen: "plan_selection",
       recommendation:
-        "Introduce a 10-session starter pack at ₹499 (₹50/session) — lower commitment entry point",
+        "Introduce a 10-session starter pack at ₹499 (₹50/session), lower commitment entry point",
       estimated_impact: "high",
       feasibility: "medium",
       impact_feasibility_score: 7,
@@ -915,7 +915,7 @@ export const fitSquareSimData: SimulationData = {
     },
     {
       root_cause:
-        "Gym detail page lacks walkthrough content — users can't assess quality before commitment",
+        "Gym detail page lacks walkthrough content, users can't assess quality before commitment",
       screen: "gym_detail",
       recommendation:
         "Show gym walkthrough videos, equipment inventory, and real-time crowd data on detail page",
@@ -957,7 +957,7 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 2499,
       total_time_seconds: 82,
       overall_monologue:
-        "This is perfect for me. I know the gym near Koramangala 5th Block — I've walked past it many times. ₹83 per session for a premium pack means I get access to better equipment. I hate being locked into monthly gym memberships because I travel home to Mysore some weekends.",
+        "This is perfect for me. I know the gym near Koramangala 5th Block, I've walked past it many times. ₹83 per session for a premium pack means I get access to better equipment. I hate being locked into monthly gym memberships because I travel home to Mysore some weekends.",
       screen_monologues: [
         {
           screen_id: "onboarding_1",
@@ -975,7 +975,7 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "onboarding_2",
           view_name: "How It Works",
-          internal_monologue: "Browse gyms, pick a session, pay — simple enough. Like Zomato for gyms.",
+          internal_monologue: "Browse gyms, pick a session, pay, simple enough. Like Zomato for gyms.",
           reasoning: "Familiar UX pattern from food delivery apps",
           emotional_state: "comfortable",
           friction_points: [],
@@ -988,7 +988,7 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "onboarding_3",
           view_name: "Benefits",
-          internal_monologue: "No commitment, flexible schedule — ya this is built for people like me.",
+          internal_monologue: "No commitment, flexible schedule, ya this is built for people like me.",
           reasoning: "Benefits align perfectly with freelance-style work schedule",
           emotional_state: "excited",
           friction_points: [],
@@ -1027,7 +1027,7 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "create_profile",
           view_name: "Create Profile",
-          internal_monologue: "Name, email, fitness goal — that's reasonable. Not too many fields.",
+          internal_monologue: "Name, email, fitness goal, that's reasonable. Not too many fields.",
           reasoning: "Profile creation is lightweight",
           emotional_state: "neutral",
           friction_points: [],
@@ -1067,7 +1067,7 @@ export const fitSquareSimData: SimulationData = {
           screen_id: "gym_browse",
           view_name: "Browse Gyms",
           internal_monologue: "Oh nice, FitZone Koramangala is listed! That's the one near my office. 800 meters away. 4.3 stars. Let me check it out.",
-          reasoning: "Recognized a gym from daily commute — instant trust boost",
+          reasoning: "Recognized a gym from daily commute, instant trust boost",
           emotional_state: "excited",
           friction_points: [],
           decision_outcome: "CONTINUE",
@@ -1092,7 +1092,7 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
-          internal_monologue: "Basic at ₹1,599 (₹53/session), Premium at ₹2,499 (₹83/session), Elite at ₹3,999 (₹133/session). Premium gets me access to better equipment and peak hours. I'll go Premium — I can afford it.",
+          internal_monologue: "Basic at ₹1,599 (₹53/session), Premium at ₹2,499 (₹83/session), Elite at ₹3,999 (₹133/session). Premium gets me access to better equipment and peak hours. I'll go Premium, I can afford it.",
           reasoning: "Income supports Premium tier; values better equipment access",
           emotional_state: "deliberating",
           friction_points: [],
@@ -1107,7 +1107,7 @@ export const fitSquareSimData: SimulationData = {
           screen_id: "checkout_premium",
           view_name: "Checkout Premium",
           internal_monologue: "₹2,499 payment via UPI. That's less than one fancy dinner in Koramangala. Done.",
-          reasoning: "Price anchored against social spending — feels affordable",
+          reasoning: "Price anchored against social spending, feels affordable",
           emotional_state: "resolved",
           friction_points: [],
           decision_outcome: "CONTINUE",
@@ -1144,7 +1144,7 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "onboarding_1",
           view_name: "Welcome",
-          internal_monologue: "Pay per session — interesting. I hate paying monthly and going twice.",
+          internal_monologue: "Pay per session, interesting. I hate paying monthly and going twice.",
           reasoning: "Resonates with irregular workout pattern",
           emotional_state: "curious",
           friction_points: [],
@@ -1155,7 +1155,7 @@ export const fitSquareSimData: SimulationData = {
           screen_id: "plan_selection",
           view_name: "Select Plan",
           internal_monologue: "Basic at ₹1,599 is fair. I'll start there and upgrade if I like it.",
-          reasoning: "Conservative entry — wants to validate before upgrading",
+          reasoning: "Conservative entry, wants to validate before upgrading",
           emotional_state: "pragmatic",
           friction_points: ["Wish there was a smaller trial pack"],
           decision_outcome: "CONTINUE",
@@ -1241,7 +1241,7 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 3999,
       total_time_seconds: 78,
       overall_monologue:
-        "I went Elite because the gym near JP Nagar in the Elite tier has a swimming pool and sauna. ₹133 per session for a premium gym with all facilities — that's a steal compared to those ₹5,000/month premium gyms.",
+        "I went Elite because the gym near JP Nagar in the Elite tier has a swimming pool and sauna. ₹133 per session for a premium gym with all facilities, that's a steal compared to those ₹5,000/month premium gyms.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
@@ -1326,7 +1326,7 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 1599,
       total_time_seconds: 92,
       overall_monologue:
-        "The gym near Andheri station is 700m from my office. ₹53 per session for Basic — I can go during lunch break. Better than paying ₹1,200/month for a gym I'd visit 8 times. This way I only pay for what I use.",
+        "The gym near Andheri station is 700m from my office. ₹53 per session for Basic, I can go during lunch break. Better than paying ₹1,200/month for a gym I'd visit 8 times. This way I only pay for what I use.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
@@ -1377,7 +1377,7 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
-          internal_monologue: "Premium at ₹2,499 — I want peak hour access since I go after work at 7 PM.",
+          internal_monologue: "Premium at ₹2,499, I want peak hour access since I go after work at 7 PM.",
           reasoning: "Peak-hour access is must-have for post-work schedule",
           emotional_state: "decisive",
           friction_points: [],
@@ -1418,7 +1418,7 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 38,
       overall_monologue:
-        "The concept sounded good but after entering my phone number and OTP, the profile form asked for too much — email, fitness goals, weight, height. I just wanted to browse. I'll check Google Maps for gyms near Goregaon instead.",
+        "The concept sounded good but after entering my phone number and OTP, the profile form asked for too much, email, fitness goals, weight, height. I just wanted to browse. I'll check Google Maps for gyms near Goregaon instead.",
       screen_monologues: [
         {
           screen_id: "create_profile",
@@ -1469,7 +1469,7 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "checkout_basic",
           view_name: "Checkout Basic",
-          internal_monologue: "Let's try this. ₹1,599 — not a big deal if it doesn't work out.",
+          internal_monologue: "Let's try this. ₹1,599, not a big deal if it doesn't work out.",
           reasoning: "Acceptable risk at income level",
           emotional_state: "willing",
           friction_points: [],
@@ -1499,12 +1499,12 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 55,
       overall_monologue:
-        "I went through the registration and profile. But when I saw the gym list near Dadar/Parel — the nearest decent one is 2.8 km away in Lower Parel. The ones near me are tiny neighborhood places with old equipment. Not worth the effort for ₹53/session when I can just do free workout videos at home.",
+        "I went through the registration and profile. But when I saw the gym list near Dadar/Parel, the nearest decent one is 2.8 km away in Lower Parel. The ones near me are tiny neighborhood places with old equipment. Not worth the effort for ₹53/session when I can just do free workout videos at home.",
       screen_monologues: [
         {
           screen_id: "gym_browse",
           view_name: "Browse Gyms",
-          internal_monologue: "The gyms near Dadar/Parel are small 500-sqft places. I want something with proper equipment and mirrors, not someone's garage converted into a gym. The one good gym is in Lower Parel — too far from my shop.",
+          internal_monologue: "The gyms near Dadar/Parel are small 500-sqft places. I want something with proper equipment and mirrors, not someone's garage converted into a gym. The one good gym is in Lower Parel, too far from my shop.",
           reasoning: "Available gyms don't meet quality expectations in user's locality",
           emotional_state: "disappointed",
           friction_points: ["No quality gyms nearby", "Gym quality gap between app branding and reality"],
@@ -1538,13 +1538,13 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 1599,
       total_time_seconds: 110,
       overall_monologue:
-        "I was cautious but the gym near Manyata Tech Park in Thanisandra looked okay. ₹53/session is cheaper than my old Gold's Gym membership in Hyderabad. I went Basic to test it out — if the gym is good, I'll upgrade to Premium next month.",
+        "I was cautious but the gym near Manyata Tech Park in Thanisandra looked okay. ₹53/session is cheaper than my old Gold's Gym membership in Hyderabad. I went Basic to test it out, if the gym is good, I'll upgrade to Premium next month.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
           internal_monologue: "₹1,599 for 30 sessions. Not bad. Let me start with Basic and see the gym quality first.",
-          reasoning: "Conservative approach — test before committing more",
+          reasoning: "Conservative approach, test before committing more",
           emotional_state: "cautious",
           friction_points: ["Wish I could try one session first"],
           decision_outcome: "CONTINUE",
@@ -1554,7 +1554,7 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "checkout_basic",
           view_name: "Checkout Basic",
-          internal_monologue: "₹1,599 — let's give it a shot. If it's bad, lesson learned.",
+          internal_monologue: "₹1,599, let's give it a shot. If it's bad, lesson learned.",
           reasoning: "Willing to take a small financial risk",
           emotional_state: "hopeful",
           friction_points: [],
@@ -1584,12 +1584,12 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 2499,
       total_time_seconds: 95,
       overall_monologue:
-        "Premium tier gives me access to the gym near HSR Layout BDA Complex — I drive past it daily. ₹83/session is nothing compared to my gym back in Chennai which was ₹3,500/month. Per-session model is smarter for my unpredictable PM schedule.",
+        "Premium tier gives me access to the gym near HSR Layout BDA Complex, I drive past it daily. ₹83/session is nothing compared to my gym back in Chennai which was ₹3,500/month. Per-session model is smarter for my unpredictable PM schedule.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
-          internal_monologue: "Premium at ₹2,499 — I want peak hours and better equipment. My schedule is unpredictable so per-session is perfect.",
+          internal_monologue: "Premium at ₹2,499, I want peak hours and better equipment. My schedule is unpredictable so per-session is perfect.",
           reasoning: "Premium aligns with lifestyle and schedule needs",
           emotional_state: "decided",
           friction_points: [],
@@ -1600,7 +1600,7 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "checkout_premium",
           view_name: "Checkout Premium",
-          internal_monologue: "₹2,499 — my wife will approve. She's been asking me to exercise after my cholesterol report.",
+          internal_monologue: "₹2,499, my wife will approve. She's been asking me to exercise after my cholesterol report.",
           reasoning: "Health motivation + spousal support",
           emotional_state: "motivated",
           friction_points: [],
@@ -1630,7 +1630,7 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 1599,
       total_time_seconds: 108,
       overall_monologue:
-        "I've been wanting to join a gym since I moved to Bangalore but didn't want to commit monthly in case I relocate. This per-session model is perfect for someone on a transferable job. The gym near Hebbal Outer Ring Road has a women's section — that was the deciding factor.",
+        "I've been wanting to join a gym since I moved to Bangalore but didn't want to commit monthly in case I relocate. This per-session model is perfect for someone on a transferable job. The gym near Hebbal Outer Ring Road has a women's section, that was the deciding factor.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
@@ -1646,7 +1646,7 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "checkout_basic",
           view_name: "Checkout Basic",
-          internal_monologue: "₹1,599 — I'll pay via PhonePe. Time to stop procrastinating on fitness.",
+          internal_monologue: "₹1,599, I'll pay via PhonePe. Time to stop procrastinating on fitness.",
           reasoning: "Self-motivation overcoming hesitation",
           emotional_state: "determined",
           friction_points: [],
@@ -1676,13 +1676,13 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 42,
       overall_monologue:
-        "I was going along fine until it asked for location permission right after I just gave them my phone number and profile. Too many permissions in a row. I already have a gym in my apartment complex — this would need to be really compelling for me to share my location with yet another app. I'll think about it.",
+        "I was going along fine until it asked for location permission right after I just gave them my phone number and profile. Too many permissions in a row. I already have a gym in my apartment complex, this would need to be really compelling for me to share my location with yet another app. I'll think about it.",
       screen_monologues: [
         {
           screen_id: "location_permission",
           view_name: "Location Permission",
           internal_monologue: "First phone number, then profile, now location? How many permissions does this app need? I already have a gym in my apartment. If I'm going to switch, I need to know it's worth it before giving away my location data.",
-          reasoning: "Permission fatigue — too many data collection steps in succession",
+          reasoning: "Permission fatigue, too many data collection steps in succession",
           emotional_state: "frustrated",
           friction_points: ["Third permission request in sequence", "No value demonstrated yet"],
           decision_outcome: "DROP_OFF",
@@ -1711,7 +1711,7 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 58,
       overall_monologue:
-        "I went through the whole registration process and now I see the gym list. The nearest one is 4.2 km away in Sahakara Nagar. That's a 20-minute auto ride — ₹80 each way. So my 'per-session' cost is actually ₹53 + ₹160 transport = ₹213. For that I might as well join the small gym in my apartment complex. This app is useless for Yelahanka.",
+        "I went through the whole registration process and now I see the gym list. The nearest one is 4.2 km away in Sahakara Nagar. That's a 20-minute auto ride, ₹80 each way. So my 'per-session' cost is actually ₹53 + ₹160 transport = ₹213. For that I might as well join the small gym in my apartment complex. This app is useless for Yelahanka.",
       screen_monologues: [
         {
           screen_id: "gym_browse",
@@ -1750,7 +1750,7 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 2499,
       total_time_seconds: 100,
       overall_monologue:
-        "I've been looking for a gym near Powai since I moved. The gym on Hiranandani Powai road looks decent — 4.2 stars. Premium pack at ₹83/session is better than the ₹4,000/month gyms in Powai. Per-session is smart because I travel to Delhi every other weekend.",
+        "I've been looking for a gym near Powai since I moved. The gym on Hiranandani Powai road looks decent, 4.2 stars. Premium pack at ₹83/session is better than the ₹4,000/month gyms in Powai. Per-session is smart because I travel to Delhi every other weekend.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
@@ -1796,13 +1796,13 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 1599,
       total_time_seconds: 112,
       overall_monologue:
-        "There's a gym near Thane station that I've walked past. Basic pack at ₹53/session — not bad for a trial. My wife might also want to try this. I went Basic because I want to validate the gym quality first.",
+        "There's a gym near Thane station that I've walked past. Basic pack at ₹53/session, not bad for a trial. My wife might also want to try this. I went Basic because I want to validate the gym quality first.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
           internal_monologue: "Basic at ₹1,599. Let me test this before committing more. If it's good, my wife might join too.",
-          reasoning: "Cautious entry — validating for potential family usage",
+          reasoning: "Cautious entry, validating for potential family usage",
           emotional_state: "cautious",
           friction_points: ["Do sessions expire?"],
           decision_outcome: "CONTINUE",
@@ -1877,7 +1877,7 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 60,
       overall_monologue:
-        "Only 3 gyms showing in Hebbal area and two of them have 3.2 star ratings. The one decent-looking gym is near Manyata Tech Park — opposite direction from my home. I'd need a specific gym near Kempapura main road. Maybe this app hasn't launched properly in North Bangalore yet. I'll check back in a few months.",
+        "Only 3 gyms showing in Hebbal area and two of them have 3.2 star ratings. The one decent-looking gym is near Manyata Tech Park, opposite direction from my home. I'd need a specific gym near Kempapura main road. Maybe this app hasn't launched properly in North Bangalore yet. I'll check back in a few months.",
       screen_monologues: [
         {
           screen_id: "gym_browse",
@@ -1918,7 +1918,7 @@ export const fitSquareSimData: SimulationData = {
           screen_id: "phone_number",
           view_name: "Phone Registration",
           internal_monologue: "Why do they need my phone number before I can even see which gyms are near me? I just want to check if there's anything decent near Andheri East. Every app asks for OTP and then the spam starts.",
-          reasoning: "Recent city migrant overwhelmed with spam — phone gate is the last straw",
+          reasoning: "Recent city migrant overwhelmed with spam, phone gate is the last straw",
           emotional_state: "annoyed",
           friction_points: ["Phone required before browsing", "Spam concern from past experience"],
           decision_outcome: "DROP_OFF",
@@ -1951,12 +1951,12 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 3999,
       total_time_seconds: 65,
       overall_monologue:
-        "This is brilliant. As a trainer, I work at different gyms across South Bangalore. Elite pack gives me access to premium gyms — I can train clients at different locations. ₹133/session for premium gym access is a steal. I'm probably the ideal user for this app.",
+        "This is brilliant. As a trainer, I work at different gyms across South Bangalore. Elite pack gives me access to premium gyms, I can train clients at different locations. ₹133/session for premium gym access is a steal. I'm probably the ideal user for this app.",
       screen_monologues: [
         {
           screen_id: "onboarding_1",
           view_name: "Welcome",
-          internal_monologue: "Pay per session gym access — finally! This is exactly what I've been wanting. I work at 3 different gyms across the week.",
+          internal_monologue: "Pay per session gym access, finally! This is exactly what I've been wanting. I work at 3 different gyms across the week.",
           reasoning: "Product perfectly matches professional need",
           emotional_state: "excited",
           friction_points: [],
@@ -1976,7 +1976,7 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "onboarding_3",
           view_name: "Benefits",
-          internal_monologue: "No monthly lock-in, flexible timing — speaks my language.",
+          internal_monologue: "No monthly lock-in, flexible timing, speaks my language.",
           reasoning: "Benefits match professional lifestyle perfectly",
           emotional_state: "enthusiastic",
           friction_points: [],
@@ -2016,7 +2016,7 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "location_permission",
           view_name: "Location Permission",
-          internal_monologue: "Location for nearby gyms — obvious. Allowed.",
+          internal_monologue: "Location for nearby gyms, obvious. Allowed.",
           reasoning: "Clear utility for a location-based service",
           emotional_state: "neutral",
           friction_points: [],
@@ -2036,7 +2036,7 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "gym_browse",
           view_name: "Browse Gyms",
-          internal_monologue: "I see FitZone, Iron Paradise, and Muscle Factory — I know all these. FitZone has the best squat racks. Let me check Iron Paradise too.",
+          internal_monologue: "I see FitZone, Iron Paradise, and Muscle Factory, I know all these. FitZone has the best squat racks. Let me check Iron Paradise too.",
           reasoning: "Pre-existing knowledge of local gyms validates the platform",
           emotional_state: "excited",
           friction_points: [],
@@ -2046,8 +2046,8 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "gym_detail",
           view_name: "Gym Detail",
-          internal_monologue: "Iron Paradise — 4.5 stars, full equipment list, photos match what I remember. Good. They have a new cable crossover machine too.",
-          reasoning: "Gym detail confirms real-world knowledge — high trust",
+          internal_monologue: "Iron Paradise, 4.5 stars, full equipment list, photos match what I remember. Good. They have a new cable crossover machine too.",
+          reasoning: "Gym detail confirms real-world knowledge, high trust",
           emotional_state: "impressed",
           friction_points: [],
           decision_outcome: "CONTINUE",
@@ -2057,7 +2057,7 @@ export const fitSquareSimData: SimulationData = {
           screen_id: "plan_selection",
           view_name: "Select Plan",
           internal_monologue: "Elite at ₹3,999 for 30 sessions = ₹133/session at premium gyms. That's a no-brainer. I'd pay ₹200+ per session at these gyms if I walked in.",
-          reasoning: "Expert-level price comparison — knows walk-in rates",
+          reasoning: "Expert-level price comparison, knows walk-in rates",
           emotional_state: "decisive",
           friction_points: [],
           decision_outcome: "CONTINUE",
@@ -2097,13 +2097,13 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 1599,
       total_time_seconds: 85,
       overall_monologue:
-        "I work night shifts so I need a gym that's open at odd hours. The gym near Malad station opens at 5 AM — perfect for my post-shift workout. ₹53/session for Basic is cheaper than my current ₹1,200/month membership and more flexible.",
+        "I work night shifts so I need a gym that's open at odd hours. The gym near Malad station opens at 5 AM, perfect for my post-shift workout. ₹53/session for Basic is cheaper than my current ₹1,200/month membership and more flexible.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
           internal_monologue: "Basic at ₹1,599 for 30 sessions. My current gym is ₹1,200/month and I go about 20 times. This works out cheaper if I use all 30.",
-          reasoning: "Direct cost comparison with current gym — favorable",
+          reasoning: "Direct cost comparison with current gym, favorable",
           emotional_state: "calculating",
           friction_points: [],
           decision_outcome: "CONTINUE",
@@ -2148,7 +2148,7 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
-          internal_monologue: "Elite — I need premium equipment access. Olympic bars, plyometric boxes, pull-up rigs. Only Elite tier gyms have these.",
+          internal_monologue: "Elite, I need premium equipment access. Olympic bars, plyometric boxes, pull-up rigs. Only Elite tier gyms have these.",
           reasoning: "Professional requirement for specialized equipment",
           emotional_state: "focused",
           friction_points: [],
@@ -2189,7 +2189,7 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 2499,
       total_time_seconds: 72,
       overall_monologue:
-        "Premium gives me peak-hour access at the gym near Bellandur — I go at 6 AM before work. The per-session model is great because I travel for races 6-8 weekends a year. No more wasting monthly gym fees when I'm at a marathon in Goa.",
+        "Premium gives me peak-hour access at the gym near Bellandur, I go at 6 AM before work. The per-session model is great because I travel for races 6-8 weekends a year. No more wasting monthly gym fees when I'm at a marathon in Goa.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
@@ -2235,12 +2235,12 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 2499,
       total_time_seconds: 80,
       overall_monologue:
-        "Interesting app. I want to try gyms in other parts of Mumbai to see how they operate — competitive research plus I need equipment variety for my own training. Premium at ₹83/session gets me access to gyms I'd never join monthly. Smart business model.",
+        "Interesting app. I want to try gyms in other parts of Mumbai to see how they operate, competitive research plus I need equipment variety for my own training. Premium at ₹83/session gets me access to gyms I'd never join monthly. Smart business model.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
-          internal_monologue: "Premium at ₹2,499 — I want to try different gyms across Mumbai. Business research meets personal training. Win-win.",
+          internal_monologue: "Premium at ₹2,499, I want to try different gyms across Mumbai. Business research meets personal training. Win-win.",
           reasoning: "Dual professional and personal motivation",
           emotional_state: "strategic",
           friction_points: [],
@@ -2301,7 +2301,7 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "checkout_basic",
           view_name: "Checkout Basic",
-          internal_monologue: "₹1,599 — about 4 fancy coffees in Koramangala. Let me try this.",
+          internal_monologue: "₹1,599, about 4 fancy coffees in Koramangala. Let me try this.",
           reasoning: "Lifestyle spending anchor makes price palatable",
           emotional_state: "hopeful",
           friction_points: [],
@@ -2331,7 +2331,7 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 2499,
       total_time_seconds: 105,
       overall_monologue:
-        "I chose Premium because it includes peak-hour access — I go at 7 PM after work in BKC and I need a gym that's well-lit, clean, and has other women working out at that time. The gym detail page could have shown more about safety features but the reviews mentioned it's women-friendly.",
+        "I chose Premium because it includes peak-hour access, I go at 7 PM after work in BKC and I need a gym that's well-lit, clean, and has other women working out at that time. The gym detail page could have shown more about safety features but the reviews mentioned it's women-friendly.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
@@ -2377,7 +2377,7 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 1599,
       total_time_seconds: 82,
       overall_monologue:
-        "I cycle to work and want to add weight training. The gym near Jayanagar 4th Block has a small but clean weight section. ₹53/session for Basic — I'll go 3 times a week for upper body work. This complements my cycling perfectly.",
+        "I cycle to work and want to add weight training. The gym near Jayanagar 4th Block has a small but clean weight section. ₹53/session for Basic, I'll go 3 times a week for upper body work. This complements my cycling perfectly.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
@@ -2458,7 +2458,7 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 40,
       overall_monologue:
-        "After phone number, OTP, and profile — now they want my location? I already gave them so much data. I live alone in a PG in Marathahalli and I'm careful about which apps know my location. Let me think about this and maybe come back later.",
+        "After phone number, OTP, and profile, now they want my location? I already gave them so much data. I live alone in a PG in Marathahalli and I'm careful about which apps know my location. Let me think about this and maybe come back later.",
       screen_monologues: [
         {
           screen_id: "location_permission",
@@ -2497,13 +2497,13 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 1599,
       total_time_seconds: 130,
       overall_monologue:
-        "₹1,599 is a lot for me but a passenger once told me about this app. The gym near BTM Layout 2nd Stage is walking distance from my auto stand. ₹53 per session — I'll try to go every day and use all 30 sessions in a month. If I do that, it's cheaper than the ₹2,000/month gym my friend goes to. My wife said okay as long as I actually go.",
+        "₹1,599 is a lot for me but a passenger once told me about this app. The gym near BTM Layout 2nd Stage is walking distance from my auto stand. ₹53 per session, I'll try to go every day and use all 30 sessions in a month. If I do that, it's cheaper than the ₹2,000/month gym my friend goes to. My wife said okay as long as I actually go.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
-          internal_monologue: "₹1,599 — that's 8% of my income. But if I go every day for 30 days, it's only ₹53 per session. I need to be disciplined about this. Basic is the only option I can afford.",
-          reasoning: "High-commitment mental model — plans to maximize sessions to justify cost",
+          internal_monologue: "₹1,599, that's 8% of my income. But if I go every day for 30 days, it's only ₹53 per session. I need to be disciplined about this. Basic is the only option I can afford.",
+          reasoning: "High-commitment mental model, plans to maximize sessions to justify cost",
           emotional_state: "determined but nervous",
           friction_points: ["₹1,599 is significant portion of income"],
           decision_outcome: "CONTINUE",
@@ -2584,7 +2584,7 @@ export const fitSquareSimData: SimulationData = {
           screen_id: "phone_number",
           view_name: "Phone Registration",
           internal_monologue: "Phone number? No. Last time I registered on some app, I got insurance calls for 3 months. Just show me the gyms and prices first.",
-          reasoning: "Past negative experience with data sharing — won't provide phone before seeing value",
+          reasoning: "Past negative experience with data sharing, won't provide phone before seeing value",
           emotional_state: "suspicious",
           friction_points: ["Phone required before browsing", "Past spam experience"],
           decision_outcome: "DROP_OFF",
@@ -2618,8 +2618,8 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "phone_number",
           view_name: "Phone Registration",
-          internal_monologue: "They want my number. I don't trust apps with my number. My friend showed this to me — let him check what gyms are there and tell me.",
-          reasoning: "Low digital trust — single phone number is precious resource",
+          internal_monologue: "They want my number. I don't trust apps with my number. My friend showed this to me, let him check what gyms are there and tell me.",
+          reasoning: "Low digital trust, single phone number is precious resource",
           emotional_state: "wary",
           friction_points: ["Phone number is only communication lifeline", "Low app trust"],
           decision_outcome: "DROP_OFF",
@@ -2687,13 +2687,13 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 1599,
       total_time_seconds: 90,
       overall_monologue:
-        "Interesting concept. I have a gym in my apartment but it's overcrowded at 6 AM when I like to go. This gives me an alternative. Basic pack to try — if it's good, I'll upgrade. ₹1,599 is negligible for me. The gym near HSR has good reviews.",
+        "Interesting concept. I have a gym in my apartment but it's overcrowded at 6 AM when I like to go. This gives me an alternative. Basic pack to try, if it's good, I'll upgrade. ₹1,599 is negligible for me. The gym near HSR has good reviews.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
           internal_monologue: "Basic at ₹1,599 to try. If the gym is better than my apartment one, I'll upgrade to Premium or Elite.",
-          reasoning: "Low-risk trial at income level — testing the concept",
+          reasoning: "Low-risk trial at income level, testing the concept",
           emotional_state: "curious",
           friction_points: [],
           decision_outcome: "CONTINUE",
@@ -2733,12 +2733,12 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 3999,
       total_time_seconds: 85,
       overall_monologue:
-        "My doctor said I need to exercise after my last checkup. Elite tier gets me access to a premium gym in Andheri with a swimming pool — I used to swim in college. ₹133/session is nothing compared to the ₹8,000/month premium gym memberships in Andheri. My wife approved.",
+        "My doctor said I need to exercise after my last checkup. Elite tier gets me access to a premium gym in Andheri with a swimming pool, I used to swim in college. ₹133/session is nothing compared to the ₹8,000/month premium gym memberships in Andheri. My wife approved.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
-          internal_monologue: "Elite for the pool. Doctor's orders. ₹133/session at premium gyms — that's cheaper than ₹8,000/month memberships I've been avoiding.",
+          internal_monologue: "Elite for the pool. Doctor's orders. ₹133/session at premium gyms, that's cheaper than ₹8,000/month memberships I've been avoiding.",
           reasoning: "Health mandate + clear price advantage at Elite tier",
           emotional_state: "motivated",
           friction_points: [],
@@ -2779,13 +2779,13 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 78,
       overall_monologue:
-        "I was interested in the concept — pay only when you go. But ₹1,599 for the cheapest pack? My gym near Thane station charges ₹700/month. Yes it's basic, but I know the trainer and I go 4 times a week. This per-session thing works out to ₹53 per session but I need 30 sessions upfront. I'll stick with my current gym.",
+        "I was interested in the concept, pay only when you go. But ₹1,599 for the cheapest pack? My gym near Thane station charges ₹700/month. Yes it's basic, but I know the trainer and I go 4 times a week. This per-session thing works out to ₹53 per session but I need 30 sessions upfront. I'll stick with my current gym.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
           internal_monologue: "₹1,599 minimum. My current gym is ₹700/month. This is more than double. The per-session concept is nice but the minimum pack size is too big for me to try.",
-          reasoning: "Existing cheaper alternative — no compelling reason to switch",
+          reasoning: "Existing cheaper alternative, no compelling reason to switch",
           emotional_state: "skeptical",
           friction_points: ["More expensive than current gym", "30-session minimum too large"],
           decision_outcome: "DROP_OFF",
@@ -2814,7 +2814,7 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 65,
       overall_monologue:
-        "The gym on ITPL Road looks decent but ₹53/session for this? I can see from the photos it's not a premium gym — no swimming pool, no sauna, basic equipment. At my age I need proper machines for my knee rehab exercises. The trainer shown is some 22-year-old kid. I need a physiotherapy-trained trainer.",
+        "The gym on ITPL Road looks decent but ₹53/session for this? I can see from the photos it's not a premium gym, no swimming pool, no sauna, basic equipment. At my age I need proper machines for my knee rehab exercises. The trainer shown is some 22-year-old kid. I need a physiotherapy-trained trainer.",
       screen_monologues: [
         {
           screen_id: "gym_detail",
@@ -2849,13 +2849,13 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 1599,
       total_time_seconds: 88,
       overall_monologue:
-        "I have a gym membership at my apartment but it gets boring. Basic pack at ₹1,599 gives me a change of scenery — I'll try different gyms on different days. The price is irrelevant for me; I just want variety without multiple monthly memberships.",
+        "I have a gym membership at my apartment but it gets boring. Basic pack at ₹1,599 gives me a change of scenery, I'll try different gyms on different days. The price is irrelevant for me; I just want variety without multiple monthly memberships.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
-          internal_monologue: "Basic at ₹1,599. I don't need Premium or Elite — I have my apartment gym for regular days. This is for variety days.",
-          reasoning: "Supplementary usage — variety-seeking rather than primary gym",
+          internal_monologue: "Basic at ₹1,599. I don't need Premium or Elite, I have my apartment gym for regular days. This is for variety days.",
+          reasoning: "Supplementary usage, variety-seeking rather than primary gym",
           emotional_state: "relaxed",
           friction_points: [],
           decision_outcome: "CONTINUE",
@@ -2899,13 +2899,13 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 70,
       overall_monologue:
-        "I like the idea and the gym near HSR Layout BDA Complex looks clean. But I'm not sure about committing to 30 sessions. I've downloaded 3 fitness apps before and used each for about 2 weeks. ₹1,599 is not a lot for me but I know myself — I might use 10 sessions and waste the rest.",
+        "I like the idea and the gym near HSR Layout BDA Complex looks clean. But I'm not sure about committing to 30 sessions. I've downloaded 3 fitness apps before and used each for about 2 weeks. ₹1,599 is not a lot for me but I know myself, I might use 10 sessions and waste the rest.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
-          internal_monologue: "₹1,599 for 30 sessions. I know myself — I'll go enthusiastically for 2 weeks, then find excuses. A 10-session pack at ₹600 would be perfect for my attention span.",
-          reasoning: "Self-awareness about commitment patterns — 30 sessions feels too optimistic",
+          internal_monologue: "₹1,599 for 30 sessions. I know myself, I'll go enthusiastically for 2 weeks, then find excuses. A 10-session pack at ₹600 would be perfect for my attention span.",
+          reasoning: "Self-awareness about commitment patterns, 30 sessions feels too optimistic",
           emotional_state: "hesitant",
           friction_points: ["30-session minimum too large for trial", "No smaller pack option"],
           decision_outcome: "DROP_OFF",
@@ -2934,7 +2934,7 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 1599,
       total_time_seconds: 80,
       overall_monologue:
-        "Basic at ₹1,599 — that's like 2.5 nights out in Koramangala. If I replace 2.5 bar nights with gym nights, I'm healthier AND saving money long-term. The gym near Koramangala 1st Block has a great vibe from the photos.",
+        "Basic at ₹1,599, that's like 2.5 nights out in Koramangala. If I replace 2.5 bar nights with gym nights, I'm healthier AND saving money long-term. The gym near Koramangala 1st Block has a great vibe from the photos.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
@@ -2985,7 +2985,7 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
-          internal_monologue: "Basic at ₹1,599. On my stipend this is significant but my back pain is worse. 30 sessions over 2.5 months — ₹640/month effectively. That's reasonable.",
+          internal_monologue: "Basic at ₹1,599. On my stipend this is significant but my back pain is worse. 30 sessions over 2.5 months, ₹640/month effectively. That's reasonable.",
           reasoning: "Health need justifies the expense despite tight budget",
           emotional_state: "determined",
           friction_points: ["Significant on intern stipend"],
@@ -3026,13 +3026,13 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 26,
       overall_monologue:
-        "I saw this on Instagram reels — 'pay per session gym in Bangalore'. Cool concept. But I just want to check if there's something near my PG in Koramangala 6th Block. Why do I need to register before browsing? Even Zomato lets me see restaurants without logging in.",
+        "I saw this on Instagram reels, 'pay per session gym in Bangalore'. Cool concept. But I just want to check if there's something near my PG in Koramangala 6th Block. Why do I need to register before browsing? Even Zomato lets me see restaurants without logging in.",
       screen_monologues: [
         {
           screen_id: "phone_number",
           view_name: "Phone Registration",
           internal_monologue: "Register before browsing? Zomato doesn't do this. Swiggy doesn't do this. I just want to see gyms near Koramangala. I'll come back if a friend confirms it's good.",
-          reasoning: "UX comparison with established apps — registration before value is unusual",
+          reasoning: "UX comparison with established apps, registration before value is unusual",
           emotional_state: "mildly frustrated",
           friction_points: ["Registration before browsing", "UX inferior to known apps"],
           decision_outcome: "DROP_OFF",
@@ -3061,7 +3061,7 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 1599,
       total_time_seconds: 115,
       overall_monologue:
-        "₹1,599 is 2 good days of deliveries. But the gym near Electronic City Phase 1 is right next to my room. I can go early morning before my shift. ₹53/session — if I go 25+ times, it's better than any monthly gym. I'll eat home food for a week to compensate.",
+        "₹1,599 is 2 good days of deliveries. But the gym near Electronic City Phase 1 is right next to my room. I can go early morning before my shift. ₹53/session, if I go 25+ times, it's better than any monthly gym. I'll eat home food for a week to compensate.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
@@ -3111,13 +3111,13 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 1599,
       total_time_seconds: 92,
       overall_monologue:
-        "With two kids, my schedule is unpredictable. Per-session means I don't waste money when I can't go. The gym near Whitefield Brookefields is 10 minutes from home. Basic at ₹1,599 — I'll try going on weekday mornings before the kids wake up.",
+        "With two kids, my schedule is unpredictable. Per-session means I don't waste money when I can't go. The gym near Whitefield Brookefields is 10 minutes from home. Basic at ₹1,599, I'll try going on weekday mornings before the kids wake up.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
           internal_monologue: "Basic at ₹1,599. With kids, I might go 15-20 times realistically. Even at 20 sessions, ₹80 per visit isn't bad for schedule flexibility.",
-          reasoning: "Realistic parenting-adjusted usage estimate — still acceptable value",
+          reasoning: "Realistic parenting-adjusted usage estimate, still acceptable value",
           emotional_state: "pragmatic",
           friction_points: ["Might not use all 30 sessions"],
           decision_outcome: "CONTINUE",
@@ -3157,7 +3157,7 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 1599,
       total_time_seconds: 100,
       overall_monologue:
-        "I need to get back in shape after having my baby. The gym near BTM 2nd Stage has a women's section with morning batches. ₹53/session for Basic — I can go after dropping my daughter at the creche. Per-session is perfect because some weeks I might not make it.",
+        "I need to get back in shape after having my baby. The gym near BTM 2nd Stage has a women's section with morning batches. ₹53/session for Basic, I can go after dropping my daughter at the creche. Per-session is perfect because some weeks I might not make it.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
@@ -3203,12 +3203,12 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: 1599,
       total_time_seconds: 98,
       overall_monologue:
-        "After my father's heart surgery, I promised myself I'd take fitness seriously. The gym near Mulund station has decent reviews. Basic at ₹1,599 — I'll try going before bank hours at 8 AM. If it works, I'll continue. Per-session is practical for a banker with unpredictable late nights during audits.",
+        "After my father's heart surgery, I promised myself I'd take fitness seriously. The gym near Mulund station has decent reviews. Basic at ₹1,599, I'll try going before bank hours at 8 AM. If it works, I'll continue. Per-session is practical for a banker with unpredictable late nights during audits.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
-          internal_monologue: "Basic at ₹1,599. Family health history means I need this. Per-session is smart — during audit season I might skip 2 weeks but won't waste money.",
+          internal_monologue: "Basic at ₹1,599. Family health history means I need this. Per-session is smart, during audit season I might skip 2 weeks but won't waste money.",
           reasoning: "Health motivation from family history + practical value of per-session model",
           emotional_state: "determined",
           friction_points: [],
@@ -3249,13 +3249,13 @@ export const fitSquareSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 85,
       overall_monologue:
-        "I went all the way to checkout for Basic at ₹1,599. But at the payment screen I hesitated — the payment page doesn't show a refund policy. What if I hate the gym? What if the sessions expire before I use them? No clarity on these terms. I closed the app to think about it. Might come back tomorrow.",
+        "I went all the way to checkout for Basic at ₹1,599. But at the payment screen I hesitated, the payment page doesn't show a refund policy. What if I hate the gym? What if the sessions expire before I use them? No clarity on these terms. I closed the app to think about it. Might come back tomorrow.",
       screen_monologues: [
         {
           screen_id: "plan_selection",
           view_name: "Select Plan",
           internal_monologue: "Basic at ₹1,599. Fair price. Let me proceed to checkout.",
-          reasoning: "Price acceptable — proceeding to payment",
+          reasoning: "Price acceptable, proceeding to payment",
           emotional_state: "ready",
           friction_points: [],
           decision_outcome: "CONTINUE",
@@ -3265,7 +3265,7 @@ export const fitSquareSimData: SimulationData = {
         {
           screen_id: "checkout_basic",
           view_name: "Checkout Basic",
-          internal_monologue: "Wait — what's the refund policy? Do sessions expire? What if the gym closes or changes its listing? I don't see any terms. ₹1,599 isn't much but I hate paying for unclear terms. I'll think about this.",
+          internal_monologue: "Wait, what's the refund policy? Do sessions expire? What if the gym closes or changes its listing? I don't see any terms. ₹1,599 isn't much but I hate paying for unclear terms. I'll think about this.",
           reasoning: "Absence of refund/expiry terms creates last-minute doubt",
           emotional_state: "hesitant",
           friction_points: ["No refund policy visible", "Session expiry terms unclear", "No T&C summary"],
@@ -3312,7 +3312,7 @@ export const fitSquareSimData: SimulationData = {
           screen_id: "checkout_premium",
           view_name: "Checkout Premium",
           internal_monologue: "₹2,499... that's exactly what my wife's prenatal vitamins cost this month. With the baby coming in 3 months, I should be more careful. The ₹1,000/month gym near office will do for now.",
-          reasoning: "Life-stage priority shift — baby expenses take precedence",
+          reasoning: "Life-stage priority shift, baby expenses take precedence",
           emotional_state: "guilty",
           friction_points: ["Competing household expenses", "No urgency to switch from existing option"],
           decision_outcome: "DROP_OFF",

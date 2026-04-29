@@ -79,6 +79,9 @@ export type SimulationDoc = {
   timestamp: string;
   simulationId?: string;
   result?: unknown;
+  /** simul2design Multiverse Synthesis Engine payload — populated ~5min after
+   * comparison_ready by the backend's `synthesis_ready` UPDATE. Null until then. */
+  synthesis?: unknown;
   creditsSpent?: number;
   /** ISO timestamp, or null for UI-only sample rows that never hit the DB. */
   createdAt: string | null;
@@ -141,6 +144,7 @@ function rowToSimulation(r: SimulationRow): SimulationDoc {
     timestamp: r.timestamp_label ?? "",
     simulationId: r.simulation_id ?? undefined,
     result: r.result ?? undefined,
+    synthesis: r.synthesis ?? undefined,
     creditsSpent: r.credits_spent,
     createdAt: r.created_at,
     updatedAt: r.updated_at,

@@ -11,7 +11,7 @@ import type { SimulationData } from "@/types/simulation";
 export const flentSimData: SimulationData = {
   simulation_id: "flent-secured-sim-20260402-001",
   flow_id: "flent_secured_onboarding_v1",
-  flow_name: "Flent Secured — Rent Payment Onboarding",
+  flow_name: "Flent Secured, Rent Payment Onboarding",
   generated_at: "2026-04-02T14:00:00.000000+00:00",
 
   // ── Summary ─────────────────────────────────────────────────────────────────
@@ -57,7 +57,7 @@ export const flentSimData: SimulationData = {
   top_friction_points: [
     {
       friction:
-        "No formal rental agreement to upload — informal verbal arrangement with landlord",
+        "No formal rental agreement to upload, informal verbal arrangement with landlord",
       frequency: 11,
     },
     {
@@ -67,12 +67,12 @@ export const flentSimData: SimulationData = {
     },
     {
       friction:
-        "Landlord uses cash/UPI only — won't adopt a new rent platform",
+        "Landlord uses cash/UPI only, won't adopt a new rent platform",
       frequency: 7,
     },
     {
       friction:
-        "1% cashback on ₹15K rent = ₹150/month — not worth the setup effort",
+        "1% cashback on ₹15K rent = ₹150/month, not worth the setup effort",
       frequency: 5,
     },
     {
@@ -82,12 +82,12 @@ export const flentSimData: SimulationData = {
     },
     {
       friction:
-        "Indian phone number only — blocks NRI landlords managing from abroad",
+        "Indian phone number only, blocks NRI landlords managing from abroad",
       frequency: 4,
     },
     {
       friction:
-        "Rental agreement is physical paper — need to scan/digitize first",
+        "Rental agreement is physical paper, need to scan/digitize first",
       frequency: 4,
     },
   ],
@@ -161,7 +161,7 @@ export const flentSimData: SimulationData = {
 
   // ── Executive Summary ───────────────────────────────────────────────────────
   executive_summary:
-    "62% of users complete the Flent Secured onboarding, but the rental agreement upload and landlord bank details screens together cause 58% of all drop-offs. The core problem isn't tenant willingness — it's that Flent's flow assumes a formalized rental arrangement with a digitally-savvy landlord, which excludes a significant chunk of India's rental market. NRI landlords are completely blocked (0% completion) by the Indian-only phone requirement.",
+    "62% of users complete the Flent Secured onboarding, but the rental agreement upload and landlord bank details screens together cause 58% of all drop-offs. The core problem isn't tenant willingness, it's that Flent's flow assumes a formalized rental arrangement with a digitally-savvy landlord, which excludes a significant chunk of India's rental market. NRI landlords are completely blocked (0% completion) by the Indian-only phone requirement.",
 
   // ── Usability Findings ──────────────────────────────────────────────────────
   usability_findings: [
@@ -170,7 +170,7 @@ export const flentSimData: SimulationData = {
       type: "task_failure",
       screen: "rental_agreement",
       finding:
-        "Rental agreement upload screen causes 12% drop-off — users without formal PDF agreements are structurally blocked",
+        "Rental agreement upload screen causes 12% drop-off, users without formal PDF agreements are structurally blocked",
       evidence:
         "6 of 19 drop-offs occur at rental_agreement. Tier-2 Transplants (60% drop), Solo Founders (40% drop), and NRI Landlords (remaining personas blocked here) cite verbal arrangements, physical-only papers, and informal PG setups. No alternative verification path exists.",
       affected_segments: ["The First-Jobber", "The Bootstrapper", "The Blocked Landlord"],
@@ -182,19 +182,19 @@ export const flentSimData: SimulationData = {
       type: "trust_issue",
       screen: "landlord_bank",
       finding:
-        "Landlord bank details screen causes 10% drop-off — tenants don't have landlord's PAN and are scared to ask",
+        "Landlord bank details screen causes 10% drop-off, tenants don't have landlord's PAN and are scared to ask",
       evidence:
         "5 of 19 drop-offs occur at landlord_bank. Tier-2 Transplants and Solo Founders cite elderly landlords who would be suspicious of sharing PAN with an unknown app. Trust scores drop to 4.2 avg on this screen for these segments.",
       affected_segments: ["The First-Jobber", "The Bootstrapper"],
       recommendation:
-        "Make landlord bank details optional at signup — let tenant pay to Flent escrow, handle landlord payout via phone call from Flent team.",
+        "Make landlord bank details optional at signup, let tenant pay to Flent escrow, handle landlord payout via phone call from Flent team.",
     },
     {
       severity: "major",
       type: "task_failure",
       screen: "registration",
       finding:
-        "NRI landlords with foreign phone numbers are completely blocked from registration — 0% completion for this segment",
+        "NRI landlords with foreign phone numbers are completely blocked from registration, 0% completion for this segment",
       evidence:
         "2 NRI Landlord personas dropped at registration due to Indian-only phone requirement, 1 dropped at landing (no landlord-first path), and the remaining 2 were blocked at rental_agreement (no formal agreement accessible from abroad). NRI landlords control significant Bangalore rental inventory.",
       affected_segments: ["The Blocked Landlord"],
@@ -206,7 +206,7 @@ export const flentSimData: SimulationData = {
       type: "friction_point",
       screen: "application_status",
       finding:
-        "72-hour waitlist after completing full onboarding creates resentment — users feel baited into sharing personal data for uncertain outcome",
+        "72-hour waitlist after completing full onboarding creates resentment, users feel baited into sharing personal data for uncertain outcome",
       evidence:
         "2 personas dropped at application_status after seeing waitlist. 5 additional completers flagged this as a major friction point. Emotional state shifts from 'accomplished' to 'suspicious' when users realize they aren't immediately approved.",
       affected_segments: ["The Property Optimizer", "The Hopeful Newcomer"],
@@ -218,7 +218,7 @@ export const flentSimData: SimulationData = {
       type: "friction_point",
       screen: "value_cashback",
       finding:
-        "1% cashback on low rent (₹12-18K) yields ₹120-180/month — perceived as not worth the setup effort for budget-conscious users",
+        "1% cashback on low rent (₹12-18K) yields ₹120-180/month, perceived as not worth the setup effort for budget-conscious users",
       evidence:
         "5 personas across Solo Founder and Tier-2 Transplant segments flagged cashback insufficiency. 1 dropped at value_cashback. Those who continued were motivated by credit card float rather than cashback.",
       affected_segments: ["The Bootstrapper", "The First-Jobber"],
@@ -230,21 +230,21 @@ export const flentSimData: SimulationData = {
   // ── Segment Analysis ────────────────────────────────────────────────────────
   segment_analysis: {
     summary:
-      "Sharp divide between tenants with formal rental infrastructure (agreements, responsive landlords) and those in India's informal rental market. Credit Card Points Optimizers and Senior Managers renting by choice convert at 100% — they have formal agreements, tech-savvy landlords, and instantly grasp the cashback/float math. NRI Landlords are structurally excluded (0%), while Tier-2 Transplants and Solo Founders (40% each) are blocked by informal arrangements and non-digital landlords.",
+      "Sharp divide between tenants with formal rental infrastructure (agreements, responsive landlords) and those in India's informal rental market. Credit Card Points Optimizers and Senior Managers renting by choice convert at 100%, they have formal agreements, tech-savvy landlords, and instantly grasp the cashback/float math. NRI Landlords are structurally excluded (0%), while Tier-2 Transplants and Solo Founders (40% each) are blocked by informal arrangements and non-digital landlords.",
     high_propensity_segment:
-      "Credit Card Points Optimizers and Senior Managers renting by choice — already pay via cards, understand float and cashback math, have formal rental agreements with responsive landlords.",
+      "Credit Card Points Optimizers and Senior Managers renting by choice, already pay via cards, understand float and cashback math, have formal rental agreements with responsive landlords.",
     low_propensity_segment:
-      "NRI Landlords (0% — structurally blocked) and Tier-2 Transplants (40% — informal rental arrangements without agreements, landlords who don't use apps).",
+      "NRI Landlords (0%, structurally blocked) and Tier-2 Transplants (40%, informal rental arrangements without agreements, landlords who don't use apps).",
   },
 
   // ── Flow Assessment ─────────────────────────────────────────────────────────
   flow_assessment: {
     overall_verdict:
-      "The rental agreement upload kills 12% of users and the landlord bank details screen kills another 10% — together they account for 58% of all drop-offs. Flent assumes every renter has a formal PDF agreement and their landlord's PAN number, which is a metro-premium-only assumption.",
+      "The rental agreement upload kills 12% of users and the landlord bank details screen kills another 10%, together they account for 58% of all drop-offs. Flent assumes every renter has a formal PDF agreement and their landlord's PAN number, which is a metro-premium-only assumption.",
     what_works: [
       {
         element: "1% cashback value proposition on landing",
-        why: "Immediate, tangible value — users with ₹40K+ rent see ₹400+/month and ₹4,800+/year savings without effort",
+        why: "Immediate, tangible value, users with ₹40K+ rent see ₹400+/month and ₹4,800+/year savings without effort",
         for_whom: "Credit Card Points Optimizers, Premium Couples, Senior Managers, Returning NRI Renters",
       },
       {
@@ -254,39 +254,39 @@ export const flentSimData: SimulationData = {
       },
       {
         element: "₹1.5L landlord insurance pitch",
-        why: "Unique value prop — no competitor offers this. Landlords see direct financial protection",
+        why: "Unique value prop, no competitor offers this. Landlords see direct financial protection",
         for_whom: "Landlord-Investors, NRI Landlords (if they could access it), Premium Couples (landlord buy-in)",
       },
       {
         element: "Clean, progressive value prop screens (3-screen value sequence)",
         why: "Breaking benefits into cashback → float/credit → landlord insurance builds understanding layer by layer",
-        for_whom: "All segments — clarity scores 8+ across value prop screens",
+        for_whom: "All segments, clarity scores 8+ across value prop screens",
       },
     ],
     what_needs_fixing: [
       {
-        element: "Rental agreement upload — PDF only",
-        problem: "Majority of Indian rental arrangements are verbal or physical paper — no digital agreement exists",
+        element: "Rental agreement upload, PDF only",
+        problem: "Majority of Indian rental arrangements are verbal or physical paper, no digital agreement exists",
         for_whom: "Tier-2 Transplants, Solo Founders, NRI Landlords, Female Professionals",
         fix: "Accept self-declaration + 3 months UPI payment history as proof. Accept photo of physical agreement with OCR.",
         priority: "P0",
       },
       {
-        element: "Landlord bank details — PAN + account mandatory",
+        element: "Landlord bank details, PAN + account mandatory",
         problem: "Tenants don't have landlord's PAN; asking for it damages tenant-landlord trust",
         for_whom: "Tier-2 Transplants, Solo Founders",
         fix: "Make landlord details optional. Let tenant pay to Flent escrow; Flent handles landlord onboarding via phone call.",
         priority: "P0",
       },
       {
-        element: "Registration — Indian phone numbers only",
+        element: "Registration, Indian phone numbers only",
         problem: "NRI landlords managing flats from Dubai/US cannot register",
         for_whom: "NRI Landlords (5/5 blocked by flow end)",
         fix: "Add international phone support with NRI-specific KYC (passport + NRE statement)",
         priority: "P1",
       },
       {
-        element: "Application status — 72-hour waitlist",
+        element: "Application status, 72-hour waitlist",
         problem: "Users who completed full onboarding feel baited when told to wait 72 hours",
         for_whom: "Landlord-Investors, Freshly Relocated Tech Workers",
         fix: "Instant approval for verified users. Show progress tracker via WhatsApp for others.",
@@ -296,9 +296,9 @@ export const flentSimData: SimulationData = {
     usability_score: 6,
     emotional_journey_map: {
       completers:
-        "Curious (landing — 'rent that rewards you?') → Excited (value_cashback — '1% back on ₹45K rent = ₹5,400/year!') → Impressed (value_benefits — 'credit card float on rent? genius') → Intrigued (value_landlord — '₹1.5L insurance might convince my landlord') → Neutral (registration — standard) → Quick (otp_verify — auto-read) → Slightly tedious (rental_agreement — 'let me find the PDF') → Mild friction (landlord_bank — 'need to WhatsApp landlord for PAN') → Accomplished → Deflated (application_status — '72-hour wait? really?')",
+        "Curious (landing, 'rent that rewards you?') → Excited (value_cashback, '1% back on ₹45K rent = ₹5,400/year!') → Impressed (value_benefits, 'credit card float on rent? genius') → Intrigued (value_landlord, '₹1.5L insurance might convince my landlord') → Neutral (registration, standard) → Quick (otp_verify, auto-read) → Slightly tedious (rental_agreement, 'let me find the PDF') → Mild friction (landlord_bank, 'need to WhatsApp landlord for PAN') → Accomplished → Deflated (application_status, '72-hour wait? really?')",
       drop_offs:
-        "Confused (landing — 'I'm not a renter / don't get it') → [EXIT] OR Dismissive (value_cashback — '₹150/month? not worth it') → [EXIT] OR Frustrated (registration — 'Indian numbers only? I manage flats from Dubai!') → [EXIT] OR Stuck (rental_agreement — 'I don't have a formal agreement — it's all verbal with my landlord uncle') → [EXIT] OR Panicked (landlord_bank — 'If I ask my 62-year-old landlord for his PAN, he'll think I'm scamming him') → [EXIT] OR Resentful (application_status — 'I did ALL that and now I'm on a waitlist?') → [EXIT]",
+        "Confused (landing, 'I'm not a renter / don't get it') → [EXIT] OR Dismissive (value_cashback, '₹150/month? not worth it') → [EXIT] OR Frustrated (registration, 'Indian numbers only? I manage flats from Dubai!') → [EXIT] OR Stuck (rental_agreement, 'I don't have a formal agreement, it's all verbal with my landlord uncle') → [EXIT] OR Panicked (landlord_bank, 'If I ask my 62-year-old landlord for his PAN, he'll think I'm scamming him') → [EXIT] OR Resentful (application_status, 'I did ALL that and now I'm on a waitlist?') → [EXIT]",
     },
   },
 
@@ -315,21 +315,21 @@ export const flentSimData: SimulationData = {
             label: "No formal rental agreement exists",
             persona_count: 3,
             representative_reasoning:
-              "I'm renting a room in a 3BHK in Majestic area — it's a verbal arrangement with the building owner. There's no rental agreement. He just said 'pay ₹12,000 by the 5th every month via GPay.' How am I supposed to upload a PDF that doesn't exist? This app seems made for people in Koramangala paying ₹40K with proper agreements.",
+              "I'm renting a room in a 3BHK in Majestic area, it's a verbal arrangement with the building owner. There's no rental agreement. He just said 'pay ₹12,000 by the 5th every month via GPay.' How am I supposed to upload a PDF that doesn't exist? This app seems made for people in Koramangala paying ₹40K with proper agreements.",
           },
           {
             cluster_id: 2,
             label: "Agreement is physical paper, not digitized",
             persona_count: 2,
             representative_reasoning:
-              "We have a rental agreement but it's a physical stamped paper that the broker made when we moved into this 2BHK in JP Nagar. It's in a file folder somewhere. I'd need to find it, scan it somehow — I don't even have a scanner. CamScanner? That's another app to download. This is becoming a whole project just to sign up for cashback.",
+              "We have a rental agreement but it's a physical stamped paper that the broker made when we moved into this 2BHK in JP Nagar. It's in a file folder somewhere. I'd need to find it, scan it somehow, I don't even have a scanner. CamScanner? That's another app to download. This is becoming a whole project just to sign up for cashback.",
           },
           {
             cluster_id: 3,
             label: "Informal PG/shared arrangement without individual agreement",
             persona_count: 1,
             representative_reasoning:
-              "I'm in a PG in Electronic City — the PG owner has one master lease for the building, not individual agreements with each tenant. My name isn't on any agreement. I just pay ₹8,500/month to the PG warden. Flent assumes I have a one-to-one landlord relationship that simply doesn't exist in PG accommodation.",
+              "I'm in a PG in Electronic City, the PG owner has one master lease for the building, not individual agreements with each tenant. My name isn't on any agreement. I just pay ₹8,500/month to the PG warden. Flent assumes I have a one-to-one landlord relationship that simply doesn't exist in PG accommodation.",
           },
         ],
       },
@@ -348,7 +348,7 @@ export const flentSimData: SimulationData = {
             label: "Landlord refuses to share bank details with unknown app",
             persona_count: 2,
             representative_reasoning:
-              "I WhatsApped my landlord asking for his PAN and bank details for this rent app. He called back within 2 minutes — not to share details, but to ask if I'm in some kind of trouble. He said 'don't share my details with any app-shapp, I don't trust these things.' He's a retired government officer from Rajajinagar — his pension goes to SBI and that's the only bank he trusts.",
+              "I WhatsApped my landlord asking for his PAN and bank details for this rent app. He called back within 2 minutes, not to share details, but to ask if I'm in some kind of trouble. He said 'don't share my details with any app-shapp, I don't trust these things.' He's a retired government officer from Rajajinagar, his pension goes to SBI and that's the only bank he trusts.",
           },
         ],
       },
@@ -357,14 +357,14 @@ export const flentSimData: SimulationData = {
         clusters: [
           {
             cluster_id: 1,
-            label: "Indian phone number only — blocks NRI landlords",
+            label: "Indian phone number only, blocks NRI landlords",
             persona_count: 1,
             representative_reasoning:
-              "I own two flats in Whitefield that I manage from Dubai. My tenants told me about Flent Secured and the ₹1.5 lakh insurance sounded great — that's real protection for my rental income. But I can't even register because I have a UAE number. I disconnected my Indian SIM years ago. Am I supposed to get an Indian number just for this app?",
+              "I own two flats in Whitefield that I manage from Dubai. My tenants told me about Flent Secured and the ₹1.5 lakh insurance sounded great, that's real protection for my rental income. But I can't even register because I have a UAE number. I disconnected my Indian SIM years ago. Am I supposed to get an Indian number just for this app?",
           },
           {
             cluster_id: 2,
-            label: "Privacy concern — too much data upfront",
+            label: "Privacy concern, too much data upfront",
             persona_count: 1,
             representative_reasoning:
               "They want my Aadhaar-linked phone number, PAN, and personal details before I've even seen how the product works? I just wanted to understand the cashback structure and maybe try it for one month. Every fintech app in India starts spamming you once you register. Show me the product first, then I'll decide if I trust you with my identity.",
@@ -397,7 +397,7 @@ export const flentSimData: SimulationData = {
       dropped: 5,
       completion_pct: 0,
       top_drop_off_screen: "registration",
-      top_drop_off_reason: "Indian phone number only — blocks NRI landlords managing from abroad",
+      top_drop_off_reason: "Indian phone number only, blocks NRI landlords managing from abroad",
     },
     {
       segment: "Hustling Solo Founder",
@@ -406,7 +406,7 @@ export const flentSimData: SimulationData = {
       dropped: 3,
       completion_pct: 40,
       top_drop_off_screen: "landlord_bank",
-      top_drop_off_reason: "Landlord is local uncle/auntie who doesn't use apps — can't get PAN",
+      top_drop_off_reason: "Landlord is local uncle/auntie who doesn't use apps, can't get PAN",
     },
     {
       segment: "Tier-2 Transplant",
@@ -415,7 +415,7 @@ export const flentSimData: SimulationData = {
       dropped: 3,
       completion_pct: 40,
       top_drop_off_screen: "landlord_bank",
-      top_drop_off_reason: "Don't have landlord's PAN — landlord is non-tech older person",
+      top_drop_off_reason: "Don't have landlord's PAN, landlord is non-tech older person",
     },
     {
       segment: "Female Professional Living Alone",
@@ -433,7 +433,7 @@ export const flentSimData: SimulationData = {
       dropped: 2,
       completion_pct: 60,
       top_drop_off_screen: "rental_agreement",
-      top_drop_off_reason: "No formal agreement yet — still in first month of new rental",
+      top_drop_off_reason: "No formal agreement yet, still in first month of new rental",
     },
     {
       segment: "Landlord-Turned-Investor",
@@ -442,7 +442,7 @@ export const flentSimData: SimulationData = {
       dropped: 2,
       completion_pct: 60,
       top_drop_off_screen: "application_status",
-      top_drop_off_reason: "72-hour waitlist — expected instant insurance activation",
+      top_drop_off_reason: "72-hour waitlist, expected instant insurance activation",
     },
     {
       segment: "Premium Couple",
@@ -451,7 +451,7 @@ export const flentSimData: SimulationData = {
       dropped: 1,
       completion_pct: 80,
       top_drop_off_screen: "value_landlord",
-      top_drop_off_reason: "Skeptical about landlord adoption — corporate landlord already has own system",
+      top_drop_off_reason: "Skeptical about landlord adoption, corporate landlord already has own system",
     },
     {
       segment: "Returning NRI Renter",
@@ -460,7 +460,7 @@ export const flentSimData: SimulationData = {
       dropped: 1,
       completion_pct: 80,
       top_drop_off_screen: "landing",
-      top_drop_off_reason: "Not currently renting — still in temporary Airbnb while house-hunting",
+      top_drop_off_reason: "Not currently renting, still in temporary Airbnb while house-hunting",
     },
     {
       segment: "Credit Card Points Optimizer",
@@ -602,9 +602,9 @@ export const flentSimData: SimulationData = {
         persona_label: "23yo First-Job Developer, Electronic City",
         behavioral_archetype: "The First-Jobber",
         internal_monologue:
-          "I'm renting a room in a 3BHK in Majestic area — it's a verbal arrangement with the building owner. There's no rental agreement. He just said 'pay ₹12,000 by the 5th every month via GPay.' How am I supposed to upload a PDF that doesn't exist? This app seems made for people in Koramangala paying ₹40K with proper agreements.",
+          "I'm renting a room in a 3BHK in Majestic area, it's a verbal arrangement with the building owner. There's no rental agreement. He just said 'pay ₹12,000 by the 5th every month via GPay.' How am I supposed to upload a PDF that doesn't exist? This app seems made for people in Koramangala paying ₹40K with proper agreements.",
         reasoning:
-          "No formal rental agreement exists — verbal arrangement with landlord is the norm in budget rental segments.",
+          "No formal rental agreement exists, verbal arrangement with landlord is the norm in budget rental segments.",
         emotional_state: "frustrated",
         trust_score: 5,
         clarity_score: 3,
@@ -615,7 +615,7 @@ export const flentSimData: SimulationData = {
         persona_label: "26yo Junior PM, JP Nagar",
         behavioral_archetype: "The Hopeful Newcomer",
         internal_monologue:
-          "We have a rental agreement but it's a physical stamped paper that the broker made when we moved into this 2BHK in JP Nagar. It's in a file folder somewhere at my parents' house in Hubli. I'd need to find it, scan it somehow — I don't even have a scanner. CamScanner? That's another app to download and figure out. This is becoming a whole project just to sign up for cashback.",
+          "We have a rental agreement but it's a physical stamped paper that the broker made when we moved into this 2BHK in JP Nagar. It's in a file folder somewhere at my parents' house in Hubli. I'd need to find it, scan it somehow, I don't even have a scanner. CamScanner? That's another app to download and figure out. This is becoming a whole project just to sign up for cashback.",
         reasoning:
           "Physical-only agreement stored at parents' house. Multi-step digitization creates excessive friction for a rewards signup.",
         emotional_state: "exasperated",
@@ -628,7 +628,7 @@ export const flentSimData: SimulationData = {
         persona_label: "42yo NRI Landlord, Dubai (owns Whitefield flat)",
         behavioral_archetype: "The Blocked Landlord",
         internal_monologue:
-          "I managed to get past registration using my brother's Indian number, but now it wants my rental agreement. My agreement is with my property manager in Bangalore — he has the papers. I'm in Dubai. Even if he scans it, the agreement is in the tenant's name, not mine. The whole flow assumes I'm sitting in India with all my papers. I own 3 flats in Whitefield, managing them from here is already a nightmare.",
+          "I managed to get past registration using my brother's Indian number, but now it wants my rental agreement. My agreement is with my property manager in Bangalore, he has the papers. I'm in Dubai. Even if he scans it, the agreement is in the tenant's name, not mine. The whole flow assumes I'm sitting in India with all my papers. I own 3 flats in Whitefield, managing them from here is already a nightmare.",
         reasoning:
           "Remote landlord cannot access physical documents. Flow assumes in-person document availability.",
         emotional_state: "exasperated",
@@ -641,7 +641,7 @@ export const flentSimData: SimulationData = {
         persona_label: "24yo Startup Founder, HSR Layout",
         behavioral_archetype: "The Bootstrapper",
         internal_monologue:
-          "I'm in a PG in Electronic City — the PG owner has one master lease for the building, not individual agreements with each tenant. My name isn't on any agreement. I just pay ₹8,500/month to the PG warden via PhonePe. Flent assumes I have a one-to-one landlord relationship that simply doesn't exist in PG accommodation. Maybe I'll revisit when I get my own apartment.",
+          "I'm in a PG in Electronic City, the PG owner has one master lease for the building, not individual agreements with each tenant. My name isn't on any agreement. I just pay ₹8,500/month to the PG warden via PhonePe. Flent assumes I have a one-to-one landlord relationship that simply doesn't exist in PG accommodation. Maybe I'll revisit when I get my own apartment.",
         reasoning:
           "PG/shared accommodation model doesn't map to Flent's individual landlord-tenant assumption.",
         emotional_state: "resigned",
@@ -654,7 +654,7 @@ export const flentSimData: SimulationData = {
         persona_label: "27yo Content Writer, Indiranagar",
         behavioral_archetype: "The Safety-First Renter",
         internal_monologue:
-          "My landlady is an elderly woman who lives downstairs. Our 'agreement' was a handshake and her saying 'pay ₹18,000 by the 3rd.' There's a one-page letter she gave me with the rent amount written on it — does that count? The upload form says 'registered rental agreement' specifically. This feels like it's designed for corporate-managed apartments, not regular Bangalore rentals.",
+          "My landlady is an elderly woman who lives downstairs. Our 'agreement' was a handshake and her saying 'pay ₹18,000 by the 3rd.' There's a one-page letter she gave me with the rent amount written on it, does that count? The upload form says 'registered rental agreement' specifically. This feels like it's designed for corporate-managed apartments, not regular Bangalore rentals.",
         reasoning:
           "Informal single-page letter doesn't qualify as registered rental agreement. Form language excludes common arrangements.",
         emotional_state: "disappointed",
@@ -682,7 +682,7 @@ export const flentSimData: SimulationData = {
         persona_label: "24yo Data Analyst, Electronic City",
         behavioral_archetype: "The First-Jobber",
         internal_monologue:
-          "I WhatsApped my landlord asking for his PAN and bank details for this rent app. He called back within 2 minutes — not to share details, but to ask if I'm in some kind of trouble. He said 'don't share my details with any app-shapp, I don't trust these things.' He's a retired government officer from Rajajinagar — his pension goes to SBI and that's the only bank he trusts.",
+          "I WhatsApped my landlord asking for his PAN and bank details for this rent app. He called back within 2 minutes, not to share details, but to ask if I'm in some kind of trouble. He said 'don't share my details with any app-shapp, I don't trust these things.' He's a retired government officer from Rajajinagar, his pension goes to SBI and that's the only bank he trusts.",
         reasoning:
           "Landlord actively hostile to sharing financial details with fintech platforms. Tenant cannot override.",
         emotional_state: "defeated",
@@ -695,7 +695,7 @@ export const flentSimData: SimulationData = {
         persona_label: "26yo Freelance Designer, Koramangala",
         behavioral_archetype: "The Bootstrapper",
         internal_monologue:
-          "My rent is ₹16,000 to a local aunty in Jayanagar 4th Block. She collects rent in cash on the 1st — she literally comes to my door. She doesn't have a bank account that I know of, and asking for her PAN would be like asking for her Aadhaar-linked phone number. She'd ask my parents if I'm okay. This feature is for people with professional landlords, not for people renting from neighborhood aunties.",
+          "My rent is ₹16,000 to a local aunty in Jayanagar 4th Block. She collects rent in cash on the 1st, she literally comes to my door. She doesn't have a bank account that I know of, and asking for her PAN would be like asking for her Aadhaar-linked phone number. She'd ask my parents if I'm okay. This feature is for people with professional landlords, not for people renting from neighborhood aunties.",
         reasoning:
           "Cash-only landlord with no digital footprint. Flent's assumption of banked, PAN-holding landlords doesn't match reality.",
         emotional_state: "amused_but_stuck",
@@ -721,9 +721,9 @@ export const flentSimData: SimulationData = {
         persona_label: "22yo Support Engineer, Hebbal",
         behavioral_archetype: "The First-Jobber",
         internal_monologue:
-          "My parents are paying part of my rent. My landlord's son collected the deposit and gave us a receipt. I don't even know the actual landlord's name — it's the son who handles everything. Which person's PAN do I enter? The son said he'll 'ask his father' but that was 3 days ago. I'm not going to chase them for PAN just to get ₹140/month cashback.",
+          "My parents are paying part of my rent. My landlord's son collected the deposit and gave us a receipt. I don't even know the actual landlord's name, it's the son who handles everything. Which person's PAN do I enter? The son said he'll 'ask his father' but that was 3 days ago. I'm not going to chase them for PAN just to get ₹140/month cashback.",
         reasoning:
-          "Proxy landlord management — tenant doesn't have direct relationship with property owner.",
+          "Proxy landlord management, tenant doesn't have direct relationship with property owner.",
         emotional_state: "impatient",
         trust_score: 4,
         clarity_score: 4,
@@ -736,9 +736,9 @@ export const flentSimData: SimulationData = {
         persona_label: "38yo NRI Landlord, Dubai (owns 2 BLR flats)",
         behavioral_archetype: "The Blocked Landlord",
         internal_monologue:
-          "I own two flats in Whitefield that I manage from Dubai. My tenants told me about Flent Secured and the ₹1.5 lakh insurance sounded great — that's real protection for my rental income. But I can't even register because I have a UAE number. I disconnected my Indian SIM years ago. Am I supposed to get an Indian number just for this app?",
+          "I own two flats in Whitefield that I manage from Dubai. My tenants told me about Flent Secured and the ₹1.5 lakh insurance sounded great, that's real protection for my rental income. But I can't even register because I have a UAE number. I disconnected my Indian SIM years ago. Am I supposed to get an Indian number just for this app?",
         reasoning:
-          "Structurally blocked — foreign phone number not accepted. NRI landlords are a valuable but excluded segment.",
+          "Structurally blocked, foreign phone number not accepted. NRI landlords are a valuable but excluded segment.",
         emotional_state: "frustrated",
         trust_score: 6,
         clarity_score: 7,
@@ -764,7 +764,7 @@ export const flentSimData: SimulationData = {
         persona_label: "52yo Landlord-Investor, HSR Layout",
         behavioral_archetype: "The Property Optimizer",
         internal_monologue:
-          "I spent 20 minutes filling out everything — my property details, tenant info, bank account, PAN. And now it says '72-hour review period' and I'm on a 'waitlist'? Waitlist for what? To insure MY property? I own 3 flats. I'm the customer here. If you want landlords to sign up, don't make them feel like they're applying for a job. I'll check back in a week but this better not be one of those 'exclusive launch' gimmicks.",
+          "I spent 20 minutes filling out everything, my property details, tenant info, bank account, PAN. And now it says '72-hour review period' and I'm on a 'waitlist'? Waitlist for what? To insure MY property? I own 3 flats. I'm the customer here. If you want landlords to sign up, don't make them feel like they're applying for a job. I'll check back in a week but this better not be one of those 'exclusive launch' gimmicks.",
         reasoning:
           "High-value landlord perceives waitlist as disrespectful of their time and status. 72-hour gate after full data submission creates trust deficit.",
         emotional_state: "indignant",
@@ -777,7 +777,7 @@ export const flentSimData: SimulationData = {
         persona_label: "55yo Property Investor, Koramangala",
         behavioral_archetype: "The Property Optimizer",
         internal_monologue:
-          "So I've given Flent my PAN, bank details, property documents, and tenant information. And now I wait 72 hours to find out if I 'qualify'? Qualify for what — paying for my own insurance? The ₹1.5L coverage sounded reasonable but if there's a 3-month activation period on top of this waitlist, I'm looking at 4+ months before any actual protection. My current insurance broker can set up a policy in 48 hours.",
+          "So I've given Flent my PAN, bank details, property documents, and tenant information. And now I wait 72 hours to find out if I 'qualify'? Qualify for what, paying for my own insurance? The ₹1.5L coverage sounded reasonable but if there's a 3-month activation period on top of this waitlist, I'm looking at 4+ months before any actual protection. My current insurance broker can set up a policy in 48 hours.",
         reasoning:
           "Comparing Flent's activation timeline unfavorably to traditional insurance channels. Combined delays erode value proposition.",
         emotional_state: "skeptical",
@@ -792,10 +792,10 @@ export const flentSimData: SimulationData = {
   fix_recommendations: [
     {
       root_cause:
-        "Users without formal rental agreements are blocked — verbal and physical-only arrangements have no upload path",
+        "Users without formal rental agreements are blocked, verbal and physical-only arrangements have no upload path",
       screen: "rental_agreement",
       recommendation:
-        "Allow self-declaration for rent amount when formal agreement doesn't exist — verify via 3 months of UPI transaction history instead",
+        "Allow self-declaration for rent amount when formal agreement doesn't exist, verify via 3 months of UPI transaction history instead",
       estimated_impact: "high",
       feasibility: "high",
       impact_feasibility_score: 9,
@@ -808,7 +808,7 @@ export const flentSimData: SimulationData = {
         "Tenants don't have landlord's PAN/bank details and requesting them damages the tenant-landlord relationship",
       screen: "landlord_bank",
       recommendation:
-        "Make landlord bank details optional at signup — let tenant pay to Flent's escrow, handle landlord payout via phone call",
+        "Make landlord bank details optional at signup, let tenant pay to Flent's escrow, handle landlord payout via phone call",
       estimated_impact: "high",
       feasibility: "medium",
       impact_feasibility_score: 8,
@@ -818,10 +818,10 @@ export const flentSimData: SimulationData = {
     },
     {
       root_cause:
-        "Tenants are uncomfortable asking landlords to join an unknown platform — landlord communication burden falls entirely on tenant",
+        "Tenants are uncomfortable asking landlords to join an unknown platform, landlord communication burden falls entirely on tenant",
       screen: "landlord_bank",
       recommendation:
-        "Add WhatsApp-based landlord invite with pre-filled message — don't make tenant explain the product themselves",
+        "Add WhatsApp-based landlord invite with pre-filled message, don't make tenant explain the product themselves",
       estimated_impact: "medium",
       feasibility: "high",
       impact_feasibility_score: 7,
@@ -834,7 +834,7 @@ export const flentSimData: SimulationData = {
         "NRI landlords with foreign phone numbers are completely excluded from the platform despite controlling significant urban rental inventory",
       screen: "registration",
       recommendation:
-        "Support NRI phone numbers for landlord accounts — they control significant Bangalore rental inventory",
+        "Support NRI phone numbers for landlord accounts, they control significant Bangalore rental inventory",
       estimated_impact: "medium",
       feasibility: "medium",
       impact_feasibility_score: 6,
@@ -844,10 +844,10 @@ export const flentSimData: SimulationData = {
     },
     {
       root_cause:
-        "72-hour review waitlist after full onboarding creates resentment — users feel they shared personal data for uncertain outcome",
+        "72-hour review waitlist after full onboarding creates resentment, users feel they shared personal data for uncertain outcome",
       screen: "application_status",
       recommendation:
-        "Remove waitlist/72-hour gate for qualified applicants — the uncertainty after effort creates resentment",
+        "Remove waitlist/72-hour gate for qualified applicants, the uncertainty after effort creates resentment",
       estimated_impact: "medium",
       feasibility: "high",
       impact_feasibility_score: 5,
@@ -878,7 +878,7 @@ export const flentSimData: SimulationData = {
         marital_status: "Unmarried",
       },
       professional_background:
-        "SDE-3 at a product startup in Koramangala. ₹24L CTC. Pays everything on HDFC Infinia — tracks reward points in a spreadsheet. Rent ₹35K for 1BHK in HSR Layout.",
+        "SDE-3 at a product startup in Koramangala. ₹24L CTC. Pays everything on HDFC Infinia, tracks reward points in a spreadsheet. Rent ₹35K for 1BHK in HSR Layout.",
       cultural_background:
         "Grew up in Mysuru, engineering from RVCE. Lives alone in HSR Layout. Active on r/IndianCreditCards.",
       outcome: "completed",
@@ -891,7 +891,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "landing",
           view_name: "Landing Page",
-          internal_monologue: "'Rent that rewards you' — okay, let me see the math. 1% cashback on rent payments via credit card? This is exactly what's been missing.",
+          internal_monologue: "'Rent that rewards you', okay, let me see the math. 1% cashback on rent payments via credit card? This is exactly what's been missing.",
           reasoning: "Immediately frames value in reward-point optimization terms",
           emotional_state: "interested",
           friction_points: [],
@@ -905,7 +905,7 @@ export const flentSimData: SimulationData = {
           screen_id: "value_cashback",
           view_name: "Cashback Value Proposition",
           internal_monologue: "1% flat cashback. No cap mentioned. On ₹35K rent that's ₹350/month, ₹4,200/year. Plus credit card rewards on top? If this stacks with my Infinia 3.3X, I'm getting 4.3% effective return on rent spend. Need to verify stacking.",
-          reasoning: "Calculating exact yield to the decimal — comparing against CRED and other options",
+          reasoning: "Calculating exact yield to the decimal, comparing against CRED and other options",
           emotional_state: "excited",
           friction_points: [],
           decision_outcome: "CONTINUE",
@@ -917,8 +917,8 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "value_benefits",
           view_name: "Credit Card Float Benefits",
-          internal_monologue: "Credit card float on rent — this is the real value. My rent due date is 1st, credit card due date is 5th of next month. That's 35 days of ₹35K sitting in my Zerodha liquid fund instead of landlord's account. At 6.5% liquid fund return, that's about ₹200/month. Small but it compounds.",
-          reasoning: "Float arbitrage calculation — exactly the behavior this feature targets",
+          internal_monologue: "Credit card float on rent, this is the real value. My rent due date is 1st, credit card due date is 5th of next month. That's 35 days of ₹35K sitting in my Zerodha liquid fund instead of landlord's account. At 6.5% liquid fund return, that's about ₹200/month. Small but it compounds.",
+          reasoning: "Float arbitrage calculation, exactly the behavior this feature targets",
           emotional_state: "impressed",
           friction_points: [],
           decision_outcome: "CONTINUE",
@@ -930,7 +930,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "value_landlord",
           view_name: "Landlord Insurance Value",
-          internal_monologue: "₹1.5L insurance for landlord — smart positioning. My landlord in HSR is a techie himself, he'll appreciate this. Makes the pitch easier when I tell him about Flent.",
+          internal_monologue: "₹1.5L insurance for landlord, smart positioning. My landlord in HSR is a techie himself, he'll appreciate this. Makes the pitch easier when I tell him about Flent.",
           reasoning: "Sees landlord value prop as a tool to get landlord buy-in",
           emotional_state: "strategic",
           friction_points: [],
@@ -943,7 +943,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "registration",
           view_name: "Registration",
-          internal_monologue: "Standard. Using my Jio number — same one on every fintech app.",
+          internal_monologue: "Standard. Using my Jio number, same one on every fintech app.",
           reasoning: "Routine fintech registration",
           emotional_state: "neutral",
           friction_points: [],
@@ -969,7 +969,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "rental_agreement",
           view_name: "Rental Agreement Upload",
-          internal_monologue: "I have my agreement as a PDF from NoBroker — we signed digitally when I moved in 6 months ago. Uploading... done.",
+          internal_monologue: "I have my agreement as a PDF from NoBroker, we signed digitally when I moved in 6 months ago. Uploading... done.",
           reasoning: "Digital-native renter with organized documents",
           emotional_state: "smooth",
           friction_points: [],
@@ -982,7 +982,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "landlord_bank",
           view_name: "Landlord Bank Details",
-          internal_monologue: "I need landlord's PAN and bank details. He's a tech PM at Flipkart — let me WhatsApp him. He responded in 2 minutes with all details. Easy when your landlord is also a millennial.",
+          internal_monologue: "I need landlord's PAN and bank details. He's a tech PM at Flipkart, let me WhatsApp him. He responded in 2 minutes with all details. Easy when your landlord is also a millennial.",
           reasoning: "Tech-savvy landlord enables frictionless completion",
           emotional_state: "smooth",
           friction_points: [],
@@ -995,7 +995,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "application_status",
           view_name: "Application Status",
-          internal_monologue: "Under review, 72-hour wait. That's fine — I'm not in a rush. As long as it's active before next month's rent. Already calculating my annual reward optimization.",
+          internal_monologue: "Under review, 72-hour wait. That's fine, I'm not in a rush. As long as it's active before next month's rent. Already calculating my annual reward optimization.",
           reasoning: "Patient because value case is clear",
           emotional_state: "optimistic",
           friction_points: ["72-hour wait is unnecessary friction for verified users"],
@@ -1020,7 +1020,7 @@ export const flentSimData: SimulationData = {
         marital_status: "Unmarried",
       },
       professional_background:
-        "PM at a fintech startup in Lower Parel. ₹32L CTC. Amex Platinum user — maximizes lounge access and cashback across 3 cards. Rent ₹45K for 2BHK in Bandra West.",
+        "PM at a fintech startup in Lower Parel. ₹32L CTC. Amex Platinum user, maximizes lounge access and cashback across 3 cards. Rent ₹45K for 2BHK in Bandra West.",
       cultural_background:
         "Delhi girl, moved to Mumbai for career. Lives with college friend. Tracks spend on Walnut app.",
       outcome: "completed",
@@ -1028,7 +1028,7 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 68,
       overall_monologue:
-        "₹45K rent is my single biggest monthly expense and the only one that doesn't earn me card rewards. Flent gives me 1% cashback (₹450/month = ₹5,400/year) PLUS I can route through Amex for MR points. That's like getting a free domestic flight every year just from rent. My landlord is a Bandra socialite who loves anything 'premium' — she'll be thrilled about the insurance. Signed up, uploaded agreement from my Google Drive, done.",
+        "₹45K rent is my single biggest monthly expense and the only one that doesn't earn me card rewards. Flent gives me 1% cashback (₹450/month = ₹5,400/year) PLUS I can route through Amex for MR points. That's like getting a free domestic flight every year just from rent. My landlord is a Bandra socialite who loves anything 'premium', she'll be thrilled about the insurance. Signed up, uploaded agreement from my Google Drive, done.",
       screen_monologues: [
         {
           screen_id: "landing",
@@ -1054,7 +1054,7 @@ export const flentSimData: SimulationData = {
           screen_id: "application_status",
           view_name: "Application Status",
           internal_monologue: "72-hour review. Fine. I'll set a calendar reminder. Next month's rent goes through Flent.",
-          reasoning: "Organized and patient — has already captured the value",
+          reasoning: "Organized and patient, has already captured the value",
           emotional_state: "satisfied",
           friction_points: [],
           decision_outcome: "CONTINUE",
@@ -1083,13 +1083,13 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 78,
       overall_monologue:
-        "CRED charges 1% + GST for rent via credit card. Flent gives 1% back. The delta is massive — instead of paying ₹520 to CRED, I'm earning ₹520 from Flent. That's a ₹1,040/month swing on ₹52K rent. ₹12,480/year. Plus the credit card float is 35 days on ₹52K — that's real money in overnight TREPS. My landlord in Indiranagar is a startup founder, he was already asking about rent automation.",
+        "CRED charges 1% + GST for rent via credit card. Flent gives 1% back. The delta is massive, instead of paying ₹520 to CRED, I'm earning ₹520 from Flent. That's a ₹1,040/month swing on ₹52K rent. ₹12,480/year. Plus the credit card float is 35 days on ₹52K, that's real money in overnight TREPS. My landlord in Indiranagar is a startup founder, he was already asking about rent automation.",
       screen_monologues: [
         {
           screen_id: "value_cashback",
           view_name: "Cashback Value Proposition",
-          internal_monologue: "Wait — CRED charges me 1% to pay rent via card, and Flent gives me 1% back? That's a 2% swing. On ₹52K that's ₹1,040/month I'm leaving on the table. Why didn't I find this sooner?",
-          reasoning: "Direct comparison with CRED — calculates the opportunity cost of current setup",
+          internal_monologue: "Wait, CRED charges me 1% to pay rent via card, and Flent gives me 1% back? That's a 2% swing. On ₹52K that's ₹1,040/month I'm leaving on the table. Why didn't I find this sooner?",
+          reasoning: "Direct comparison with CRED, calculates the opportunity cost of current setup",
           emotional_state: "eureka",
           friction_points: [],
           decision_outcome: "CONTINUE",
@@ -1120,7 +1120,7 @@ export const flentSimData: SimulationData = {
         marital_status: "Unmarried",
       },
       professional_background:
-        "Associate at a Big 4. ₹18L CTC. HDFC Regalia user — obsessed with airport lounge access. Rent ₹28K for 1BHK in Powai.",
+        "Associate at a Big 4. ₹18L CTC. HDFC Regalia user, obsessed with airport lounge access. Rent ₹28K for 1BHK in Powai.",
       cultural_background:
         "From Lucknow, XLRI grad. Travels weekly for work. Every spend is optimized for Regalia milestone benefits.",
       outcome: "completed",
@@ -1133,7 +1133,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "application_status",
           view_name: "Application Status",
-          internal_monologue: "72-hour wait. Fine — I'll hit my Regalia milestone this month regardless. Flent is gravy.",
+          internal_monologue: "72-hour wait. Fine, I'll hit my Regalia milestone this month regardless. Flent is gravy.",
           reasoning: "Already optimizing around existing card strategy",
           emotional_state: "pleased",
           friction_points: [],
@@ -1163,12 +1163,12 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 80,
       overall_monologue:
-        "₹20K rent × 1% = ₹200/month. Not huge, but it's money I was leaving on the table. The credit card float is more interesting — 35 days of ₹20K in my Parag Parikh Liquid Fund. But the real win is that my rent spend finally shows up on my credit card statement for higher credit limit eligibility. ₹2.4L annual rent spend on my HDFC Millennia should push me toward Infinia upgrade eligibility.",
+        "₹20K rent × 1% = ₹200/month. Not huge, but it's money I was leaving on the table. The credit card float is more interesting, 35 days of ₹20K in my Parag Parikh Liquid Fund. But the real win is that my rent spend finally shows up on my credit card statement for higher credit limit eligibility. ₹2.4L annual rent spend on my HDFC Millennia should push me toward Infinia upgrade eligibility.",
       screen_monologues: [
         {
           screen_id: "application_status",
           view_name: "Application Status",
-          internal_monologue: "Under review. I've added it to my credit card optimization tracker. If approved, my total card spend jumps by ₹2.4L/year — that's Infinia territory.",
+          internal_monologue: "Under review. I've added it to my credit card optimization tracker. If approved, my total card spend jumps by ₹2.4L/year, that's Infinia territory.",
           reasoning: "Sees Flent as credit limit optimization tool beyond cashback",
           emotional_state: "strategic",
           friction_points: [],
@@ -1202,12 +1202,12 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 95,
       overall_monologue:
-        "The 10-month deposit for my BTM Layout apartment almost broke me. ₹1.8 lakh — that's 2 months of salary before tax. 'Zero deposits' on the landing page got me excited, but that seems to be a different Flent product. The 1% cashback is ₹180/month — not life-changing. But the 'formalized rent receipts' feature means I can claim HRA tax benefit properly. That's ₹15K+ in tax savings per year. My landlord is a young working professional, he gave me his PAN over WhatsApp in 5 minutes.",
+        "The 10-month deposit for my BTM Layout apartment almost broke me. ₹1.8 lakh, that's 2 months of salary before tax. 'Zero deposits' on the landing page got me excited, but that seems to be a different Flent product. The 1% cashback is ₹180/month, not life-changing. But the 'formalized rent receipts' feature means I can claim HRA tax benefit properly. That's ₹15K+ in tax savings per year. My landlord is a young working professional, he gave me his PAN over WhatsApp in 5 minutes.",
       screen_monologues: [
         {
           screen_id: "landing",
           view_name: "Landing Page",
-          internal_monologue: "'Zero deposits' — wait, is this about my ₹1.8L deposit? Oh, that's a different product. 'Rent that rewards' — okay, let me see what Secured offers.",
+          internal_monologue: "'Zero deposits', wait, is this about my ₹1.8L deposit? Oh, that's a different product. 'Rent that rewards', okay, let me see what Secured offers.",
           reasoning: "Initial hook is deposit-free living, but pivots to understanding Secured product",
           emotional_state: "slightly_disappointed_then_curious",
           friction_points: ["Zero deposit messaging creates expectation mismatch with Secured product"],
@@ -1221,9 +1221,9 @@ export const flentSimData: SimulationData = {
           screen_id: "value_cashback",
           view_name: "Cashback Value Proposition",
           internal_monologue: "₹180/month cashback. That's... one Swiggy order? Not amazing. But wait, formalized rent receipts for HRA? THAT's the value. My CA said I'm losing ₹15K/year in tax benefits because I don't have proper rent receipts.",
-          reasoning: "Reframes value from cashback to HRA tax benefit — much higher impact for this income bracket",
+          reasoning: "Reframes value from cashback to HRA tax benefit, much higher impact for this income bracket",
           emotional_state: "recalculating",
-          friction_points: ["1% on ₹18K feels small — HRA benefit should be highlighted for this segment"],
+          friction_points: ["1% on ₹18K feels small, HRA benefit should be highlighted for this segment"],
           decision_outcome: "CONTINUE",
           trust_score: 7,
           clarity_score: 8,
@@ -1233,7 +1233,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "rental_agreement",
           view_name: "Rental Agreement Upload",
-          internal_monologue: "I have my agreement — the broker did it on NoBroker when I moved in. It's in my email. Let me find it... here, the PDF. Uploading.",
+          internal_monologue: "I have my agreement, the broker did it on NoBroker when I moved in. It's in my email. Let me find it... here, the PDF. Uploading.",
           reasoning: "Recent rental with digital agreement via platform",
           emotional_state: "confident",
           friction_points: [],
@@ -1292,7 +1292,7 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 90,
       overall_monologue:
-        "I moved to Bangalore 2 months ago and the rental system here is wild — 10 months deposit, no proper receipts, landlords who communicate only through brokers. Flent feels like the first organized thing about Bangalore renting. ₹220/month cashback plus proper receipts plus the credit card float — it all adds up. My landlord is a retired professor, very methodical — he actually appreciated the formal receipt structure.",
+        "I moved to Bangalore 2 months ago and the rental system here is wild, 10 months deposit, no proper receipts, landlords who communicate only through brokers. Flent feels like the first organized thing about Bangalore renting. ₹220/month cashback plus proper receipts plus the credit card float, it all adds up. My landlord is a retired professor, very methodical, he actually appreciated the formal receipt structure.",
       screen_monologues: [
         {
           screen_id: "application_status",
@@ -1328,13 +1328,13 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 55,
       overall_monologue:
-        "I was excited about Flent until it asked me to upload a rental agreement. I don't have one. My room is a verbal arrangement with the building owner in Majestic — he said 'pay ₹12K by the 5th on GPay.' There's no paper, no PDF, nothing. This app is for people in nice apartments with proper leases. Not for someone sharing a room near the bus stand.",
+        "I was excited about Flent until it asked me to upload a rental agreement. I don't have one. My room is a verbal arrangement with the building owner in Majestic, he said 'pay ₹12K by the 5th on GPay.' There's no paper, no PDF, nothing. This app is for people in nice apartments with proper leases. Not for someone sharing a room near the bus stand.",
       screen_monologues: [
         {
           screen_id: "rental_agreement",
           view_name: "Rental Agreement Upload",
-          internal_monologue: "I'm renting a room in a 3BHK in Majestic area — it's a verbal arrangement with the building owner. There's no rental agreement. He just said 'pay ₹12,000 by the 5th every month via GPay.' How am I supposed to upload a PDF that doesn't exist? This app seems made for people in Koramangala paying ₹40K with proper agreements.",
-          reasoning: "No formal rental agreement exists — verbal arrangement is standard in budget rentals",
+          internal_monologue: "I'm renting a room in a 3BHK in Majestic area, it's a verbal arrangement with the building owner. There's no rental agreement. He just said 'pay ₹12,000 by the 5th every month via GPay.' How am I supposed to upload a PDF that doesn't exist? This app seems made for people in Koramangala paying ₹40K with proper agreements.",
+          reasoning: "No formal rental agreement exists, verbal arrangement is standard in budget rentals",
           emotional_state: "frustrated",
           friction_points: ["No formal agreement to upload", "Verbal rent arrangement has no documentation"],
           decision_outcome: "DROP_OFF",
@@ -1366,7 +1366,7 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 58,
       overall_monologue:
-        "The cashback was appealing — ₹150/month helps. But when it asked for rental agreement upload, I realized mine is on stamp paper in a file at home. I'd need to scan it and I don't have a scanner. I tried CamScanner but the pages were blurry. I'll come back when I figure out how to digitize this thing.",
+        "The cashback was appealing, ₹150/month helps. But when it asked for rental agreement upload, I realized mine is on stamp paper in a file at home. I'd need to scan it and I don't have a scanner. I tried CamScanner but the pages were blurry. I'll come back when I figure out how to digitize this thing.",
       screen_monologues: [
         {
           screen_id: "rental_agreement",
@@ -1404,12 +1404,12 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 88,
       overall_monologue:
-        "Solid product. 1% cashback on ₹20K = ₹200/month. Not huge, but the HRA tax receipts are the real win — my CA said proper rent receipts save me ₹12K/year in taxes. Landlord shared PAN quickly since he's also a techie. 72-hour wait is the only annoying part.",
+        "Solid product. 1% cashback on ₹20K = ₹200/month. Not huge, but the HRA tax receipts are the real win, my CA said proper rent receipts save me ₹12K/year in taxes. Landlord shared PAN quickly since he's also a techie. 72-hour wait is the only annoying part.",
       screen_monologues: [
         {
           screen_id: "application_status",
           view_name: "Application Status",
-          internal_monologue: "Done. 72-hour wait. Would prefer instant but I get it — they need to verify documents. Setting reminder.",
+          internal_monologue: "Done. 72-hour wait. Would prefer instant but I get it, they need to verify documents. Setting reminder.",
           reasoning: "Understands verification need but slightly impatient",
           emotional_state: "accepting",
           friction_points: [],
@@ -1435,7 +1435,7 @@ export const flentSimData: SimulationData = {
         marital_status: "Married",
       },
       professional_background:
-        "IT Director at a Dubai consultancy. Owns 2 flats in Whitefield, Bangalore — combined rental income ₹75K/month. Manages through a local property manager.",
+        "IT Director at a Dubai consultancy. Owns 2 flats in Whitefield, Bangalore, combined rental income ₹75K/month. Manages through a local property manager.",
       cultural_background:
         "From Lucknow originally. In Dubai 10 years. Wife and kids in Dubai. Indian SIM disconnected.",
       outcome: "dropped_off",
@@ -1443,7 +1443,7 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 45,
       overall_monologue:
-        "My tenants mentioned Flent Secured and the ₹1.5L insurance per flat caught my attention — that's real protection. I pay ₹8K/year for a basic rental insurance policy that covers almost nothing. But I can't register — Indian phone number only. I disconnected my Airtel SIM 5 years ago. I'm not getting an Indian number just for this. I'll wait until they support international numbers.",
+        "My tenants mentioned Flent Secured and the ₹1.5L insurance per flat caught my attention, that's real protection. I pay ₹8K/year for a basic rental insurance policy that covers almost nothing. But I can't register, Indian phone number only. I disconnected my Airtel SIM 5 years ago. I'm not getting an Indian number just for this. I'll wait until they support international numbers.",
       screen_monologues: [
         {
           screen_id: "landing",
@@ -1461,14 +1461,14 @@ export const flentSimData: SimulationData = {
           internal_monologue: "Cashback for tenants is fine. I care about the landlord protection. Let me skip ahead.",
           reasoning: "Tenant-facing benefit is irrelevant for landlord persona",
           emotional_state: "impatient",
-          friction_points: ["Value screens are tenant-focused — no fast path for landlord sign-up"],
+          friction_points: ["Value screens are tenant-focused, no fast path for landlord sign-up"],
           decision_outcome: "CONTINUE",
           trust_score: 7, clarity_score: 7, value_score: 6, time_seconds: 6,
         },
         {
           screen_id: "value_benefits",
           view_name: "Credit Card Float Benefits",
-          internal_monologue: "Credit card float — this is for tenants, not landlords. Where's the landlord sign-up?",
+          internal_monologue: "Credit card float, this is for tenants, not landlords. Where's the landlord sign-up?",
           reasoning: "Entire flow is tenant-oriented, no landlord-first path exists",
           emotional_state: "confused",
           friction_points: ["No dedicated landlord onboarding path"],
@@ -1478,7 +1478,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "value_landlord",
           view_name: "Landlord Insurance Value",
-          internal_monologue: "Finally — the landlord value prop. ₹1.5L coverage, automatic protection, claims process. This is what I want. Let me register now.",
+          internal_monologue: "Finally, the landlord value prop. ₹1.5L coverage, automatic protection, claims process. This is what I want. Let me register now.",
           reasoning: "Insurance details are compelling for property investor",
           emotional_state: "motivated",
           friction_points: [],
@@ -1489,7 +1489,7 @@ export const flentSimData: SimulationData = {
           screen_id: "registration",
           view_name: "Registration",
           internal_monologue: "Indian phone number only? I've been in Dubai for 10 years. My Indian SIM is disconnected. Am I supposed to get an Indian number just to insure my own property? Even HDFC Bank lets me use my UAE number for NRI services.",
-          reasoning: "Structurally blocked — foreign phone number not accepted",
+          reasoning: "Structurally blocked, foreign phone number not accepted",
           emotional_state: "frustrated",
           friction_points: ["Indian phone number only", "No NRI registration path"],
           decision_outcome: "DROP_OFF",
@@ -1510,7 +1510,7 @@ export const flentSimData: SimulationData = {
         marital_status: "Married",
       },
       professional_background:
-        "VP Eng at a Bay Area startup. Owns a 3BHK in Indiranagar — rental income ₹55K/month. Also owns a 2BHK in JP Nagar.",
+        "VP Eng at a Bay Area startup. Owns a 3BHK in Indiranagar, rental income ₹55K/month. Also owns a 2BHK in JP Nagar.",
       cultural_background:
         "Bangalorean. In US 18 years. Parents still live in Jayanagar. Manages flats through father + NoBroker.",
       outcome: "dropped_off",
@@ -1518,7 +1518,7 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 40,
       overall_monologue:
-        "I was searching for rental management platforms for my Bangalore flats. ₹1.5L insurance is great — my father handles tenant issues but he's 75. I need digital infrastructure. But Indian phone only. I have a US number. My Indian number expired in 2015. This is 2026 — even RazorpayX handles NRI accounts. Disappointing.",
+        "I was searching for rental management platforms for my Bangalore flats. ₹1.5L insurance is great, my father handles tenant issues but he's 75. I need digital infrastructure. But Indian phone only. I have a US number. My Indian number expired in 2015. This is 2026, even RazorpayX handles NRI accounts. Disappointing.",
       screen_monologues: [
         {
           screen_id: "registration",
@@ -1553,12 +1553,12 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 62,
       overall_monologue:
-        "Used my brother's Indian number to register since mine is UAE. Got through to OTP and then rental agreement. But my agreement is with the property management company, not directly with the tenant. The format doesn't match what Flent expects. Plus my NRI status means the PAN verification might flag — I have an NRE account, not a regular savings account. The whole flow isn't built for NRI landlords.",
+        "Used my brother's Indian number to register since mine is UAE. Got through to OTP and then rental agreement. But my agreement is with the property management company, not directly with the tenant. The format doesn't match what Flent expects. Plus my NRI status means the PAN verification might flag, I have an NRE account, not a regular savings account. The whole flow isn't built for NRI landlords.",
       screen_monologues: [
         {
           screen_id: "rental_agreement",
           view_name: "Rental Agreement Upload",
-          internal_monologue: "My agreement is between my property manager and the tenant — I'm not directly on it. The format Flent expects is a standard landlord-tenant agreement. Plus my NRI status creates complications with PAN and banking details. This isn't designed for people like me.",
+          internal_monologue: "My agreement is between my property manager and the tenant, I'm not directly on it. The format Flent expects is a standard landlord-tenant agreement. Plus my NRI status creates complications with PAN and banking details. This isn't designed for people like me.",
           reasoning: "NRI ownership structure doesn't fit standard landlord-tenant agreement format",
           emotional_state: "resigned",
           friction_points: ["Property management company intermediary", "NRI PAN/banking complications"],
@@ -1588,7 +1588,7 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 55,
       overall_monologue:
-        "The insurance pitch is compelling — ₹1.5L coverage would protect against the nightmare scenario where my Whitefield tenant stops paying. But I can't register with my US number, and the rental agreement is between my cousin (as my representative) and the tenant. Even if I got in, the bank details section would require my NRE account which probably isn't supported. I'll keep using NoBroker for now.",
+        "The insurance pitch is compelling, ₹1.5L coverage would protect against the nightmare scenario where my Whitefield tenant stops paying. But I can't register with my US number, and the rental agreement is between my cousin (as my representative) and the tenant. Even if I got in, the bank details section would require my NRE account which probably isn't supported. I'll keep using NoBroker for now.",
       screen_monologues: [
         {
           screen_id: "rental_agreement",
@@ -1623,13 +1623,13 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 22,
       overall_monologue:
-        "Saw the Flent Secured ad on LinkedIn. ₹1.5L insurance sounded interesting but this entire flow is tenant-focused — cashback on rent, credit card float. I'm a landlord. Where's the landlord portal? I don't want to wade through a tenant onboarding flow to get insurance for my properties. I'll wait until they have a direct landlord sign-up path.",
+        "Saw the Flent Secured ad on LinkedIn. ₹1.5L insurance sounded interesting but this entire flow is tenant-focused, cashback on rent, credit card float. I'm a landlord. Where's the landlord portal? I don't want to wade through a tenant onboarding flow to get insurance for my properties. I'll wait until they have a direct landlord sign-up path.",
       screen_monologues: [
         {
           screen_id: "landing",
           view_name: "Landing Page",
-          internal_monologue: "This is all about tenants getting cashback and credit card float. I'm a landlord sitting in Abu Dhabi — I want the ₹1.5L insurance, not cashback. Where's the landlord-first flow? I'm not going to go through a tenant onboarding to access landlord benefits. This isn't built for me.",
-          reasoning: "Landlord persona finds tenant-first flow alienating — no direct landlord entry point",
+          internal_monologue: "This is all about tenants getting cashback and credit card float. I'm a landlord sitting in Abu Dhabi, I want the ₹1.5L insurance, not cashback. Where's the landlord-first flow? I'm not going to go through a tenant onboarding to access landlord benefits. This isn't built for me.",
+          reasoning: "Landlord persona finds tenant-first flow alienating, no direct landlord entry point",
           emotional_state: "dismissive",
           friction_points: ["No landlord-first onboarding path", "Landing page entirely tenant-focused"],
           decision_outcome: "DROP_OFF",
@@ -1662,12 +1662,12 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 82,
       overall_monologue:
-        "₹55K rent × 1% = ₹550/month = ₹6,600/year. Plus credit card float on ₹55K for 35 days — that's ₹300+ in liquid fund returns monthly. Combined value: ~₹850/month, ₹10,200/year. Our corporate landlord (a housing company) was already set up on Flent — they sent us a link to connect. The insurance benefit sealed it for them. Seamless experience. The 72-hour wait is the only hiccup.",
+        "₹55K rent × 1% = ₹550/month = ₹6,600/year. Plus credit card float on ₹55K for 35 days, that's ₹300+ in liquid fund returns monthly. Combined value: ~₹850/month, ₹10,200/year. Our corporate landlord (a housing company) was already set up on Flent, they sent us a link to connect. The insurance benefit sealed it for them. Seamless experience. The 72-hour wait is the only hiccup.",
       screen_monologues: [
         {
           screen_id: "value_cashback",
           view_name: "Cashback Value Proposition",
-          internal_monologue: "₹550/month cashback on ₹55K rent. That covers our Netflix + Spotify + YouTube Premium combined. 'Rent working for you' — yes, exactly.",
+          internal_monologue: "₹550/month cashback on ₹55K rent. That covers our Netflix + Spotify + YouTube Premium combined. 'Rent working for you', yes, exactly.",
           reasoning: "Maps cashback to tangible subscription costs",
           emotional_state: "delighted",
           friction_points: [],
@@ -1707,7 +1707,7 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 78,
       overall_monologue:
-        "₹60K rent is our biggest line item. 1% = ₹600/month. On my Amex, that's additional MR points worth another ₹300. ₹900/month combined = ₹10,800/year. My Bandra landlord is a businessman — he appreciated the insurance angle. Uploaded our registered L&L agreement from the broker's email. Done.",
+        "₹60K rent is our biggest line item. 1% = ₹600/month. On my Amex, that's additional MR points worth another ₹300. ₹900/month combined = ₹10,800/year. My Bandra landlord is a businessman, he appreciated the insurance angle. Uploaded our registered L&L agreement from the broker's email. Done.",
       screen_monologues: [
         {
           screen_id: "application_status",
@@ -1772,19 +1772,19 @@ export const flentSimData: SimulationData = {
       professional_background:
         "She's VP Product (₹40L), he's an architect (₹20L). Combined ₹60L. Rent ₹65K for 4BHK in Sarjapur Road. Corporate-managed villa.",
       cultural_background:
-        "She's from Jaipur, he's Bangalorean. Both skeptical of new fintech — prefer established brands.",
+        "She's from Jaipur, he's Bangalorean. Both skeptical of new fintech, prefer established brands.",
       outcome: "dropped_off",
       key_selections: {},
       final_price_inr: null,
       total_time_seconds: 38,
       overall_monologue:
-        "The cashback was interesting — ₹650/month on our ₹65K rent. But when I saw the landlord insurance section, I realized our corporate landlord (a real estate company) already has their own insurance and payment infrastructure. They'd never switch to a new platform for a ₹1.5L policy when they have a ₹50Cr portfolio insurance. And we can't sign up without landlord participation. This product is for individual landlord-tenant arrangements, not corporate rentals.",
+        "The cashback was interesting, ₹650/month on our ₹65K rent. But when I saw the landlord insurance section, I realized our corporate landlord (a real estate company) already has their own insurance and payment infrastructure. They'd never switch to a new platform for a ₹1.5L policy when they have a ₹50Cr portfolio insurance. And we can't sign up without landlord participation. This product is for individual landlord-tenant arrangements, not corporate rentals.",
       screen_monologues: [
         {
           screen_id: "value_landlord",
           view_name: "Landlord Insurance Value",
           internal_monologue: "₹1.5L insurance? Our corporate landlord manages 200 apartments. They have enterprise-grade insurance. They'll never adopt a new platform for ₹1.5L coverage per unit. And if the landlord doesn't participate, the whole thing falls apart. This isn't for corporate-managed rentals.",
-          reasoning: "Corporate landlord has existing infrastructure — won't adopt Flent for marginal benefit",
+          reasoning: "Corporate landlord has existing infrastructure, won't adopt Flent for marginal benefit",
           emotional_state: "skeptical",
           friction_points: ["Corporate landlord won't adopt", "Product assumes individual landlord"],
           decision_outcome: "DROP_OFF",
@@ -1813,12 +1813,12 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 88,
       overall_monologue:
-        "₹500/month cashback plus credit card float. Our landlord is a retired IAS officer — very process-oriented. When I explained Flent's structure and the insurance benefit, he actually said 'this is how rent should always work.' He shared his details within an hour. The 72-hour review is a bit much but our landlord's enthusiasm makes me confident this will go through.",
+        "₹500/month cashback plus credit card float. Our landlord is a retired IAS officer, very process-oriented. When I explained Flent's structure and the insurance benefit, he actually said 'this is how rent should always work.' He shared his details within an hour. The 72-hour review is a bit much but our landlord's enthusiasm makes me confident this will go through.",
       screen_monologues: [
         {
           screen_id: "landlord_bank",
           view_name: "Landlord Bank Details",
-          internal_monologue: "Called our landlord — retired IAS officer. Explained the insurance benefit. He said 'this is proper governance for rent, I'll share my details.' Got PAN and account number in 30 minutes. This is what happens when your landlord values structure.",
+          internal_monologue: "Called our landlord, retired IAS officer. Explained the insurance benefit. He said 'this is proper governance for rent, I'll share my details.' Got PAN and account number in 30 minutes. This is what happens when your landlord values structure.",
           reasoning: "Process-oriented landlord appreciates formalization",
           emotional_state: "smooth",
           friction_points: [],
@@ -1852,12 +1852,12 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 92,
       overall_monologue:
-        "₹160/month cashback? That's barely a cutting chai at Third Wave. But the credit card float — now that's interesting. My cash flow is lumpy — some months I have ₹50K from freelance, some months ₹5K. If I can delay rent outflow by 35 days via credit card, that gives me breathing room during dry months. My landlord is a young architect, she was chill about sharing details. The value is in the float, not the cashback.",
+        "₹160/month cashback? That's barely a cutting chai at Third Wave. But the credit card float, now that's interesting. My cash flow is lumpy, some months I have ₹50K from freelance, some months ₹5K. If I can delay rent outflow by 35 days via credit card, that gives me breathing room during dry months. My landlord is a young architect, she was chill about sharing details. The value is in the float, not the cashback.",
       screen_monologues: [
         {
           screen_id: "value_cashback",
           view_name: "Cashback Value Proposition",
-          internal_monologue: "1% on ₹16K = ₹160. That's one auto ride. But wait — credit card float? If I can pay rent on card and get 35 extra days... that's the real value for someone with my cash flow pattern.",
+          internal_monologue: "1% on ₹16K = ₹160. That's one auto ride. But wait, credit card float? If I can pay rent on card and get 35 extra days... that's the real value for someone with my cash flow pattern.",
           reasoning: "Reframes from cashback to cash flow management tool",
           emotional_state: "recalculating",
           friction_points: ["1% on low rent is underwhelming"],
@@ -1897,12 +1897,12 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 65,
       overall_monologue:
-        "The credit card float was appealing for my irregular income months. But then it asked for landlord's PAN and bank details. My landlord is a local aunty who collects rent in cash on the 1st — she literally comes to my door. She doesn't have a bank account that I know of, and asking for her PAN would be like asking for her Aadhaar. She'd call my parents asking if I'm okay.",
+        "The credit card float was appealing for my irregular income months. But then it asked for landlord's PAN and bank details. My landlord is a local aunty who collects rent in cash on the 1st, she literally comes to my door. She doesn't have a bank account that I know of, and asking for her PAN would be like asking for her Aadhaar. She'd call my parents asking if I'm okay.",
       screen_monologues: [
         {
           screen_id: "landlord_bank",
           view_name: "Landlord Bank Details",
-          internal_monologue: "My rent is ₹16,000 to a local aunty in Jayanagar 4th Block. She collects rent in cash on the 1st — she literally comes to my door. She doesn't have a bank account that I know of, and asking for her PAN would be like asking for her Aadhaar-linked phone number. She'd ask my parents if I'm okay. This feature is for people with professional landlords, not for people renting from neighborhood aunties.",
+          internal_monologue: "My rent is ₹16,000 to a local aunty in Jayanagar 4th Block. She collects rent in cash on the 1st, she literally comes to my door. She doesn't have a bank account that I know of, and asking for her PAN would be like asking for her Aadhaar-linked phone number. She'd ask my parents if I'm okay. This feature is for people with professional landlords, not for people renting from neighborhood aunties.",
           reasoning: "Cash-only landlord with no digital footprint. Flent's assumptions don't match reality.",
           emotional_state: "amused_but_stuck",
           friction_points: ["Cash-only landlord", "No PAN/bank details available"],
@@ -1967,7 +1967,7 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 98,
       overall_monologue:
-        "The cashback is small but the credit card float is a lifesaver. My app revenue comes in waves — sometimes I'm flush, sometimes scraping by. Paying rent on credit card and having 35 extra days means I can wait for the Google Play payout before the card bill hits. My landlord is a young professional who was fine sharing details. Win.",
+        "The cashback is small but the credit card float is a lifesaver. My app revenue comes in waves, sometimes I'm flush, sometimes scraping by. Paying rent on credit card and having 35 extra days means I can wait for the Google Play payout before the card bill hits. My landlord is a young professional who was fine sharing details. Win.",
       screen_monologues: [
         {
           screen_id: "application_status",
@@ -2002,12 +2002,12 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 50,
       overall_monologue:
-        "I'm in a PG — I don't have a rental agreement with the building owner. The PG warden collects ₹8,500 from me and I don't even know the actual property owner's name. Flent assumes I have a direct landlord relationship. PG accommodation doesn't work that way. I'll revisit when I graduate to my own apartment.",
+        "I'm in a PG, I don't have a rental agreement with the building owner. The PG warden collects ₹8,500 from me and I don't even know the actual property owner's name. Flent assumes I have a direct landlord relationship. PG accommodation doesn't work that way. I'll revisit when I graduate to my own apartment.",
       screen_monologues: [
         {
           screen_id: "rental_agreement",
           view_name: "Rental Agreement Upload",
-          internal_monologue: "I'm in a PG in Electronic City — the PG owner has one master lease for the building, not individual agreements with each tenant. My name isn't on any agreement. I just pay ₹8,500/month to the PG warden via PhonePe. Flent assumes I have a one-to-one landlord relationship that simply doesn't exist in PG accommodation. Maybe I'll revisit when I get my own apartment.",
+          internal_monologue: "I'm in a PG in Electronic City, the PG owner has one master lease for the building, not individual agreements with each tenant. My name isn't on any agreement. I just pay ₹8,500/month to the PG warden via PhonePe. Flent assumes I have a one-to-one landlord relationship that simply doesn't exist in PG accommodation. Maybe I'll revisit when I get my own apartment.",
           reasoning: "PG/shared accommodation model doesn't map to Flent's assumption",
           emotional_state: "resigned",
           friction_points: ["No individual rental agreement in PG", "No direct landlord relationship"],
@@ -2041,13 +2041,13 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 70,
       overall_monologue:
-        "'Welcome to the right side of renting' — finally someone who gets it. Renting is a financial strategy, not a compromise. ₹58K rent × 1% = ₹580/month. But the real play is the credit card float — ₹58K sitting in my Nifty 50 index fund for 35 extra days per month compounds to ~₹4,000/year. My landlord is a doctor who lives abroad — very organized, shared details immediately. This product understands the intentional renter.",
+        "'Welcome to the right side of renting', finally someone who gets it. Renting is a financial strategy, not a compromise. ₹58K rent × 1% = ₹580/month. But the real play is the credit card float, ₹58K sitting in my Nifty 50 index fund for 35 extra days per month compounds to ~₹4,000/year. My landlord is a doctor who lives abroad, very organized, shared details immediately. This product understands the intentional renter.",
       screen_monologues: [
         {
           screen_id: "landing",
           view_name: "Landing Page",
-          internal_monologue: "'Rent that rewards you' — finally, a product that doesn't treat renting as a failure. I deliberately rent to invest the EMI differential. Flent gets this.",
-          reasoning: "Identity validation — product messaging aligns with deliberate-renter philosophy",
+          internal_monologue: "'Rent that rewards you', finally, a product that doesn't treat renting as a failure. I deliberately rent to invest the EMI differential. Flent gets this.",
+          reasoning: "Identity validation, product messaging aligns with deliberate-renter philosophy",
           emotional_state: "validated",
           friction_points: [],
           decision_outcome: "CONTINUE",
@@ -2076,7 +2076,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "value_landlord",
           view_name: "Landlord Insurance Value",
-          internal_monologue: "₹1.5L insurance — my landlord lives in London, this gives him peace of mind. Good for building the relationship.",
+          internal_monologue: "₹1.5L insurance, my landlord lives in London, this gives him peace of mind. Good for building the relationship.",
           reasoning: "Landlord benefit as relationship management tool",
           emotional_state: "thoughtful",
           friction_points: [],
@@ -2106,7 +2106,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "rental_agreement",
           view_name: "Rental Agreement Upload",
-          internal_monologue: "Have my registered agreement as PDF — always keep a digital copy. Uploaded in seconds.",
+          internal_monologue: "Have my registered agreement as PDF, always keep a digital copy. Uploaded in seconds.",
           reasoning: "Organized, digitally-native user with proper documentation",
           emotional_state: "smooth",
           friction_points: [],
@@ -2116,7 +2116,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "landlord_bank",
           view_name: "Landlord Bank Details",
-          internal_monologue: "My landlord in London responded to my WhatsApp in 10 minutes. He's a doctor — organized. PAN, account number, IFSC. Done.",
+          internal_monologue: "My landlord in London responded to my WhatsApp in 10 minutes. He's a doctor, organized. PAN, account number, IFSC. Done.",
           reasoning: "Professional, responsive landlord enables frictionless completion",
           emotional_state: "smooth",
           friction_points: [],
@@ -2145,7 +2145,7 @@ export const flentSimData: SimulationData = {
       key_selections: {},
       final_price_inr: null,
       total_time_seconds: 68,
-      overall_monologue: "₹620/month cashback + credit card float on ₹62K. My rent is my cheapest investment — I get to live in Koramangala AND earn returns on the money that would otherwise be locked in a house. Flent amplifies this strategy. Landlord is a startup founder, shared details instantly.",
+      overall_monologue: "₹620/month cashback + credit card float on ₹62K. My rent is my cheapest investment, I get to live in Koramangala AND earn returns on the money that would otherwise be locked in a house. Flent amplifies this strategy. Landlord is a startup founder, shared details instantly.",
       screen_monologues: [
         { screen_id: "application_status", view_name: "Application Status", internal_monologue: "72-hour wait. No rush. My rent-to-invest strategy just got a cashback multiplier.", reasoning: "Long-term financial strategy validation", emotional_state: "content", friction_points: [], decision_outcome: "CONTINUE", trust_score: 7, clarity_score: 7, value_score: 9, time_seconds: 4 },
       ],
@@ -2153,15 +2153,15 @@ export const flentSimData: SimulationData = {
     {
       persona_uuid: "flent-persona-028",
       demographics: { first_language: "Hindi", age: 35, occupation: "Senior Engineering Manager", district: "Mumbai Suburban", behavioral_archetype: "The Intentional Renter" },
-      professional_background: "Senior EM at a fintech. ₹48L CTC. Rent ₹55K for 2BHK in Andheri West. Could buy — chooses not to.",
+      professional_background: "Senior EM at a fintech. ₹48L CTC. Rent ₹55K for 2BHK in Andheri West. Could buy, chooses not to.",
       cultural_background: "From Varanasi. Wharton MBA. Views home ownership as a liability in Indian metros.",
       outcome: "completed",
       key_selections: {},
       final_price_inr: null,
       total_time_seconds: 75,
-      overall_monologue: "₹550/month cashback on ₹55K Andheri rent. My landlord is a developer (builder, not software) — he loved the insurance angle. 'Finally something that protects my rental income,' he said. Done in 75 seconds. The product gets that renting can be deliberate, not desperate.",
+      overall_monologue: "₹550/month cashback on ₹55K Andheri rent. My landlord is a developer (builder, not software), he loved the insurance angle. 'Finally something that protects my rental income,' he said. Done in 75 seconds. The product gets that renting can be deliberate, not desperate.",
       screen_monologues: [
-        { screen_id: "application_status", view_name: "Application Status", internal_monologue: "Review period. My landlord is more excited than me — he's already asking when the insurance activates.", reasoning: "Landlord enthusiasm validates product-market fit", emotional_state: "amused", friction_points: [], decision_outcome: "CONTINUE", trust_score: 7, clarity_score: 7, value_score: 8, time_seconds: 4 },
+        { screen_id: "application_status", view_name: "Application Status", internal_monologue: "Review period. My landlord is more excited than me, he's already asking when the insurance activates.", reasoning: "Landlord enthusiasm validates product-market fit", emotional_state: "amused", friction_points: [], decision_outcome: "CONTINUE", trust_score: 7, clarity_score: 7, value_score: 8, time_seconds: 4 },
       ],
     },
     {
@@ -2173,7 +2173,7 @@ export const flentSimData: SimulationData = {
       key_selections: {},
       final_price_inr: null,
       total_time_seconds: 72,
-      overall_monologue: "₹520/month cashback + float value. Writing a Twitter thread about Flent — 'Finally a product that monetizes the rent-vs-buy arbitrage.' My landlord in Whitefield is a retired IT professional, very systematic. Shared PAN before I even asked.",
+      overall_monologue: "₹520/month cashback + float value. Writing a Twitter thread about Flent, 'Finally a product that monetizes the rent-vs-buy arbitrage.' My landlord in Whitefield is a retired IT professional, very systematic. Shared PAN before I even asked.",
       screen_monologues: [
         { screen_id: "application_status", view_name: "Application Status", internal_monologue: "72 hours. I'll write my Twitter thread while I wait. This product is content gold for the rent-vs-buy debate.", reasoning: "Content creation opportunity", emotional_state: "inspired", friction_points: [], decision_outcome: "CONTINUE", trust_score: 7, clarity_score: 7, value_score: 9, time_seconds: 4 },
       ],
@@ -2187,7 +2187,7 @@ export const flentSimData: SimulationData = {
       key_selections: {},
       final_price_inr: null,
       total_time_seconds: 78,
-      overall_monologue: "₹450/month cashback. Both my wife and I claim HRA — combined tax savings of ₹40K/year from renting. Flent adds another ₹5,400/year in cashback. Our landlord is a family friend — shared details over dinner. The whole setup took one evening.",
+      overall_monologue: "₹450/month cashback. Both my wife and I claim HRA, combined tax savings of ₹40K/year from renting. Flent adds another ₹5,400/year in cashback. Our landlord is a family friend, shared details over dinner. The whole setup took one evening.",
       screen_monologues: [
         { screen_id: "application_status", view_name: "Application Status", internal_monologue: "Done. Adding Flent cashback to our couple financial model. Every ₹450/month invested at 14% for 10 years = ₹1.2L. Rent literally compounds.", reasoning: "Long-term compounding calculation on cashback", emotional_state: "satisfied", friction_points: [], decision_outcome: "CONTINUE", trust_score: 7, clarity_score: 7, value_score: 8, time_seconds: 4 },
       ],
@@ -2217,13 +2217,13 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 95,
       overall_monologue:
-        "I checked Flent's SEBI registration, their funding round on Crunchbase, and their LinkedIn team page before signing up. ₹200/month cashback is nice but the real value for me is formalized payment records — if anything goes wrong with my landlord, I have documented proof of every payment. My landlord is a retired school principal — she was actually happy that payments would be 'official.' I explained the insurance benefit and she said 'achha, chalo, ye toh acchi baat hai.'",
+        "I checked Flent's SEBI registration, their funding round on Crunchbase, and their LinkedIn team page before signing up. ₹200/month cashback is nice but the real value for me is formalized payment records, if anything goes wrong with my landlord, I have documented proof of every payment. My landlord is a retired school principal, she was actually happy that payments would be 'official.' I explained the insurance benefit and she said 'achha, chalo, ye toh acchi baat hai.'",
       screen_monologues: [
         {
           screen_id: "landing",
           view_name: "Landing Page",
-          internal_monologue: "First thing I check — who's behind this? Any SEBI or RBI registration? Let me Google 'Flent Secured funding' before I go further. Okay, Y Combinator backed, that's legitimate. Proceeding.",
-          reasoning: "Trust verification behavior — researches company before engaging",
+          internal_monologue: "First thing I check, who's behind this? Any SEBI or RBI registration? Let me Google 'Flent Secured funding' before I go further. Okay, Y Combinator backed, that's legitimate. Proceeding.",
+          reasoning: "Trust verification behavior, researches company before engaging",
           emotional_state: "cautious_but_open",
           friction_points: ["Had to leave app to verify legitimacy"],
           decision_outcome: "CONTINUE",
@@ -2272,7 +2272,7 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 100,
       overall_monologue:
-        "The formalized receipts are what sold me — I can show my parents documented proof that I'm paying rent properly, and claim HRA on taxes. The cashback is a bonus. My landlord is a working woman herself — she understood immediately. 'If they're handling the payment, at least I know it'll come on time every month,' she said.",
+        "The formalized receipts are what sold me, I can show my parents documented proof that I'm paying rent properly, and claim HRA on taxes. The cashback is a bonus. My landlord is a working woman herself, she understood immediately. 'If they're handling the payment, at least I know it'll come on time every month,' she said.",
       screen_monologues: [
         {
           screen_id: "application_status",
@@ -2343,12 +2343,12 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 58,
       overall_monologue:
-        "My landlady is an elderly woman who lives downstairs. Our 'agreement' was a handshake and her saying 'pay ₹18,000 by the 3rd.' I have a one-page letter with the rent amount — but the form says 'registered rental agreement.' This is designed for corporate apartments, not regular Bangalore rentals.",
+        "My landlady is an elderly woman who lives downstairs. Our 'agreement' was a handshake and her saying 'pay ₹18,000 by the 3rd.' I have a one-page letter with the rent amount, but the form says 'registered rental agreement.' This is designed for corporate apartments, not regular Bangalore rentals.",
       screen_monologues: [
         {
           screen_id: "rental_agreement",
           view_name: "Rental Agreement Upload",
-          internal_monologue: "My landlady is an elderly woman who lives downstairs. Our 'agreement' was a handshake and her saying 'pay ₹18,000 by the 3rd.' There's a one-page letter she gave me with the rent amount written on it — does that count? The upload form says 'registered rental agreement' specifically. This feels like it's designed for corporate-managed apartments, not regular Bangalore rentals.",
+          internal_monologue: "My landlady is an elderly woman who lives downstairs. Our 'agreement' was a handshake and her saying 'pay ₹18,000 by the 3rd.' There's a one-page letter she gave me with the rent amount written on it, does that count? The upload form says 'registered rental agreement' specifically. This feels like it's designed for corporate-managed apartments, not regular Bangalore rentals.",
           reasoning: "Informal letter doesn't meet 'registered agreement' requirement",
           emotional_state: "disappointed",
           friction_points: ["Informal arrangement", "Form requires registered agreement"],
@@ -2378,7 +2378,7 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 90,
       overall_monologue:
-        "I have a proper registered agreement and my landlord is a professional who was responsive. The whole point for me is documentation — I want a paper trail for every rent payment. ₹220/month cashback is nice, but the audit trail is priceless. If my landlord ever disputes anything, I have Flent's records.",
+        "I have a proper registered agreement and my landlord is a professional who was responsive. The whole point for me is documentation, I want a paper trail for every rent payment. ₹220/month cashback is nice, but the audit trail is priceless. If my landlord ever disputes anything, I have Flent's records.",
       screen_monologues: [
         {
           screen_id: "application_status",
@@ -2417,12 +2417,12 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 98,
       overall_monologue:
-        "₹140/month cashback is small but the formalized receipts are the real value — my parents keep asking 'are you paying rent properly? Do you have receipts?' Now I can show them documented proof. My landlord is a young techie, shared PAN easily. The HRA tax benefit alone saves me ₹10K/year.",
+        "₹140/month cashback is small but the formalized receipts are the real value, my parents keep asking 'are you paying rent properly? Do you have receipts?' Now I can show them documented proof. My landlord is a young techie, shared PAN easily. The HRA tax benefit alone saves me ₹10K/year.",
       screen_monologues: [
         {
           screen_id: "value_cashback",
           view_name: "Cashback Value Proposition",
-          internal_monologue: "₹140/month. Not much. But wait — formalized rent receipts? My parents will love this. And my CA said I can claim HRA with proper receipts. That's ₹10K/year in tax savings.",
+          internal_monologue: "₹140/month. Not much. But wait, formalized rent receipts? My parents will love this. And my CA said I can claim HRA with proper receipts. That's ₹10K/year in tax savings.",
           reasoning: "Parental peace of mind + tax benefit outweighs small cashback",
           emotional_state: "interested",
           friction_points: ["Cashback too small to be the hook"],
@@ -2513,7 +2513,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "landlord_bank",
           view_name: "Landlord Bank Details",
-          internal_monologue: "I WhatsApped my landlord asking for his PAN and bank details for this rent app. He called back within 2 minutes — not to share details, but to ask if I'm in some kind of trouble. He said 'don't share my details with any app-shapp, I don't trust these things.' He's a retired government officer from Rajajinagar — his pension goes to SBI and that's the only bank he trusts.",
+          internal_monologue: "I WhatsApped my landlord asking for his PAN and bank details for this rent app. He called back within 2 minutes, not to share details, but to ask if I'm in some kind of trouble. He said 'don't share my details with any app-shapp, I don't trust these things.' He's a retired government officer from Rajajinagar, his pension goes to SBI and that's the only bank he trusts.",
           reasoning: "Elderly landlord actively hostile to fintech. Tenant cannot override.",
           emotional_state: "defeated",
           friction_points: ["Landlord refuses to engage with fintech apps"],
@@ -2537,7 +2537,7 @@ export const flentSimData: SimulationData = {
       professional_background:
         "QA at an IT services company in Whitefield. ₹5L CTC. Rent ₹11K for shared room in Whitefield.",
       cultural_background:
-        "From Bhubaneswar. Moved to Bangalore 4 months ago. Very respectful of elders — won't push landlord.",
+        "From Bhubaneswar. Moved to Bangalore 4 months ago. Very respectful of elders, won't push landlord.",
       outcome: "dropped_off",
       key_selections: {},
       final_price_inr: null,
@@ -2578,13 +2578,13 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 65,
       overall_monologue:
-        "The formalized receipts would have been great — Baba keeps asking for rent receipts. But I don't know my landlord's PAN. He's the son of the property owner and I deal with him, but I don't even know the actual owner's name. He said he'll 'ask his father' about the PAN 3 days ago. I'm not going to chase them for ₹130/month cashback.",
+        "The formalized receipts would have been great, Baba keeps asking for rent receipts. But I don't know my landlord's PAN. He's the son of the property owner and I deal with him, but I don't even know the actual owner's name. He said he'll 'ask his father' about the PAN 3 days ago. I'm not going to chase them for ₹130/month cashback.",
       screen_monologues: [
         {
           screen_id: "landlord_bank",
           view_name: "Landlord Bank Details",
-          internal_monologue: "My parents are paying part of my rent. My landlord's son collected the deposit and gave us a receipt. I don't even know the actual landlord's name — it's the son who handles everything. Which person's PAN do I enter? The son said he'll 'ask his father' but that was 3 days ago. I'm not going to chase them for PAN just to get ₹130/month cashback.",
-          reasoning: "Proxy landlord management — tenant lacks direct relationship with property owner",
+          internal_monologue: "My parents are paying part of my rent. My landlord's son collected the deposit and gave us a receipt. I don't even know the actual landlord's name, it's the son who handles everything. Which person's PAN do I enter? The son said he'll 'ask his father' but that was 3 days ago. I'm not going to chase them for PAN just to get ₹130/month cashback.",
+          reasoning: "Proxy landlord management, tenant lacks direct relationship with property owner",
           emotional_state: "impatient",
           friction_points: ["Don't know actual owner", "Proxy management creates PAN confusion"],
           decision_outcome: "DROP_OFF",
@@ -2617,12 +2617,12 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 75,
       overall_monologue:
-        "In Seattle, every rent payment was automated through Zelle, receipts were instant, and my lease was a 45-page PDF covering every contingency. In Bangalore? My broker handed me a ₹200 stamp paper agreement, the landlord's 'receipt' is a WhatsApp message saying 'received', and I'm expected to pay via manual NEFT. Flent is the first thing that feels like proper rental infrastructure. ₹700/month cashback is real money — ₹8,400/year. Plus structured payments, formal receipts, and the insurance benefit for my landlord. This is how renting should work in 2026 India.",
+        "In Seattle, every rent payment was automated through Zelle, receipts were instant, and my lease was a 45-page PDF covering every contingency. In Bangalore? My broker handed me a ₹200 stamp paper agreement, the landlord's 'receipt' is a WhatsApp message saying 'received', and I'm expected to pay via manual NEFT. Flent is the first thing that feels like proper rental infrastructure. ₹700/month cashback is real money, ₹8,400/year. Plus structured payments, formal receipts, and the insurance benefit for my landlord. This is how renting should work in 2026 India.",
       screen_monologues: [
         {
           screen_id: "landing",
           view_name: "Landing Page",
-          internal_monologue: "Finally — someone building proper rental infrastructure for India. After 8 years in Seattle where Zillow and Zelle made renting seamless, coming back to manual NEFT and WhatsApp receipts was culture shock. Flent looks like what I've been looking for.",
+          internal_monologue: "Finally, someone building proper rental infrastructure for India. After 8 years in Seattle where Zillow and Zelle made renting seamless, coming back to manual NEFT and WhatsApp receipts was culture shock. Flent looks like what I've been looking for.",
           reasoning: "US rental experience creates strong demand for structured Indian alternative",
           emotional_state: "excited",
           friction_points: [],
@@ -2642,7 +2642,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "rental_agreement",
           view_name: "Rental Agreement Upload",
-          internal_monologue: "I insisted on a proper registered agreement when I moved in — my US habits. Have the PDF ready. Uploading.",
+          internal_monologue: "I insisted on a proper registered agreement when I moved in, my US habits. Have the PDF ready. Uploading.",
           reasoning: "NRI-returnee habit of formalizing agreements",
           emotional_state: "prepared",
           friction_points: [],
@@ -2652,7 +2652,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "landlord_bank",
           view_name: "Landlord Bank Details",
-          internal_monologue: "My Indiranagar landlord is a retired professor. Called him, explained the structure — 'Sir, it's like Zelle for rent.' He didn't know Zelle but understood the insurance benefit. Shared PAN and bank details next day.",
+          internal_monologue: "My Indiranagar landlord is a retired professor. Called him, explained the structure, 'Sir, it's like Zelle for rent.' He didn't know Zelle but understood the insurance benefit. Shared PAN and bank details next day.",
           reasoning: "Articulate communication + insurance pitch converts educated landlord",
           emotional_state: "smooth",
           friction_points: [],
@@ -2662,7 +2662,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "application_status",
           view_name: "Application Status",
-          internal_monologue: "72-hour wait. In the US, everything is instant. But I'll take it — this is still 10x better than the current Indian rental situation. Setting up auto-pay once approved.",
+          internal_monologue: "72-hour wait. In the US, everything is instant. But I'll take it, this is still 10x better than the current Indian rental situation. Setting up auto-pay once approved.",
           reasoning: "Patience driven by comparison to worse status quo",
           emotional_state: "accepting",
           friction_points: ["72-hour wait feels anachronistic after US instant approvals"],
@@ -2693,15 +2693,15 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 20,
       overall_monologue:
-        "I'm not even renting yet — still in an Airbnb. Someone shared Flent link on the NRI Bangalore WhatsApp group. I'll come back once I've signed a lease. Right now I'm dealing with getting my kids into school, wife's visa paperwork, and finding an apartment. Bookmarking for later.",
+        "I'm not even renting yet, still in an Airbnb. Someone shared Flent link on the NRI Bangalore WhatsApp group. I'll come back once I've signed a lease. Right now I'm dealing with getting my kids into school, wife's visa paperwork, and finding an apartment. Bookmarking for later.",
       screen_monologues: [
         {
           screen_id: "landing",
           view_name: "Landing Page",
           internal_monologue: "Interesting concept but I'm still in an Airbnb hunting for apartments. Don't have a rental yet. Bookmarking this for when I've signed a lease. Too many things going on right now.",
-          reasoning: "Not yet a renter — premature in customer journey",
+          reasoning: "Not yet a renter, premature in customer journey",
           emotional_state: "overwhelmed_by_relocation",
-          friction_points: ["Not yet in rental — product timing mismatch"],
+          friction_points: ["Not yet in rental, product timing mismatch"],
           decision_outcome: "DROP_OFF",
           trust_score: 6, clarity_score: 7, value_score: 6, time_seconds: 20,
         },
@@ -2717,7 +2717,7 @@ export const flentSimData: SimulationData = {
       key_selections: {},
       final_price_inr: null,
       total_time_seconds: 78,
-      overall_monologue: "₹650/month cashback on Koramangala rent. In NYC I paid $4,200 for a studio — getting cashback on ₹65K feels like a steal. My landlord is a startup exit founder, very digital. Shared details in a Google Sheet. This is how Indian rental should work.",
+      overall_monologue: "₹650/month cashback on Koramangala rent. In NYC I paid $4,200 for a studio, getting cashback on ₹65K feels like a steal. My landlord is a startup exit founder, very digital. Shared details in a Google Sheet. This is how Indian rental should work.",
       screen_monologues: [
         { screen_id: "application_status", view_name: "Application Status", internal_monologue: "Under review. Already told my NRI friend group about Flent. Everyone returning to India needs this.", reasoning: "Word-of-mouth advocacy among NRI returnee network", emotional_state: "evangelical", friction_points: [], decision_outcome: "CONTINUE", trust_score: 7, clarity_score: 7, value_score: 9, time_seconds: 4 },
       ],
@@ -2731,7 +2731,7 @@ export const flentSimData: SimulationData = {
       key_selections: {},
       final_price_inr: null,
       total_time_seconds: 82,
-      overall_monologue: "Bandra landlord wanted 11 months deposit — in London it's 5 weeks max. The Indian rental system is stuck in 1990. Flent is a start. ₹600/month cashback, formal receipts, and structure. My landlord is a doctor — he appreciated the insurance. 'Better than those agents promising insurance and disappearing,' he said.",
+      overall_monologue: "Bandra landlord wanted 11 months deposit, in London it's 5 weeks max. The Indian rental system is stuck in 1990. Flent is a start. ₹600/month cashback, formal receipts, and structure. My landlord is a doctor, he appreciated the insurance. 'Better than those agents promising insurance and disappearing,' he said.",
       screen_monologues: [
         { screen_id: "application_status", view_name: "Application Status", internal_monologue: "72 hours. In London everything was same-day. But Flent is already better than WhatsApp-based rent payments. Progress.", reasoning: "Measured optimism from international benchmark", emotional_state: "patient", friction_points: [], decision_outcome: "CONTINUE", trust_score: 7, clarity_score: 7, value_score: 8, time_seconds: 4 },
       ],
@@ -2745,7 +2745,7 @@ export const flentSimData: SimulationData = {
       key_selections: {},
       final_price_inr: null,
       total_time_seconds: 80,
-      overall_monologue: "₹800/month cashback on ₹80K rent. In Singapore, rent was automated through PropertyGuru. Indian landlords still want manual transfers. Flent bridges that gap. My Whitefield villa landlord is a businessman — immediately saw the insurance value. 'Arey, free insurance? Why not,' he said. Done.",
+      overall_monologue: "₹800/month cashback on ₹80K rent. In Singapore, rent was automated through PropertyGuru. Indian landlords still want manual transfers. Flent bridges that gap. My Whitefield villa landlord is a businessman, immediately saw the insurance value. 'Arey, free insurance? Why not,' he said. Done.",
       screen_monologues: [
         { screen_id: "application_status", view_name: "Application Status", internal_monologue: "Under review. ₹800/month × 12 = ₹9,600/year in cashback alone. Plus structured payments. This pays for itself.", reasoning: "Annual value calculation drives satisfaction", emotional_state: "satisfied", friction_points: [], decision_outcome: "CONTINUE", trust_score: 7, clarity_score: 7, value_score: 9, time_seconds: 4 },
       ],
@@ -2767,7 +2767,7 @@ export const flentSimData: SimulationData = {
         marital_status: "Married",
       },
       professional_background:
-        "Retired from Infosys at 45 with ₹2Cr corpus. Owns 3 flats — Koramangala, JP Nagar, Whitefield. Total rental income ₹1.2L/month.",
+        "Retired from Infosys at 45 with ₹2Cr corpus. Owns 3 flats, Koramangala, JP Nagar, Whitefield. Total rental income ₹1.2L/month.",
       cultural_background:
         "Bangalorean. Engineering from BMS. Sees real estate as primary wealth vehicle. Evaluating Flent for all 3 properties.",
       outcome: "completed",
@@ -2775,12 +2775,12 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 95,
       overall_monologue:
-        "₹1.5L insurance per property × 3 = ₹4.5L total coverage. That's significant — my current insurance costs ₹20K/year and covers less. The tenant cashback doesn't affect me directly but it'll make my tenants more likely to pay on time and stay longer. Registered for my Koramangala flat first — will add JP Nagar and Whitefield once I see how it works. The 72-hour wait is annoying but understandable for a new platform.",
+        "₹1.5L insurance per property × 3 = ₹4.5L total coverage. That's significant, my current insurance costs ₹20K/year and covers less. The tenant cashback doesn't affect me directly but it'll make my tenants more likely to pay on time and stay longer. Registered for my Koramangala flat first, will add JP Nagar and Whitefield once I see how it works. The 72-hour wait is annoying but understandable for a new platform.",
       screen_monologues: [
         {
           screen_id: "landing",
           view_name: "Landing Page",
-          internal_monologue: "₹1.5L landlord insurance — this caught my eye immediately. I lost ₹2L when my Whitefield tenant absconded last year. If Flent can protect against that, I'm interested.",
+          internal_monologue: "₹1.5L landlord insurance, this caught my eye immediately. I lost ₹2L when my Whitefield tenant absconded last year. If Flent can protect against that, I'm interested.",
           reasoning: "Personal loss experience makes insurance proposition immediately tangible",
           emotional_state: "interested",
           friction_points: [],
@@ -2800,7 +2800,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "rental_agreement",
           view_name: "Rental Agreement Upload",
-          internal_monologue: "I have registered agreements for all 3 properties — my lawyer insists on it. Uploading the Koramangala one. Well-organized PDFs in my Google Drive.",
+          internal_monologue: "I have registered agreements for all 3 properties, my lawyer insists on it. Uploading the Koramangala one. Well-organized PDFs in my Google Drive.",
           reasoning: "Multi-property landlord with proper documentation habits",
           emotional_state: "organized",
           friction_points: [],
@@ -2811,7 +2811,7 @@ export const flentSimData: SimulationData = {
           screen_id: "landlord_bank",
           view_name: "Landlord Bank Details",
           internal_monologue: "Entering my own bank details. PAN, HDFC account number, IFSC. Straightforward. I'm the landlord here.",
-          reasoning: "Landlord entering own details — no dependency friction",
+          reasoning: "Landlord entering own details, no dependency friction",
           emotional_state: "smooth",
           friction_points: [],
           decision_outcome: "CONTINUE",
@@ -2851,12 +2851,12 @@ export const flentSimData: SimulationData = {
       final_price_inr: null,
       total_time_seconds: 85,
       overall_monologue:
-        "I spent 20 minutes filling out everything — property details, tenant info, bank account, PAN. And now it says '72-hour review period' and I'm on a 'waitlist'? I own 3 flats. I'm the customer. If you want landlords, don't make them feel like they're applying for a job. I'll check back but this better not be a gimmick.",
+        "I spent 20 minutes filling out everything, property details, tenant info, bank account, PAN. And now it says '72-hour review period' and I'm on a 'waitlist'? I own 3 flats. I'm the customer. If you want landlords, don't make them feel like they're applying for a job. I'll check back but this better not be a gimmick.",
       screen_monologues: [
         {
           screen_id: "application_status",
           view_name: "Application Status",
-          internal_monologue: "I spent 20 minutes filling out everything — my property details, tenant info, bank account, PAN. And now it says '72-hour review period' and I'm on a 'waitlist'? Waitlist for what? To insure MY property? I own 3 flats. I'm the customer here. If you want landlords to sign up, don't make them feel like they're applying for a job. I'll check back in a week but this better not be one of those 'exclusive launch' gimmicks.",
+          internal_monologue: "I spent 20 minutes filling out everything, my property details, tenant info, bank account, PAN. And now it says '72-hour review period' and I'm on a 'waitlist'? Waitlist for what? To insure MY property? I own 3 flats. I'm the customer here. If you want landlords to sign up, don't make them feel like they're applying for a job. I'll check back in a week but this better not be one of those 'exclusive launch' gimmicks.",
           reasoning: "High-value landlord perceives waitlist as disrespectful",
           emotional_state: "indignant",
           friction_points: ["72-hour waitlist after full data submission", "Feels like applying for permission to use own money"],
@@ -2891,7 +2891,7 @@ export const flentSimData: SimulationData = {
         {
           screen_id: "application_status",
           view_name: "Application Status",
-          internal_monologue: "So I've given Flent my PAN, bank details, property documents, and tenant information. And now I wait 72 hours to find out if I 'qualify'? Qualify for what — paying for my own insurance? The ₹1.5L coverage sounded reasonable but if there's a 3-month activation period on top of this waitlist, I'm looking at 4+ months before any actual protection. My current insurance broker can set up a policy in 48 hours.",
+          internal_monologue: "So I've given Flent my PAN, bank details, property documents, and tenant information. And now I wait 72 hours to find out if I 'qualify'? Qualify for what, paying for my own insurance? The ₹1.5L coverage sounded reasonable but if there's a 3-month activation period on top of this waitlist, I'm looking at 4+ months before any actual protection. My current insurance broker can set up a policy in 48 hours.",
           reasoning: "Comparing Flent's activation timeline unfavorably to traditional channels",
           emotional_state: "skeptical",
           friction_points: ["Combined waitlist + activation period makes timeline uncompetitive"],
@@ -2910,7 +2910,7 @@ export const flentSimData: SimulationData = {
       key_selections: {},
       final_price_inr: null,
       total_time_seconds: 92,
-      overall_monologue: "₹1.5L insurance per flat = ₹3L coverage. My last tenant in Whitefield caused ₹80K in damages before vacating. This would have covered it. The 72-hour wait is fine — in the army we waited months for postings. Patience is a virtue. Registered my first flat, will add the second once approved.",
+      overall_monologue: "₹1.5L insurance per flat = ₹3L coverage. My last tenant in Whitefield caused ₹80K in damages before vacating. This would have covered it. The 72-hour wait is fine, in the army we waited months for postings. Patience is a virtue. Registered my first flat, will add the second once approved.",
       screen_monologues: [
         { screen_id: "application_status", view_name: "Application Status", internal_monologue: "72-hour review. I've filed applications that took 6 months. This is nothing. Insurance coverage is the priority.", reasoning: "Military patience and long-term thinking", emotional_state: "disciplined", friction_points: [], decision_outcome: "CONTINUE", trust_score: 6, clarity_score: 7, value_score: 8, time_seconds: 4 },
       ],
@@ -2924,7 +2924,7 @@ export const flentSimData: SimulationData = {
       key_selections: {},
       final_price_inr: null,
       total_time_seconds: 88,
-      overall_monologue: "As a CA, I see the dual benefit — insurance protection AND automated rent receipts for my tenant (which means fewer HRA queries from their employers calling me to verify). ₹1.5L coverage is reasonable for the property risk. My agreement is registered and PAN is always handy. Clean process.",
+      overall_monologue: "As a CA, I see the dual benefit, insurance protection AND automated rent receipts for my tenant (which means fewer HRA queries from their employers calling me to verify). ₹1.5L coverage is reasonable for the property risk. My agreement is registered and PAN is always handy. Clean process.",
       screen_monologues: [
         { screen_id: "application_status", view_name: "Application Status", internal_monologue: "72 hours. As a CA I understand verification processes. The documentation benefit alone makes this worthwhile for my tax records.", reasoning: "Professional expertise validates process requirement", emotional_state: "understanding", friction_points: [], decision_outcome: "CONTINUE", trust_score: 7, clarity_score: 8, value_score: 8, time_seconds: 4 },
       ],

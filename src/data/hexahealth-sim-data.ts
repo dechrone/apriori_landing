@@ -11,7 +11,7 @@
 export const hexahealthSimData = {
   simulation_id: "hexahealth-piles-sim-20260409-001",
   flow_id: "hexahealth_piles_treatment_v1",
-  flow_name: "HexaHealth — Piles Treatment Consultation",
+  flow_name: "HexaHealth, Piles Treatment Consultation",
   generated_at: "2026-04-09T10:00:00.000000+00:00",
 
   // ── Summary ─────────────────────────────────────────────────────────────────
@@ -58,17 +58,17 @@ export const hexahealthSimData = {
   top_friction_points: [
     {
       friction:
-        "Doctor consultation form asks for full name, age, and phone number before any value is shown — feels like a lead-capture trap",
+        "Doctor consultation form asks for full name, age, and phone number before any value is shown, feels like a lead-capture trap",
       frequency: 12,
     },
     {
       friction:
-        "Mandatory app login/OTP gate after investing time browsing — users feel bait-and-switched into downloading the app",
+        "Mandatory app login/OTP gate after investing time browsing, users feel bait-and-switched into downloading the app",
       frequency: 10,
     },
     {
       friction:
-        "Describing piles symptoms in a text box is embarrassing and unclear — users don't know medical terminology and feel shame typing details",
+        "Describing piles symptoms in a text box is embarrassing and unclear, users don't know medical terminology and feel shame typing details",
       frequency: 8,
     },
     {
@@ -78,7 +78,7 @@ export const hexahealthSimData = {
     },
     {
       friction:
-        "No upfront pricing or insurance compatibility information — users fear hidden costs for surgical consultations",
+        "No upfront pricing or insurance compatibility information, users fear hidden costs for surgical consultations",
       frequency: 6,
     },
     {
@@ -88,7 +88,7 @@ export const hexahealthSimData = {
     },
     {
       friction:
-        "Home dashboard after login is generic — doesn't carry forward the piles context, making users feel lost",
+        "Home dashboard after login is generic, doesn't carry forward the piles context, making users feel lost",
       frequency: 4,
     },
   ],

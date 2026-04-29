@@ -504,7 +504,8 @@ alter table public.simulations
   add column if not exists num_personas     int,
   add column if not exists retrieval_mode   text,
   add column if not exists public           boolean not null default false,
-  add column if not exists public_share_id  text;
+  add column if not exists public_share_id  text,
+  add column if not exists synthesis        jsonb;
 
 create unique index if not exists simulations_user_sim_id_idx on public.simulations(user_id, simulation_id) where simulation_id is not null;
 create unique index if not exists simulations_public_share_idx on public.simulations(public_share_id) where public_share_id is not null;

@@ -6,7 +6,7 @@ import type { FlowAnalysisData } from "@/types/flow-analysis";
 export const flowAnalysisDummyData: FlowAnalysisData = {
   meta: {
     product: "Blink Money",
-    flow: "LAMF Onboarding — Flow 1",
+    flow: "LAMF Onboarding, Flow 1",
     date: "February 2026",
     totalPersonas: 10,
     completionRate: 40,
@@ -40,7 +40,7 @@ export const flowAnalysisDummyData: FlowAnalysisData = {
     {
       id: "RC2",
       screen: "S4",
-      title: "LAMF terms absent — personal loan pushed instead",
+      title: "LAMF terms absent, personal loan pushed instead",
       detail:
         "Screen 4 presented a personal loan without ever surfacing LAMF rates or terms. First-time users read this as deception.",
       affectedPersonas: ["Suresh I.", "Neha G.", "Kiran R."],
@@ -100,7 +100,7 @@ export const flowAnalysisDummyData: FlowAnalysisData = {
   },
   dropReasons: {
     S3: "No lender identity or pledge explanation",
-    S4: "LAMF terms absent — personal loan pushed instead",
+    S4: "LAMF terms absent, personal loan pushed instead",
     S6: "Hybrid loan structure revealed too late",
   },
   dropPersonas: {
@@ -135,7 +135,7 @@ export const flowAnalysisDummyData: FlowAnalysisData = {
     },
     {
       stat: "2/10",
-      title: "Urgency buys patience — it does not replace trust",
+      title: "Urgency buys patience, it does not replace trust",
       description:
         "Even emergency-urgency personas dropped when trust collapsed at S6. Urgency extends the window; it does not close the gap.",
     },
@@ -154,7 +154,7 @@ export const flowAnalysisDummyData: FlowAnalysisData = {
     },
     {
       quote:
-        "This is a bait-and-switch. My portfolio is ₹7L — offering ₹60K LAMF is insulting. Why wasn't this explained upfront?",
+        "This is a bait-and-switch. My portfolio is ₹7L, offering ₹60K LAMF is insulting. Why wasn't this explained upfront?",
       attribution: "Kiran R. · Dropped at S4",
     },
     {
@@ -465,7 +465,7 @@ export const flowAnalysisDummyData: FlowAnalysisData = {
           trustScore: 8,
           clarityScore: 7,
           gutReaction:
-            "Nice — finally seeing actual numbers and rates. Split structure is smart.",
+            "Nice, finally seeing actual numbers and rates. Split structure is smart.",
           reasoning: "Rates look competitive. Interface cleaner than my bank's.",
           frictionPoints: ["Amount exceeds LAMF eligibility without clear warning"],
           missing: "Timeline for loan disbursement after approval",
@@ -478,7 +478,7 @@ export const flowAnalysisDummyData: FlowAnalysisData = {
           gutReaction:
             "Clean interface, good rate transparency, like seeing both options compared.",
           reasoning: "This screen gives me exactly what I need. 10.5% LAMF rate competitive.",
-          frictionPoints: ["LAMF eligibility lower than portfolio — no explanation"],
+          frictionPoints: ["LAMF eligibility lower than portfolio, no explanation"],
           missing: "Quick tooltip explaining LAMF eligibility calculation",
         },
         {
@@ -581,7 +581,7 @@ export const flowAnalysisDummyData: FlowAnalysisData = {
           trustScore: 7,
           clarityScore: 8,
           gutReaction:
-            "Clean interface. No max eligible amount shown — I know this stuff already.",
+            "Clean interface. No max eligible amount shown, I know this stuff already.",
           reasoning: "Professional design suggests legitimate product. Need funds today.",
           frictionPoints: [
             "No personalised max eligible amount",

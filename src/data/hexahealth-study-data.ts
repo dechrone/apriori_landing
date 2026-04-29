@@ -45,7 +45,7 @@ export const hexahealthStudyData: StudyData = {
       {
         rank: 2,
         finding:
-          "54% refused or hesitated at the mobile login wall — piles patients are extra privacy-conscious about health data",
+          "54% refused or hesitated at the mobile login wall, piles patients are extra privacy-conscious about health data",
       },
       {
         rank: 3,
@@ -216,7 +216,7 @@ export const hexahealthStudyData: StudyData = {
       theme_name:
         "Health condition embarrassment amplifies every friction point",
       description:
-        "Users dealing with piles already feel uncomfortable — every data collection step (phone, name, symptoms) compounds this anxiety. The flow doesn't acknowledge the sensitive nature of the condition.",
+        "Users dealing with piles already feel uncomfortable, every data collection step (phone, name, symptoms) compounds this anxiety. The flow doesn't acknowledge the sensitive nature of the condition.",
       frequency_pct: 72,
       affected_personas: ["Pragmatist", "Skeptic", "Confused Novice"],
       not_affected_personas: ["Enthusiast"],
@@ -246,7 +246,7 @@ export const hexahealthStudyData: StudyData = {
         avg_seq: 2.8,
       },
       root_causes:
-        "The flow was designed as a generic health consultation intake, not a condition-specific experience. It applies the same data collection pattern to piles as it would to a knee replacement or eye check-up. But piles is a condition users find deeply embarrassing — every form field that asks for personal information feels like exposure rather than progress. The flow never acknowledges this sensitivity or explains why the data is needed.",
+        "The flow was designed as a generic health consultation intake, not a condition-specific experience. It applies the same data collection pattern to piles as it would to a knee replacement or eye check-up. But piles is a condition users find deeply embarrassing, every form field that asks for personal information feels like exposure rather than progress. The flow never acknowledges this sensitivity or explains why the data is needed.",
       connected_friction_point_ids: ["FP_001", "FP_003"],
     },
     {
@@ -266,7 +266,7 @@ export const hexahealthStudyData: StudyData = {
         {
           session_id: "APR_HEXA_U008_20260409",
           persona_type: "Skeptic",
-          text: "I clicked the ad to learn about the treatment. Why do they need my phone number before I've even seen what they offer? They'll start calling me about piles — no way.",
+          text: "I clicked the ad to learn about the treatment. Why do they need my phone number before I've even seen what they offer? They'll start calling me about piles, no way.",
         },
         {
           session_id: "APR_HEXA_U041_20260409",
@@ -293,7 +293,7 @@ export const hexahealthStudyData: StudyData = {
       theme_name:
         "Generic app structure wastes condition-specific intent",
       description:
-        "Users from a piles-specific ad land on a generic dashboard with 6+ services. They must navigate through Home and then Conditions to reach relevant content — 2 extra screens that dilute focused intent and increase abandonment risk.",
+        "Users from a piles-specific ad land on a generic dashboard with 6+ services. They must navigate through Home and then Conditions to reach relevant content, 2 extra screens that dilute focused intent and increase abandonment risk.",
       frequency_pct: 44,
       affected_personas: ["Confused Novice", "Skeptic"],
       not_affected_personas: ["Enthusiast", "Pragmatist"],
@@ -323,7 +323,7 @@ export const hexahealthStudyData: StudyData = {
         avg_seq: 3.4,
       },
       root_causes:
-        "The app routes all ad traffic to the same generic home screen regardless of the condition in the ad. There's no deep-linking from condition-specific ads to condition-specific pages. This is a product architecture decision — the app was built as a multi-service platform, and the marketing team runs condition-specific ads that create expectations the app structure doesn't fulfill.",
+        "The app routes all ad traffic to the same generic home screen regardless of the condition in the ad. There's no deep-linking from condition-specific ads to condition-specific pages. This is a product architecture decision, the app was built as a multi-service platform, and the marketing team runs condition-specific ads that create expectations the app structure doesn't fulfill.",
       connected_friction_point_ids: ["FP_004"],
     },
     {
@@ -344,7 +344,7 @@ export const hexahealthStudyData: StudyData = {
         {
           session_id: "APR_HEXA_U022_20260409",
           persona_type: "Pragmatist",
-          text: "Name, city, relation, date of birth, gender — this feels like I'm registering at a government hospital. I just wanted to ask a doctor a quick question.",
+          text: "Name, city, relation, date of birth, gender, this feels like I'm registering at a government hospital. I just wanted to ask a doctor a quick question.",
         },
         {
           session_id: "APR_HEXA_U035_20260409",
@@ -362,7 +362,7 @@ export const hexahealthStudyData: StudyData = {
         avg_seq: 2.8,
       },
       root_causes:
-        "The consultation booking form was designed to match the hospital's intake requirements rather than the user's mental model. Users expected a quick, informal chat with a doctor — like messaging a friend who happens to be a specialist. Instead, they got a formal registration form that requires information they don't understand the need for (Relation, DOB) at a step where trust hasn't been established.",
+        "The consultation booking form was designed to match the hospital's intake requirements rather than the user's mental model. Users expected a quick, informal chat with a doctor, like messaging a friend who happens to be a specialist. Instead, they got a formal registration form that requires information they don't understand the need for (Relation, DOB) at a step where trust hasn't been established.",
       connected_friction_point_ids: ["FP_001"],
     },
   ],
@@ -384,7 +384,7 @@ export const hexahealthStudyData: StudyData = {
           persona_type: "Pragmatist",
           action_taken: "Clicked ad CTA",
           internal_monologue:
-            "30 minutes laser treatment for piles — that's interesting. I've been putting this off for months. Let me check this out quickly before anyone notices what I'm browsing.",
+            "30 minutes laser treatment for piles, that's interesting. I've been putting this off for months. Let me check this out quickly before anyone notices what I'm browsing.",
           emotional_tags: ["HOPEFUL", "EMBARRASSED"],
           behavioral_tags: ["COMPLETED"],
           completed: true,
@@ -395,7 +395,7 @@ export const hexahealthStudyData: StudyData = {
           persona_type: "Enthusiast",
           action_taken: "Clicked ad CTA immediately",
           internal_monologue:
-            "Finally a proper laser treatment option. I've been researching this for weeks — HexaHealth came up on Google too. Let me see the details.",
+            "Finally a proper laser treatment option. I've been researching this for weeks, HexaHealth came up on Google too. Let me see the details.",
           emotional_tags: ["CONFIDENT", "HOPEFUL"],
           behavioral_tags: ["COMPLETED"],
           completed: true,
@@ -412,7 +412,7 @@ export const hexahealthStudyData: StudyData = {
           completed: false,
           dropped: true,
           drop_reason:
-            "Distrust of health advertising claims on social media — perceived as too-good-to-be-true",
+            "Distrust of health advertising claims on social media, perceived as too-good-to-be-true",
         },
         {
           session_id: "APR_HEXA_U046_20260409",
@@ -425,7 +425,7 @@ export const hexahealthStudyData: StudyData = {
           completed: false,
           dropped: true,
           drop_reason:
-            "Assumed laser treatment is unaffordable — ad did not address cost concerns",
+            "Assumed laser treatment is unaffordable, ad did not address cost concerns",
         },
       ],
       dropped_monologues: [
@@ -473,7 +473,7 @@ export const hexahealthStudyData: StudyData = {
           persona_type: "Pragmatist",
           action_taken: "Entered number, proceeded",
           internal_monologue:
-            "Phone number login — standard enough. But I hope they don't start sending me promotional messages about piles treatment. That would be awkward if someone sees my notifications.",
+            "Phone number login, standard enough. But I hope they don't start sending me promotional messages about piles treatment. That would be awkward if someone sees my notifications.",
           emotional_tags: ["ANXIOUS", "HOPEFUL"],
           behavioral_tags: ["COMPLETED"],
           completed: true,
@@ -484,7 +484,7 @@ export const hexahealthStudyData: StudyData = {
           persona_type: "Skeptic",
           action_taken: "Stared at screen, closed app",
           internal_monologue:
-            "I clicked the ad to learn about the treatment. Why do they need my phone number before I've even seen what they offer? They'll start calling me about piles — no way.",
+            "I clicked the ad to learn about the treatment. Why do they need my phone number before I've even seen what they offer? They'll start calling me about piles, no way.",
           emotional_tags: ["DISTRUST", "EMBARRASSED"],
           behavioral_tags: ["ABANDONED"],
           completed: false,
@@ -544,7 +544,7 @@ export const hexahealthStudyData: StudyData = {
           completed: false,
           dropped: true,
           drop_reason:
-            "No guest browsing alternative — forced auth felt invasive",
+            "No guest browsing alternative, forced auth felt invasive",
         },
       ],
     },
@@ -609,7 +609,7 @@ export const hexahealthStudyData: StudyData = {
           completed: false,
           dropped: true,
           drop_reason:
-            "Navigational error on generic dashboard — no recovery path visible",
+            "Navigational error on generic dashboard, no recovery path visible",
         },
       ],
     },
@@ -629,7 +629,7 @@ export const hexahealthStudyData: StudyData = {
           persona_type: "Pragmatist",
           action_taken: "Scrolled list, tapped Piles",
           internal_monologue:
-            "Good — there's a clean list here. Piles is right there. Finally getting to what I came for.",
+            "Good, there's a clean list here. Piles is right there. Finally getting to what I came for.",
           emotional_tags: ["RELIEVED", "CONFIDENT"],
           behavioral_tags: ["COMPLETED"],
           completed: true,
@@ -679,7 +679,7 @@ export const hexahealthStudyData: StudyData = {
           persona_type: "Enthusiast",
           action_taken: "Read entire page, clicked Book Consultation",
           internal_monologue:
-            "This is comprehensive — symptoms match what I've been experiencing. Laser treatment in 30 minutes, same-day discharge. This validates everything I've read online. I'm ready to book.",
+            "This is comprehensive, symptoms match what I've been experiencing. Laser treatment in 30 minutes, same-day discharge. This validates everything I've read online. I'm ready to book.",
           emotional_tags: ["CONFIDENT", "HOPEFUL"],
           behavioral_tags: ["COMPLETED", "ENGAGED"],
           completed: true,
@@ -727,7 +727,7 @@ export const hexahealthStudyData: StudyData = {
           persona_type: "Confused Novice",
           action_taken: "Scrolled page but couldn't understand medical terms",
           internal_monologue:
-            "Hemorrhoids, thrombosis, prolapse — I don't understand these English medical words. Is this even what I have?",
+            "Hemorrhoids, thrombosis, prolapse, I don't understand these English medical words. Is this even what I have?",
           emotional_tags: ["CONFUSED", "OVERWHELMED"],
           behavioral_tags: ["ABANDONED"],
           completed: false,
@@ -753,7 +753,7 @@ export const hexahealthStudyData: StudyData = {
           persona_type: "Enthusiast",
           action_taken: "Filled form quickly, submitted",
           internal_monologue:
-            "Standard medical intake form. Name, city, DOB — fine. I need this consultation, so I'll fill it in. The sooner I book, the sooner I get treated.",
+            "Standard medical intake form. Name, city, DOB, fine. I need this consultation, so I'll fill it in. The sooner I book, the sooner I get treated.",
           emotional_tags: ["CONFIDENT"],
           behavioral_tags: ["COMPLETED"],
           completed: true,
@@ -764,7 +764,7 @@ export const hexahealthStudyData: StudyData = {
           persona_type: "Skeptic",
           action_taken: "Started filling, stopped at Relation field, closed app",
           internal_monologue:
-            "I already feel weird looking this up on my phone. Now they want my full name and date of birth? For piles? No thanks. And what does 'Relation' mean — relation to whom? This feels like a hospital registration counter.",
+            "I already feel weird looking this up on my phone. Now they want my full name and date of birth? For piles? No thanks. And what does 'Relation' mean, relation to whom? This feels like a hospital registration counter.",
           emotional_tags: ["EMBARRASSED", "DISTRUST", "FRUSTRATED"],
           behavioral_tags: ["ABANDONED"],
           completed: false,
@@ -777,7 +777,7 @@ export const hexahealthStudyData: StudyData = {
           persona_type: "Pragmatist",
           action_taken: "Filled form reluctantly, submitted",
           internal_monologue:
-            "Name, city, relation, date of birth, gender — this feels like I'm registering at a government hospital. I just wanted to ask a doctor a quick question. But I've come this far, might as well finish.",
+            "Name, city, relation, date of birth, gender, this feels like I'm registering at a government hospital. I just wanted to ask a doctor a quick question. But I've come this far, might as well finish.",
           emotional_tags: ["FRUSTRATED", "HOPEFUL"],
           behavioral_tags: ["COMPLETED"],
           completed: true,
@@ -794,7 +794,7 @@ export const hexahealthStudyData: StudyData = {
           completed: false,
           dropped: true,
           drop_reason:
-            "Confusing 'Relation' field with no context — user didn't understand who it referred to",
+            "Confusing 'Relation' field with no context, user didn't understand who it referred to",
         },
       ],
       dropped_monologues: [
@@ -835,7 +835,7 @@ export const hexahealthStudyData: StudyData = {
           completed: false,
           dropped: true,
           drop_reason:
-            "Data privacy fear — worried about sensitive health data being leaked",
+            "Data privacy fear, worried about sensitive health data being leaked",
         },
         {
           session_id: "APR_HEXA_U044_20260409",
@@ -848,7 +848,7 @@ export const hexahealthStudyData: StudyData = {
           completed: false,
           dropped: true,
           drop_reason:
-            "UI friction — date of birth entry was confusing without a clear date picker",
+            "UI friction, date of birth entry was confusing without a clear date picker",
         },
         {
           session_id: "APR_HEXA_U017_20260409",
@@ -881,7 +881,7 @@ export const hexahealthStudyData: StudyData = {
           persona_type: "Enthusiast",
           action_taken: "Typed symptoms clearly, submitted",
           internal_monologue:
-            "I know my symptoms well — bleeding during bowel movement, external lump, pain while sitting. I've described this to a doctor before, so typing it out isn't a problem.",
+            "I know my symptoms well, bleeding during bowel movement, external lump, pain while sitting. I've described this to a doctor before, so typing it out isn't a problem.",
           emotional_tags: ["CONFIDENT"],
           behavioral_tags: ["COMPLETED"],
           completed: true,
@@ -922,7 +922,7 @@ export const hexahealthStudyData: StudyData = {
           completed: false,
           dropped: true,
           drop_reason:
-            "Language barrier combined with embarrassment — couldn't articulate symptoms in writing",
+            "Language barrier combined with embarrassment, couldn't articulate symptoms in writing",
         },
       ],
       dropped_monologues: [
@@ -983,7 +983,7 @@ export const hexahealthStudyData: StudyData = {
           persona_type: "Enthusiast",
           action_taken: "Selected Yes, submitted",
           internal_monologue:
-            "Yes, I want the doctor consultation. That's the whole reason I'm here. Submit. Finally done — now I wait for the call.",
+            "Yes, I want the doctor consultation. That's the whole reason I'm here. Submit. Finally done, now I wait for the call.",
           emotional_tags: ["CONFIDENT", "RELIEVED"],
           behavioral_tags: ["COMPLETED"],
           completed: true,
@@ -994,7 +994,7 @@ export const hexahealthStudyData: StudyData = {
           persona_type: "Pragmatist",
           action_taken: "Selected Yes, submitted",
           internal_monologue:
-            "Simple yes/no question — do I want a doctor consultation? Yes. That was the easiest step in this whole journey. Should have started here.",
+            "Simple yes/no question, do I want a doctor consultation? Yes. That was the easiest step in this whole journey. Should have started here.",
           emotional_tags: ["RELIEVED", "HOPEFUL"],
           behavioral_tags: ["COMPLETED"],
           completed: true,
@@ -1046,9 +1046,9 @@ export const hexahealthStudyData: StudyData = {
       top_behavioral_tags: ["HESITATED", "ABANDONED"],
       avg_seq: 2.4,
       problem_narrative:
-        "Users who have navigated 5 screens to reach this point are suddenly asked to fill a hospital-style registration form — full name, city, relation, date of birth, and gender — for what they expected to be a quick, free doctor consultation. For users dealing with piles, an inherently embarrassing condition, this form feels like creating a permanent medical record that links their real identity to a condition they haven't told anyone about. The 'Relation' field is particularly confusing and feels invasive. The form doesn't explain why any of this information is needed or how it will be used.",
+        "Users who have navigated 5 screens to reach this point are suddenly asked to fill a hospital-style registration form, full name, city, relation, date of birth, and gender, for what they expected to be a quick, free doctor consultation. For users dealing with piles, an inherently embarrassing condition, this form feels like creating a permanent medical record that links their real identity to a condition they haven't told anyone about. The 'Relation' field is particularly confusing and feels invasive. The form doesn't explain why any of this information is needed or how it will be used.",
       user_expectation:
-        "A simple, low-commitment way to connect with a doctor — maybe just a chat or a callback request with minimal personal information.",
+        "A simple, low-commitment way to connect with a doctor, maybe just a chat or a callback request with minimal personal information.",
       actual_experience:
         "A 6-field formal registration form that feels like a hospital intake counter, with no explanation of why each field is needed or how the data will be protected.",
       business_impact:
@@ -1063,7 +1063,7 @@ export const hexahealthStudyData: StudyData = {
         {
           session_id: "APR_HEXA_U022_20260409",
           persona_type: "Pragmatist",
-          text: "Name, city, relation, date of birth, gender — this feels like I'm registering at a government hospital.",
+          text: "Name, city, relation, date of birth, gender, this feels like I'm registering at a government hospital.",
         },
         {
           session_id: "APR_HEXA_U035_20260409",
@@ -1087,13 +1087,13 @@ export const hexahealthStudyData: StudyData = {
       top_behavioral_tags: ["HESITATED", "ABANDONED"],
       avg_seq: 3.8,
       problem_narrative:
-        "Users who clicked a piles-specific ad are immediately asked for their mobile number before seeing any content. For a condition users find deeply embarrassing, a phone number isn't just a login credential — it's a permanent link between their identity and a stigmatized health condition. Users fear unsolicited calls or SMS messages that could expose their condition to family members who share the same household. There is no guest browsing option and no explanation of how the phone number will be used.",
+        "Users who clicked a piles-specific ad are immediately asked for their mobile number before seeing any content. For a condition users find deeply embarrassing, a phone number isn't just a login credential, it's a permanent link between their identity and a stigmatized health condition. Users fear unsolicited calls or SMS messages that could expose their condition to family members who share the same household. There is no guest browsing option and no explanation of how the phone number will be used.",
       user_expectation:
         "Browse treatment information anonymously first, then provide contact details only when ready to book a consultation.",
       actual_experience:
         "Phone number required immediately after clicking the ad, before seeing any treatment information or value from the app.",
       business_impact:
-        "10.9% of users drop at this step, and 54% of users who continue report negative emotions. This is the second-highest friction point and it's the first thing users see — it shapes their perception of the entire app as invasive rather than helpful.",
+        "10.9% of users drop at this step, and 54% of users who continue report negative emotions. This is the second-highest friction point and it's the first thing users see, it shapes their perception of the entire app as invasive rather than helpful.",
       related_theme_ids: ["T_002"],
       key_monologues: [
         {
@@ -1123,11 +1123,11 @@ export const hexahealthStudyData: StudyData = {
       top_behavioral_tags: ["HESITATED", "ABANDONED"],
       avg_seq: 2.6,
       problem_narrative:
-        "After the registration form ordeal, users face an open text field asking them to describe their health condition in their own words. For piles — a condition most users haven't discussed with anyone — typing out symptoms in plain text feels excessively intimate and exposing. Users struggle with what to write, how much detail to provide, and whether to use clinical or everyday language. The blank text field offers no structure, no prompts, and no reassurance about who will read the response. Users who speak Hindi as their primary language face an additional barrier — they're unsure whether to write in Hindi or English.",
+        "After the registration form ordeal, users face an open text field asking them to describe their health condition in their own words. For piles, a condition most users haven't discussed with anyone, typing out symptoms in plain text feels excessively intimate and exposing. Users struggle with what to write, how much detail to provide, and whether to use clinical or everyday language. The blank text field offers no structure, no prompts, and no reassurance about who will read the response. Users who speak Hindi as their primary language face an additional barrier, they're unsure whether to write in Hindi or English.",
       user_expectation:
         "A simple checklist of common symptoms (bleeding, pain, swelling) they could tap without having to articulate embarrassing details in writing.",
       actual_experience:
-        "A blank, open text field with no guidance, no symptom suggestions, and no language options — asking users to compose a free-text description of an embarrassing condition.",
+        "A blank, open text field with no guidance, no symptom suggestions, and no language options, asking users to compose a free-text description of an embarrassing condition.",
       business_impact:
         "9.7% drop-off at this step, with 68% of all users reporting embarrassment or discomfort. This is the most emotionally charged step in the flow and the point where the condition-specific nature of the product conflicts most directly with the generic UX pattern.",
       related_theme_ids: ["T_001"],
@@ -1164,13 +1164,13 @@ export const hexahealthStudyData: StudyData = {
       top_behavioral_tags: ["HESITATED", "ABANDONED"],
       avg_seq: 4.2,
       problem_narrative:
-        "Users who clicked a piles-specific ad expect to land on piles-specific content. Instead, they see a generic health services dashboard with 6+ service categories — knee replacement, weight loss, eye care, and more. Finding the piles section requires navigating through the dashboard to a conditions list and then selecting the correct condition. This disconnect between the ad's promise and the app's structure wastes the focused intent that brought users here and makes the app feel like a generic platform rather than a specialist solution.",
+        "Users who clicked a piles-specific ad expect to land on piles-specific content. Instead, they see a generic health services dashboard with 6+ service categories, knee replacement, weight loss, eye care, and more. Finding the piles section requires navigating through the dashboard to a conditions list and then selecting the correct condition. This disconnect between the ad's promise and the app's structure wastes the focused intent that brought users here and makes the app feel like a generic platform rather than a specialist solution.",
       user_expectation:
-        "Clicking a piles ad would lead directly to piles treatment information — a seamless continuation of the ad's promise.",
+        "Clicking a piles ad would lead directly to piles treatment information, a seamless continuation of the ad's promise.",
       actual_experience:
         "A generic multi-service health dashboard that requires 2 additional navigation steps to reach piles-specific content.",
       business_impact:
-        "4.9% direct drop-off, but 44% of users reported confusion or frustration at this step. The real cost is subtle — it dilutes the condition-specific trust built by the ad and makes the app feel unfocused. Users who navigate past this step arrive at the Piles Detail page with lower confidence than they should have.",
+        "4.9% direct drop-off, but 44% of users reported confusion or frustration at this step. The real cost is subtle, it dilutes the condition-specific trust built by the ad and makes the app feel unfocused. Users who navigate past this step arrive at the Piles Detail page with lower confidence than they should have.",
       related_theme_ids: ["T_003"],
       key_monologues: [
         {
@@ -1198,7 +1198,7 @@ export const hexahealthStudyData: StudyData = {
       trigger_step_name: "App Login (Mobile Number)",
       trigger_tags: ["DISTRUST", "EMBARRASSED"],
       implication:
-        "These users are not low-intent — they genuinely need treatment but their privacy concerns override their health needs. The flow treats health data collection the same as e-commerce login, which fails for stigmatized conditions.",
+        "These users are not low-intent, they genuinely need treatment but their privacy concerns override their health needs. The flow treats health data collection the same as e-commerce login, which fails for stigmatized conditions.",
       session_ids: [
         "APR_HEXA_U008_20260409",
         "APR_HEXA_U019_20260409",
@@ -1206,12 +1206,12 @@ export const hexahealthStudyData: StudyData = {
         "APR_HEXA_U027_20260409",
       ],
       behavior_narrative:
-        "Privacy guardians click the piles ad with genuine interest — their monologues show they are suffering and actively seeking help. But the moment the app asks for identifying information (phone number, name, DOB), their embarrassment about the condition overrides their desire for treatment. They imagine worst-case scenarios: unsolicited calls about piles that family overhears, data breaches exposing their condition, or promotional SMS messages that appear on their lock screen. They exit the app and either search for anonymous information on Google or defer treatment entirely.",
+        "Privacy guardians click the piles ad with genuine interest, their monologues show they are suffering and actively seeking help. But the moment the app asks for identifying information (phone number, name, DOB), their embarrassment about the condition overrides their desire for treatment. They imagine worst-case scenarios: unsolicited calls about piles that family overhears, data breaches exposing their condition, or promotional SMS messages that appear on their lock screen. They exit the app and either search for anonymous information on Google or defer treatment entirely.",
       key_monologues: [
         {
           session_id: "APR_HEXA_U008_20260409",
           persona_type: "Skeptic",
-          text: "I clicked the ad to learn about the treatment. Why do they need my phone number before I've even seen what they offer? They'll start calling me about piles — no way.",
+          text: "I clicked the ad to learn about the treatment. Why do they need my phone number before I've even seen what they offer? They'll start calling me about piles, no way.",
         },
         {
           session_id: "APR_HEXA_U027_20260409",
@@ -1225,7 +1225,7 @@ export const hexahealthStudyData: StudyData = {
         },
       ],
       actionable_insight:
-        "Allow anonymous browsing until consultation booking. When auth is required, offer email login as an alternative — it feels less invasive than a phone number for health-sensitive users. Add a clear privacy statement explaining that no unsolicited calls or messages will be made.",
+        "Allow anonymous browsing until consultation booking. When auth is required, offer email login as an alternative, it feels less invasive than a phone number for health-sensitive users. Add a clear privacy statement explaining that no unsolicited calls or messages will be made.",
       related_theme_ids: ["T_002"],
       related_friction_point_ids: ["FP_002"],
     },
@@ -1246,7 +1246,7 @@ export const hexahealthStudyData: StudyData = {
         "APR_HEXA_U015_20260409",
       ],
       behavior_narrative:
-        "Embarrassment blockers make it deep into the flow — they complete login, navigate to piles content, fill the registration form, and then freeze at the symptom description step. They stare at the blank text field, type a few words, delete them, try again, and eventually give up. Their monologues reveal a consistent pattern: they know what their symptoms are, but the act of articulating them in writing — choosing the words, deciding on the level of detail, confronting the condition in text form — triggers a level of embarrassment that breaks their momentum.",
+        "Embarrassment blockers make it deep into the flow, they complete login, navigate to piles content, fill the registration form, and then freeze at the symptom description step. They stare at the blank text field, type a few words, delete them, try again, and eventually give up. Their monologues reveal a consistent pattern: they know what their symptoms are, but the act of articulating them in writing, choosing the words, deciding on the level of detail, confronting the condition in text form, triggers a level of embarrassment that breaks their momentum.",
       key_monologues: [
         {
           session_id: "APR_HEXA_U033_20260409",
@@ -1274,7 +1274,7 @@ export const hexahealthStudyData: StudyData = {
       trigger_step_name: null,
       trigger_tags: ["HOPEFUL", "CONFIDENT"],
       implication:
-        "These users convert not because the flow is good, but because their pain and desperation override the friction. They would convert even faster with a smoother flow — and they represent the floor of what this flow can achieve, not the ceiling.",
+        "These users convert not because the flow is good, but because their pain and desperation override the friction. They would convert even faster with a smoother flow, and they represent the floor of what this flow can achieve, not the ceiling.",
       session_ids: [
         "APR_HEXA_U001_20260409",
         "APR_HEXA_U005_20260409",
@@ -1283,7 +1283,7 @@ export const hexahealthStudyData: StudyData = {
         "APR_HEXA_U011_20260409",
       ],
       behavior_narrative:
-        "Intent preservers have been suffering from piles for weeks or months. They've already researched treatment options online, discussed the condition with at least one trusted person, and are actively seeking a solution. When they hit friction points — login wall, generic dashboard, registration form, symptom text field — they acknowledge the discomfort but push through because the alternative (continuing to live with untreated piles) is worse. Their monologues show rational cost-benefit calculations: 'This is annoying, but I need this treatment.'",
+        "Intent preservers have been suffering from piles for weeks or months. They've already researched treatment options online, discussed the condition with at least one trusted person, and are actively seeking a solution. When they hit friction points, login wall, generic dashboard, registration form, symptom text field, they acknowledge the discomfort but push through because the alternative (continuing to live with untreated piles) is worse. Their monologues show rational cost-benefit calculations: 'This is annoying, but I need this treatment.'",
       key_monologues: [
         {
           session_id: "APR_HEXA_U005_20260409",
@@ -1312,7 +1312,7 @@ export const hexahealthStudyData: StudyData = {
       trigger_step_name: "Home/Dashboard (Services Grid)",
       trigger_tags: ["CONFUSED", "OVERWHELMED"],
       implication:
-        "The disconnect between a targeted ad and a generic app experience creates a trust and navigation gap. Users who arrive with condition-specific intent need condition-specific landing — not a multi-service dashboard that makes them hunt for what they came for.",
+        "The disconnect between a targeted ad and a generic app experience creates a trust and navigation gap. Users who arrive with condition-specific intent need condition-specific landing, not a multi-service dashboard that makes them hunt for what they came for.",
       session_ids: [
         "APR_HEXA_U043_20260409",
         "APR_HEXA_U029_20260409",
@@ -1353,22 +1353,22 @@ export const hexahealthStudyData: StudyData = {
         summary:
           "Pragmatists push through friction because they need treatment, but the registration form and symptom text field test their patience",
         persona_profile:
-          "Pragmatists are typically 30–45 year old working professionals from Mumbai and Delhi who have been dealing with piles for 2–6 months. They've done some online research, may have tried home remedies, and are now ready for a medical solution. They value efficiency and directness — they'll tolerate some friction if the end result is a real doctor consultation, but they expect the process to respect their time and intelligence.",
+          "Pragmatists are typically 30–45 year old working professionals from Mumbai and Delhi who have been dealing with piles for 2–6 months. They've done some online research, may have tried home remedies, and are now ready for a medical solution. They value efficiency and directness, they'll tolerate some friction if the end result is a real doctor consultation, but they expect the process to respect their time and intelligence.",
         journey_narrative:
-          "Pragmatists clicked the ad with moderate intent — the '30 min laser treatment' claim aligned with their desire for a quick fix. They entered their phone number with mild reluctance, navigated the generic dashboard without major difficulty, and found the Piles section within 30 seconds. The Piles Detail page validated their research and built confidence. But the Doctor Consultation Form triggered frustration — they questioned why so many fields were needed for a free consultation. Most completed it anyway, but the symptom description step pushed several to their limit. Those who finished felt relieved but noted the process was unnecessarily burdensome.",
+          "Pragmatists clicked the ad with moderate intent, the '30 min laser treatment' claim aligned with their desire for a quick fix. They entered their phone number with mild reluctance, navigated the generic dashboard without major difficulty, and found the Piles section within 30 seconds. The Piles Detail page validated their research and built confidence. But the Doctor Consultation Form triggered frustration, they questioned why so many fields were needed for a free consultation. Most completed it anyway, but the symptom description step pushed several to their limit. Those who finished felt relieved but noted the process was unnecessarily burdensome.",
         monologues: [
           {
-            text: "30 minutes laser treatment — that's interesting. I've been putting this off for months.",
+            text: "30 minutes laser treatment, that's interesting. I've been putting this off for months.",
           },
           {
-            text: "Name, city, relation, date of birth, gender — this feels like I'm registering at a government hospital.",
+            text: "Name, city, relation, date of birth, gender, this feels like I'm registering at a government hospital.",
           },
           {
             text: "I was fine until the symptom text box. A checklist would have been so much easier.",
           },
         ],
         positive_experience:
-          "The Piles Detail page (Step 5) was the strongest moment for Pragmatists — the symptoms and causes matched their prior research, and the '30 min laser treatment' claim was consistent with the ad. This validation moment converted tentative interest into genuine intent.",
+          "The Piles Detail page (Step 5) was the strongest moment for Pragmatists, the symptoms and causes matched their prior research, and the '30 min laser treatment' claim was consistent with the ad. This validation moment converted tentative interest into genuine intent.",
         emotional_arc: [
           "HOPEFUL",
           "ANXIOUS",
@@ -1380,7 +1380,7 @@ export const hexahealthStudyData: StudyData = {
           "RELIEVED",
         ],
         segment_recommendation:
-          "Reduce the Doctor Consultation Form to Name + City only — DOB, Gender, and Relation can be collected during the actual consultation call. Replace the symptom text field with a structured checklist. Pragmatists will complete any reasonable form, but they resent unnecessary bureaucracy.",
+          "Reduce the Doctor Consultation Form to Name + City only, DOB, Gender, and Relation can be collected during the actual consultation call. Replace the symptom text field with a structured checklist. Pragmatists will complete any reasonable form, but they resent unnecessary bureaucracy.",
       },
       {
         segment_id: "SEG_002",
@@ -1393,14 +1393,14 @@ export const hexahealthStudyData: StudyData = {
         primary_pattern: "privacy_guardian",
         top_emotional_tags: ["DISTRUST", "EMBARRASSED"],
         summary:
-          "Skeptics see every data collection point as a privacy risk — for an embarrassing condition, this distrust becomes a hard blocker",
+          "Skeptics see every data collection point as a privacy risk, for an embarrassing condition, this distrust becomes a hard blocker",
         persona_profile:
           "Skeptics are privacy-conscious users, often 25–40 year old men in Mumbai and Delhi who are deeply uncomfortable with digital health platforms. They've likely searched for piles information on Google in incognito mode. They distrust health apps that ask for personal information, fear data leaks that could expose their condition, and imagine worst-case scenarios at every step. They need strong reassurance that their data is safe before they'll engage.",
         journey_narrative:
-          "Skeptics approached the ad with cautious interest but immediately hit a wall at the phone login. Many left at this step — those who continued did so reluctantly. The generic dashboard reinforced their distrust ('this feels like a trick'). The Piles Detail page partially recovered their confidence with legitimate medical information. But the Doctor Consultation Form was the breaking point for most — full name, DOB, and an unclear 'Relation' field felt like building a permanent medical file for a condition they hadn't told anyone about. The few who survived the form then faced the symptom text field, where the final Skeptics dropped.",
+          "Skeptics approached the ad with cautious interest but immediately hit a wall at the phone login. Many left at this step, those who continued did so reluctantly. The generic dashboard reinforced their distrust ('this feels like a trick'). The Piles Detail page partially recovered their confidence with legitimate medical information. But the Doctor Consultation Form was the breaking point for most, full name, DOB, and an unclear 'Relation' field felt like building a permanent medical file for a condition they hadn't told anyone about. The few who survived the form then faced the symptom text field, where the final Skeptics dropped.",
         monologues: [
           {
-            text: "Why do they need my phone number before I've even seen what they offer? They'll start calling me about piles — no way.",
+            text: "Why do they need my phone number before I've even seen what they offer? They'll start calling me about piles, no way.",
           },
           {
             text: "I already feel weird looking this up on my phone. Now they want my full name and date of birth? For piles? No thanks.",
@@ -1433,24 +1433,24 @@ export const hexahealthStudyData: StudyData = {
         primary_pattern: "intent_preserver",
         top_emotional_tags: ["CONFIDENT", "HOPEFUL"],
         summary:
-          "Enthusiasts convert reliably — they've already decided to seek treatment and the flow's friction doesn't deter them",
+          "Enthusiasts convert reliably, they've already decided to seek treatment and the flow's friction doesn't deter them",
         persona_profile:
           "Enthusiasts are users who have been actively seeking piles treatment for weeks. They've researched laser treatment online, possibly consulted friends or family, and arrived at the HexaHealth ad via Google Search or from a recommendation. They're comfortable discussing their condition (at least digitally) and view the consultation as a practical step toward solving a real problem. They have higher digital literacy and prior experience with health-tech apps.",
         journey_narrative:
-          "Enthusiasts clicked the ad immediately — the '30 min laser treatment' matched their prior research. They entered their phone number without hesitation, navigated to the Piles section quickly, and spent time reading the Detail page to validate their understanding. The Doctor Form was a minor speed bump — they treated it as standard medical intake. The symptom description was easy because they'd already articulated their symptoms to themselves. They submitted and felt relieved that the consultation process had begun.",
+          "Enthusiasts clicked the ad immediately, the '30 min laser treatment' matched their prior research. They entered their phone number without hesitation, navigated to the Piles section quickly, and spent time reading the Detail page to validate their understanding. The Doctor Form was a minor speed bump, they treated it as standard medical intake. The symptom description was easy because they'd already articulated their symptoms to themselves. They submitted and felt relieved that the consultation process had begun.",
         monologues: [
           {
             text: "Finally a proper laser treatment option. I've been researching this for weeks.",
           },
           {
-            text: "This is comprehensive — symptoms match what I've been experiencing. I'm ready to book.",
+            text: "This is comprehensive, symptoms match what I've been experiencing. I'm ready to book.",
           },
           {
-            text: "I know my symptoms well — bleeding, pain, lump. Typing it out isn't a problem for me.",
+            text: "I know my symptoms well, bleeding, pain, lump. Typing it out isn't a problem for me.",
           },
         ],
         positive_experience:
-          "Every step worked for Enthusiasts, but the Piles Detail page (Step 5) was the highlight — it validated their prior research and confirmed that HexaHealth offers the laser treatment they've been looking for. The symptom-cause breakdown built medical credibility that other steps lacked.",
+          "Every step worked for Enthusiasts, but the Piles Detail page (Step 5) was the highlight, it validated their prior research and confirmed that HexaHealth offers the laser treatment they've been looking for. The symptom-cause breakdown built medical credibility that other steps lacked.",
         emotional_arc: [
           "CONFIDENT",
           "CONFIDENT",
@@ -1462,7 +1462,7 @@ export const hexahealthStudyData: StudyData = {
           "RELIEVED",
         ],
         segment_recommendation:
-          "Protect the Enthusiast path — it works. Any flow changes should be tested against this segment to ensure the happy path stays fast. For acquisition, invest in Google Search targeting for piles-related keywords — search users arrive with Enthusiast-level intent.",
+          "Protect the Enthusiast path, it works. Any flow changes should be tested against this segment to ensure the happy path stays fast. For acquisition, invest in Google Search targeting for piles-related keywords, search users arrive with Enthusiast-level intent.",
       },
       {
         segment_id: "SEG_004",
@@ -1475,11 +1475,11 @@ export const hexahealthStudyData: StudyData = {
         primary_pattern: "navigation_lost",
         top_emotional_tags: ["OVERWHELMED", "CONFUSED", "EMBARRASSED"],
         summary:
-          "Confused Novices fail across the entire funnel — low digital literacy, high embarrassment, and no understanding of the medical process compound into early exits",
+          "Confused Novices fail across the entire funnel, low digital literacy, high embarrassment, and no understanding of the medical process compound into early exits",
         persona_profile:
-          "Confused Novices are typically 35–55 year old users from lower-middle-class households in Delhi and Mumbai suburbs. They may be experiencing piles for the first time, haven't discussed it with anyone, and are deeply embarrassed. Their digital literacy is limited — they use phones primarily for WhatsApp, YouTube, and basic browsing. Medical English is mostly incomprehensible to them. They saw the ad while scrolling Instagram and clicked out of desperation, not informed intent.",
+          "Confused Novices are typically 35–55 year old users from lower-middle-class households in Delhi and Mumbai suburbs. They may be experiencing piles for the first time, haven't discussed it with anyone, and are deeply embarrassed. Their digital literacy is limited, they use phones primarily for WhatsApp, YouTube, and basic browsing. Medical English is mostly incomprehensible to them. They saw the ad while scrolling Instagram and clicked out of desperation, not informed intent.",
         journey_narrative:
-          "Confused Novices clicked the ad tentatively — many almost scrolled past. The phone login was terrifying — sharing a number meant the app could call them about piles, which family might overhear. Those who got past login landed on the generic dashboard and couldn't find piles content. The few who reached the Piles Detail page were overwhelmed by medical terminology. The registration form's 'Relation' field was incomprehensible. And the symptom text field — the final barrier — asked them to write in English about a condition they'd never verbalized in any language. Most dropped before Step 6.",
+          "Confused Novices clicked the ad tentatively, many almost scrolled past. The phone login was terrifying, sharing a number meant the app could call them about piles, which family might overhear. Those who got past login landed on the generic dashboard and couldn't find piles content. The few who reached the Piles Detail page were overwhelmed by medical terminology. The registration form's 'Relation' field was incomprehensible. And the symptom text field, the final barrier, asked them to write in English about a condition they'd never verbalized in any language. Most dropped before Step 6.",
         monologues: [
           {
             text: "Mera number deke kya hoga? Ye log call karenge toh ghar mein pata chal jayega.",
@@ -1540,7 +1540,7 @@ export const hexahealthStudyData: StudyData = {
         rate_b: 42,
         delta: 29,
         implication:
-          "Search users have higher intent and prior condition awareness — they've already decided to seek treatment. Instagram users are earlier in their journey, often seeing the ad while casually scrolling, and need more context and reassurance before sharing personal information.",
+          "Search users have higher intent and prior condition awareness, they've already decided to seek treatment. Instagram users are earlier in their journey, often seeing the ad while casually scrolling, and need more context and reassurance before sharing personal information.",
       },
     ],
   },
@@ -1551,8 +1551,8 @@ export const hexahealthStudyData: StudyData = {
     pct_of_converters: 52,
     why_they_convert: [
       "Already suffering from piles for weeks/months and actively seeking treatment",
-      "High digital literacy — comfortable with app-based health services",
-      "Prior research on piles treatment options — ad validated existing knowledge",
+      "High digital literacy, comfortable with app-based health services",
+      "Prior research on piles treatment options, ad validated existing knowledge",
     ],
     what_resonates: [
       {
@@ -1579,7 +1579,7 @@ export const hexahealthStudyData: StudyData = {
         strength:
           "Clean, organized list with piles easily findable among conditions",
         evidence:
-          "97% of power users completed this step with zero hesitation — avg time under 8 seconds",
+          "97% of power users completed this step with zero hesitation, avg time under 8 seconds",
       },
       {
         step_id: 5,
@@ -1587,7 +1587,7 @@ export const hexahealthStudyData: StudyData = {
         strength:
           "Comprehensive symptom and treatment information builds medical credibility",
         evidence:
-          "86% of power users showed CONFIDENT tags at this step — highest positive signal in the flow",
+          "86% of power users showed CONFIDENT tags at this step, highest positive signal in the flow",
       },
     ],
     persona_breakdown: {
@@ -1600,7 +1600,7 @@ export const hexahealthStudyData: StudyData = {
       highest_yield_channel: "google_search",
       highest_yield_persona: "Enthusiast",
       recommendation:
-        "Google Search users converting at 71% vs Instagram at 42% — invest in search intent keywords like 'piles laser treatment near me', 'piles doctor consultation online'. Search users arrive with Enthusiast-level intent that survives the flow's friction. Instagram drives volume but the flow isn't built for the low-intent, high-embarrassment users it attracts.",
+        "Google Search users converting at 71% vs Instagram at 42%, invest in search intent keywords like 'piles laser treatment near me', 'piles doctor consultation online'. Search users arrive with Enthusiast-level intent that survives the flow's friction. Instagram drives volume but the flow isn't built for the low-intent, high-embarrassment users it attracts.",
       channel_persona_matrix: [
         {
           channel: "google_search",
@@ -1638,7 +1638,7 @@ export const hexahealthStudyData: StudyData = {
       observation:
         "72 out of 100 persona-weighted interactions showed negative emotional signals at the Doctor Consultation Form. SEQ at this step is 2.4 vs a 5.5 benchmark. Drop-off rate is 13.9%.",
       finding:
-        "Users consistently felt the 6-field registration form (Name, City, Relation, DOB, Gender) was excessive for a free doctor consultation. The 'Relation' field was particularly confusing. For users dealing with piles — an inherently embarrassing condition — each field felt like creating a permanent record linking their identity to a stigmatized health issue.",
+        "Users consistently felt the 6-field registration form (Name, City, Relation, DOB, Gender) was excessive for a free doctor consultation. The 'Relation' field was particularly confusing. For users dealing with piles, an inherently embarrassing condition, each field felt like creating a permanent record linking their identity to a stigmatized health issue.",
       insight:
         "The form was designed for hospital intake requirements, not user comfort. It applies a generic medical registration pattern to a condition where users haven't even told their own families. The gap between user expectation ('quick chat with a doctor') and actual experience ('government hospital registration') triggers abandonment at the moment of highest conversion potential.",
       recommendation:
@@ -1661,7 +1661,7 @@ export const hexahealthStudyData: StudyData = {
         {
           session_id: "APR_HEXA_U022_20260409",
           persona_type: "Pragmatist",
-          text: "Name, city, relation, date of birth, gender — this feels like I'm registering at a government hospital.",
+          text: "Name, city, relation, date of birth, gender, this feels like I'm registering at a government hospital.",
         },
         {
           session_id: "APR_HEXA_U035_20260409",
@@ -1684,14 +1684,14 @@ export const hexahealthStudyData: StudyData = {
       headline:
         "Mobile login gate fails for privacy-sensitive health conditions",
       one_liner:
-        "54% of users refused or hesitated at the phone number login — piles patients fear unsolicited calls exposing their condition",
+        "54% of users refused or hesitated at the phone number login, piles patients fear unsolicited calls exposing their condition",
       type: "Usability Problem",
       observation:
         "54 out of 100 persona-weighted interactions showed negative emotional signals at the App Login step. SEQ at this step is 3.8 vs a 5.5 benchmark. Drop-off rate is 10.9%.",
       finding:
-        "Users arriving from a piles ad were immediately asked for their phone number before seeing any app content. For a condition users find deeply embarrassing, a phone number isn't just a login credential — it's a potential channel for unsolicited calls and SMS that could expose their condition to family members.",
+        "Users arriving from a piles ad were immediately asked for their phone number before seeing any app content. For a condition users find deeply embarrassing, a phone number isn't just a login credential, it's a potential channel for unsolicited calls and SMS that could expose their condition to family members.",
       insight:
-        "Standard mobile-first auth (phone number + OTP) works for food delivery and e-commerce because the transaction isn't stigmatized. For sensitive health conditions, the same pattern fails because the phone number becomes a liability — a way for the app to contact them about something they want to keep private. The flow doesn't offer any alternative or explain its data usage policy.",
+        "Standard mobile-first auth (phone number + OTP) works for food delivery and e-commerce because the transaction isn't stigmatized. For sensitive health conditions, the same pattern fails because the phone number becomes a liability, a way for the app to contact them about something they want to keep private. The flow doesn't offer any alternative or explain its data usage policy.",
       recommendation:
         "Allow guest browsing until consultation booking. When login is required, offer email as an alternative to phone number. Add a clear statement: 'We will never call or message you without your explicit consent.'",
       frequency_pct: 54,
@@ -1745,7 +1745,7 @@ export const hexahealthStudyData: StudyData = {
       user_need:
         "A way to communicate symptoms without having to articulate embarrassing details in writing",
       current_experience:
-        "A blank open text field asking users to describe their health condition in their own words — no prompts, no structure, no language options.",
+        "A blank open text field asking users to describe their health condition in their own words, no prompts, no structure, no language options.",
       after_experience:
         "A tappable symptom checklist (bleeding, pain, swelling, itching, prolapse, difficulty sitting) with an optional free-text field for additional details. Available in both English and Hindi.",
       recommended_change:
@@ -1770,13 +1770,13 @@ export const hexahealthStudyData: StudyData = {
       user_need:
         "Browse treatment information anonymously before committing personal information",
       current_experience:
-        "Phone number required immediately after clicking the ad — before seeing any treatment content or app value.",
+        "Phone number required immediately after clicking the ad, before seeing any treatment content or app value.",
       after_experience:
-        "Users browse the full app — Home, Conditions, Piles Detail — without logging in. Phone number is only required when they click 'Book Consultation' on the detail page. Email login is available as an alternative.",
+        "Users browse the full app, Home, Conditions, Piles Detail, without logging in. Phone number is only required when they click 'Book Consultation' on the detail page. Email login is available as an alternative.",
       recommended_change:
         "Defer authentication to the consultation booking step. Allow full browse access without login. When auth is required, offer email as an alternative to phone. Add a privacy statement at the login step.",
       emotional_target:
-        "Replace DISTRUST and EMBARRASSED at login with CONFIDENT — users feel in control of when they share personal info",
+        "Replace DISTRUST and EMBARRASSED at login with CONFIDENT, users feel in control of when they share personal info",
       effort: "medium",
       success_metric:
         "Login step drop-off rate falls below 5% (currently 10.9%). Users reporting distrust at login drops below 20% (currently 54%).",
@@ -1802,7 +1802,7 @@ export const hexahealthStudyData: StudyData = {
       recommended_change:
         "Configure ad campaign deep-links to route piles ad traffic directly to the Piles Detail page (Step 5), bypassing the Home dashboard and Conditions list. Combined with guest browsing (DR_002), this creates a 2-step path: Ad → Piles Detail → Book Consultation.",
       emotional_target:
-        "Replace CONFUSED and FRUSTRATED at the dashboard with CONFIDENT — users see immediate relevance",
+        "Replace CONFUSED and FRUSTRATED at the dashboard with CONFIDENT, users see immediate relevance",
       effort: "quick_win",
       success_metric:
         "Dashboard drop-off rate falls below 2% (currently 4.9%). Time from ad click to Piles Detail page drops by 60%+ (from 3 screens to 1).",

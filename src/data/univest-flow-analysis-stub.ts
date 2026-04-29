@@ -29,7 +29,7 @@ export function buildUnivestFlowAnalysisStub(
     meta: {
       product,
       flow,
-      date: (sim.generated_at ?? "").slice(0, 10) || "—",
+      date: (sim.generated_at ?? "").slice(0, 10) || "-",
       totalPersonas: summary.total_personas,
       completionRate: Math.round(summary.completion_rate_pct ?? 0),
     },

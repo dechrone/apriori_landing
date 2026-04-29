@@ -4,7 +4,7 @@
  */
 
 import type { SimulationData } from "@/types/simulation";
-import type { AbReport } from "@/types/ab-report";
+import type { AbReport, SynthesisReadyData } from "@/types/ab-report";
 
 export type SimulationEvent =
   | {
@@ -62,6 +62,18 @@ export type SimulationEvent =
       data: { flow_id: string; flow_name: string; insights: SimulationData };
     }
   | { type: "comparison_ready"; data: AbReport }
+  /**
+   * Multiverse Synthesis Engine (simul2design) follow-on. Arrives ~4-5 min
+   * AFTER comparison_ready when SIMUL2DESIGN_ENABLED is on in the backend.
+   * The wizard typically redirects on comparison_ready before this lands;
+   * the durable write is the server-side UPDATE to `public.simulations.synthesis`,
+   * which the results page reads via supabase realtime.
+   */
+  | { type: "synthesis_ready"; data: SynthesisReadyData }
+  | {
+      type: "synthesis_failed";
+      data: { message: string; comparison_id: string };
+    }
   | { type: "error"; data: { message: string; flow_id?: string } };
 
 /**

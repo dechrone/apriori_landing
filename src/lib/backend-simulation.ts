@@ -42,9 +42,7 @@ export interface AudienceRoutingHints {
 export interface ProductFlowSimulationPayload extends AudienceRoutingHints {
   name: string;
   audience: string;
-  /** Legacy bucket — kept for back-compat. Ignored when numPersonas is set. */
-  personaDepth?: "low" | "medium" | "high";
-  /** Explicit persona count, 1-50. Free PM wizard hardcodes this to 50. */
+  /** Persona count, 1-50. Backend defaults to 25. */
   numPersonas?: number;
   optimizeMetric: string;
   /** Free-text: what is this flow trying to achieve for the user? */
@@ -55,9 +53,7 @@ export interface ProductFlowSimulationPayload extends AudienceRoutingHints {
 export interface ProductFlowComparatorPayload extends AudienceRoutingHints {
   name: string;
   audience: string;
-  /** Legacy bucket — kept for back-compat. Ignored when numPersonas is set. */
-  personaDepth: "low" | "medium" | "high";
-  /** Explicit persona count per variant. Overrides personaDepth when present. */
+  /** Persona count, 1-100. Same set is reused across every variant. Backend defaults to 25. */
   numPersonas?: number;
   optimizeMetric: string;
   selectedFolderIds: string[];
@@ -94,7 +90,7 @@ async function loadLocalPoolTemplates(country?: string): Promise<AudienceTemplat
     description: p.description,
     country: p.country,
     category: p.ideal_customer_profile,
-    target_group_seed: `${p.display_name} — ${p.description}`,
+    target_group_seed: `${p.display_name}, ${p.description}`,
     pre_cached_uuids_count: p.target_size,
     filters: {},
   }));

@@ -52,6 +52,12 @@ No test suite.
 
 `src/components/flow-analysis/ReadingGuide.tsx` renders a dismissible explainer above the tab bar. Dismissal persists in `localStorage` under `apriori.readingGuide.dismissed.v1`.
 
+### A/B comparator: lever attribution
+
+The comparator results page (`/simulations/product-flow-comparator/[id]`) renders `AbReportView` which now includes Section 02b "Winning lever combinations" between the per-screen overlay (02) and persona split (03). The section is hidden when the report's `lever_attribution` is null (legacy reports or runs where lever extraction couldn't produce an inventory). Schema: `LeverAttribution { top_combinations[], by_segment{}, notes }` with each `LeverCombination` carrying `levers[]` (lever_ids), `variant`, `persona_count`, `convert_rate`, `delta_vs_baseline`, optional `cohort`, and an LLM-written `interpretation`. The "How the screen landed" overlay (Section 02) reads the same `ScreenElement[]` shape it always did — backend just produces principled per-element verdicts when an inventory is present, falls back to vision-LLM inference when not.
+
+Image hosts: `next.config.ts::remotePatterns` whitelists `res.cloudinary.com` so user-uploaded variant screenshots render via `next/image` in the AB overlay (added 2026-04-28).
+
 ### Key directories
 
 | Path | Purpose |

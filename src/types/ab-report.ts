@@ -82,6 +82,12 @@ export interface AnnotatedScreenPair {
   screen_label: string;
   variant_a: AnnotatedVariant;
   variant_b: AnnotatedVariant;
+  /**
+   * Auto-extracted design knobs that vary between variants A and B on this
+   * screen. Empty when this screen had no inventory (legacy reports or
+   * extraction failure). Drives the Lever Analysis tab.
+   */
+  levers?: Lever[];
 }
 
 export interface AnnotatedScreens {
@@ -164,6 +170,39 @@ export interface DeepDive {
   personas: PersonaDeepDive[];
 }
 
+/* ── Lever inventory + attribution ───────────────────────────────────────── */
+
+export type LeverCategory = "copy" | "cta" | "imagery" | "layout" | "color" | "content";
+export type LeverValence = "loved" | "liked" | "neutral" | "disliked" | "missed";
+
+/** Auto-extracted design knob that varies between variant A and B on a screen. */
+export interface Lever {
+  lever_id: string;
+  label: string;
+  category: LeverCategory;
+  variant_a_value: string;
+  variant_b_value: string;
+  anchor_a: Anchor;
+  anchor_b: Anchor;
+}
+
+/** One row of the combinatorial lever-attribution table. */
+export interface LeverCombination {
+  levers: string[];               // lever_ids, sorted, ≤3 entries
+  variant: "A" | "B";
+  persona_count: number;
+  convert_rate: number;           // 0..1
+  delta_vs_baseline: number;      // [-1, 1]
+  cohort: string | null;          // null = global row
+  interpretation: string;
+}
+
+export interface LeverAttribution {
+  top_combinations: LeverCombination[];          // ≤10, sorted by |delta|
+  by_segment: Record<string, LeverCombination[]>;
+  notes: string;
+}
+
 /**
  * The full A/B report payload. Emitted on `comparison_ready` and persisted
  * to `public.simulations.result`.
@@ -177,4 +216,69 @@ export interface AbReport {
   friction_provenance: FrictionProvenance;
   monologue_diff: MonologueDiff[];
   deep_dive?: DeepDive;
+  /** Combinatorial lever analysis. Null when the run had no lever inventory. */
+  lever_attribution?: LeverAttribution | null;
+}
+
+/**
+ * simul2design Multiverse Synthesis Engine output. Emitted ~4-5 min AFTER
+ * `comparison_ready` on the `synthesis_ready` SSE event when the backend's
+ * `SIMUL2DESIGN_ENABLED` flag is on. Mirrors `simul2design/schemas.py::SynthesisResult`.
+ *
+ * The cascade turns the AbReport into a buildable V(N+1) spec (markdown +
+ * structured JSON) and renders a phone-frame PNG via Playwright. The PNG is
+ * uploaded to Cloudinary; `variant_image_url` carries the CDN URL.
+ */
+export interface SynthesisResultCellRef {
+  variant_id: string;
+  dimension: string;
+  /** "low_default" | "needs_review" | "auto_mapped_llm" | "high" */
+  confidence: string;
+  current_value: unknown;
+}
+
+export interface SynthesisResultTokenUsage {
+  input_tokens: number;
+  output_tokens: number;
+  cache_read_tokens: number;
+  cache_write_tokens: number;
+}
+
+export interface SynthesisResult {
+  client_slug: string;
+  pipeline_version: string;
+  element_matrix: Record<string, unknown>;
+  automap_trace: Record<string, unknown>;
+  source_markdown: string;
+  cells_needing_review: SynthesisResultCellRef[];
+  ready_for_synthesis: boolean;
+  estimated_cost_usd: number;
+  token_usage: SynthesisResultTokenUsage;
+  /** Phase 3c outputs — populated when run_full_cascade=True (our default). */
+  weighted_scores: Record<string, unknown> | null;
+  synthesized_variant: Record<string, unknown> | null;
+  adversary_review: Record<string, unknown> | null;
+  conversion_estimates: Record<string, unknown> | null;
+  spec_markdown: string | null;
+  /** Reserved upstream — never populated today. */
+  report_html: string | null;
+  /** v0.2.0 render — Playwright-rendered PNG of the V(N+1) screen. */
+  variant_image_path?: string | null;
+  variant_image_size_bytes?: number | null;
+  /** Cloudinary CDN URL set by our orchestrator after a successful upload. Null
+   * when the render extra is missing, render failed, or upload errored. */
+  variant_image_url?: string | null;
+}
+
+/**
+ * The full payload of a `synthesis_ready` SSE event AND the shape persisted
+ * server-side to `public.simulations.synthesis`.
+ */
+export interface SynthesisReadyData {
+  synthesis_input_source: "ab_report" | "comparison_data";
+  ready_for_human: boolean;
+  /** Top-level convenience copy of result.variant_image_url. Null when render
+   * or upload didn't produce a URL. */
+  variant_image_url: string | null;
+  result: SynthesisResult;
 }

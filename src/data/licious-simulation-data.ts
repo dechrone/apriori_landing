@@ -484,7 +484,7 @@ function buildSimulationData() {
       {
         priority: "P0",
         screen: "Home Page \u2013 Navigation",
-        issue: "Navigation lacks category-level structure — users must click 'Shop' and scan visually, despite the brand selling 5 distinct product types already listed in the footer.",
+        issue: "Navigation lacks category-level structure, users must click 'Shop' and scan visually, despite the brand selling 5 distinct product types already listed in the footer.",
         recommendation: "Surface product taxonomy as a dropdown under 'Shop' in the primary nav, matching the footer categories: Oral Intimacy Spray, Edible Lube, Delay Spray, Intimate Hygiene, Aphrodisiac Perfumes.",
         expected_impact: "Faster navigation for intent-driven visitors; reduces hunt-and-scan friction across all product categories",
         primary_affected_segment: "All visitors, especially those arriving with specific product intent",
@@ -492,7 +492,7 @@ function buildSimulationData() {
       {
         priority: "P0",
         screen: "Home Page \u2013 Scrolled Section (Below the Fold)",
-        issue: "Homepage doesn't surface the strong product reviews (89% 5-star) — in a taboo-adjacent category, social proof from real buyers is the #1 trust driver.",
+        issue: "Homepage doesn't surface the strong product reviews (89% 5-star), in a taboo-adjacent category, social proof from real buyers is the #1 trust driver.",
         recommendation: "Add a testimonial carousel or 'Trusted by 1000+ couples' section with 5\u20136 real review snippets prominently on the homepage. Use the existing format (name, city, star rating, short quote).",
         expected_impact: "+10\u201315% trust lift for first-time visitors in a taboo-adjacent category",
         primary_affected_segment: "All first-time visitors, trust-seeking users",
@@ -500,7 +500,7 @@ function buildSimulationData() {
       {
         priority: "P1",
         screen: "Product Detail Page",
-        issue: "PDP repeats the full product description twice and is too long for mobile — wall-of-text kills scroll momentum for 80%+ mobile traffic.",
+        issue: "PDP repeats the full product description twice and is too long for mobile, wall-of-text kills scroll momentum for 80%+ mobile traffic.",
         recommendation: "Lead with 2\u20133 punchy benefit lines, then collapse the rest behind a 'Read more' toggle. Remove the duplicate description block entirely.",
         expected_impact: "Improved mobile scroll momentum; faster path to Add to Cart",
         primary_affected_segment: "Mobile users, impulse buyers, anyone scanning product pages",
@@ -508,7 +508,7 @@ function buildSimulationData() {
       {
         priority: "P0",
         screen: "Product Detail Page",
-        issue: "No visible ingredient list on the PDP for an edible/intimate product — 'food-grade' and 'dermatologically tested' are claims, not proof, causing safety anxiety and drop-offs.",
+        issue: "No visible ingredient list on the PDP for an edible/intimate product, 'food-grade' and 'dermatologically tested' are claims, not proof, causing safety anxiety and drop-offs.",
         recommendation: "Add a collapsible 'Full Ingredients' section on every PDP with the complete ingredient list, concentrations, and a linked FSSAI badge/certificate.",
         expected_impact: "+10\u201315% conversion from safety-conscious visitors who currently bounce at PDP",
         primary_affected_segment: "Safety-conscious users, healthcare professionals, ingredient-checkers",

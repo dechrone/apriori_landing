@@ -27,7 +27,7 @@ export const OBJECTIVE_PRESETS: ObjectivePreset[] = [
     id: "feature-activation",
     label: "Which variant improves activation of the primary feature?",
     objective:
-      "Compare the two screens and identify which one nudges more users into engaging with the primary feature — first purchase, first search, first action, whichever applies.",
+      "Compare the two screens and identify which one nudges more users into engaging with the primary feature, first purchase, first search, first action, whichever applies.",
   },
   {
     id: "copy-cta",
