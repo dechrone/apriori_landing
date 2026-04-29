@@ -16,12 +16,12 @@
   /* Brand accent — indigo (replaces the previous warm gold). The CSS variable
      names keep the legacy "gold/amber" suffix to avoid breaking dependents;
      only the values changed. */
-  --accent-gold: #4F46E5;
-  --accent-gold-hover: #4338CA;
-  --accent-gold-dim: #312E81;
+  --accent-gold: #1F2937;
+  --accent-gold-hover: #111827;
+  --accent-gold-dim: #111827;
 
-  --accent-blue: #3B82F6;
-  --accent-blue-hover: #60A5FA;
+  --accent-blue: #374151;
+  --accent-blue-hover: #9CA3AF;
   --accent-blue-bg: rgba(59, 130, 246, 0.1);
 
   --accent-green: #10B981;
@@ -37,9 +37,9 @@
   --accent-purple-bg: rgba(168, 85, 247, 0.1);
 
   /* Legacy support */
-  --accent-amber: #4F46E5;
-  --accent-amber-glow: rgba(79, 70, 229, 0.3);
-  --accent-amber-dim: rgba(79, 70, 229, 0.1);
+  --accent-amber: #1F2937;
+  --accent-amber-glow: rgba(31, 41, 55, 0.3);
+  --accent-amber-dim: rgba(31, 41, 55, 0.1);
 
   /* ===== TEXT COLORS ===== */
   --text-primary: #F9FAFB;
@@ -52,15 +52,15 @@
   --border-subtle: #1F2937;
   --border-medium: #374151;
   --border-strong: #4B5563;
-  --border-accent: #4F46E5;
+  --border-accent: #1F2937;
   
   /* Legacy support */
   --border-emphasis: #374151;
 
   /* ===== GRADIENT OVERLAYS ===== */
-  --gradient-gold: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
+  --gradient-gold: linear-gradient(135deg, #1F2937 0%, #374151 100%);
   --gradient-dark: linear-gradient(180deg, #0A0E1A 0%, #131824 100%);
-  --gradient-glow: radial-gradient(circle at 50% 0%, rgba(79, 70, 229, 0.15) 0%, transparent 50%);
+  --gradient-glow: radial-gradient(circle at 50% 0%, rgba(31, 41, 55, 0.15) 0%, transparent 50%);
 
   /* ===== SPACING SYSTEM (4px base) ===== */
   --space-0: 0;
@@ -92,14 +92,14 @@
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
-  --shadow-glow-gold: 0 0 20px rgba(79, 70, 229, 0.3);
+  --shadow-glow-gold: 0 0 20px rgba(31, 41, 55, 0.3);
   --shadow-glow-blue: 0 0 20px rgba(59, 130, 246, 0.3);
   --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.4);
 
   /* Legacy support */
   --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  --shadow-amber-glow: 0 0 48px rgba(79, 70, 229, 0.3);
-  --shadow-amber-glow-sm: 0 0 24px rgba(79, 70, 229, 0.2);
+  --shadow-amber-glow: 0 0 48px rgba(31, 41, 55, 0.3);
+  --shadow-amber-glow-sm: 0 0 24px rgba(31, 41, 55, 0.2);
 
   /* ===== TRANSITIONS ===== */
   --transition-fast: 150ms;
@@ -627,15 +627,15 @@ body {
   --border-emphasis: #D1D5DB;
   --border-header: #E8E4DE;
 
-  /* Accent — indigo (replacing the previous warm orange/amber). Variable names
+  /* Accent — graphite (replacing the previous indigo/blue). Variable names
      keep their legacy gold/amber suffix to avoid touching every dependent file. */
-  --accent-gold: #4F46E5;
-  --accent-gold-hover: #4338CA;
-  --accent-gold-dim: rgba(79, 70, 229, 0.08);
-  --accent-amber: #4F46E5;
-  --accent-amber-glow: rgba(79, 70, 229, 0.12);
-  --accent-amber-dim: rgba(79, 70, 229, 0.08);
-  --accent-light: #E0E7FF;
+  --accent-gold: #1F2937;
+  --accent-gold-hover: #111827;
+  --accent-gold-dim: rgba(31, 41, 55, 0.08);
+  --accent-amber: #1F2937;
+  --accent-amber-glow: rgba(31, 41, 55, 0.12);
+  --accent-amber-dim: rgba(31, 41, 55, 0.08);
+  --accent-light: #F3F4F6;
   --accent-fg: #FFFFFF;
 
   /* Semantic status colors */
@@ -645,10 +645,10 @@ body {
   --accent-red-bg: #FEE2E2;
   --accent-orange: #F59E0B; /* genuine warning/orange, kept warm */
   --accent-orange-bg: #FEF3C7;
-  --accent-blue: #2563EB;
-  --accent-blue-bg: rgba(37, 99, 235, 0.08);
-  --accent-purple: #7C3AED;
-  --accent-purple-bg: rgba(124, 58, 237, 0.08);
+  --accent-blue: #1F2937;
+  --accent-blue-bg: rgba(31, 41, 55, 0.08);
+  --accent-purple: #374151;
+  --accent-purple-bg: rgba(55, 65, 81, 0.08);
 
   /* Status text colors */
   --status-green-text: #065F46;
@@ -656,9 +656,9 @@ body {
   --status-orange-text: #92400E;
 
   /* Gradients */
-  --gradient-gold: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%);
+  --gradient-gold: linear-gradient(135deg, #1F2937 0%, #111827 100%);
   --gradient-dark: linear-gradient(180deg, #F5F3F0 0%, #FFFFFF 100%);
-  --gradient-glow: radial-gradient(circle at 50% 0%, rgba(79, 70, 229, 0.06) 0%, transparent 50%);
+  --gradient-glow: radial-gradient(circle at 50% 0%, rgba(31, 41, 55, 0.06) 0%, transparent 50%);
 
   /* Cards */
   --card-bg: #FFFFFF;
@@ -681,11 +681,11 @@ body {
   --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.08), 0 20px 48px rgba(0, 0, 0, 0.06);
   --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
   --shadow-card-hover: 0 4px 20px rgba(0, 0, 0, 0.08);
-  --shadow-glow-gold: 0 0 16px rgba(79, 70, 229, 0.14);
-  --shadow-fab: 0 4px 12px rgba(79, 70, 229, 0.30);
+  --shadow-glow-gold: 0 0 16px rgba(31, 41, 55, 0.14);
+  --shadow-fab: 0 4px 12px rgba(31, 41, 55, 0.30);
   --shadow-glass: 0 1px 4px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
-  --shadow-amber-glow: 0 0 20px rgba(79, 70, 229, 0.14);
-  --shadow-amber-glow-sm: 0 0 12px rgba(79, 70, 229, 0.10);
+  --shadow-amber-glow: 0 0 20px rgba(31, 41, 55, 0.14);
+  --shadow-amber-glow-sm: 0 0 12px rgba(31, 41, 55, 0.10);
   --shadow-toast: 0 8px 24px rgba(0, 0, 0, 0.2);
   --shadow-inner: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
@@ -706,7 +706,7 @@ body:has(.dashboard-theme) {
   background: #9CA3AF;
 }
 .dashboard-theme ::selection {
-  background: #4F46E5;
+  background: #1F2937;
   color: #FFFFFF;
 }
 

@@ -25,7 +25,7 @@ const SCREEN_IMAGES: Record<string, string> = {
 const sim = univestInsights as unknown as SimulationData;
 const stub = buildUnivestFlowAnalysisStub(
   "Univest",
-  "Variant 5 — Trust Pillars + Dual CTA (Unlock + Start Trial @ ₹1)",
+  "Variant 5, Trust Pillars + Dual CTA (Unlock + Start Trial @ ₹1)",
   sim,
 );
 

@@ -175,13 +175,13 @@ export default function EditAudiencePage() {
             {/* Step progress bar */}
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-2">
-                <span className="w-7 h-7 rounded-full bg-[#4F46E5] text-white text-[11px] font-bold flex items-center justify-center shadow-[0_0_0_3px_rgba(79,70,229,0.15)]">
+                <span className="w-7 h-7 rounded-full bg-[#1F2937] text-white text-[11px] font-bold flex items-center justify-center shadow-[0_0_0_3px_rgba(31, 41, 55,0.15)]">
                   1
                 </span>
                 <span className="text-[13px] font-semibold text-[#111827]">Details</span>
               </div>
               <div className="flex-1 h-[2px] rounded-full bg-[#E5E7EB] mx-1 overflow-hidden">
-                <div className="h-full w-1/2 bg-[#4F46E5] rounded-full" />
+                <div className="h-full w-1/2 bg-[#1F2937] rounded-full" />
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-7 h-7 rounded-full border-2 border-[#E5E7EB] text-[#9CA3AF] text-[11px] font-bold flex items-center justify-center">
@@ -196,8 +196,8 @@ export default function EditAudiencePage() {
 
               {/* Card header */}
               <div className="flex items-start gap-4 px-7 pt-7 pb-6 border-b border-[#F3F4F6]">
-                <div className="w-10 h-10 rounded-xl bg-[#E0E7FF] flex items-center justify-center flex-shrink-0">
-                  <Users className="w-5 h-5 text-[#4338CA]" />
+                <div className="w-10 h-10 rounded-xl bg-[#F3F4F6] flex items-center justify-center flex-shrink-0">
+                  <Users className="w-5 h-5 text-[#111827]" />
                 </div>
                 <div>
                   <h2 className="text-[20px] font-bold text-[#111827] leading-snug">
@@ -223,7 +223,7 @@ export default function EditAudiencePage() {
                     placeholder="e.g., Urban millennials – Mumbai/Delhi"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-[#F3F4F6] border border-[#E5E7EB] rounded-xl px-4 py-3 text-[15px] text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/15 transition-all"
+                    className="w-full bg-[#F3F4F6] border border-[#E5E7EB] rounded-xl px-4 py-3 text-[15px] text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#1F2937] focus:ring-2 focus:ring-[#1F2937]/15 transition-all"
                   />
                 </div>
 
@@ -238,14 +238,14 @@ export default function EditAudiencePage() {
                     rows={3}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="w-full bg-[#F3F4F6] border border-[#E5E7EB] rounded-xl px-4 py-3 text-[15px] text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/15 transition-all resize-none leading-relaxed"
+                    className="w-full bg-[#F3F4F6] border border-[#E5E7EB] rounded-xl px-4 py-3 text-[15px] text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#1F2937] focus:ring-2 focus:ring-[#1F2937]/15 transition-all resize-none leading-relaxed"
                   />
                 </div>
               </div>
 
               {/* Card footer / actions */}
               <div className="flex items-center justify-between gap-4 px-7 py-5 border-t border-[#F3F4F6] bg-[#FAFAFA]">
-                {/* Refresh personas — secondary, advanced action.
+                {/* Refresh personas, secondary, advanced action.
                     The backend caches retrieved persona UUIDs per audience to
                     skip the full LLM filter-extraction + BM25 hybrid retrieval
                     on repeat runs. Users hit this when they've edited the
@@ -267,7 +267,7 @@ export default function EditAudiencePage() {
 
                 <button
                   onClick={handleContinueToBuilder}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 text-[14px] font-semibold text-white bg-[#4F46E5] rounded-[10px] hover:bg-[#4338CA] active:bg-[#3730A3] transition-all shadow-[0_4px_12px_rgba(79,70,229,0.3)] hover:shadow-[0_6px_16px_rgba(79,70,229,0.4)]"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 text-[14px] font-semibold text-white bg-[#1F2937] rounded-[10px] hover:bg-[#111827] active:bg-[#111827] transition-all shadow-[0_4px_12px_rgba(31, 41, 55,0.3)] hover:shadow-[0_6px_16px_rgba(31, 41, 55,0.4)]"
                 >
                   Save &amp; continue to filters
                   <ArrowRight className="w-4 h-4" />

@@ -27,6 +27,16 @@ import { saveSimulation, getSimulations } from '@/lib/db';
 import { consumeNDJSONStream } from '@/lib/stream-simulation';
 import { OBJECTIVE_PRESETS, CUSTOM_OBJECTIVE_ID } from '@/data/objective-presets';
 import type { AbReport } from '@/types/ab-report';
+import {
+  SimulationRunningView,
+  type RunningFlow,
+} from '@/components/simulations/SimulationRunningView';
+
+// Hardcoded in the request below. Mirrored here so the running view can
+// show a real "X of N" total before the backend's started event fires
+// (in multiflow mode, the backend only emits flow_started which doesn't
+// carry num_personas).
+const NUM_PERSONAS_PER_VARIANT = 25;
 
 interface PendingVariant {
   file: File;
@@ -45,7 +55,7 @@ export default function ProductFlowABSimulationPage() {
   const [validationError, setValidationError] = useState('');
   const [shake, setShake] = useState(false);
   const [streamProgress, setStreamProgress] = useState<{
-    flows: Record<string, { personasTotal: number; personasDone: number }>;
+    flows: Record<string, RunningFlow>;
     phase: string;
   } | null>(null);
 
@@ -55,7 +65,7 @@ export default function ProductFlowABSimulationPage() {
     if (!userId || !profileReady) return;
     getSimulations(userId)
       .then((sims) => setHasPriorSims(sims.length > 0))
-      .catch(() => setHasPriorSims(true)); // fail closed — hide hero on error
+      .catch(() => setHasPriorSims(true)); // fail closed, hide hero on error
   }, [userId, profileReady]);
 
   // Audience templates (curated, loaded from local pool JSON)
@@ -160,7 +170,7 @@ export default function ProductFlowABSimulationPage() {
     setUploading(true);
     try {
       const token = await getAccessToken();
-      if (!token) throw new Error('Not signed in — please refresh and try again.');
+      if (!token) throw new Error('Not signed in, please refresh and try again.');
 
       // Comparator endpoint treats each folder as a separate flow. For a
       // single-screen A/B, we create one folder per variant with a single
@@ -211,10 +221,7 @@ export default function ProductFlowABSimulationPage() {
         res = await triggerProductFlowComparatorSimulation(userId, {
           name: runName,
           audience: audienceText,
-          // 20 personas × 2 single-screen variants = 40 credits — five free runs
-          // fit inside the 200-credit monthly grant.
-          personaDepth: 'medium',
-          numPersonas: 20,
+          numPersonas: NUM_PERSONAS_PER_VARIANT,
           optimizeMetric: 'activation',
           selectedFolderIds: [folderA.id, folderB.id],
           audienceTemplateId,
@@ -246,34 +253,59 @@ export default function ProductFlowABSimulationPage() {
       let comparisonData: AbReport | null = null;
       let streamError: string | null = null;
 
+      // For the single-screen A/B page, flow_index 0 always maps to the
+      // "Variant A" upload and flow_index 1 to "Variant B" (we created the
+      // folders in that order above), so we override any backend-supplied
+      // flow_name with the user-facing variant label.
+      const labelForIndex = (idx: number) => `Variant ${String.fromCharCode(65 + idx)}`;
+
       await consumeNDJSONStream(res, (event) => {
         if (event.type === 'flow_started') {
-          setStreamProgress((prev) => ({
-            flows: {
-              ...(prev?.flows ?? {}),
-              [event.data.flow_id]: { personasTotal: 0, personasDone: 0 },
-            },
-            phase: 'simulating',
-          }));
-        } else if (event.type === 'started') {
+          const displayName = labelForIndex(event.data.flow_index);
           setStreamProgress((prev) => ({
             flows: {
               ...(prev?.flows ?? {}),
               [event.data.flow_id]: {
-                personasTotal: event.data.num_personas,
-                personasDone: 0,
+                displayName,
+                personasTotal:
+                  prev?.flows[event.data.flow_id]?.personasTotal || NUM_PERSONAS_PER_VARIANT,
+                personasDone: prev?.flows[event.data.flow_id]?.personasDone ?? 0,
               },
             },
             phase: 'simulating',
           }));
-        } else if (event.type === 'persona_complete') {
-          const fid = event.data.flow_id ?? '';
+        } else if (event.type === 'started') {
           setStreamProgress((prev) => {
-            const existing = prev?.flows[fid] ?? { personasTotal: 0, personasDone: 0 };
+            const existing = prev?.flows[event.data.flow_id];
             return {
               flows: {
                 ...(prev?.flows ?? {}),
-                [fid]: { ...existing, personasDone: existing.personasDone + 1 },
+                [event.data.flow_id]: {
+                  displayName: existing?.displayName ?? event.data.flow_name ?? event.data.flow_id,
+                  personasTotal: event.data.num_personas,
+                  personasDone: existing?.personasDone ?? 0,
+                },
+              },
+              phase: 'simulating',
+            };
+          });
+        } else if (event.type === 'persona_complete') {
+          const fid = event.data.flow_id ?? '';
+          setStreamProgress((prev) => {
+            const existing =
+              prev?.flows[fid] ?? {
+                displayName: fid,
+                personasTotal: NUM_PERSONAS_PER_VARIANT,
+                personasDone: 0,
+              };
+            return {
+              flows: {
+                ...(prev?.flows ?? {}),
+                [fid]: {
+                  ...existing,
+                  personasTotal: existing.personasTotal || NUM_PERSONAS_PER_VARIANT,
+                  personasDone: existing.personasDone + 1,
+                },
               },
               phase: 'simulating',
             };
@@ -332,7 +364,12 @@ export default function ProductFlowABSimulationPage() {
           {hasPriorSims === false && <DemoHero />}
 
           {(uploading || running) && (
-            <ProgressPanel uploading={uploading} streamProgress={streamProgress} />
+            <SimulationRunningView
+              uploading={uploading}
+              phase={streamProgress?.phase}
+              flows={streamProgress?.flows ?? {}}
+              eyebrow="Running A/B simulation"
+            />
           )}
 
           {!uploading && !running && (
@@ -346,8 +383,8 @@ export default function ProductFlowABSimulationPage() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g., Onboarding CTA — red vs. green"
-                  className="w-full text-[15px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 focus:border-[#4F46E5] focus:shadow-[0_0_0_3px_rgba(79,70,229,0.12)] focus:outline-none transition-all"
+                  placeholder="e.g., Onboarding CTA, red vs. green"
+                  className="w-full text-[15px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 focus:border-[#1F2937] focus:shadow-[0_0_0_3px_rgba(31, 41, 55,0.12)] focus:outline-none transition-all"
                 />
               </div>
 
@@ -404,7 +441,7 @@ export default function ProductFlowABSimulationPage() {
                     value={customObjective}
                     onChange={(e) => setCustomObjective(e.target.value)}
                     placeholder="Describe what you're comparing and what to look for…"
-                    className="w-full mt-3 text-[14px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 min-h-[90px] focus:border-[#4F46E5] focus:shadow-[0_0_0_3px_rgba(79,70,229,0.12)] focus:outline-none transition-all resize-y"
+                    className="w-full mt-3 text-[14px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 min-h-[90px] focus:border-[#1F2937] focus:shadow-[0_0_0_3px_rgba(31, 41, 55,0.12)] focus:outline-none transition-all resize-y"
                   />
                 )}
               </div>
@@ -417,7 +454,7 @@ export default function ProductFlowABSimulationPage() {
                   Audience <span className="text-[#EF4444]">*</span>
                 </label>
                 <p className="text-[13px] text-[#6B7280] mb-4">
-                  Pick a curated template — pre-cached for speed.
+                  Pick a curated template, pre-cached for speed.
                 </p>
                 {templates.length === 0 ? (
                   <div className="bg-[#FAFAFA] border-[1.5px] border-dashed border-[#E5E7EB] rounded-xl p-6 text-center">
@@ -437,15 +474,15 @@ export default function ProductFlowABSimulationPage() {
                             text-left rounded-xl border-[1.5px] px-[18px] py-4 transition-all duration-150 cursor-pointer flex items-start gap-3
                             ${
                               isSelected
-                                ? 'border-[#4F46E5] bg-[#EEF2FF]'
-                                : 'border-[#E5E7EB] bg-white hover:border-[#4F46E5] hover:bg-[#EEF2FF]'
+                                ? 'border-[#1F2937] bg-[#F3F4F6]'
+                                : 'border-[#E5E7EB] bg-white hover:border-[#1F2937] hover:bg-[#F3F4F6]'
                             }
                           `}
                         >
                           <div className="mt-0.5 flex-shrink-0">
                             <div
                               className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
-                                ${isSelected ? 'border-[#4F46E5] bg-[#4F46E5]' : 'border-[#D1D5DB] bg-white'}`}
+                                ${isSelected ? 'border-[#1F2937] bg-[#1F2937]' : 'border-[#D1D5DB] bg-white'}`}
                             >
                               {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                             </div>
@@ -491,7 +528,7 @@ export default function ProductFlowABSimulationPage() {
                     transition-all duration-200
                     ${
                       canSubmit
-                        ? 'bg-[#4F46E5] text-white shadow-[0_2px_8px_rgba(79,70,229,0.3)] hover:bg-[#4338CA] hover:shadow-[0_4px_12px_rgba(79,70,229,0.35)]'
+                        ? 'bg-[#1F2937] text-white shadow-[0_2px_8px_rgba(31, 41, 55,0.3)] hover:bg-[#111827] hover:shadow-[0_4px_12px_rgba(31, 41, 55,0.35)]'
                         : 'bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed shadow-none'
                     }
                   `}
@@ -508,7 +545,7 @@ export default function ProductFlowABSimulationPage() {
               Testing a multi-screen flow?{' '}
               <Link
                 href="/simulations/new/product-flow-comparator"
-                className="font-medium text-[#4F46E5] hover:underline"
+                className="font-medium text-[#1F2937] hover:underline"
               >
                 Try the full Flow Comparator
               </Link>
@@ -536,7 +573,7 @@ export default function ProductFlowABSimulationPage() {
 }
 
 /* ────────────────────────────────────────────────────────────────
-   Demo hero — first-run only
+   Demo hero, first-run only
    ──────────────────────────────────────────────────────────────── */
 
 function DemoHero() {
@@ -545,21 +582,21 @@ function DemoHero() {
       href="/demo/univest"
       target="_blank"
       rel="noopener noreferrer"
-      className="block bg-gradient-to-br from-[#EEF2FF] to-[#E0E7FF] border-[1.5px] border-[#C7D2FE] rounded-[14px] p-5 mb-6 hover:from-[#E0E7FF] hover:to-[#C7D2FE] transition-all group"
+      className="block bg-gradient-to-br from-[#F3F4F6] to-[#F3F4F6] border-[1.5px] border-[#D1D5DB] rounded-[14px] p-5 mb-6 hover:from-[#F3F4F6] hover:to-[#D1D5DB] transition-all group"
     >
       <div className="flex items-start gap-4">
-        <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center flex-shrink-0 border border-[#C7D2FE]">
-          <Columns2 className="w-5 h-5 text-indigo-700" />
+        <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center flex-shrink-0 border border-[#D1D5DB]">
+          <Columns2 className="w-5 h-5 text-gray-900" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[14px] font-semibold text-[#3730A3] mb-0.5">
-            See what an A/B report looks like — 30 seconds
+          <p className="text-[14px] font-semibold text-[#111827] mb-0.5">
+            See what an A/B report looks like, 30 seconds
           </p>
-          <p className="text-[13px] text-[#312E81] leading-[1.5]">
+          <p className="text-[13px] text-[#111827] leading-[1.5]">
             A finished Univest onboarding comparison. Opens in a new tab.
           </p>
         </div>
-        <ExternalLink className="w-4 h-4 text-indigo-700 flex-shrink-0 mt-1 group-hover:translate-x-0.5 transition-transform" />
+        <ExternalLink className="w-4 h-4 text-gray-900 flex-shrink-0 mt-1 group-hover:translate-x-0.5 transition-transform" />
       </div>
     </a>
   );
@@ -584,15 +621,15 @@ function ObjectiveOption({ label, selected, onSelect }: ObjectiveOptionProps) {
         w-full text-left rounded-xl border-[1.5px] px-4 py-3 transition-all duration-150 cursor-pointer
         ${
           selected
-            ? 'border-[#4F46E5] bg-[#EEF2FF]'
-            : 'border-[#E5E7EB] bg-white hover:border-[#4F46E5] hover:bg-[#EEF2FF]'
+            ? 'border-[#1F2937] bg-[#F3F4F6]'
+            : 'border-[#E5E7EB] bg-white hover:border-[#1F2937] hover:bg-[#F3F4F6]'
         }
       `}
     >
       <div className="flex items-center gap-3">
         <div
           className={`w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all
-            ${selected ? 'border-[#4F46E5] bg-[#4F46E5]' : 'border-[#D1D5DB] bg-white'}`}
+            ${selected ? 'border-[#1F2937] bg-[#1F2937]' : 'border-[#D1D5DB] bg-white'}`}
         >
           {selected && <div className="w-[7px] h-[7px] rounded-full bg-white" />}
         </div>
@@ -663,8 +700,8 @@ function VariantUploader({ label, variant, onFile, onClear }: VariantUploaderPro
             flex flex-col items-center justify-center gap-2 cursor-pointer
             ${
               dragOver
-                ? 'border-[#4F46E5] bg-[#EEF2FF]'
-                : 'border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#4F46E5] hover:bg-[#EEF2FF]'
+                ? 'border-[#1F2937] bg-[#F3F4F6]'
+                : 'border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#1F2937] hover:bg-[#F3F4F6]'
             }
           `}
         >
@@ -684,59 +721,3 @@ function VariantUploader({ label, variant, onFile, onClear }: VariantUploaderPro
   );
 }
 
-/* ────────────────────────────────────────────────────────────────
-   Progress panel (upload + simulation)
-   ──────────────────────────────────────────────────────────────── */
-
-interface ProgressPanelProps {
-  uploading: boolean;
-  streamProgress: {
-    flows: Record<string, { personasTotal: number; personasDone: number }>;
-    phase: string;
-  } | null;
-}
-
-function ProgressPanel({ uploading, streamProgress }: ProgressPanelProps) {
-  const phaseLabel = uploading
-    ? 'Uploading your screens…'
-    : streamProgress?.phase === 'saving'
-      ? 'Saving comparison…'
-      : streamProgress && Object.keys(streamProgress.flows).length > 0
-        ? 'Running A/B simulation…'
-        : 'Starting A/B simulation…';
-
-  return (
-    <div className="bg-white border border-[#E8E4DE] rounded-[14px] p-7">
-      <div className="flex items-center gap-3 mb-5">
-        <Loader2 className="w-5 h-5 animate-spin text-[#4F46E5]" />
-        <p className="text-[15px] font-semibold text-[#1A1A1A]">{phaseLabel}</p>
-      </div>
-      {streamProgress && Object.keys(streamProgress.flows).length > 0 && (
-        <div className="space-y-3">
-          {Object.entries(streamProgress.flows).map(([flowId, flow]) => (
-            <div key={flowId}>
-              <div className="flex items-center justify-between text-[13px] mb-1">
-                <span className="text-[#4B5563] font-medium">{flowId}</span>
-                <span className="text-[#9CA3AF]">
-                  {flow.personasTotal > 0
-                    ? `${flow.personasDone} / ${flow.personasTotal} personas`
-                    : `${flow.personasDone} personas`}
-                </span>
-              </div>
-              {flow.personasTotal > 0 && (
-                <div className="h-1.5 bg-[#E5E7EB] rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-[#4F46E5] rounded-full transition-all duration-300"
-                    style={{
-                      width: `${Math.round((flow.personasDone / flow.personasTotal) * 100)}%`,
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}

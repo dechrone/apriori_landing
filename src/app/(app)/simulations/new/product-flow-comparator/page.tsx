@@ -24,10 +24,19 @@ import { getAudiences, getAssetFolders, saveSimulation } from '@/lib/db';
 import type { AudienceDoc } from '@/lib/db';
 import { consumeNDJSONStream } from '@/lib/stream-simulation';
 import type { AbReport } from '@/types/ab-report';
+import {
+  SimulationRunningView,
+  type RunningFlow,
+} from '@/components/simulations/SimulationRunningView';
 
 type Step = 1 | 2 | 3;
 
 const STEP_LABELS = ['Setup', 'Select assets', 'Parameters'];
+
+// Hardcoded in the request below. Mirrored here so the running view can
+// show "X of N" before the backend's per-flow started event lands (in
+// multiflow mode flow_started doesn't carry num_personas).
+const NUM_PERSONAS_PER_FLOW = 25;
 
 const METRICS = [
   { value: 'signup-completion', label: 'Signup completion rate', desc: '% of users who complete the sign-up flow' },
@@ -50,7 +59,7 @@ export default function ProductFlowComparatorSimulationPage() {
   const [validationError, setValidationError] = useState('');
   const [shake, setShake] = useState(false);
   const [streamProgress, setStreamProgress] = useState<{
-    flows: Record<string, { personasTotal: number; personasDone: number }>;
+    flows: Record<string, RunningFlow>;
     phase: string;
   } | null>(null);
   const router = useRouter();
@@ -91,7 +100,6 @@ export default function ProductFlowComparatorSimulationPage() {
     name: '',
     audience: '',
     audienceTemplateId: '',
-    personaDepth: 'medium' as 'low' | 'medium' | 'high',
     optimizeMetric: 'activation',
     selectedFolderIds: [] as string[],
   });
@@ -166,9 +174,7 @@ export default function ProductFlowComparatorSimulationPage() {
       const res = await triggerProductFlowComparatorSimulation(userId, {
         name: formData.name,
         audience: audienceText,
-        // 20 personas per flow — matches the credit math (1 credit = persona × screen).
-        personaDepth: 'medium',
-        numPersonas: 20,
+        numPersonas: NUM_PERSONAS_PER_FLOW,
         optimizeMetric: formData.optimizeMetric,
         selectedFolderIds: subFolderIds,
         // Persona-retrieval routing hints — same semantics as single-flow page.
@@ -195,34 +201,62 @@ export default function ProductFlowComparatorSimulationPage() {
 
       let comparisonData: AbReport | null = null;
       let streamError: string | null = null;
-      const flowNames: Record<string, string> = {};
+
+      // Backend ships flow_name on flow_started; if it's missing we fall back
+      // to "Flow N" using flow_index so the UI never shows raw IDs.
+      const labelFor = (flowName: string | undefined, flowIndex: number) => {
+        const trimmed = flowName?.trim();
+        if (trimmed) return trimmed;
+        return `Flow ${flowIndex + 1}`;
+      };
 
       await consumeNDJSONStream(res, (event) => {
         if (event.type === 'flow_started') {
-          flowNames[event.data.flow_id] = event.data.flow_name;
+          const displayName = labelFor(event.data.flow_name, event.data.flow_index);
           setStreamProgress((prev) => ({
             flows: {
               ...(prev?.flows ?? {}),
-              [event.data.flow_id]: { personasTotal: 0, personasDone: 0 },
+              [event.data.flow_id]: {
+                displayName,
+                personasTotal:
+                  prev?.flows[event.data.flow_id]?.personasTotal || NUM_PERSONAS_PER_FLOW,
+                personasDone: prev?.flows[event.data.flow_id]?.personasDone ?? 0,
+              },
             },
             phase: 'simulating',
           }));
         } else if (event.type === 'started') {
-          setStreamProgress((prev) => ({
-            flows: {
-              ...(prev?.flows ?? {}),
-              [event.data.flow_id]: { personasTotal: event.data.num_personas, personasDone: 0 },
-            },
-            phase: 'simulating',
-          }));
-        } else if (event.type === 'persona_complete') {
-          const fid = event.data.flow_id ?? '';
           setStreamProgress((prev) => {
-            const existing = prev?.flows[fid] ?? { personasTotal: 0, personasDone: 0 };
+            const existing = prev?.flows[event.data.flow_id];
             return {
               flows: {
                 ...(prev?.flows ?? {}),
-                [fid]: { ...existing, personasDone: existing.personasDone + 1 },
+                [event.data.flow_id]: {
+                  displayName: existing?.displayName ?? event.data.flow_name ?? event.data.flow_id,
+                  personasTotal: event.data.num_personas,
+                  personasDone: existing?.personasDone ?? 0,
+                },
+              },
+              phase: 'simulating',
+            };
+          });
+        } else if (event.type === 'persona_complete') {
+          const fid = event.data.flow_id ?? '';
+          setStreamProgress((prev) => {
+            const existing =
+              prev?.flows[fid] ?? {
+                displayName: fid,
+                personasTotal: NUM_PERSONAS_PER_FLOW,
+                personasDone: 0,
+              };
+            return {
+              flows: {
+                ...(prev?.flows ?? {}),
+                [fid]: {
+                  ...existing,
+                  personasTotal: existing.personasTotal || NUM_PERSONAS_PER_FLOW,
+                  personasDone: existing.personasDone + 1,
+                },
               },
               phase: 'simulating',
             };
@@ -230,6 +264,11 @@ export default function ProductFlowComparatorSimulationPage() {
         } else if (event.type === 'comparison_ready') {
           comparisonData = event.data;
           setStreamProgress((prev) => prev ? { ...prev, phase: 'saving' } : null);
+        } else if (event.type === 'synthesis_ready' || event.type === 'synthesis_failed') {
+          // simul2design cascade — arrives ~5 min AFTER comparison_ready.
+          // The wizard has typically redirected by now; the backend UPDATEs
+          // public.simulations.synthesis server-side and the results page
+          // reads it via supabase realtime. Nothing to do here.
         } else if (event.type === 'error') {
           streamError = event.data.message;
         }
@@ -301,42 +340,12 @@ export default function ProductFlowComparatorSimulationPage() {
 
           {/* Running progress panel */}
           {running && streamProgress && (
-            <div className="bg-white border border-[#E8E4DE] rounded-[14px] p-7">
-              <div className="flex items-center gap-3 mb-5">
-                <Loader2 className="w-5 h-5 animate-spin text-[#4F46E5]" />
-                <p className="text-[15px] font-semibold text-[#1A1A1A]">
-                  {streamProgress.phase === 'saving'
-                    ? 'Saving comparison results…'
-                    : Object.keys(streamProgress.flows).length > 0
-                      ? 'Simulating flows in parallel…'
-                      : 'Initialising comparison…'}
-                </p>
-              </div>
-              {Object.keys(streamProgress.flows).length > 0 && (
-                <div className="space-y-3">
-                  {Object.entries(streamProgress.flows).map(([flowId, flow]) => (
-                    <div key={flowId}>
-                      <div className="flex items-center justify-between text-[13px] mb-1">
-                        <span className="text-[#4B5563] font-medium">{flowId}</span>
-                        <span className="text-[#9CA3AF]">
-                          {flow.personasTotal > 0
-                            ? `${flow.personasDone} / ${flow.personasTotal} personas`
-                            : `${flow.personasDone} personas`}
-                        </span>
-                      </div>
-                      {flow.personasTotal > 0 && (
-                        <div className="h-1.5 bg-[#E5E7EB] rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-[#4F46E5] rounded-full transition-all duration-300"
-                            style={{ width: `${Math.round((flow.personasDone / flow.personasTotal) * 100)}%` }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <SimulationRunningView
+              uploading={false}
+              phase={streamProgress.phase}
+              flows={streamProgress.flows}
+              eyebrow="Running flow comparison"
+            />
           )}
 
           {!running && currentStep === 1 && (
@@ -397,7 +406,7 @@ export default function ProductFlowComparatorSimulationPage() {
                 flex items-center gap-2 text-[15px] font-semibold rounded-xl px-7 py-[13px]
                 transition-all duration-200
                 ${canProceedCurrent && !running
-                  ? 'bg-[#4F46E5] text-white shadow-[0_2px_8px_rgba(79,70,229,0.3)] hover:bg-[#4338CA] hover:shadow-[0_4px_12px_rgba(79,70,229,0.35)]'
+                  ? 'bg-[#1F2937] text-white shadow-[0_2px_8px_rgba(31, 41, 55,0.3)] hover:bg-[#111827] hover:shadow-[0_4px_12px_rgba(31, 41, 55,0.35)]'
                   : 'bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed shadow-none'
                 }
               `}
@@ -419,8 +428,8 @@ export default function ProductFlowComparatorSimulationPage() {
           75% { transform: translateX(4px); }
         }
         @keyframes pulse-glow {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(79,70,229,0.4); }
-          50% { box-shadow: 0 0 0 8px rgba(79,70,229,0); }
+          0%, 100% { box-shadow: 0 0 0 0 rgba(31, 41, 55,0.4); }
+          50% { box-shadow: 0 0 0 8px rgba(31, 41, 55,0); }
         }
       `}</style>
     </>
@@ -428,14 +437,13 @@ export default function ProductFlowComparatorSimulationPage() {
 }
 
 /* ────────────────────────────────────────────────────────────────
-   STEP 1 — SETUP
+   STEP 1, SETUP
    ──────────────────────────────────────────────────────────────── */
 
 type ComparatorFormData = {
   name: string;
   audience: string;
   audienceTemplateId: string;
-  personaDepth: 'low' | 'medium' | 'high';
   optimizeMetric: string;
   selectedFolderIds: string[];
 };
@@ -464,7 +472,7 @@ function SetupStep({ formData, setFormData, audiences, templates }: SetupStepPro
           value={formData.name}
           onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
           placeholder="e.g., Onboarding V1 vs V2 Comparison"
-          className="w-full text-[15px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 focus:border-[#4F46E5] focus:shadow-[0_0_0_3px_rgba(79,70,229,0.12)] focus:outline-none transition-all"
+          className="w-full text-[15px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 focus:border-[#1F2937] focus:shadow-[0_0_0_3px_rgba(31, 41, 55,0.12)] focus:outline-none transition-all"
         />
       </div>
 
@@ -511,13 +519,13 @@ function SetupStep({ formData, setFormData, audiences, templates }: SetupStepPro
               <Users className="w-6 h-6 text-[#9CA3AF] mx-auto mb-2" />
               <p className="text-[14px] font-medium text-[#6B7280]">No audiences created yet</p>
               <p className="text-[13px] text-[#9CA3AF] mt-1">
-                Create one — or switch to &quot;Curated templates&quot; for a fast start.
+                Create one, or switch to &quot;Curated templates&quot; for a fast start.
               </p>
               <a
                 href="/audiences"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block text-[13px] font-semibold text-[#4F46E5] hover:text-[#4338CA] hover:underline mt-3"
+                className="inline-block text-[13px] font-semibold text-[#1F2937] hover:text-[#111827] hover:underline mt-3"
               >
                 → Create an audience
               </a>
@@ -542,15 +550,15 @@ function SetupStep({ formData, setFormData, audiences, templates }: SetupStepPro
                     className={`
                       text-left rounded-xl border-[1.5px] px-[18px] py-4 transition-all duration-150 cursor-pointer flex items-start gap-3
                       ${isSelected
-                        ? 'border-[#4F46E5] bg-[#EEF2FF]'
-                        : 'border-[#E5E7EB] bg-white hover:border-[#4F46E5] hover:bg-[#EEF2FF]'
+                        ? 'border-[#1F2937] bg-[#F3F4F6]'
+                        : 'border-[#E5E7EB] bg-white hover:border-[#1F2937] hover:bg-[#F3F4F6]'
                       }
                     `}
                   >
                     <div className="mt-0.5 flex-shrink-0">
                       <div
                         className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
-                          ${isSelected ? 'border-[#4F46E5] bg-[#4F46E5]' : 'border-[#D1D5DB] bg-white'}`}
+                          ${isSelected ? 'border-[#1F2937] bg-[#1F2937]' : 'border-[#D1D5DB] bg-white'}`}
                       >
                         {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                       </div>
@@ -593,15 +601,15 @@ function SetupStep({ formData, setFormData, audiences, templates }: SetupStepPro
                   className={`
                     text-left rounded-xl border-[1.5px] px-[18px] py-4 transition-all duration-150 cursor-pointer flex items-start gap-3
                     ${isSelected
-                      ? 'border-[#4F46E5] bg-[#EEF2FF]'
-                      : 'border-[#E5E7EB] bg-white hover:border-[#4F46E5] hover:bg-[#EEF2FF]'
+                      ? 'border-[#1F2937] bg-[#F3F4F6]'
+                      : 'border-[#E5E7EB] bg-white hover:border-[#1F2937] hover:bg-[#F3F4F6]'
                     }
                   `}
                 >
                   <div className="mt-0.5 flex-shrink-0">
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
-                        ${isSelected ? 'border-[#4F46E5] bg-[#4F46E5]' : 'border-[#D1D5DB] bg-white'}`}
+                        ${isSelected ? 'border-[#1F2937] bg-[#1F2937]' : 'border-[#D1D5DB] bg-white'}`}
                     >
                       {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                     </div>
@@ -635,7 +643,7 @@ function SetupStep({ formData, setFormData, audiences, templates }: SetupStepPro
 }
 
 /* ────────────────────────────────────────────────────────────────
-   STEP 2 — SELECT ASSETS (Product Flow Comparator folders)
+   STEP 2, SELECT ASSETS (Product Flow Comparator folders)
    ──────────────────────────────────────────────────────────────── */
 
 interface AssetSelectionStepProps {
@@ -685,7 +693,7 @@ function AssetSelectionStep({ formData, setFormData, allFolders, readyFolders }:
             href="/assets"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block text-[13px] font-semibold text-[#4F46E5] hover:text-[#4338CA] hover:underline mt-3"
+            className="inline-block text-[13px] font-semibold text-[#1F2937] hover:text-[#111827] hover:underline mt-3"
           >
             → Go to Assets
           </a>
@@ -708,19 +716,19 @@ function AssetSelectionStep({ formData, setFormData, allFolders, readyFolders }:
                     ${!isReady
                       ? 'opacity-50 cursor-not-allowed border-[#E5E7EB] bg-[#FAFAFA]'
                       : isSelected
-                        ? 'border-[#4F46E5] bg-[#EEF2FF] cursor-pointer'
-                        : 'border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#4F46E5] hover:bg-[#EEF2FF] cursor-pointer'
+                        ? 'border-[#1F2937] bg-[#F3F4F6] cursor-pointer'
+                        : 'border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#1F2937] hover:bg-[#F3F4F6] cursor-pointer'
                     }
                   `}
                 >
                   <div className="flex items-center justify-between">
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
-                        ${isSelected ? 'border-[#4F46E5] bg-[#4F46E5]' : 'border-[#D1D5DB] bg-white'}`}
+                        ${isSelected ? 'border-[#1F2937] bg-[#1F2937]' : 'border-[#D1D5DB] bg-white'}`}
                     >
                       {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                     </div>
-                    <FolderOpen className="w-5 h-5 text-[#7C3AED]" />
+                    <FolderOpen className="w-5 h-5 text-[#374151]" />
                   </div>
 
                   <p className="text-[14px] font-semibold text-[#1A1A1A] truncate mt-2.5">
@@ -738,7 +746,7 @@ function AssetSelectionStep({ formData, setFormData, allFolders, readyFolders }:
                         Ready for Simulation
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#3730A3] bg-[#E0E7FF] rounded-full px-2.5 py-0.5">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#111827] bg-[#F3F4F6] rounded-full px-2.5 py-0.5">
                         <AlertCircle className="w-3 h-3" />
                         Needs step numbers
                       </span>
@@ -762,7 +770,7 @@ function AssetSelectionStep({ formData, setFormData, allFolders, readyFolders }:
 }
 
 /* ────────────────────────────────────────────────────────────────
-   STEP 3 — PARAMETERS
+   STEP 3, PARAMETERS
    ──────────────────────────────────────────────────────────────── */
 
 interface ParametersStepProps {
@@ -781,7 +789,7 @@ interface ParametersStepProps {
 function ParametersStep({ formData, setFormData, audienceName, selectedFolders, onBack, onNext, running, canProceed, validationError, shake }: ParametersStepProps) {
   const folderSummary = selectedFolders.length > 0
     ? selectedFolders.map((f) => `${f.name} · ${f.assetCount} screens`).join(', ')
-    : '—';
+    : '-';
 
   return (
     <div className="bg-white border border-[#E8E4DE] rounded-[14px] p-6 sm:px-7">
@@ -813,15 +821,15 @@ function ParametersStep({ formData, setFormData, audienceName, selectedFolders, 
                   ${isComingSoon
                     ? 'border-[#E5E7EB] bg-[#F9FAFB] opacity-50 cursor-not-allowed'
                     : isSelected
-                      ? 'border-[#4F46E5] bg-[#EEF2FF] cursor-pointer'
-                      : 'border-[#E5E7EB] bg-white hover:border-[#4F46E5] hover:bg-[#EEF2FF] cursor-pointer'
+                      ? 'border-[#1F2937] bg-[#F3F4F6] cursor-pointer'
+                      : 'border-[#E5E7EB] bg-white hover:border-[#1F2937] hover:bg-[#F3F4F6] cursor-pointer'
                   }
                 `}
                 disabled={isComingSoon}
               >
                 <div
                   className={`w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all
-                    ${isComingSoon ? 'border-[#D1D5DB] bg-[#F3F4F6]' : isSelected ? 'border-[#4F46E5] bg-[#4F46E5]' : 'border-[#D1D5DB] bg-white'}`}
+                    ${isComingSoon ? 'border-[#D1D5DB] bg-[#F3F4F6]' : isSelected ? 'border-[#1F2937] bg-[#1F2937]' : 'border-[#D1D5DB] bg-white'}`}
                 >
                   {isSelected && !isComingSoon && <div className="w-[7px] h-[7px] rounded-full bg-white" />}
                 </div>
@@ -851,8 +859,8 @@ function ParametersStep({ formData, setFormData, audienceName, selectedFolders, 
         </p>
         <div className="space-y-0">
           {[
-            { label: 'Name', value: formData.name.trim() || '—' },
-            { label: 'Audience', value: audienceName || '—' },
+            { label: 'Name', value: formData.name.trim() || '-' },
+            { label: 'Audience', value: audienceName || '-' },
             { label: 'Comparator Folders', value: folderSummary },
           ].map((row, idx, arr) => (
             <div
@@ -860,7 +868,7 @@ function ParametersStep({ formData, setFormData, audienceName, selectedFolders, 
               className={`flex items-center justify-between py-[5px] ${idx < arr.length - 1 ? 'border-b border-[#F3F4F6]' : ''}`}
             >
               <span className="text-[13px] text-[#6B7280]">{row.label}</span>
-              <span className={`text-[13px] font-medium ${row.value === '—' ? 'text-[#9CA3AF]' : 'text-[#1A1A1A]'}`}>
+              <span className={`text-[13px] font-medium ${row.value === '-' ? 'text-[#9CA3AF]' : 'text-[#1A1A1A]'}`}>
                 {row.value}
               </span>
             </div>
@@ -893,7 +901,7 @@ function ParametersStep({ formData, setFormData, audienceName, selectedFolders, 
               flex items-center gap-2 text-[15px] font-semibold rounded-xl px-6 py-3
               transition-all duration-200
               ${canProceed && !running
-                ? 'bg-[#4F46E5] text-white shadow-[0_2px_8px_rgba(79,70,229,0.3)] hover:bg-[#4338CA] hover:shadow-[0_4px_12px_rgba(79,70,229,0.35)]'
+                ? 'bg-[#1F2937] text-white shadow-[0_2px_8px_rgba(31, 41, 55,0.3)] hover:bg-[#111827] hover:shadow-[0_4px_12px_rgba(31, 41, 55,0.35)]'
                 : 'bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed shadow-none'
               }
             `}

@@ -82,7 +82,7 @@ function TierCard({ tier, activePlan }: { tier: Tier; activePlan: string }) {
   const isCurrent = activePlan === tier.id;
   const subject = encodeURIComponent(`Apriori ${tier.name} plan enquiry`);
   const body = encodeURIComponent(
-    `Hi Apriori team,\n\nI'd like to know more about the ${tier.name} plan.\n\n— Sent from the pricing page`,
+    `Hi Apriori team,\n\nI'd like to know more about the ${tier.name} plan.\n\nSent from the pricing page`,
   );
 
   const ctaHref =
@@ -94,12 +94,12 @@ function TierCard({ tier, activePlan }: { tier: Tier; activePlan: string }) {
     <div
       className={`relative flex flex-col rounded-[20px] border bg-white p-7 ${
         tier.highlight
-          ? "border-[#4F46E5] shadow-[0_12px_32px_rgba(79,70,229,0.18)]"
+          ? "border-[#1F2937] shadow-[0_12px_32px_rgba(31, 41, 55,0.18)]"
           : "border-[#E8E4DE]"
       }`}
     >
       {tier.highlight && (
-        <div className="absolute -top-3 left-7 flex items-center gap-1.5 rounded-full bg-[#4F46E5] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
+        <div className="absolute -top-3 left-7 flex items-center gap-1.5 rounded-full bg-[#1F2937] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
           <Sparkles className="w-3 h-3" />
           Most popular
         </div>
@@ -118,7 +118,7 @@ function TierCard({ tier, activePlan }: { tier: Tier; activePlan: string }) {
           <span className="text-[13px] text-[#9CA3AF]">/ {tier.cadence}</span>
         </div>
         <div className="mt-2 flex items-center gap-1.5 text-[13px] text-[#374151]">
-          <Zap className="w-3.5 h-3.5 text-[#4F46E5]" />
+          <Zap className="w-3.5 h-3.5 text-[#1F2937]" />
           <span className="font-medium">{tier.credits}</span>
           <span className="text-[#9CA3AF]">·</span>
           <span className="text-[#6B7280]">{tier.personas}</span>
@@ -176,14 +176,14 @@ export default function PricingPage() {
             </h2>
             <p className="mt-2 text-[15px] text-[#6B7280]">
               1 credit = 1 persona on 1 screen. A single-screen A/B with 20
-              personas across two variants is 40 credits — and the free tier
+              personas across two variants is 40 credits, and the free tier
               gives you 200 credits a month, enough for five A/B runs.
             </p>
           </div>
 
           {profile && (
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E8E4DE] bg-white px-4 py-2 text-[13px] text-[#374151]">
-              <Zap className="w-3.5 h-3.5 text-[#4F46E5]" />
+              <Zap className="w-3.5 h-3.5 text-[#1F2937]" />
               <span className="font-medium">
                 {profile.credits_remaining} / {profile.credits_total}
               </span>
@@ -214,7 +214,7 @@ export default function PricingPage() {
               </li>
               <li>
                 <span className="font-medium">Full-flow A/B</span> charges per
-                screen in each flow — 20 personas across two 5-screen flows is
+                screen in each flow, 20 personas across two 5-screen flows is
                 20 × 10 = 200 credits.
               </li>
               <li>
@@ -224,7 +224,7 @@ export default function PricingPage() {
               <li>
                 Need something different?{" "}
                 <a
-                  className="font-medium text-[#4F46E5] hover:underline"
+                  className="font-medium text-[#1F2937] hover:underline"
                   href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
                     "Apriori custom plan",
                   )}`}

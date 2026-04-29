@@ -15,7 +15,7 @@ async function notify(payload: FeedbackPayload, uid: string | null) {
   const webhook = process.env.FEEDBACK_WEBHOOK_URL;
   if (!webhook) return;
   const text =
-    `*New Apriori feedback* — _${payload.kind}_\n` +
+    `*New Apriori feedback*, _${payload.kind}_\n` +
     `From: ${payload.email ?? "anonymous"}${uid ? ` (${uid})` : ""}\n` +
     `Path: ${payload.path ?? "n/a"}\n\n` +
     payload.message;

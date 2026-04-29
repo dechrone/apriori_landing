@@ -136,7 +136,7 @@ function HeroSection() {
               background: "rgba(255,255,255,0.06)",
               border: "1px solid rgba(255,255,255,0.1)",
               color: "rgba(255,255,255,0.6)",
-              boxShadow: "0 0 20px rgba(99,102,241,0.08)",
+              boxShadow: "0 0 20px rgba(55, 65, 81,0.08)",
             }}
           >
             Early Access - Limited Spots
@@ -323,7 +323,7 @@ function ProblemSolutionSection() {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   SECTION 3: HOW IT WORKS — STICKY STACKED CARDS
+   SECTION 3: HOW IT WORKS, STICKY STACKED CARDS
    ═══════════════════════════════════════════════════════════════════════════ */
 
 const steps = [
@@ -795,7 +795,7 @@ function RegistrationSection() {
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
     e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)";
-    e.currentTarget.style.boxShadow = "0 0 0 2px rgba(99,102,241,0.15)";
+    e.currentTarget.style.boxShadow = "0 0 0 2px rgba(55, 65, 81,0.15)";
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -813,7 +813,7 @@ function RegistrationSection() {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(99,102,241,0.06) 0%, transparent 70%)",
+            "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(55, 65, 81,0.06) 0%, transparent 70%)",
         }}
       />
 

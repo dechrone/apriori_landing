@@ -8,7 +8,6 @@ import {
   Columns2,
   GitCompare,
   Loader2,
-  PartyPopper,
   PlayCircle,
   Sparkles,
   Zap,
@@ -221,7 +220,7 @@ function HeroBanner({
             Welcome back{firstName ? `,` : ''}
           </p>
           <h1 className="mt-1 text-[26px] sm:text-[30px] font-bold text-[#0F172A] leading-tight">
-            {firstName ? `Hey ${firstName} — ready to ship?` : 'Ready to ship something better?'}
+            {firstName ? `Hey ${firstName}, ready to ship?` : 'Ready to ship something better?'}
           </h1>
           <p className="mt-2 text-[14px] text-[#64748B] max-w-[520px] leading-relaxed">
             Run a synthetic-user A/B in under two minutes. Upload screens, pick an
@@ -299,7 +298,7 @@ function PrimaryActions() {
       <div className="flex items-baseline justify-between mb-4">
         <h2 className="text-[18px] font-semibold text-[#0F172A]">Run a simulation</h2>
         <Link
-          href="/simulations/product-flow/sample"
+          href="/demo/univest"
           className="inline-flex items-center gap-1 text-[13px] font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
         >
           <PlayCircle className="w-3.5 h-3.5" />
@@ -347,7 +346,7 @@ function ActionCard({
       href={href}
       className={`group relative block rounded-[14px] bg-white p-5 transition-all hover:-translate-y-[1px] ${
         recommended
-          ? 'border-[1.5px] border-[var(--accent-gold)] shadow-[0_8px_24px_rgba(79,70,229,0.10)]'
+          ? 'border-[1.5px] border-[var(--accent-gold)] shadow-[0_8px_24px_rgba(31, 41, 55,0.10)]'
           : 'border border-[#E8E4DE] hover:border-[#CBD5E1] hover:shadow-[0_4px_14px_rgba(15,23,42,0.06)]'
       }`}
     >
@@ -523,10 +522,10 @@ function RecentSimulations({
 
 function StatusDot({ status }: { status: SimulationDoc['status'] }) {
   const styles: Record<string, { dot: string; ring: string }> = {
-    completed: { dot: 'bg-emerald-500', ring: 'bg-emerald-100' },
+    completed: { dot: 'bg-[#1F2937]', ring: 'bg-[#F3F4F6]' },
     running: { dot: 'bg-[var(--accent-gold)]', ring: 'bg-[var(--accent-amber-dim)]' },
     draft: { dot: 'bg-[#94A3B8]', ring: 'bg-[#F1F5F9]' },
-    failed: { dot: 'bg-red-500', ring: 'bg-red-100' },
+    failed: { dot: 'bg-[#B91C1C]', ring: 'bg-[#FEE2E2]' },
   };
   const s = styles[status] || styles.draft;
   return (
@@ -543,12 +542,12 @@ function AllSetCard() {
   return (
     <section>
       <div className="bg-white rounded-[14px] border border-[#E8E4DE] p-6 text-center">
-        <div className="w-12 h-12 mx-auto rounded-full bg-emerald-100 flex items-center justify-center mb-3">
-          <PartyPopper className="w-6 h-6 text-emerald-600" />
+        <div className="w-12 h-12 mx-auto rounded-full bg-[#F3F4F6] flex items-center justify-center mb-3">
+          <Check className="w-6 h-6 text-[#1F2937]" />
         </div>
         <h3 className="text-[16px] font-semibold text-[#0F172A]">You&apos;re all set</h3>
         <p className="text-[13px] text-[#64748B] mt-1">
-          Keep iterating — every run sharpens the verdict.
+          Keep iterating, every run sharpens the verdict.
         </p>
       </div>
     </section>
@@ -565,7 +564,7 @@ function TalkToUsFooter() {
             Hit a wall? Have a half-formed idea?
           </p>
           <p className="text-[12px] text-[#64748B] mt-0.5">
-            We read every message — and we&apos;re fast.
+            We read every message, and we&apos;re fast.
           </p>
         </div>
         <button

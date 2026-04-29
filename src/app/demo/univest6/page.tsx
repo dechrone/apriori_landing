@@ -26,7 +26,7 @@ const SCREEN_IMAGES: Record<string, string> = {
 const sim = univestInsights as unknown as SimulationData;
 const stub = buildUnivestFlowAnalysisStub(
   "Univest",
-  "Variant 6 — Dual CTA → Loss-Aversion recover (6.1 → 6.2)",
+  "Variant 6, Dual CTA → Loss-Aversion recover (6.1 → 6.2)",
   sim,
 );
 

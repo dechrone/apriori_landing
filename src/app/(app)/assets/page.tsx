@@ -219,14 +219,14 @@ export default function AssetsPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setFigmaImportOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-[#4B5563] bg-white border border-[#E5E7EB] rounded-lg hover:border-[#A259FF] hover:text-[#7C3AED] transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-[#4B5563] bg-white border border-[#E5E7EB] rounded-lg hover:border-[#A259FF] hover:text-[#374151] transition-colors"
               >
                 <Figma className="w-4 h-4" />
                 Import from Figma
               </button>
               <button
                 onClick={() => setCreateModalOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-[#4B5563] bg-white border border-[#E5E7EB] rounded-lg hover:border-[#4F46E5] hover:text-[#3730A3] transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-[#4B5563] bg-white border border-[#E5E7EB] rounded-lg hover:border-[#1F2937] hover:text-[#111827] transition-colors"
               >
                 <FolderPlus className="w-4 h-4" />
                 Create folder
@@ -246,8 +246,8 @@ export default function AssetsPage() {
         ) : folders.length === 0 ? (
           /* ── Change 1: Create-folder-focused empty state ── */
           <div className="flex flex-col items-center text-center py-16 px-6">
-            <div className="w-16 h-16 rounded-full bg-[#E0E7FF] flex items-center justify-center mb-4">
-              <FolderOpen className="w-8 h-8 text-[#4F46E5]" />
+            <div className="w-16 h-16 rounded-full bg-[#F3F4F6] flex items-center justify-center mb-4">
+              <FolderOpen className="w-8 h-8 text-[#1F2937]" />
             </div>
             <h3 className="text-[20px] font-semibold text-[#1A1A1A] mt-4">
               Organise your assets into folders
@@ -259,7 +259,7 @@ export default function AssetsPage() {
             </p>
             <button
               onClick={() => setCreateModalOpen(true)}
-              className="mt-6 inline-flex items-center gap-2 px-6 py-3 text-[14px] font-semibold text-white bg-[#4F46E5] rounded-[10px] hover:bg-[#4338CA] transition-all duration-200 shadow-[0_2px_8px_rgba(79,70,229,0.3)]"
+              className="mt-6 inline-flex items-center gap-2 px-6 py-3 text-[14px] font-semibold text-white bg-[#1F2937] rounded-[10px] hover:bg-[#111827] transition-all duration-200 shadow-[0_2px_8px_rgba(31, 41, 55,0.3)]"
             >
               <Plus className="w-4 h-4" />
               Create your first folder
@@ -341,7 +341,7 @@ export default function AssetsPage() {
                   className="block"
                 >
                   <div className="flex items-center justify-between">
-                    <FolderOpen className="w-6 h-6 text-[#4F46E5]" />
+                    <FolderOpen className="w-6 h-6 text-[#1F2937]" />
                     {/* Spacer to keep layout balanced with the absolutely-positioned menu */}
                     <div className="w-8 h-8" />
                   </div>
@@ -357,13 +357,13 @@ export default function AssetsPage() {
                       </span>
                     )}
                     {(needsStepNumbers || comparatorNeedsWork) && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#3730A3] bg-[#E0E7FF] rounded-full px-2.5 py-0.5">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#111827] bg-[#F3F4F6] rounded-full px-2.5 py-0.5">
                         <AlertCircle className="w-3 h-3" />
                         Needs step numbers
                       </span>
                     )}
                     {needsCaptions && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#3730A3] bg-[#E0E7FF] rounded-full px-2.5 py-0.5">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#111827] bg-[#F3F4F6] rounded-full px-2.5 py-0.5">
                         <AlertCircle className="w-3 h-3" />
                         Needs captions
                       </span>
@@ -386,7 +386,7 @@ export default function AssetsPage() {
           {folders.length > 0 ? (
             <button
               onClick={openUploadModal}
-              className="inline-flex items-center gap-2 h-12 px-5 text-[14px] font-semibold text-white bg-[#4F46E5] rounded-[24px] hover:bg-[#4338CA] transition-all duration-200 shadow-[0_4px_12px_rgba(79,70,229,0.35)] hover:shadow-[0_6px_16px_rgba(79,70,229,0.45)]"
+              className="inline-flex items-center gap-2 h-12 px-5 text-[14px] font-semibold text-white bg-[#1F2937] rounded-[24px] hover:bg-[#111827] transition-all duration-200 shadow-[0_4px_12px_rgba(31, 41, 55,0.35)] hover:shadow-[0_6px_16px_rgba(31, 41, 55,0.45)]"
             >
               <Plus className="w-[18px] h-[18px]" />
               Upload Asset
@@ -394,7 +394,7 @@ export default function AssetsPage() {
           ) : !loading && (
             <button
               onClick={() => setCreateModalOpen(true)}
-              className="inline-flex items-center gap-2 h-12 px-5 text-[14px] font-semibold text-white bg-[#4F46E5] rounded-[24px] hover:bg-[#4338CA] transition-all duration-200 shadow-[0_4px_12px_rgba(79,70,229,0.35)] hover:shadow-[0_6px_16px_rgba(79,70,229,0.45)]"
+              className="inline-flex items-center gap-2 h-12 px-5 text-[14px] font-semibold text-white bg-[#1F2937] rounded-[24px] hover:bg-[#111827] transition-all duration-200 shadow-[0_4px_12px_rgba(31, 41, 55,0.35)] hover:shadow-[0_6px_16px_rgba(31, 41, 55,0.45)]"
             >
               <FolderPlus className="w-[18px] h-[18px]" />
               Create folder

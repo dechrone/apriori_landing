@@ -25,7 +25,7 @@ const SCREEN_IMAGES: Record<string, string> = {
 const sim = univestInsights as unknown as SimulationData;
 const stub = buildUnivestFlowAnalysisStub(
   "Univest",
-  "Variant 2 — Trusted Advisory + Live Trades + Sticky 'Start Trial @ ₹1'",
+  "Variant 2, Trusted Advisory + Live Trades + Sticky 'Start Trial @ ₹1'",
   sim,
 );
 

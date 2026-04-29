@@ -46,7 +46,7 @@ function HelpPopover({ label, body }: { label: string; body: string }) {
         onClick={() => setOpen((v) => !v)}
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
-        className="text-[#9CA3AF] hover:text-[#4F46E5] transition-colors focus:outline-none focus:text-[#4F46E5]"
+        className="text-[#9CA3AF] hover:text-[#1F2937] transition-colors focus:outline-none focus:text-[#1F2937]"
       >
         <HelpCircle className="w-4 h-4" />
       </button>
@@ -55,7 +55,7 @@ function HelpPopover({ label, body }: { label: string; body: string }) {
           role="tooltip"
           className="absolute left-1/2 top-full mt-2 -translate-x-1/2 w-72 bg-[#1C1917] text-white text-[12px] leading-snug rounded-lg px-3 py-2.5 shadow-xl z-50 pointer-events-none"
         >
-          <span className="block font-semibold mb-1 text-indigo-300">{label}</span>
+          <span className="block font-semibold mb-1 text-gray-400">{label}</span>
           {body}
           <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#1C1917] rotate-45" />
         </span>
@@ -147,7 +147,6 @@ export default function ProductFlowSimulationPage() {
     objective: '',             // free-text "what is this flow trying to achieve?"
     audience: '',              // selected user-created audience id (mutually exclusive with templateId)
     audienceTemplateId: '',    // selected curated template id
-    personaDepth: 'medium',
     optimizeMetric: 'activation',
     selectedFolderIds: [],
   });
@@ -173,7 +172,7 @@ export default function ProductFlowSimulationPage() {
       else if (!formData.audience && !formData.audienceTemplateId)
         msg = 'Please select an audience or template to continue.';
     } else if (currentStep === 2) {
-      if (pendingFiles.length === 1) msg = 'Upload at least 2 screens — a flow needs more than one step.';
+      if (pendingFiles.length === 1) msg = 'Upload at least 2 screens, a flow needs more than one step.';
       else msg = 'Upload your screens or pick an existing folder to continue.';
     } else {
       msg = 'Please select a primary metric to continue.';
@@ -197,7 +196,7 @@ export default function ProductFlowSimulationPage() {
       setUploading(true);
       try {
         const token = await getAccessToken();
-        if (!token) throw new Error('Not signed in — please refresh and try again.');
+        if (!token) throw new Error('Not signed in, please refresh and try again.');
         const folderName =
           formData.name.trim() ||
           `Product flow screens · ${new Date().toLocaleString()}`;
@@ -217,7 +216,7 @@ export default function ProductFlowSimulationPage() {
         await Promise.all(
           uploaded.map((asset, idx) =>
             updateAssetMetadata(token, asset.id, folder.id, { stepNumber: idx + 1 })
-              .catch(() => { /* order fallback is fine — backend already ordered */ }),
+              .catch(() => { /* order fallback is fine, backend already ordered */ }),
           ),
         );
         setFormData((prev) => ({
@@ -270,7 +269,6 @@ export default function ProductFlowSimulationPage() {
         name: formData.name,
         objective: formData.objective.trim(),
         audience: audienceText,
-        // Free PM tool: always a 25-persona run. numPersonas beats personaDepth on the backend.
         numPersonas: 25,
         optimizeMetric: formData.optimizeMetric,
         selectedFolderIds: formData.selectedFolderIds,
@@ -317,7 +315,7 @@ export default function ProductFlowSimulationPage() {
           if (mode === 'relaxed') {
             notice =
               matched !== undefined
-                ? `Only ${matched} personas strictly matched your audience — we widened the search semantically to reach ${event.data.count}.`
+                ? `Only ${matched} personas strictly matched your audience, we widened the search semantically to reach ${event.data.count}.`
                 : "Your audience description was broadened semantically to reach enough personas.";
           } else if (mode === 'random_fallback') {
             notice =
@@ -415,7 +413,7 @@ export default function ProductFlowSimulationPage() {
           {running && streamProgress && (
             <div className="bg-white border border-[#E8E4DE] rounded-[14px] p-7">
               <div className="flex items-center gap-3 mb-5">
-                <Loader2 className="w-5 h-5 animate-spin text-[#4F46E5]" />
+                <Loader2 className="w-5 h-5 animate-spin text-[#1F2937]" />
                 <p className="text-[15px] font-semibold text-[#1A1A1A]">
                   {streamProgress.phase === 'saving'
                     ? 'Saving results…'
@@ -425,7 +423,7 @@ export default function ProductFlowSimulationPage() {
                 </p>
               </div>
               {streamProgress.retrievalNotice && (
-                <div className="mb-4 flex items-start gap-2.5 rounded-[10px] border border-[#FCD34D] bg-[#EEF2FF] px-3.5 py-2.5 text-[13px] text-[#312E81]">
+                <div className="mb-4 flex items-start gap-2.5 rounded-[10px] border border-[#FCD34D] bg-[#F3F4F6] px-3.5 py-2.5 text-[13px] text-[#111827]">
                   <span aria-hidden className="mt-[1px]">⚠</span>
                   <span className="leading-[1.5]">{streamProgress.retrievalNotice}</span>
                 </div>
@@ -467,7 +465,7 @@ export default function ProductFlowSimulationPage() {
           )}
           {!running && uploading && (
             <div className="bg-white border border-[#E8E4DE] rounded-[14px] p-7 flex items-center gap-3">
-              <Loader2 className="w-5 h-5 animate-spin text-[#4F46E5]" />
+              <Loader2 className="w-5 h-5 animate-spin text-[#1F2937]" />
               <div>
                 <p className="text-[15px] font-semibold text-[#1A1A1A]">
                   Uploading {pendingFiles.length} screen{pendingFiles.length !== 1 ? 's' : ''}…
@@ -520,7 +518,7 @@ export default function ProductFlowSimulationPage() {
                 flex items-center gap-2 text-[15px] font-semibold rounded-xl px-7 py-[13px]
                 transition-all duration-200
                 ${canProceedCurrent && !running
-                  ? 'bg-[#4F46E5] text-white shadow-[0_2px_8px_rgba(79,70,229,0.3)] hover:bg-[#4338CA] hover:shadow-[0_4px_12px_rgba(79,70,229,0.35)]'
+                  ? 'bg-[#1F2937] text-white shadow-[0_2px_8px_rgba(31, 41, 55,0.3)] hover:bg-[#111827] hover:shadow-[0_4px_12px_rgba(31, 41, 55,0.35)]'
                   : 'bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed shadow-none'
                 }
               `}
@@ -542,8 +540,8 @@ export default function ProductFlowSimulationPage() {
           75% { transform: translateX(4px); }
         }
         @keyframes pulse-glow {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(79,70,229,0.4); }
-          50% { box-shadow: 0 0 0 8px rgba(79,70,229,0); }
+          0%, 100% { box-shadow: 0 0 0 0 rgba(31, 41, 55,0.4); }
+          50% { box-shadow: 0 0 0 8px rgba(31, 41, 55,0); }
         }
       `}</style>
     </>
@@ -551,7 +549,7 @@ export default function ProductFlowSimulationPage() {
 }
 
 /* ────────────────────────────────────────────────────────────────
-   STEP 1 — SETUP
+   STEP 1, SETUP
    ──────────────────────────────────────────────────────────────── */
 
 type ProductFlowFormData = {
@@ -559,7 +557,6 @@ type ProductFlowFormData = {
   objective: string;
   audience: string;
   audienceTemplateId: string;
-  personaDepth: 'low' | 'medium' | 'high';
   optimizeMetric: string;
   selectedFolderIds: string[];
 };
@@ -591,7 +588,7 @@ function SetupStep({ formData, setFormData, audiences, templates }: SetupStepPro
           value={formData.name}
           onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
           placeholder="e.g., Onboarding Flow Optimization"
-          className="w-full text-[15px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 focus:border-[#4F46E5] focus:shadow-[0_0_0_3px_rgba(79,70,229,0.12)] focus:outline-none transition-all"
+          className="w-full text-[15px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 focus:border-[#1F2937] focus:shadow-[0_0_0_3px_rgba(31, 41, 55,0.12)] focus:outline-none transition-all"
         />
       </div>
 
@@ -618,7 +615,7 @@ function SetupStep({ formData, setFormData, audiences, templates }: SetupStepPro
           placeholder="e.g., Help a first-time investor go from sign-up to buying their first mutual fund without stalling on KYC."
           rows={3}
           maxLength={1000}
-          className="w-full text-[15px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 focus:border-[#4F46E5] focus:shadow-[0_0_0_3px_rgba(79,70,229,0.12)] focus:outline-none transition-all resize-none"
+          className="w-full text-[15px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 focus:border-[#1F2937] focus:shadow-[0_0_0_3px_rgba(31, 41, 55,0.12)] focus:outline-none transition-all resize-none"
         />
         <p className="text-[11px] text-[#9CA3AF] mt-1.5 text-right">
           {formData.objective.length} / 1000
@@ -679,13 +676,13 @@ function SetupStep({ formData, setFormData, audiences, templates }: SetupStepPro
               <Users className="w-6 h-6 text-[#9CA3AF] mx-auto mb-2" />
               <p className="text-[14px] font-medium text-[#6B7280]">No audiences created yet</p>
               <p className="text-[13px] text-[#9CA3AF] mt-1">
-                Create one — or switch to &quot;Curated templates&quot; for a fast start.
+                Create one, or switch to &quot;Curated templates&quot; for a fast start.
               </p>
               <a
                 href="/audiences"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block text-[13px] font-semibold text-[#4F46E5] hover:text-[#4338CA] hover:underline mt-3"
+                className="inline-block text-[13px] font-semibold text-[#1F2937] hover:text-[#111827] hover:underline mt-3"
               >
                 → Create an audience
               </a>
@@ -712,15 +709,15 @@ function SetupStep({ formData, setFormData, audiences, templates }: SetupStepPro
                     className={`
                       text-left rounded-xl border-[1.5px] px-[18px] py-4 transition-all duration-150 cursor-pointer flex items-start gap-3
                       ${isSelected
-                        ? 'border-[#4F46E5] bg-[#EEF2FF]'
-                        : 'border-[#E5E7EB] bg-white hover:border-[#4F46E5] hover:bg-[#EEF2FF]'
+                        ? 'border-[#1F2937] bg-[#F3F4F6]'
+                        : 'border-[#E5E7EB] bg-white hover:border-[#1F2937] hover:bg-[#F3F4F6]'
                       }
                     `}
                   >
                     <div className="mt-0.5 flex-shrink-0">
                       <div
                         className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
-                          ${isSelected ? 'border-[#4F46E5] bg-[#4F46E5]' : 'border-[#D1D5DB] bg-white'}`}
+                          ${isSelected ? 'border-[#1F2937] bg-[#1F2937]' : 'border-[#D1D5DB] bg-white'}`}
                       >
                         {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                       </div>
@@ -766,15 +763,15 @@ function SetupStep({ formData, setFormData, audiences, templates }: SetupStepPro
                     className={`
                       text-left rounded-xl border-[1.5px] px-[18px] py-4 transition-all duration-150 cursor-pointer flex items-start gap-3
                       ${isSelected
-                        ? 'border-[#4F46E5] bg-[#EEF2FF]'
-                        : 'border-[#E5E7EB] bg-white hover:border-[#4F46E5] hover:bg-[#EEF2FF]'
+                        ? 'border-[#1F2937] bg-[#F3F4F6]'
+                        : 'border-[#E5E7EB] bg-white hover:border-[#1F2937] hover:bg-[#F3F4F6]'
                       }
                     `}
                   >
                     <div className="mt-0.5 flex-shrink-0">
                       <div
                         className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
-                          ${isSelected ? 'border-[#4F46E5] bg-[#4F46E5]' : 'border-[#D1D5DB] bg-white'}`}
+                          ${isSelected ? 'border-[#1F2937] bg-[#1F2937]' : 'border-[#D1D5DB] bg-white'}`}
                       >
                         {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                       </div>
@@ -809,7 +806,7 @@ function SetupStep({ formData, setFormData, audiences, templates }: SetupStepPro
 }
 
 /* ────────────────────────────────────────────────────────────────
-   STEP 2 — SELECT ASSETS
+   STEP 2, SELECT ASSETS
    ──────────────────────────────────────────────────────────────── */
 
 interface AssetSelectionStepProps {
@@ -846,11 +843,11 @@ function AssetSelectionStep({
       const rejected: string[] = [];
       incoming.forEach((file) => {
         if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-          rejected.push(`${file.name} — unsupported format`);
+          rejected.push(`${file.name}, unsupported format`);
           return;
         }
         if (file.size > MAX_FILE_BYTES) {
-          rejected.push(`${file.name} — over 10 MB`);
+          rejected.push(`${file.name}, over 10 MB`);
           return;
         }
         accepted.push({
@@ -932,7 +929,7 @@ function AssetSelectionStep({
       </div>
       <p className="text-[14px] text-[#4B5563] leading-[1.6] mb-5">
         Drop PNGs or JPEGs in the order users encounter them. You can reorder
-        before running — step 1 is the entry, the last step is the success
+        before running, step 1 is the entry, the last step is the success
         state. PNG / JPEG / WebP, up to 10 MB each.
       </p>
 
@@ -951,8 +948,8 @@ function AssetSelectionStep({
           flex flex-col items-center justify-center rounded-[12px] border-[1.5px] border-dashed cursor-pointer
           transition-colors py-10 px-6 text-center
           ${isDragging
-            ? 'border-[#4F46E5] bg-[#EEF2FF]'
-            : 'border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#4F46E5] hover:bg-[#EEF2FF]'
+            ? 'border-[#1F2937] bg-[#F3F4F6]'
+            : 'border-[#E5E7EB] bg-[#FAFAFA] hover:border-[#1F2937] hover:bg-[#F3F4F6]'
           }
         `}
       >
@@ -964,14 +961,14 @@ function AssetSelectionStep({
           onChange={onInputChange}
           className="hidden"
         />
-        <Upload className="w-6 h-6 text-[#4F46E5] mb-2" />
+        <Upload className="w-6 h-6 text-[#1F2937] mb-2" />
         <p className="text-[14px] font-semibold text-[#1A1A1A]">
           {pendingFiles.length > 0 ? 'Add more screens' : 'Drop screens here or click to pick'}
         </p>
         <p className="text-[12px] text-[#6B7280] mt-1">
           {pendingFiles.length > 0
             ? `${pendingFiles.length} screen${pendingFiles.length !== 1 ? 's' : ''} staged · reorder below`
-            : 'Select multiple — they keep the order you pick them in'}
+            : 'Select multiple, they keep the order you pick them in'}
         </p>
       </div>
 
@@ -983,7 +980,7 @@ function AssetSelectionStep({
               key={pf.id}
               className="flex items-center gap-3 bg-white border border-[#E5E7EB] rounded-[10px] px-3 py-2.5"
             >
-              <div className="shrink-0 w-7 h-7 rounded-full bg-[#EEF2FF] border-[1.5px] border-[#4F46E5] flex items-center justify-center text-[12px] font-bold text-[#3730A3]">
+              <div className="shrink-0 w-7 h-7 rounded-full bg-[#F3F4F6] border-[1.5px] border-[#1F2937] flex items-center justify-center text-[12px] font-bold text-[#111827]">
                 {idx + 1}
               </div>
               <div className="shrink-0 w-12 h-12 rounded-[6px] overflow-hidden bg-[#F3F4F6] flex items-center justify-center">
@@ -1060,15 +1057,15 @@ function AssetSelectionStep({
                     className={`
                       text-left rounded-[10px] border-[1.5px] px-3 py-2.5 transition-all
                       ${isSelected
-                        ? 'border-[#4F46E5] bg-[#EEF2FF]'
-                        : 'border-[#E5E7EB] bg-white hover:border-[#4F46E5] hover:bg-[#EEF2FF]'
+                        ? 'border-[#1F2937] bg-[#F3F4F6]'
+                        : 'border-[#E5E7EB] bg-white hover:border-[#1F2937] hover:bg-[#F3F4F6]'
                       }
                     `}
                   >
                     <div className="flex items-start gap-2.5">
                       <div
                         className={`mt-0.5 w-4 h-4 rounded-full border-[1.5px] flex items-center justify-center shrink-0
-                          ${isSelected ? 'border-[#4F46E5] bg-[#4F46E5]' : 'border-[#D1D5DB] bg-white'}`}
+                          ${isSelected ? 'border-[#1F2937] bg-[#1F2937]' : 'border-[#D1D5DB] bg-white'}`}
                       >
                         {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                       </div>
@@ -1099,7 +1096,7 @@ function AssetSelectionStep({
 }
 
 /* ────────────────────────────────────────────────────────────────
-   STEP 3 — PARAMETERS
+   STEP 3, PARAMETERS
    ──────────────────────────────────────────────────────────────── */
 
 interface ParametersStepProps {
@@ -1118,7 +1115,7 @@ interface ParametersStepProps {
 function ParametersStep({ formData, setFormData, audienceName, selectedFolders, onBack, onNext, running, canProceed, validationError, shake }: ParametersStepProps) {
   const folderSummary = selectedFolders.length > 0
     ? selectedFolders.map((f) => `${f.name} · ${f.assetCount} screens`).join(', ')
-    : '—';
+    : '-';
 
   return (
     <div className="bg-white border border-[#E8E4DE] rounded-[14px] p-6 sm:px-7">
@@ -1140,14 +1137,14 @@ function ParametersStep({ formData, setFormData, audienceName, selectedFolders, 
               className={`
                 w-full flex items-center gap-2.5 border-[1.5px] rounded-[10px] px-3.5 py-3 transition-all duration-150 text-left cursor-pointer
                 ${isSelected
-                  ? 'border-[#4F46E5] bg-[#EEF2FF]'
-                  : 'border-[#E5E7EB] bg-white hover:border-[#4F46E5] hover:bg-[#EEF2FF]'
+                  ? 'border-[#1F2937] bg-[#F3F4F6]'
+                  : 'border-[#E5E7EB] bg-white hover:border-[#1F2937] hover:bg-[#F3F4F6]'
                 }
               `}
             >
               <div
                 className={`w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all
-                  ${isSelected ? 'border-[#4F46E5] bg-[#4F46E5]' : 'border-[#D1D5DB] bg-white'}`}
+                  ${isSelected ? 'border-[#1F2937] bg-[#1F2937]' : 'border-[#D1D5DB] bg-white'}`}
               >
                 {isSelected && <div className="w-[7px] h-[7px] rounded-full bg-white" />}
               </div>
@@ -1172,9 +1169,9 @@ function ParametersStep({ formData, setFormData, audienceName, selectedFolders, 
         </p>
         <div className="space-y-0">
           {[
-            { label: 'Name', value: formData.name.trim() || '—' },
-            { label: 'Objective', value: formData.objective.trim() || '—' },
-            { label: 'Audience', value: audienceName || '—' },
+            { label: 'Name', value: formData.name.trim() || '-' },
+            { label: 'Objective', value: formData.objective.trim() || '-' },
+            { label: 'Audience', value: audienceName || '-' },
             { label: 'Assets', value: folderSummary },
             { label: 'Synthetic users', value: '25 personas' },
           ].map((row, idx, arr) => (
@@ -1183,7 +1180,7 @@ function ParametersStep({ formData, setFormData, audienceName, selectedFolders, 
               className={`flex items-center justify-between py-[5px] ${idx < arr.length - 1 ? 'border-b border-[#F3F4F6]' : ''}`}
             >
               <span className="text-[13px] text-[#6B7280]">{row.label}</span>
-              <span className={`text-[13px] font-medium ${row.value === '—' ? 'text-[#9CA3AF]' : 'text-[#1A1A1A]'}`}>
+              <span className={`text-[13px] font-medium ${row.value === '-' ? 'text-[#9CA3AF]' : 'text-[#1A1A1A]'}`}>
                 {row.value}
               </span>
             </div>
@@ -1216,7 +1213,7 @@ function ParametersStep({ formData, setFormData, audienceName, selectedFolders, 
               flex items-center gap-2 text-[15px] font-semibold rounded-xl px-6 py-3
               transition-all duration-200
               ${canProceed && !running
-                ? 'bg-[#4F46E5] text-white shadow-[0_2px_8px_rgba(79,70,229,0.3)] hover:bg-[#4338CA] hover:shadow-[0_4px_12px_rgba(79,70,229,0.35)]'
+                ? 'bg-[#1F2937] text-white shadow-[0_2px_8px_rgba(31, 41, 55,0.3)] hover:bg-[#111827] hover:shadow-[0_4px_12px_rgba(31, 41, 55,0.35)]'
                 : 'bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed shadow-none'
               }
             `}

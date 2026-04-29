@@ -10,7 +10,8 @@ import { useAppShell } from "@/components/app/AppShell";
 import { useUser } from "@/contexts/UserContext";
 import { getSimulation } from "@/lib/db";
 import type { SimulationDoc } from "@/lib/db";
-import type { AbReport } from "@/types/ab-report";
+import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
+import type { AbReport, SynthesisReadyData } from "@/types/ab-report";
 import { AbReportView } from "@/components/ab-report/AbReportView";
 import { ArrowLeft } from "lucide-react";
 
@@ -40,7 +41,48 @@ export default function ProductFlowComparatorResultsPage() {
     };
   }, [userId, profileReady, id]);
 
+  // Subscribe to row updates so the simul2design synthesis (which arrives
+  // ~5 min AFTER the comparator finishes — long after the wizard redirected)
+  // reveals automatically. The backend writes `synthesis` server-side via
+  // update_simulation_synthesis on the synthesis_ready event. Realtime
+  // pushes the UPDATE to this open page; the V(N+1) section in
+  // AbReportView fades in once `synthesis` is non-null.
+  useEffect(() => {
+    if (!userId || !id) return;
+    const sb = getSupabaseBrowserClient();
+    const channel = sb
+      .channel(`simulation-${id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "simulations",
+          filter: `id=eq.${id}`,
+        },
+        (payload) => {
+          const next = payload.new as Record<string, unknown> | null;
+          if (!next) return;
+          setSimulation((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              synthesis: next.synthesis ?? prev.synthesis,
+              result: (next.result as unknown) ?? prev.result,
+              status: ((next.status as SimulationDoc["status"]) ?? prev.status),
+              updatedAt: (next.updated_at as string | null) ?? prev.updatedAt,
+            };
+          });
+        },
+      )
+      .subscribe();
+    return () => {
+      sb.removeChannel(channel);
+    };
+  }, [userId, id]);
+
   const data = simulation?.result as AbReport | undefined;
+  const synthesis = simulation?.synthesis as SynthesisReadyData | undefined;
 
   if (loading) {
     return (
@@ -84,5 +126,5 @@ export default function ProductFlowComparatorResultsPage() {
     );
   }
 
-  return <AbReportView data={data} />;
+  return <AbReportView data={data} synthesis={synthesis ?? null} />;
 }

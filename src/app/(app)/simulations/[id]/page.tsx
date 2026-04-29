@@ -224,7 +224,7 @@ export default function SimulationDetailsPage() {
                 {copied
                   ? "Link copied"
                   : isPublic
-                    ? "Shared — click to revoke"
+                    ? "Shared, click to revoke"
                     : "Share report"}
               </button>
               <div className="inline-flex items-center px-4 py-2 bg-accent-green-bg text-accent-green rounded-xl text-body-sm font-semibold">
@@ -235,7 +235,7 @@ export default function SimulationDetailsPage() {
         />
         {shareUrl && (
           <div className="max-w-[1280px] mx-auto px-6 pt-3">
-            <div className="flex items-center gap-2.5 bg-[#EEF2FF] border border-[#FCD34D] rounded-[10px] px-4 py-2.5 text-[13px] text-[#312E81]">
+            <div className="flex items-center gap-2.5 bg-[#F3F4F6] border border-[#FCD34D] rounded-[10px] px-4 py-2.5 text-[13px] text-[#111827]">
               <Link2 className="w-3.5 h-3.5 shrink-0" />
               <span className="flex-1 truncate">
                 Public link:{" "}

@@ -30,10 +30,10 @@ const SAMPLE_SIMULATIONS: SimulationDoc[] = [];
 /* ── Helpers ────────────────────────────────────────────────────────────── */
 
 function getSimulationHref(sim: SimulationDoc) {
-  if (sim.id === 'sample') return '/simulations/product-flow/sample';
-  if (sim.id === 'sample-comparator') return '/simulations/product-flow-comparator/sample';
-  if (sim.id === 'sample-flent') return '/simulations/product-flow/sample-flent';
-  if (sim.id === 'sample-hexahealth') return '/simulations/product-flow/sample-hexahealth';
+  if (sim.id === 'sample') return '/demo/univest';
+  if (sim.id === 'sample-comparator') return '/demo/univest';
+  if (sim.id === 'sample-flent') return '/demo/univest';
+  if (sim.id === 'sample-hexahealth') return '/demo/univest';
   if (sim.type === 'Product Flow Comparator') return `/simulations/product-flow-comparator/${sim.id}`;
   return `/simulations/${sim.id}`;
 }
@@ -77,66 +77,63 @@ function extractPersonaCount(sim: SimulationDoc): number | null {
 
 function extractStats(sim: SimulationDoc): { label: string; value: string; sub?: string }[] {
   const r = sim.result as Record<string, unknown> | undefined;
-
-  // Product Flow Comparator
-  if (sim.type === 'Product Flow Comparator') {
-    const meta = r?.metadata as Record<string, unknown> | undefined;
-    const completionRate = meta?.completion_rate_pct;
-    const personas = extractPersonaCount(sim);
-    const assetCount = meta?.total_screens || meta?.asset_count;
-    return [
-      {
-        label: 'Completion Rate',
-        value: completionRate != null ? `${completionRate}%` : '—',
-        sub: completionRate != null ? 'across both flows' : undefined,
-      },
-      {
-        label: 'Personas',
-        value: personas != null ? `${personas} personas` : '—',
-        sub: personas != null ? 'simulated' : undefined,
-      },
-      {
-        label: 'Flows Compared',
-        value: assetCount != null ? `${assetCount} screens` : '2 flows',
-        sub: 'side-by-side',
-      },
-    ];
-  }
-
-  // Product Flow / default
   const meta = r?.metadata as Record<string, unknown> | undefined;
   const completionRate = meta?.completion_rate_pct;
   const personas = extractPersonaCount(sim);
   const assetCount = meta?.total_screens || meta?.asset_count;
-  return [
-    {
+  const isComparator = sim.type === 'Product Flow Comparator';
+
+  const stats: { label: string; value: string; sub?: string }[] = [];
+
+  if (completionRate != null) {
+    stats.push({
       label: 'Completion Rate',
-      value: completionRate != null ? `${completionRate}%` : '—',
-      sub: completionRate != null ? 'of simulated users' : undefined,
-    },
-    {
+      value: `${completionRate}%`,
+      sub: isComparator ? 'across both flows' : 'of simulated users',
+    });
+  }
+
+  if (personas != null) {
+    stats.push({
       label: 'Personas',
-      value: personas != null ? `${personas} personas` : '—',
-      sub: personas != null ? 'simulated' : undefined,
-    },
-    {
-      label: 'Assets',
-      value: assetCount != null ? `${assetCount} screens` : '—',
-    },
-  ];
+      value: `${personas} personas`,
+      sub: 'simulated',
+    });
+  }
+
+  if (assetCount != null) {
+    stats.push({
+      label: isComparator ? 'Flows Compared' : 'Assets',
+      value: `${assetCount} screens`,
+    });
+  } else if (isComparator) {
+    stats.push({
+      label: 'Flows Compared',
+      value: '2 flows',
+    });
+  }
+
+  return stats;
 }
 
 /* ── Type tag colours ───────────────────────────────────────────────────── */
 const TYPE_TAG_STYLES: Record<string, string> = {
-  'Product Flow': 'bg-[#EDE9FE] text-[#5B21B6]',
-  'Product Flow Comparator': 'bg-[#F3E8FF] text-[#7C3AED]',
+  'Product Flow': 'bg-[#F3F4F6] text-[#1F2937]',
+  'Product Flow Comparator': 'bg-[#E5E7EB] text-[#1F2937]',
 };
 
 const STATUS_TAG_STYLES: Record<string, string> = {
-  completed: 'bg-[#D1FAE5] text-[#065F46]',
-  running: 'bg-[#E0E7FF] text-[#3730A3]',
+  completed: 'bg-[#1F2937] text-white',
+  running: 'bg-[#F3F4F6] text-[#111827]',
   draft: 'bg-[#F3F4F6] text-[#6B7280]',
   failed: 'bg-[#FEE2E2] text-[#991B1B]',
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  completed: 'Completed',
+  running: 'Running',
+  draft: 'Draft',
+  failed: 'Failed',
 };
 
 /* ── Custom Dropdown Component ──────────────────────────────────────────── */
@@ -177,7 +174,7 @@ function FilterDropdown({
           flex items-center gap-2 border-[1.5px] rounded-[10px] px-3.5 py-[10px] bg-white
           text-[14px] text-[#374151] cursor-pointer whitespace-nowrap min-w-[130px]
           transition-colors duration-150
-          ${open ? 'border-[#4F46E5]' : 'border-[#E5E7EB] hover:border-[#D1D5DB]'}
+          ${open ? 'border-[#1F2937]' : 'border-[#E5E7EB] hover:border-[#D1D5DB]'}
         `}
       >
         <span className="flex-1 text-left">{selectedLabel}</span>
@@ -196,7 +193,7 @@ function FilterDropdown({
               onClick={() => { onChange(opt.value); setOpen(false); }}
               className={`
                 block w-full text-left px-3.5 py-2 text-[14px] transition-colors
-                ${opt.value === value ? 'text-[#4F46E5] font-semibold bg-[#EEF2FF]' : 'text-[#374151] hover:bg-[#F9FAFB]'}
+                ${opt.value === value ? 'text-[#1F2937] font-semibold bg-[#F3F4F6]' : 'text-[#374151] hover:bg-[#F9FAFB]'}
               `}
             >
               {opt.label}
@@ -220,6 +217,9 @@ export default function SimulationsPage() {
 
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('all');
+  const [customDateStart, setCustomDateStart] = useState('');
+  const [customDateEnd, setCustomDateEnd] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [simulations, setSimulations] = useState<SimulationDoc[]>([]);
   const [loading, setLoading] = useState(true);
@@ -260,6 +260,33 @@ export default function SimulationsPage() {
 
   /* ── Filtering ──────────────────────────────────────────────────────── */
 
+  const matchesDate = (s: SimulationDoc): boolean => {
+    if (dateFilter === 'all') return true;
+    const created = extractCreatedAt(s);
+    if (!created) return false;
+    const now = new Date();
+    if (dateFilter === 'custom') {
+      const start = customDateStart ? new Date(customDateStart) : null;
+      const end = customDateEnd ? new Date(customDateEnd) : null;
+      if (start && created < start) return false;
+      if (end) {
+        const endOfDay = new Date(end);
+        endOfDay.setHours(23, 59, 59, 999);
+        if (created > endOfDay) return false;
+      }
+      return true;
+    }
+    const days = dateFilter === 'today' ? 1 : Number(dateFilter);
+    if (!Number.isFinite(days)) return true;
+    const cutoff = new Date(now);
+    if (dateFilter === 'today') {
+      cutoff.setHours(0, 0, 0, 0);
+    } else {
+      cutoff.setDate(cutoff.getDate() - days);
+    }
+    return created >= cutoff;
+  };
+
   const filtered = simulations.filter((s) => {
     const matchType =
       typeFilter === 'all' ||
@@ -268,7 +295,7 @@ export default function SimulationsPage() {
     const matchStatus = statusFilter === 'all' || s.status === statusFilter;
     const matchSearch =
       !searchQuery || s.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchType && matchStatus && matchSearch;
+    return matchType && matchStatus && matchesDate(s) && matchSearch;
   });
 
   const samplesToShow = SAMPLE_SIMULATIONS.filter((s) => {
@@ -284,7 +311,11 @@ export default function SimulationsPage() {
 
   const listToShow = [...samplesToShow, ...filtered];
   const totalCount = SAMPLE_SIMULATIONS.length + simulations.length;
-  const hasFilters = typeFilter !== 'all' || statusFilter !== 'all' || searchQuery.trim() !== '';
+  const hasFilters =
+    typeFilter !== 'all' ||
+    statusFilter !== 'all' ||
+    dateFilter !== 'all' ||
+    searchQuery.trim() !== '';
 
   /* ── Delete handler ─────────────────────────────────────────────────── */
 
@@ -311,6 +342,9 @@ export default function SimulationsPage() {
   const clearFilters = () => {
     setTypeFilter('all');
     setStatusFilter('all');
+    setDateFilter('all');
+    setCustomDateStart('');
+    setCustomDateEnd('');
     setSearchQuery('');
   };
 
@@ -332,7 +366,7 @@ export default function SimulationsPage() {
               className={`
                 flex items-center gap-2.5 flex-1 min-w-[200px] border-[1.5px] rounded-[10px] px-3.5 py-[10px] bg-[#FAFAFA]
                 transition-all duration-150
-                ${searchFocused ? 'border-[#4F46E5] shadow-[0_0_0_3px_rgba(79,70,229,0.1)]' : 'border-[#E5E7EB]'}
+                ${searchFocused ? 'border-[#1F2937] shadow-[0_0_0_3px_rgba(31, 41, 55,0.1)]' : 'border-[#E5E7EB]'}
               `}
             >
               <Search className="w-4 h-4 text-[#9CA3AF] flex-shrink-0" />
@@ -373,6 +407,44 @@ export default function SimulationsPage() {
                 { value: 'failed', label: 'Failed' },
               ]}
             />
+
+            {/* Date filter */}
+            <FilterDropdown
+              value={dateFilter}
+              onChange={(v) => {
+                setDateFilter(v);
+                if (v !== 'custom') {
+                  setCustomDateStart('');
+                  setCustomDateEnd('');
+                }
+              }}
+              options={[
+                { value: 'all', label: 'Any time' },
+                { value: 'today', label: 'Today' },
+                { value: '3', label: 'Past 3 days' },
+                { value: '7', label: 'Past 7 days' },
+                { value: '30', label: 'Past 30 days' },
+                { value: 'custom', label: 'Custom range' },
+              ]}
+            />
+
+            {dateFilter === 'custom' && (
+              <div className="flex items-center gap-2 text-[13px] text-[#374151]">
+                <input
+                  type="date"
+                  value={customDateStart}
+                  onChange={(e) => setCustomDateStart(e.target.value)}
+                  className="border-[1.5px] border-[#E5E7EB] rounded-[10px] px-2.5 py-[8px] bg-white text-[13px] text-[#374151] focus:outline-none focus:border-[#1F2937]"
+                />
+                <span className="text-[#9CA3AF]">to</span>
+                <input
+                  type="date"
+                  value={customDateEnd}
+                  onChange={(e) => setCustomDateEnd(e.target.value)}
+                  className="border-[1.5px] border-[#E5E7EB] rounded-[10px] px-2.5 py-[8px] bg-white text-[13px] text-[#374151] focus:outline-none focus:border-[#1F2937]"
+                />
+              </div>
+            )}
           </div>
 
           {/* ═══ RESULT COUNT ═══ */}
@@ -385,15 +457,15 @@ export default function SimulationsPage() {
           {/* ═══ LOADING ═══ */}
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-[#4F46E5]" />
+              <Loader2 className="w-8 h-8 animate-spin text-[#1F2937]" />
             </div>
           ) : listToShow.length === 0 ? (
             /* ═══ EMPTY STATES ═══ */
             hasFilters ? (
               /* Filtered empty */
               <div className="flex flex-col items-center justify-center mt-[60px]">
-                <div className="w-16 h-16 rounded-full bg-[#E0E7FF] flex items-center justify-center">
-                  <Search className="w-8 h-8 text-[#4F46E5]" />
+                <div className="w-16 h-16 rounded-full bg-[#F3F4F6] flex items-center justify-center">
+                  <Search className="w-8 h-8 text-[#1F2937]" />
                 </div>
                 <h2 className="text-[20px] font-semibold text-[#1A1A1A] mt-4">
                   No simulations match your filters
@@ -403,7 +475,7 @@ export default function SimulationsPage() {
                 </p>
                 <button
                   onClick={clearFilters}
-                  className="text-[14px] font-semibold text-[#4F46E5] hover:text-[#4338CA] mt-6 transition-colors"
+                  className="text-[14px] font-semibold text-[#1F2937] hover:text-[#111827] mt-6 transition-colors"
                 >
                   Clear filters
                 </button>
@@ -411,8 +483,8 @@ export default function SimulationsPage() {
             ) : (
               /* Fully empty */
               <div className="flex flex-col items-center justify-center mt-[60px]">
-                <div className="w-16 h-16 rounded-full bg-[#E0E7FF] flex items-center justify-center">
-                  <PlayCircle className="w-8 h-8 text-[#4F46E5]" />
+                <div className="w-16 h-16 rounded-full bg-[#F3F4F6] flex items-center justify-center">
+                  <PlayCircle className="w-8 h-8 text-[#1F2937]" />
                 </div>
                 <h2 className="text-[20px] font-semibold text-[#1A1A1A] mt-4">
                   No simulations yet
@@ -422,7 +494,7 @@ export default function SimulationsPage() {
                 </p>
                 <Link
                   href="/simulations/new"
-                  className="inline-flex items-center gap-2 mt-6 h-11 px-5 text-[14px] font-semibold text-white bg-[#4F46E5] rounded-[24px] hover:bg-[#4338CA] transition-all duration-200 shadow-[0_4px_12px_rgba(79,70,229,0.35)]"
+                  className="inline-flex items-center gap-2 mt-6 h-11 px-5 text-[14px] font-semibold text-white bg-[#1F2937] rounded-[24px] hover:bg-[#111827] transition-all duration-200 shadow-[0_4px_12px_rgba(31, 41, 55,0.35)]"
                 >
                   <Plus className="w-[18px] h-[18px]" />
                   New Simulation
@@ -461,7 +533,7 @@ export default function SimulationsPage() {
                         transition-all duration-200 ease-in-out
                         hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:-translate-y-[1px]
                         ${isRunning
-                          ? 'border-[1.5px] border-[#C7D2FE]'
+                          ? 'border-[1.5px] border-[#D1D5DB]'
                           : 'border border-[#E8E4DE] hover:border-[#E0DCD6]'
                         }
                       `}
@@ -507,11 +579,11 @@ export default function SimulationsPage() {
                               >
                                 {isRunning && (
                                   <span className="relative flex h-1.5 w-1.5">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75" />
-                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-indigo-400" />
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gray-500 opacity-75" />
+                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-gray-500" />
                                   </span>
                                 )}
-                                {simulation.status}
+                                {STATUS_LABELS[simulation.status] || simulation.status}
                               </span>
                             </div>
 
@@ -603,10 +675,10 @@ export default function SimulationsPage() {
                             {isRunning && (
                               <>
                                 <span className="text-[#D1D5DB]">·</span>
-                                <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-indigo-600">
+                                <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-gray-800">
                                   <span className="relative flex h-1.5 w-1.5">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75" />
-                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-indigo-400" />
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gray-500 opacity-75" />
+                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-gray-500" />
                                   </span>
                                   Running...
                                 </span>
@@ -616,13 +688,13 @@ export default function SimulationsPage() {
 
                           {/* Running state progress bar */}
                           {isRunning && (
-                            <div className="bg-[#E0E7FF] rounded-lg px-3.5 py-[10px] mt-3 flex items-center gap-2.5">
-                              <div className="w-4 h-4 border-2 border-[#4F46E5] border-t-transparent rounded-full animate-spin flex-shrink-0" />
-                              <span className="text-[13px] font-medium text-[#3730A3]">
+                            <div className="bg-[#F3F4F6] rounded-lg px-3.5 py-[10px] mt-3 flex items-center gap-2.5">
+                              <div className="w-4 h-4 border-2 border-[#1F2937] border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                              <span className="text-[13px] font-medium text-[#111827]">
                                 Simulation in progress…
                               </span>
                               {relative && (
-                                <span className="text-[12px] text-[#4338CA] ml-auto">
+                                <span className="text-[12px] text-[#111827] ml-auto">
                                   Started {relative.toLowerCase()}
                                 </span>
                               )}
@@ -630,22 +702,25 @@ export default function SimulationsPage() {
                           )}
 
                           {/* Divider */}
-                          <div className="h-px bg-[#F3F4F6] my-4" />
+                          {stats.length > 0 && <div className="h-px bg-[#F3F4F6] my-4" />}
 
-                          {/* ROW 4 — Stats grid */}
-                          <div className="grid grid-cols-3 gap-4 mb-4">
-                            {stats.map((stat) => (
-                              <div key={stat.label}>
-                                <p className="text-[12px] font-medium text-[#9CA3AF] mb-1">{stat.label}</p>
-                                <p className={`text-[16px] font-bold ${stat.value === '—' ? 'text-[#9CA3AF]' : 'text-[#1A1A1A]'}`}>
-                                  {stat.value}
-                                </p>
-                                {stat.sub && (
-                                  <p className="text-[12px] text-[#6B7280] mt-0.5">{stat.sub}</p>
-                                )}
-                              </div>
-                            ))}
-                          </div>
+                          {/* ROW 4 — Stats grid (variable cols, only show known values) */}
+                          {stats.length > 0 && (
+                            <div
+                              className="grid gap-4 mb-4"
+                              style={{ gridTemplateColumns: `repeat(${stats.length}, minmax(0, 1fr))` }}
+                            >
+                              {stats.map((stat) => (
+                                <div key={stat.label}>
+                                  <p className="text-[12px] font-medium text-[#9CA3AF] mb-1">{stat.label}</p>
+                                  <p className="text-[16px] font-bold text-[#1A1A1A]">{stat.value}</p>
+                                  {stat.sub && (
+                                    <p className="text-[12px] text-[#6B7280] mt-0.5">{stat.sub}</p>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
 
                           {/* ROW 5 — View Details CTA */}
                           <div className="flex justify-end">
@@ -654,7 +729,7 @@ export default function SimulationsPage() {
                                 e.stopPropagation();
                                 router.push(href);
                               }}
-                              className="inline-flex items-center gap-[5px] text-[13px] font-semibold text-[#4F46E5] hover:text-[#4338CA] transition-colors duration-150 p-0 bg-transparent border-none cursor-pointer"
+                              className="inline-flex items-center gap-[5px] text-[13px] font-semibold text-[#1F2937] hover:text-[#111827] transition-colors duration-150 p-0 bg-transparent border-none cursor-pointer"
                             >
                               View Details
                               <ChevronRight className="w-4 h-4" />
@@ -672,7 +747,7 @@ export default function SimulationsPage() {
           {/* ═══ FAB ═══ */}
           <div className="fixed bottom-6 right-6 lg:right-10 z-30">
             <Link href="/simulations/new">
-              <span className="inline-flex items-center gap-2 h-12 px-5 text-[14px] font-semibold text-white bg-[#4F46E5] rounded-[24px] hover:bg-[#4338CA] transition-all duration-200 shadow-[0_4px_12px_rgba(79,70,229,0.35)] hover:shadow-[0_6px_16px_rgba(79,70,229,0.45)]">
+              <span className="inline-flex items-center gap-2 h-12 px-5 text-[14px] font-semibold text-white bg-[#1F2937] rounded-[24px] hover:bg-[#111827] transition-all duration-200 shadow-[0_4px_12px_rgba(31, 41, 55,0.35)] hover:shadow-[0_6px_16px_rgba(31, 41, 55,0.45)]">
                 <Plus className="w-[18px] h-[18px]" />
                 New Simulation
               </span>
