@@ -66,7 +66,7 @@ function ToastItem({ toast, onClose }: ToastItemProps) {
     success: <CheckCircle className="w-4 h-4 text-[#10B981]" />,
     error: <XCircle className="w-4 h-4 text-[#EF4444]" />,
     warning: <AlertCircle className="w-4 h-4 text-[#F59E0B]" />,
-    info: <Info className="w-4 h-4 text-[#3B82F6]" />
+    info: <Info className="w-4 h-4 text-[#9CA3AF]" />
   };
 
   return (

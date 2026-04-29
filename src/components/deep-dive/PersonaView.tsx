@@ -22,7 +22,7 @@ function parsePersonaName(background: string): string {
 /* ── Deterministic avatar color from persona_uuid ───────────────────── */
 function avatarColorFromUuid(uuid: string): string {
   const colors = [
-    "#2563EB", "#7C3AED", "#0D9488", "#D97706",
+    "#1F2937", "#374151", "#0D9488", "#D97706",
     "#DB2777", "#059669", "#DC2626", "#0369A1",
   ];
   const hash = uuid.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
@@ -403,9 +403,9 @@ export function PersonaView({ personas }: Props) {
                       borderRadius: 6,
                       fontSize: 11,
                       fontWeight: isActive ? 600 : 400,
-                      color: isActive ? "#7C3AED" : "#9090A8",
-                      backgroundColor: isActive ? "#F5F3FF" : "transparent",
-                      boxShadow: isActive ? "0 1px 3px rgba(124,58,237,0.12)" : "none",
+                      color: isActive ? "#374151" : "#9090A8",
+                      backgroundColor: isActive ? "#FAFAFA" : "transparent",
+                      boxShadow: isActive ? "0 1px 3px rgba(55, 65, 81,0.12)" : "none",
                       border: isActive ? "1px solid #C4B5FD" : "1px solid transparent",
                       cursor: "pointer",
                       transition: "all 150ms ease",

@@ -270,8 +270,8 @@ export function ScreenInsightsPanel({ screen, data, onClose }: Props) {
                     style={{
                       fontSize: 10,
                       fontWeight: 700,
-                      color: rec.severity === "critical" ? "#DC2626" : rec.severity === "major" ? "#EA580C" : "#3B82F6",
-                      background: rec.severity === "critical" ? "#FEE2E2" : rec.severity === "major" ? "#FFF7ED" : "#EFF6FF",
+                      color: rec.severity === "critical" ? "#DC2626" : rec.severity === "major" ? "#EA580C" : "#374151",
+                      background: rec.severity === "critical" ? "#FEE2E2" : rec.severity === "major" ? "#FFF7ED" : "#F9FAFB",
                       padding: "2px 6px",
                       borderRadius: 4,
                       fontFamily: "var(--font-plus-jakarta), sans-serif",

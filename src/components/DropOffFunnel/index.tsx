@@ -12,7 +12,7 @@ export interface DropOffFunnelProps {
 }
 
 /* Screen image URLs now ride in data.screen_image_map, keyed by screen_id.
-   Legacy hardcoded SuperAstro paths have been removed — a run without an
+   Legacy hardcoded SuperAstro paths have been removed, a run without an
    image map renders the same fallback empty state as before. */
 
 function dropBadgeStyle(screen: { is_biggest_drop: boolean; has_drop_offs: boolean }) {
@@ -81,7 +81,7 @@ export function DropOffFunnel({ data }: DropOffFunnelProps) {
                   style={{
                     display: "flex", alignItems: "center", gap: 10,
                     padding: "7px 10px", borderRadius: 10, cursor: "pointer",
-                    background: isActive ? "#F5F3FF" : "transparent",
+                    background: isActive ? "#FAFAFA" : "transparent",
                     border: isActive ? "1.5px solid #8B5CF6" : "1.5px solid transparent",
                     transition: "all 0.15s",
                   }}

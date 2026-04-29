@@ -48,7 +48,7 @@ export function ClusteredDropOffs({ data }: Props) {
           fontFamily: "var(--font-inter), sans-serif",
         }}
       >
-        Root causes at each drop-off point — clustered from persona reasonings
+        Root causes at each drop-off point, clustered from persona reasonings
       </p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>

@@ -47,7 +47,7 @@ export default function FigmaImportModal({ isOpen, onClose, onComplete }: Props)
       // 1. Create folder in Supabase
       setProgress('Creating folder...');
       const folderId = await saveAssetFolder(userId, {
-        name:              `${payload.fileName} — ${payload.pageName}`,
+        name:              `${payload.fileName}, ${payload.pageName}`,
         assetType:         'product-flow',
         description:       `Imported from Figma: ${payload.fileName}`,
         parentId:          null,

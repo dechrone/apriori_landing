@@ -11,7 +11,7 @@ interface Props {
 
 /** Segment color palette — distinct, accessible */
 const SEGMENT_COLORS = [
-  "#3B82F6", // blue
+  "#374151", // blue
   "#8B5CF6", // purple
   "#EF4444", // red
   "#F59E0B", // amber
@@ -120,7 +120,7 @@ export function SegmentDivergence({ data }: Props) {
           fontFamily: "var(--font-inter), sans-serif",
         }}
       >
-        The same screen, dramatically different outcomes — this is what
+        The same screen, dramatically different outcomes, this is what
         aggregate metrics hide
       </p>
 

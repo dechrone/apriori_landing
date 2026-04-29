@@ -4,7 +4,7 @@ const COLORS = {
   red: "#EF4444",
   amber: "#F59E0B",
   green: "#10B981",
-  blue: "#3B82F6",
+  blue: "#374151",
   textPrimary: "#1A1A1A",
   textSecondary: "#4B5563",
   textMuted: "#9CA3AF",

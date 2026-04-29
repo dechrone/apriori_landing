@@ -46,7 +46,7 @@ export function HeroMetrics({ data }: Props) {
     },
     {
       label: "Root Causes",
-      value: distinctRootCauses > 0 ? String(distinctRootCauses) : "—",
+      value: distinctRootCauses > 0 ? String(distinctRootCauses) : "-",
       sub:
         distinctRootCauses > 0
           ? "distinct friction patterns"

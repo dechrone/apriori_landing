@@ -28,7 +28,7 @@ function badgeColors(screen: FunnelScreen) {
 }
 
 function cardBorder(screen: FunnelScreen, isSelected: boolean) {
-  if (isSelected) return "2px solid #6366F1";
+  if (isSelected) return "2px solid #374151";
   if (screen.is_biggest_drop) return "2px solid #FCA5A5";
   if (screen.has_drop_offs) return "1.5px solid #FED7AA";
   return "1px solid #E2E2EA";
@@ -92,7 +92,7 @@ export function FunnelScreenCard({
         background: noUsersReached ? "#FAFAFA" : cardBg(screen),
         cursor: isClickable ? "pointer" : "default",
         transition: "all 0.2s ease",
-        boxShadow: isSelected ? "0 0 0 2px #6366F1" : "none",
+        boxShadow: isSelected ? "0 0 0 2px #374151" : "none",
         overflow: "hidden",
         opacity: noUsersReached ? 0.6 : 1,
       }}

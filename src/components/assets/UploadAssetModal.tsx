@@ -71,7 +71,7 @@ export function UploadAssetModal({
     ...folders.map((f) => {
       const parent = parentFolders.find(p => p.id === f.parentId);
       const label = parent
-        ? `${parent.name} — ${f.name}`
+        ? `${parent.name}, ${f.name}`
         : f.name;
       return { value: f.id, label };
     }),

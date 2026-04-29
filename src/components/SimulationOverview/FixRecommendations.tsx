@@ -77,7 +77,7 @@ export function FixRecommendations({ data }: Props) {
           fontFamily: "var(--font-inter), sans-serif",
         }}
       >
-        Ranked by impact and feasibility — build these first
+        Ranked by impact and feasibility, build these first
       </p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>

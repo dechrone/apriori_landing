@@ -198,10 +198,10 @@ export function CalibrationAppendix({ data }: Props) {
             </strong>{" "}
             the real-world baseline.
             {absDelta <= 5
-              ? " Strong calibration — simulation closely matches observed behavior."
+              ? " Strong calibration, simulation closely matches observed behavior."
               : absDelta <= 15
-                ? " Moderate deviation — directionally useful but verify key drop-off screens with real data."
-                : " Significant deviation — treat simulation insights as directional. Investigate root causes of the gap."}
+                ? " Moderate deviation, directionally useful but verify key drop-off screens with real data."
+                : " Significant deviation, treat simulation insights as directional. Investigate root causes of the gap."}
           </p>
         </div>
       </div>

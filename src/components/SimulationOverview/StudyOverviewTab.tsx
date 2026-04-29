@@ -6,10 +6,10 @@ import type { StudyData } from "@/types/study";
 
 /* ─── Persona Colors (expanded views only) ─── */
 const PERSONA_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  Pragmatist: { bg: "#EDE9FE", text: "#5B21B6", border: "#C4B5FD" },
+  Pragmatist: { bg: "#F3F4F6", text: "#1F2937", border: "#C4B5FD" },
   Skeptic: { bg: "#FEF3C7", text: "#92400E", border: "#FCD34D" },
   Enthusiast: { bg: "#D1FAE5", text: "#065F46", border: "#6EE7B7" },
-  "Confused Novice": { bg: "#DBEAFE", text: "#1E40AF", border: "#93C5FD" },
+  "Confused Novice": { bg: "#F3F4F6", text: "#111827", border: "#D1D5DB" },
 };
 const DEFAULT_PC = { bg: "#F3F4F6", text: "#374151", border: "#D1D5DB" };
 function personaColor(p: string) { return PERSONA_COLORS[p] || DEFAULT_PC; }
@@ -17,7 +17,7 @@ function personaColor(p: string) { return PERSONA_COLORS[p] || DEFAULT_PC; }
 const SEV: Record<string, string> = { critical: "#EF4444", high: "#F59E0B", moderate: "#EAB308", low: "#6B7280" };
 const SENTIMENT: Record<string, string> = { positive: "#10B981", neutral: "#6B7280", negative: "#EF4444" };
 function pctColor(v: number) { return v < 60 ? "#EF4444" : v < 80 ? "#F59E0B" : "#10B981"; }
-const ROUTING_STYLES: Record<string, { bg: string; text: string; label: string }> = { this_sprint: { bg: "#D1FAE5", text: "#065F46", label: "This Sprint" }, next_sprint: { bg: "#DBEAFE", text: "#1E40AF", label: "Next Sprint" }, backlog: { bg: "#F3F4F6", text: "#6B7280", label: "Backlog" } };
+const ROUTING_STYLES: Record<string, { bg: string; text: string; label: string }> = { this_sprint: { bg: "#D1FAE5", text: "#065F46", label: "This Sprint" }, next_sprint: { bg: "#F3F4F6", text: "#111827", label: "Next Sprint" }, backlog: { bg: "#F3F4F6", text: "#6B7280", label: "Backlog" } };
 const EFFORT_STYLES: Record<string, { bg: string; text: string; label: string }> = { quick_win: { bg: "#D1FAE5", text: "#065F46", label: "Quick Win" }, medium: { bg: "#FEF3C7", text: "#92400E", label: "Medium" }, large: { bg: "#FEE2E2", text: "#991B1B", label: "Large" } };
 function susGradeColor(g: string) { return g === "A+" || g === "A" ? "#10B981" : g === "B" ? "#14B8A6" : g === "C" ? "#EAB308" : g === "D" ? "#F59E0B" : g === "F" ? "#EF4444" : "#6B7280"; }
 function seqFlagStyle(f: string) { return f === "very_difficult" ? { bg: "#FEE2E2", text: "#991B1B", label: "Very Difficult" } : f === "needs_improvement" ? { bg: "#FEF3C7", text: "#92400E", label: "Needs Improvement" } : f === "acceptable" ? { bg: "#D1FAE5", text: "#065F46", label: "Acceptable" } : { bg: "#F3F4F6", text: "#6B7280", label: f.replace(/_/g, " ") }; }
@@ -189,13 +189,13 @@ function ScoreStrip({ scores }: { scores: StudyData["scores"] }) {
         <p style={{ fontSize: 13, fontWeight: 500, color: "#1A1A1A", margin: "0 0 8px" }}>System usability scale</p>
         <p style={{ fontSize: 12, fontWeight: 400, color: "#6B7280", lineHeight: 1.5, margin: "0 0 8px" }}>A standardized 10-question usability score used across thousands of products. Range: 0–100. Industry average: 68.</p>
         <p style={{ fontSize: 11, fontWeight: 400, color: "#9CA3AF", margin: "0 0 8px" }}>A: 80+ · B: 68–80 · C: 68 · D: 51–68 · F: &lt;51</p>
-        <p style={{ fontSize: 12, fontWeight: 500, color: "#6B7280", margin: 0 }}>This flow scored {sus.mean.toFixed(1)} (<span style={{ color: susGradeColor(sus.grade) }}>Grade {sus.grade}</span>) — {sus.delta_from_benchmark < 0 ? "just below" : "above"} the industry average.</p>
+        <p style={{ fontSize: 12, fontWeight: 500, color: "#6B7280", margin: 0 }}>This flow scored {sus.mean.toFixed(1)} (<span style={{ color: susGradeColor(sus.grade) }}>Grade {sus.grade}</span>), {sus.delta_from_benchmark < 0 ? "just below" : "above"} the industry average.</p>
       </>} />
-      <ScoreCard title="SEQ (First Purchase)" value={seq?.avg?.toFixed(1) ?? "—"} subtitle={<span style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}><Pill bg={sf.bg} text={sf.text}>{sf.label}</Pill><span style={{ display: "inline-flex", alignItems: "center", gap: 2, fontSize: 13, color: (seq?.delta ?? 0) < 0 ? "#EF4444" : "#10B981" }}>{(seq?.delta ?? 0) < 0 ? <ArrowDown size={13} /> : <ArrowUp size={13} />}{Math.abs(seq?.delta ?? 0).toFixed(1)} from benchmark</span></span>} accent={(seq?.delta ?? 0) < 0 ? "#EF4444" : "#10B981"} tooltip={<>
+      <ScoreCard title="SEQ (First Purchase)" value={seq?.avg?.toFixed(1) ?? "-"} subtitle={<span style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}><Pill bg={sf.bg} text={sf.text}>{sf.label}</Pill><span style={{ display: "inline-flex", alignItems: "center", gap: 2, fontSize: 13, color: (seq?.delta ?? 0) < 0 ? "#EF4444" : "#10B981" }}>{(seq?.delta ?? 0) < 0 ? <ArrowDown size={13} /> : <ArrowUp size={13} />}{Math.abs(seq?.delta ?? 0).toFixed(1)} from benchmark</span></span>} accent={(seq?.delta ?? 0) < 0 ? "#EF4444" : "#10B981"} tooltip={<>
         <p style={{ fontSize: 13, fontWeight: 500, color: "#1A1A1A", margin: "0 0 8px" }}>Single ease question</p>
         <p style={{ fontSize: 12, fontWeight: 400, color: "#6B7280", lineHeight: 1.5, margin: "0 0 8px" }}>Measures how easy users found a specific task on a 1–7 scale. Asked immediately after each task attempt. Benchmark: 5.5.</p>
         <p style={{ fontSize: 11, fontWeight: 400, color: "#9CA3AF", margin: "0 0 8px" }}>Very easy: 7 · Easy: 5.5+ · Difficult: &lt;5.5 · Very difficult: &lt;3.5</p>
-        <p style={{ fontSize: 12, fontWeight: 500, color: "#6B7280", margin: 0 }}>This task scored {seq?.avg?.toFixed(1) ?? "—"} (<span style={{ color: sf.text }}>{sf.label}</span>) — {Math.abs(seq?.delta ?? 0).toFixed(1)} points {(seq?.delta ?? 0) < 0 ? "below" : "above"} the benchmark.</p>
+        <p style={{ fontSize: 12, fontWeight: 500, color: "#6B7280", margin: 0 }}>This task scored {seq?.avg?.toFixed(1) ?? "-"} (<span style={{ color: sf.text }}>{sf.label}</span>), {Math.abs(seq?.delta ?? 0).toFixed(1)} points {(seq?.delta ?? 0) < 0 ? "below" : "above"} the benchmark.</p>
       </>} />
     </div>
   );
@@ -227,7 +227,7 @@ function FrictionPointGrid({ points, themes }: { points: StudyData["friction_poi
 
   return (
     <>
-      <SectionHeader num="" title="Top Friction Points" subtitle="The steps where users dropped off — ranked by severity and impact" />
+      <SectionHeader num="" title="Top Friction Points" subtitle="The steps where users dropped off, ranked by severity and impact" />
       <div style={{ display: "grid", gridTemplateColumns: cols, gap: 12 }}>
         {sorted.map(fp => {
           const sv = fpSevStyle(fp.severity);
@@ -373,7 +373,7 @@ function Act2Section({ themes, frictionPoints, behavioral_patterns, emotional_fi
       <SectionDivider />
 
       <div>
-        <SectionHeader num="03" title="Behavioral Patterns" subtitle="How different user types navigated the flow — their strategies and failure modes" />
+        <SectionHeader num="03" title="Behavioral Patterns" subtitle="How different user types navigated the flow, their strategies and failure modes" />
         <BehavioralPatternsGrid patterns={behavioral_patterns} themes={themes} frictionPoints={frictionPoints} />
       </div>
 
@@ -655,7 +655,7 @@ function SegmentTable({ segments, study, frictionPoints }: { segments: StudyData
   return (
     <>
       <div>
-        <SectionHeader num="04" title="Segment Analysis" subtitle={`${study.total_users} synthetic users across ${sorted.length} persona types — how each segment performed`} />
+        <SectionHeader num="04" title="Segment Analysis" subtitle={`${study.total_users} synthetic users across ${sorted.length} persona types, how each segment performed`} />
         <div style={{ background: "#FFF", borderRadius: 14, border: "1px solid #E5E7EB", overflow: "hidden" }}>
           <div style={{ display: "grid", gridTemplateColumns: "180px 60px 120px 70px 1fr", padding: "14px 24px", borderBottom: "1px solid #E5E7EB" }}><span style={{ fontSize: 13, fontWeight: 500, color: "#9CA3AF" }}>Persona</span><span style={{ fontSize: 13, fontWeight: 500, color: "#9CA3AF" }}>n</span><span style={{ fontSize: 13, fontWeight: 500, color: "#9CA3AF" }}>Conversion</span><span style={{ fontSize: 13, fontWeight: 500, color: "#9CA3AF" }}>SUS</span><span style={{ fontSize: 13, fontWeight: 500, color: "#9CA3AF" }}>Key insight</span></div>
           {sorted.map((seg, i) => <div key={seg.segment_id} onClick={() => setSelId(seg.segment_id)} style={{ display: "grid", gridTemplateColumns: "180px 60px 120px 70px 1fr", padding: "16px 24px", borderBottom: i < sorted.length - 1 ? "1px solid #F3F4F6" : "none", alignItems: "center", cursor: "pointer", transition: "background 0.15s" }} onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = "#FAFAF8"; const h = e.currentTarget.querySelector(".viewHint") as HTMLElement; if (h) h.style.color = "#1A1A1A"; }} onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = "transparent"; const h = e.currentTarget.querySelector(".viewHint") as HTMLElement; if (h) h.style.color = "#9CA3AF"; }}><span style={{ fontSize: 15, fontWeight: 600, color: "#1A1A1A" }}>{seg.label}</span><span style={{ fontSize: 14, color: "#6B7280" }}>{seg.n}</span><span style={{ fontSize: 15, fontWeight: 600, color: pctColor(seg.conversion_rate) }}>{seg.conversion_rate}%</span><span style={{ fontSize: 14, color: "#374151" }}>{seg.avg_sus}</span><div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}><span style={{ fontSize: 14, color: "#4B5563" }}>{short(seg.summary)}</span><span className="viewHint" style={{ fontSize: 11, color: "#9CA3AF", flexShrink: 0, marginLeft: 12, transition: "color 0.15s" }}>View details →</span></div></div>)}
@@ -718,9 +718,9 @@ function SegmentTable({ segments, study, frictionPoints }: { segments: StudyData
               <div style={{ marginBottom: 16 }}>
                 <p style={{ fontSize: 11, fontWeight: 500, color: "#6B7280", letterSpacing: "0.5px", marginBottom: 6 }}>Emotional arc</p>
                 {unique.length <= 1 || allPositive ? (
-                  <p style={{ fontSize: 13, color: "#4B5563", margin: 0 }}>Consistently {humanize(unique[0] || "confident").toLowerCase()} throughout — no friction points triggered negative emotions.</p>
+                  <p style={{ fontSize: 13, color: "#4B5563", margin: 0 }}>Consistently {humanize(unique[0] || "confident").toLowerCase()} throughout, no friction points triggered negative emotions.</p>
                 ) : allNegative ? (
-                  <p style={{ fontSize: 13, color: "#4B5563", margin: 0 }}>Negative throughout — {unique.map(t => humanize(t).toLowerCase()).join(", ")} dominated the experience.</p>
+                  <p style={{ fontSize: 13, color: "#4B5563", margin: 0 }}>Negative throughout, {unique.map(t => humanize(t).toLowerCase()).join(", ")} dominated the experience.</p>
                 ) : (
                   <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
                     {unique.map((tag, ti) => {
@@ -923,7 +923,7 @@ function PriorityTableSection({ table, recommendations }: { table: StudyData["pr
   const recMap = new Map(recommendations.map(r => [r.rec_id, r]));
   return (
     <div>
-      <SectionHeader num="" title="Priority Table" subtitle="Issues ranked by impact, confidence, and effort — fix these first to improve conversion" />
+      <SectionHeader num="" title="Priority Table" subtitle="Issues ranked by impact, confidence, and effort, fix these first to improve conversion" />
       <div style={{ background: "#FFF", borderRadius: 12, border: "1px solid #E5E7EB", overflow: "visible", boxShadow: "0 4px 24px rgba(0,0,0,0.08), 0 1px 6px rgba(0,0,0,0.04)" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
           <colgroup>

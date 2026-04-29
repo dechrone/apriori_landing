@@ -92,7 +92,7 @@ export function TopBar({ title, breadcrumb, actions, onMenuClick }: TopBarProps)
                   className="w-[34px] h-[34px] rounded-full object-cover"
                 />
               ) : (
-                <div className="flex items-center justify-center shrink-0 w-[34px] h-[34px] rounded-full bg-[#4F46E5] text-white text-sm font-semibold">
+                <div className="flex items-center justify-center shrink-0 w-[34px] h-[34px] rounded-full bg-[#1F2937] text-white text-sm font-semibold">
                   {initials}
                 </div>
               )}
@@ -119,7 +119,7 @@ export function TopBar({ title, breadcrumb, actions, onMenuClick }: TopBarProps)
                         className="w-10 h-10 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="flex items-center justify-center shrink-0 w-10 h-10 rounded-full bg-[#4F46E5] text-white text-sm font-semibold">
+                      <div className="flex items-center justify-center shrink-0 w-10 h-10 rounded-full bg-[#1F2937] text-white text-sm font-semibold">
                         {initials}
                       </div>
                     )}

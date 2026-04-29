@@ -70,7 +70,7 @@ function resolveViewName(
   // 3. Try behavior_analysis — use primary_task as a descriptive name
   const ba = data.behavior_analysis;
   if (ba?.[screenId]?.primary_task) {
-    return `Screen ${stepNum || screenId} — ${ba[screenId].primary_task}`;
+    return `Screen ${stepNum || screenId}, ${ba[screenId].primary_task}`;
   }
 
   // 4. Fallback: "view_1" → "Screen 1"

@@ -15,9 +15,9 @@ const LOGOS: Logo[] = [
   { name: "Apps For Bharat", domain: "appsforbharat.com", color: "#FF6B35" },
   { name: "Apollo", domain: "apollo.io", color: "#0E1B4D" },
   { name: "Earnin", domain: "earnin.com", color: "#00C389" },
-  { name: "Univest", domain: "univest.in", color: "#1E40AF" },
+  { name: "Univest", domain: "univest.in", color: "#111827" },
   { name: "GoodScore", domain: "goodscore.app", color: "#16A34A" },
-  { name: "Blink Money", domain: "blinkmoney.in", color: "#7C3AED" },
+  { name: "Blink Money", domain: "blinkmoney.in", color: "#374151" },
   { name: "PoP", domain: "pop.in", color: "#EC4899" },
 ];
 
@@ -106,7 +106,7 @@ export function WaitlistPage() {
                 className="text-[12.5px] font-medium"
                 style={{ letterSpacing: "-0.005em" }}
               >
-                Apriori is in closed alpha — join the waitlist and we&apos;ll
+                Apriori is in closed alpha, join the waitlist and we&apos;ll
                 take it from here.
               </span>
             </div>

@@ -358,7 +358,7 @@ export function AudienceFiltersStep({
                 Describe your audience
               </h3>
               <p className="text-[13px] text-[#6B7280] mb-4">
-                Write who you want to simulate — in plain English.
+                Write who you want to simulate, in plain English.
               </p>
               <div className="relative">
                 <textarea

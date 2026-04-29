@@ -454,7 +454,7 @@ export function SortableAssetRow({
 
           {/* Bottom hint */}
           <p className="text-[11px] text-[#9CA3AF] mt-[10px] text-right">
-            These hints improve AI accuracy — fill what you know, skip what you don&apos;t.
+            These hints improve AI accuracy, fill what you know, skip what you don&apos;t.
           </p>
         </div>
       )}

@@ -11,6 +11,7 @@ const APP_ROUTES_PREFIXES = [
   "/insights",
   "/assets",
   "/settings",
+  "/pricing",
   "/signup",
 ];
 

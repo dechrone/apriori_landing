@@ -96,7 +96,7 @@ function TalkToUsModal({ onClose }: { onClose: () => void }) {
       }
       showToast(
         "success",
-        "Thanks — message received",
+        "Thanks, message received",
         "We'll get back to you at your account email.",
       );
       onClose();
@@ -127,7 +127,7 @@ function TalkToUsModal({ onClose }: { onClose: () => void }) {
               Talk to us
             </h2>
             <p className="text-[13px] text-[#64748B] mt-1 leading-relaxed">
-              Bug, idea, or question — it lands in our inbox. We read every message.
+              Bug, idea, or question, it lands in our inbox. We read every message.
             </p>
           </div>
           <button
@@ -197,7 +197,7 @@ function TalkToUsModal({ onClose }: { onClose: () => void }) {
               disabled={!canSubmit}
               className={`inline-flex items-center gap-2 text-[14px] font-semibold rounded-[10px] px-4 py-2.5 transition-all ${
                 canSubmit
-                  ? "bg-[var(--accent-gold)] text-white hover:bg-[var(--accent-gold-hover)] shadow-[0_2px_8px_rgba(79,70,229,0.25)]"
+                  ? "bg-[var(--accent-gold)] text-white hover:bg-[var(--accent-gold-hover)] shadow-[0_2px_8px_rgba(31, 41, 55,0.25)]"
                   : "bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed"
               }`}
             >

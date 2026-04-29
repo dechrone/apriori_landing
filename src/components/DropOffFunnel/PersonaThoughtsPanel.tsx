@@ -392,7 +392,7 @@ export function PersonaThoughtsPanel({
                   gap: 4,
                   fontSize: 13,
                   fontWeight: 500,
-                  color: safeIdx === 0 ? "#D0D0DC" : "#6366F1",
+                  color: safeIdx === 0 ? "#D0D0DC" : "#374151",
                   background: "none",
                   border: "none",
                   cursor: safeIdx === 0 ? "default" : "pointer",
@@ -424,7 +424,7 @@ export function PersonaThoughtsPanel({
                   fontSize: 13,
                   fontWeight: 500,
                   color:
-                    safeIdx === personas.length - 1 ? "#D0D0DC" : "#6366F1",
+                    safeIdx === personas.length - 1 ? "#D0D0DC" : "#374151",
                   background: "none",
                   border: "none",
                   cursor:
@@ -514,7 +514,7 @@ function GutReactionText({ text }: { text: string }) {
           style={{
             fontSize: 12,
             fontWeight: 600,
-            color: "#6366F1",
+            color: "#374151",
             background: "none",
             border: "none",
             cursor: "pointer",

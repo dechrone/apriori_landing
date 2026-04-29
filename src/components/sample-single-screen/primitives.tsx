@@ -41,9 +41,9 @@ const T = {
   bad: "#EF4444",
   badBg: "#FEE2E2",
   badInk: "#991B1B",
-  info: "#3B82F6",
-  infoBg: "#DBEAFE",
-  infoInk: "#1E40AF",
+  info: "#374151",
+  infoBg: "#F3F4F6",
+  infoInk: "#111827",
   neutral: "#6B7280",
   neutralBg: "#F3F4F6",
   neutralInk: "#374151",
@@ -293,12 +293,12 @@ export function Pill({ intent, children }: { intent: keyof typeof intentMap; chi
    1.7 PersonaChip
    ═══════════════════════════════════════════ */
 const chipPalette: Record<string, { bg: string; color: string; border: string }> = {
-  A: { bg: "#EDE9FE", color: "#5B21B6", border: "#C4B5FD" },
+  A: { bg: "#F3F4F6", color: "#1F2937", border: "#C4B5FD" },
   B: { bg: "#D1FAE5", color: "#065F46", border: "#6EE7B7" },
   both: { bg: "#F3F4F6", color: "#374151", border: "#D1D5DB" },
   neither: { bg: "#F3F4F6", color: "#374151", border: "#D1D5DB" },
   tie: { bg: "#F3F4F6", color: "#374151", border: "#D1D5DB" },
-  segment: { bg: "#DBEAFE", color: "#1E40AF", border: "#93C5FD" },
+  segment: { bg: "#F3F4F6", color: "#111827", border: "#D1D5DB" },
   default: { bg: "#F3F4F6", color: "#374151", border: "#D1D5DB" },
 };
 

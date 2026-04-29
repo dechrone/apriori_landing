@@ -78,7 +78,7 @@ export function FlowFunnel({ data }: Props) {
           fontFamily: "var(--font-inter), sans-serif",
         }}
       >
-        Screen-by-screen conversion rates — {total} personas entered
+        Screen-by-screen conversion rates, {total} personas entered
       </p>
 
       <div

@@ -385,7 +385,7 @@ export function DeepDiveTab({ data, simulationData }: { data: FlowAnalysisData; 
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   Screen View — Filter Bar
+   Screen View, Filter Bar
    ═══════════════════════════════════════════════════════════════════ */
 function ScreenViewFilters({
   screens,
@@ -515,7 +515,7 @@ function ScreenViewFilters({
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   Persona View — Dropdowns + Sort
+   Persona View, Dropdowns + Sort
    ═══════════════════════════════════════════════════════════════════ */
 function PersonaViewControls({
   personas,
@@ -723,7 +723,7 @@ function ActiveFilterSummary({
           <span>{selectedPersona.lamfExp}</span>
           <span>·</span>
           <span style={{ fontWeight: 600, color: selectedPersona.outcome === "completed" ? "#16A34A" : "#DC2626" }}>
-            Outcome: {selectedPersona.outcome === "completed" ? "Completed" : `Dropped at ${selectedPersona.dropScreen ?? "—"}`}
+            Outcome: {selectedPersona.outcome === "completed" ? "Completed" : `Dropped at ${selectedPersona.dropScreen ?? "-"}`}
           </span>
         </div>
       ) : null}
@@ -732,7 +732,7 @@ function ActiveFilterSummary({
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   Screen View — Card Results Grid
+   Screen View, Card Results Grid
    ═══════════════════════════════════════════════════════════════════ */
 function ScreenViewResults({
   personas,
@@ -768,7 +768,7 @@ function ScreenViewResults({
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   Persona View — Timeline Results
+   Persona View, Timeline Results
    ═══════════════════════════════════════════════════════════════════ */
 function PersonaViewResults({
   persona,
@@ -988,7 +988,7 @@ function PersonaViewResults({
                     }}
                   >
                     <p style={{ fontSize: 13, color: "#9CA3AF", textAlign: "center" }}>
-                      {persona.name.split(" ")[0]} did not reach this screen. Dropped at {persona.dropScreen ?? "—"}.
+                      {persona.name.split(" ")[0]} did not reach this screen. Dropped at {persona.dropScreen ?? "-"}.
                     </p>
                   </div>
                 )}

@@ -109,7 +109,7 @@ export function SegmentScorecard({ data }: Props) {
           fontFamily: "var(--font-inter), sans-serif",
         }}
       >
-        Per-segment completion rates — sorted by biggest opportunity first
+        Per-segment completion rates, sorted by biggest opportunity first
       </p>
 
       <div

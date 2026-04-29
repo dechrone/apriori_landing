@@ -17,8 +17,8 @@ const FRICTION_CARD_COLORS = [
   "#DC2626",
   "#EA580C",
   "#CA8A04",
-  "#2563EB",
-  "#7C3AED",
+  "#1F2937",
+  "#374151",
   "#0D9488",
 ];
 

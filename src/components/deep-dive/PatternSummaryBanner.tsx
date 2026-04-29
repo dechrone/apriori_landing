@@ -161,7 +161,7 @@ export function PatternSummaryBanner({ patterns, allPersonas }: Props) {
           style={{
             fontSize: 12,
             fontWeight: 600,
-            color: "#6366F1",
+            color: "#374151",
             background: "none",
             border: "none",
             cursor: "pointer",

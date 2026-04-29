@@ -7,10 +7,9 @@ import {
   LayoutDashboard,
   Beaker,
   Users,
-  Package,
   Image as ImageIcon,
   Settings,
-  Sparkles,
+  CreditCard,
   X,
   PanelLeftClose,
   PanelLeft,
@@ -39,12 +38,13 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Simulations', href: '/simulations', icon: Beaker },
   { name: 'Audiences', href: '/audiences', icon: Users },
-  { name: 'Product Context', href: '/product-context', icon: Package },
+  // Hidden in v1 — re-enable when product-context flow is ready.
+  // { name: 'Product Context', href: '/product-context', icon: Package },
   { name: 'Assets', href: '/assets', icon: ImageIcon },
 ];
 
 const secondaryNavigation = [
-  { name: 'Pricing', href: '/pricing', icon: Sparkles },
+  { name: 'Pricing', href: '/pricing', icon: CreditCard },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
@@ -79,11 +79,11 @@ function NavItem({
         flex items-center rounded-lg text-sm transition-[background] duration-150 ease-in-out
         ${collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5'}
         ${active
-          ? 'bg-indigo-50 text-indigo-700 font-semibold'
+          ? 'bg-gray-100 text-gray-900 font-semibold'
           : 'text-[#374151] hover:bg-[#F5F5F5] font-medium'}
       `}
     >
-      <Icon className={`w-5 h-5 flex-shrink-0 ${active ? 'text-indigo-600' : 'text-[#9CA3AF]'}`} />
+      <Icon className={`w-5 h-5 flex-shrink-0 ${active ? 'text-gray-800' : 'text-[#9CA3AF]'}`} />
       {!collapsed && <span>{label}</span>}
     </Link>
   );

@@ -193,7 +193,7 @@ export default function ScreenPicker({
       {/* Selected — drag to reorder */}
       <div>
         <p className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider mb-3">
-          Selected — drag to reorder
+          Selected, drag to reorder
         </p>
         <DndContext
           sensors={sensors}
@@ -223,7 +223,7 @@ export default function ScreenPicker({
       {unselected.length > 0 && (
         <div>
           <p className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider mb-3">
-            Excluded — click to add back
+            Excluded, click to add back
           </p>
           <div className="flex flex-wrap gap-3">
             {unselected.map((frame) => (

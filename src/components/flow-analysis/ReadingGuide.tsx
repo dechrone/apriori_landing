@@ -83,7 +83,7 @@ export function ReadingGuide() {
             <p className="font-semibold text-[#1A1A1A] mb-1">Overview</p>
             <p>
               Top-line completion rate + drop-off cluster summary. This is the
-              PM/PD tl;dr — start here.
+              PM/PD tl;dr, start here.
             </p>
           </div>
           <div>
@@ -104,21 +104,21 @@ export function ReadingGuide() {
 
         <div className="mt-4 pt-3 border-t border-[#F3F4F6] grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-2 text-[12px] text-[#6B7280]">
           <p>
-            <span className="font-semibold text-[#1A1A1A]">Trust</span> — does
+            <span className="font-semibold text-[#1A1A1A]">Trust</span>, does
             the screen feel credible / safe to act on?
           </p>
           <p>
-            <span className="font-semibold text-[#1A1A1A]">Clarity</span> — can
+            <span className="font-semibold text-[#1A1A1A]">Clarity</span>, can
             the persona tell what&apos;s happening and what to do next?
           </p>
           <p>
-            <span className="font-semibold text-[#1A1A1A]">Value</span> — does
+            <span className="font-semibold text-[#1A1A1A]">Value</span>, does
             this step move them toward their goal, or feel like a detour?
           </p>
         </div>
 
         <p className="mt-4 text-[11.5px] text-[#9CA3AF] leading-[1.5]">
-          All numbers come from AI-simulated personas — they&apos;re directional,
+          All numbers come from AI-simulated personas, they&apos;re directional,
           not ground truth. Use them to find friction hypotheses to test with
           real users, not as a replacement for production analytics.
         </p>

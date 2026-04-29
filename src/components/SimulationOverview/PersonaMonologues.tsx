@@ -80,7 +80,7 @@ export function PersonaMonologues({ data }: Props) {
           marginBottom: 8,
         }}
       >
-        The Why — Persona Monologues
+        The Why, Persona Monologues
       </h2>
       <p
         style={{
@@ -135,7 +135,7 @@ export function PersonaMonologues({ data }: Props) {
                     fontFamily: "var(--font-inter), sans-serif",
                   }}
                 >
-                  — {monologues.length} voice{monologues.length !== 1 ? "s" : ""}
+                 , {monologues.length} voice{monologues.length !== 1 ? "s" : ""}
                 </span>
               </div>
 

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, X, MessageSquareQuote } from "lucide-react";
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   TYPE DEFINITIONS — matches variant-comparison-schema.json
+   TYPE DEFINITIONS, matches variant-comparison-schema.json
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export interface VariantDef {
@@ -158,7 +158,7 @@ function variantColor(variants: VariantDef[], id: string): string {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   PRIMITIVES — matches StudyOverviewTab design system exactly
+   PRIMITIVES, matches StudyOverviewTab design system exactly
    ═══════════════════════════════════════════════════════════════════════════ */
 
 function Pill({ bg, text, children, style: s }: { bg: string; text: string; children: React.ReactNode; style?: React.CSSProperties }) {
@@ -210,7 +210,7 @@ function SemanticPill({ color, children }: { color: string; children: React.Reac
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   POPUP — same architecture as StudyOverviewTab
+   POPUP, same architecture as StudyOverviewTab
    ═══════════════════════════════════════════════════════════════════════════ */
 
 function Popup({ onClose, children }: { onClose: () => void; children: React.ReactNode }) {
@@ -231,7 +231,7 @@ function Popup({ onClose, children }: { onClose: () => void; children: React.Rea
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   EXEC SUMMARY BANNER — dark banner matching StudyOverviewTab
+   EXEC SUMMARY BANNER, dark banner matching StudyOverviewTab
    ═══════════════════════════════════════════════════════════════════════════ */
 
 function VerdictBanner({ data, variants, segmentVerdicts, personaCount }: { data: ComparisonData["verdict"]; variants: VariantDef[]; segmentVerdicts?: SegmentVerdict[]; personaCount?: number }) {
@@ -317,7 +317,7 @@ function renderVerdictText(text: string): React.ReactNode {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   SCORE STRIP — 3-card layout matching StudyOverviewTab ScoreCard
+   SCORE STRIP, 3-card layout matching StudyOverviewTab ScoreCard
    ═══════════════════════════════════════════════════════════════════════════ */
 
 function ScoreCard({ title, value, subtitle, accent }: { title: string; value: string; subtitle: React.ReactNode; accent: string }) {
@@ -396,7 +396,7 @@ function WinnerScoreStrip({ metrics, variants }: { metrics: Record<string, Metri
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   METRICS TABLE — full comparison table
+   METRICS TABLE, full comparison table
    ═══════════════════════════════════════════════════════════════════════════ */
 
 interface MetricDef { label: string; key: keyof MetricsRow; unit: string; bestIs: "highest" | "lowest"; explanation?: string; isNorthStar?: boolean; gradeMap?: Record<string, string>; }
@@ -408,7 +408,7 @@ function susGrade(score: number): { grade: string; label: string } {
   return { grade: "F", label: "Awful" };
 }
 const METRIC_DEFS: MetricDef[] = [
-  { label: "Completion Rate", key: "completion_rate", unit: "%", bestIs: "highest", explanation: "₹1 plan activation rate — the primary metric for this test", isNorthStar: true },
+  { label: "Completion Rate", key: "completion_rate", unit: "%", bestIs: "highest", explanation: "₹1 plan activation rate, the primary metric for this test", isNorthStar: true },
   { label: "SUS Score", key: "sus", unit: "", bestIs: "highest", explanation: "System Usability Scale (0-100). Industry avg: ~68. Higher = easier to use." },
   { label: "SEQ Score", key: "seq", unit: "", bestIs: "highest", explanation: "Single Ease Question (1-7). Above 5 = easy. Higher = less friction." },
   { label: "Friction Points", key: "friction_count", unit: "", bestIs: "lowest" },
@@ -464,7 +464,7 @@ function MetricsTable({ metrics, variants }: { metrics: Record<string, MetricsRo
                           {val}{md.unit}
                         </span>
                         {md.key === "sus" && (
-                          <div style={{ fontSize: 10, color: "#9CA3AF", marginTop: 1 }}>{susGrade(val).grade} — {susGrade(val).label}</div>
+                          <div style={{ fontSize: 10, color: "#9CA3AF", marginTop: 1 }}>{susGrade(val).grade}, {susGrade(val).label}</div>
                         )}
                         {!isControl && deltaStr && (
                           <div style={{ fontSize: 11, fontFamily: "monospace", color: delta > 0 ? "#10B981" : "#EF4444", marginTop: 2 }}>{deltaStr}</div>
@@ -483,7 +483,7 @@ function MetricsTable({ metrics, variants }: { metrics: Record<string, MetricsRo
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   THEME MOVEMENT — 2×2 card grid matching ThemesGrid
+   THEME MOVEMENT, 2×2 card grid matching ThemesGrid
    ═══════════════════════════════════════════════════════════════════════════ */
 
 const THEME_COLORS = { persistent: "#F59E0B", resolved: "#10B981", introduced: "#EF4444" };
@@ -533,7 +533,7 @@ function ThemeCard({ theme, category, variants, totalPersonas }: { theme: ThemeI
       {/* Expanded monologue evidence */}
       {expanded && evidence && (
         <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #E5E7EB" }}>
-          <p style={{ fontSize: 12, fontStyle: "italic", color: "#9CA3AF", margin: "0 0 10px" }}>{evidence.persona_name} — {evidence.persona_archetype}</p>
+          <p style={{ fontSize: 12, fontStyle: "italic", color: "#9CA3AF", margin: "0 0 10px" }}>{evidence.persona_name}, {evidence.persona_archetype}</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {variants.filter((v) => evidence.monologues[v.id]).map((v) => (
               <div key={v.id} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
@@ -555,7 +555,7 @@ function ThemeMovementSection({ data, variants, totalPersonas }: { data: Compari
   const sections: { key: "persistent" | "resolved" | "introduced"; label: string; desc: string }[] = [
     { key: "resolved", label: "Resolved", desc: "Friction from Control that one or more variants eliminated" },
     { key: "introduced", label: "Introduced", desc: "New friction that didn't exist in Control" },
-    { key: "persistent", label: "Persistent", desc: "Present in all variants — no flow redesign fixed these" },
+    { key: "persistent", label: "Persistent", desc: "Present in all variants, no flow redesign fixed these" },
   ];
 
   return (
@@ -571,7 +571,7 @@ function ThemeMovementSection({ data, variants, totalPersonas }: { data: Compari
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
                 <span style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0 }} />
                 <span style={{ fontSize: 15, fontWeight: 500, color }}>{sec.label}</span>
-                <span style={{ fontSize: 13, color: "#6B7280" }}>— {sec.desc}</span>
+                <span style={{ fontSize: 13, color: "#6B7280" }}>{sec.desc}</span>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: items.length === 1 ? "1fr" : "1fr 1fr", gap: 12 }}>
                 {items.map((theme) => (
@@ -587,7 +587,7 @@ function ThemeMovementSection({ data, variants, totalPersonas }: { data: Compari
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   SCREEN-BY-SCREEN — expandable rows matching card pattern
+   SCREEN-BY-SCREEN, expandable rows matching card pattern
    ═══════════════════════════════════════════════════════════════════════════ */
 
 function divergenceStyle(d: string): { color: string; bg: string; text: string } {
@@ -644,15 +644,15 @@ function ScreenComparisonSection({ screens, variants }: { screens: ScreenCompari
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   PERSONA JOURNEYS — card grid matching behavioral patterns
+   PERSONA JOURNEYS, card grid matching behavioral patterns
    ═══════════════════════════════════════════════════════════════════════════ */
 
 function extractHighlightStat(narrative: string): string | null {
   // Pull out key stats that should be headlines
   const timeMatch = narrative.match(/(?:average |Average )?[Tt]ime[- ]on[- ]screen:?\s*(\d+\s*seconds?)/i);
   if (timeMatch) return `Avg. time on screen: ${timeMatch[1]}`;
-  const rateMatch = narrative.match(/(\d+%)\s*(?:—|–|-)\s*approaching the natural ceiling/i);
-  if (rateMatch) return `${rateMatch[1]} — approaching natural ceiling`;
+  const rateMatch = narrative.match(/(\d+%)\s*(?:-|–|-)\s*approaching the natural ceiling/i);
+  if (rateMatch) return `${rateMatch[1]}, approaching natural ceiling`;
   return null;
 }
 
@@ -701,7 +701,7 @@ function PersonaJourneysSection({ journeys, variants, segmentVerdicts }: { journ
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   SEGMENT VERDICTS — table matching SegmentTable + popup
+   SEGMENT VERDICTS, table matching SegmentTable + popup
    ═══════════════════════════════════════════════════════════════════════════ */
 
 function heatmapColor(rate: number, min: number, max: number): string {
@@ -908,7 +908,7 @@ function SegmentVerdictsSection({ segments, variants }: { segments: SegmentVerdi
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   FRICTION PROVENANCE — table matching Priority Table styling
+   FRICTION PROVENANCE, table matching Priority Table styling
    ═══════════════════════════════════════════════════════════════════════════ */
 
 type PresenceDisplay = { bg: string; text: string; char: string };
@@ -918,13 +918,13 @@ function presenceDisplay(status: "present" | "partial" | "absent", item: Frictio
   // "absent" — distinguish between "fixed" (was present in another variant that came before)
   // and "never existed" (N/A for this variant)
   const wasEverPresent = Object.values(item.presence).some((p) => p === "present");
-  if (!wasEverPresent) return { bg: "#F3F4F6", text: "#9CA3AF", char: "—" };
+  if (!wasEverPresent) return { bg: "#F3F4F6", text: "#9CA3AF", char: "-" };
   // If this item is "resolved", the resolving variants show green. Others show grey.
   if (item.status === "resolved" && item.resolved_by?.includes(variantId)) {
     return { bg: "#D1FAE5", text: "#065F46", char: "✓" };
   }
   // If the friction was never present in this variant (e.g. blurred card not in Control/V1), show grey
-  return { bg: "#F3F4F6", text: "#9CA3AF", char: "—" };
+  return { bg: "#F3F4F6", text: "#9CA3AF", char: "-" };
 }
 
 function FrictionProvenanceSection({ items, variants }: { items: FrictionProvenanceItem[]; variants: VariantDef[] }) {
@@ -942,7 +942,7 @@ function FrictionProvenanceSection({ items, variants }: { items: FrictionProvena
           <span style={{ fontSize: 11, color: "#6B7280" }}>Fixed</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ display: "inline-block", padding: "2px 6px", borderRadius: 4, fontSize: 9, fontWeight: 600, background: "#F3F4F6", color: "#9CA3AF" }}>—</span>
+          <span style={{ display: "inline-block", padding: "2px 6px", borderRadius: 4, fontSize: 9, fontWeight: 600, background: "#F3F4F6", color: "#9CA3AF" }}>-</span>
           <span style={{ fontSize: 11, color: "#6B7280" }}>Never existed</span>
         </div>
       </div>
@@ -1002,7 +1002,7 @@ function FrictionProvenanceSection({ items, variants }: { items: FrictionProvena
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   RECOMMENDATIONS — card grid matching DesignRecGrid
+   RECOMMENDATIONS, card grid matching DesignRecGrid
    ═══════════════════════════════════════════════════════════════════════════ */
 
 function recBorderColor(type: string): string {
@@ -1038,7 +1038,7 @@ function RecommendationsSection({ recommendations, variants }: { recommendations
               <p style={{ fontSize: 12, color: "#6B7280", lineHeight: 1.5, margin: "0 0 8px", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{rec.rationale}</p>
               {rec.effort_estimate && (
                 <div style={{ display: "flex", alignItems: "flex-start", gap: 6, marginBottom: 4 }}>
-                  <span style={{ fontSize: 10, fontWeight: 600, color: "#6366F1", background: "#6366F110", padding: "2px 6px", borderRadius: 4, whiteSpace: "nowrap", flexShrink: 0 }}>Effort</span>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: "#374151", background: "#37415110", padding: "2px 6px", borderRadius: 4, whiteSpace: "nowrap", flexShrink: 0 }}>Effort</span>
                   <span style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.4 }}>{rec.effort_estimate}</span>
                 </div>
               )}
@@ -1057,7 +1057,7 @@ function RecommendationsSection({ recommendations, variants }: { recommendations
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   VARIANT SCREENSHOTS — side-by-side visual reference
+   VARIANT SCREENSHOTS, side-by-side visual reference
    ═══════════════════════════════════════════════════════════════════════════ */
 
 function VariantScreenshotsSection({ screenshots, variants }: { screenshots: Record<string, string | string[]>; variants: VariantDef[] }) {
@@ -1093,7 +1093,7 @@ function VariantScreenshotsSection({ screenshots, variants }: { screenshots: Rec
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   WHAT TO TEST NEXT — concrete V5 hypothesis
+   WHAT TO TEST NEXT, concrete V5 hypothesis
    ═══════════════════════════════════════════════════════════════════════════ */
 
 function NextTestSection({ data, risks }: { data: RecommendedNextTest; risks?: string[] }) {
@@ -1101,10 +1101,10 @@ function NextTestSection({ data, risks }: { data: RecommendedNextTest; risks?: s
     <div>
       <SectionHeader title="What to Test Next" subtitle="The concrete next experiment based on this study's findings." />
       <div style={{ background: "#1A1814", borderRadius: 16, padding: "28px 32px", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: -40, right: -40, width: 160, height: 160, borderRadius: "50%", background: "rgba(99,102,241,0.1)", filter: "blur(60px)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: -40, right: -40, width: 160, height: 160, borderRadius: "50%", background: "rgba(55, 65, 81,0.1)", filter: "blur(60px)", pointerEvents: "none" }} />
         <div style={{ position: "relative" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-            <span style={{ fontSize: 14, fontWeight: 700, color: "#6366F1" }}>{data.name}</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "#374151" }}>{data.name}</span>
             <span style={{ fontSize: 12, fontFamily: "monospace", color: "#10B981", background: "#10B98120", padding: "2px 10px", borderRadius: 999 }}>
               Predicted: {data.predicted_conversion}
             </span>
@@ -1117,7 +1117,7 @@ function NextTestSection({ data, risks }: { data: RecommendedNextTest; risks?: s
           </p>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: risks?.length ? 20 : 0 }}>
             <div style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "8px 14px" }}>
-              <span style={{ fontSize: 10, fontWeight: 600, color: "#6366F1" }}>Effort</span>
+              <span style={{ fontSize: 10, fontWeight: 600, color: "#374151" }}>Effort</span>
               <p style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", margin: "2px 0 0" }}>{data.estimated_effort}</p>
             </div>
           </div>

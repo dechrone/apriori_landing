@@ -217,9 +217,9 @@ export function DropOffFunnel({ data }: { data: FlowAnalysisData }) {
                             padding: "3px 10px",
                             fontSize: 12,
                             fontWeight: 600,
-                            backgroundColor: remainPct === 100 ? "#F0FDF4" : isBiggestDrop ? "#FEF2F2" : "#EFF6FF",
-                            color: remainPct === 100 ? "#16A34A" : isBiggestDrop ? ACCENT : "#2563EB",
-                            border: `1px solid ${remainPct === 100 ? "#BBF7D0" : isBiggestDrop ? "#FECACA" : "#BFDBFE"}`,
+                            backgroundColor: remainPct === 100 ? "#F0FDF4" : isBiggestDrop ? "#FEF2F2" : "#F9FAFB",
+                            color: remainPct === 100 ? "#16A34A" : isBiggestDrop ? ACCENT : "#1F2937",
+                            border: `1px solid ${remainPct === 100 ? "#BBF7D0" : isBiggestDrop ? "#FECACA" : "#E5E7EB"}`,
                           }}
                         >
                           <Users size={12} />

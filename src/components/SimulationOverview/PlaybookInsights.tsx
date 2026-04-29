@@ -12,8 +12,8 @@ interface Props {
 const CLUSTER_TYPE_STYLES: Record<string, { label: string; color: string; bg: string }> = {
   trust_deficit:        { label: "Trust Deficit",        color: "#DC2626", bg: "#FEF2F2" },
   comprehension_barrier:{ label: "Comprehension Barrier", color: "#D97706", bg: "#FFFBEB" },
-  social_proof_gap:     { label: "Social Proof Gap",     color: "#2563EB", bg: "#EFF6FF" },
-  price_sensitivity:    { label: "Price Sensitivity",    color: "#7C3AED", bg: "#F5F3FF" },
+  social_proof_gap:     { label: "Social Proof Gap",     color: "#1F2937", bg: "#F9FAFB" },
+  price_sensitivity:    { label: "Price Sensitivity",    color: "#374151", bg: "#FAFAFA" },
 };
 
 function clusterTypeStyle(type: string) {

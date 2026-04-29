@@ -166,7 +166,7 @@ export function TaskAnalysis({ data }: Props) {
                 {screen.behavioral_observations?.length > 0 && (
                   <ObservationBlock
                     title="What Users Did"
-                    color="#2563EB"
+                    color="#1F2937"
                     items={screen.behavioral_observations}
                   />
                 )}
@@ -193,7 +193,7 @@ export function TaskAnalysis({ data }: Props) {
                 {screen.segment_differences?.length > 0 && (
                   <ObservationBlock
                     title="Segment Differences"
-                    color="#7C3AED"
+                    color="#374151"
                     items={screen.segment_differences}
                   />
                 )}

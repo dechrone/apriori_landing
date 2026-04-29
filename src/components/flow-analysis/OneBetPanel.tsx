@@ -23,14 +23,14 @@ const CHANGE_ICONS: Record<string, React.ElementType> = {
 };
 
 const ICON_BG: Record<string, string> = {
-  shield: "#EFF6FF",
+  shield: "#F9FAFB",
   flag: "#FEF2F2",
-  "book-open": "#F5F3FF",
+  "book-open": "#FAFAFA",
 };
 const ICON_COLOR: Record<string, string> = {
-  shield: "#2563EB",
+  shield: "#1F2937",
   flag: "#E8583A",
-  "book-open": "#7C3AED",
+  "book-open": "#374151",
 };
 
 function parseProjectedRange(projected: string): { low: number; high: number; mid: number } {
@@ -243,7 +243,7 @@ export function OneBetPanel({ oneBet, personas }: OneBetPanelProps) {
                   className="absolute inset-y-0 left-0"
                   style={{
                     width: `${current}%`,
-                    backgroundColor: "#3B82F6",
+                    backgroundColor: "#374151",
                     borderRadius: "100px 0 0 100px",
                   }}
                 />
@@ -253,7 +253,7 @@ export function OneBetPanel({ oneBet, personas }: OneBetPanelProps) {
                   style={{
                     left: `${current}%`,
                     width: `${projected.mid - current}%`,
-                    backgroundColor: "#93C5FD",
+                    backgroundColor: "#D1D5DB",
                     borderRadius: "0 100px 100px 0",
                   }}
                 />
@@ -368,8 +368,8 @@ export function OneBetPanel({ oneBet, personas }: OneBetPanelProps) {
             {(oneBet.whatChanges ?? []).map((change, idx) => {
               const iconKey = change.icon ?? "shield";
               const IconComp = CHANGE_ICONS[iconKey] ?? Shield;
-              const iconBg = ICON_BG[iconKey] ?? "#EFF6FF";
-              const iconColor = ICON_COLOR[iconKey] ?? "#2563EB";
+              const iconBg = ICON_BG[iconKey] ?? "#F9FAFB";
+              const iconColor = ICON_COLOR[iconKey] ?? "#1F2937";
               const title = change.title ?? change.description.split(".")[0];
 
               return (

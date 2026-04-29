@@ -84,10 +84,10 @@ export function CreateFolderModal({ isOpen, onClose, onCreate }: CreateFolderMod
             {/* Comparator info callout */}
             {assetType === 'product-flow-comparator' && (
               <div
-                className="flex items-start gap-2 mt-3 p-[10px_14px] bg-[#EFF6FF] border border-[#BFDBFE] rounded-[8px] animate-in fade-in duration-200"
+                className="flex items-start gap-2 mt-3 p-[10px_14px] bg-[#F9FAFB] border border-[#E5E7EB] rounded-[8px] animate-in fade-in duration-200"
               >
-                <Info className="w-4 h-4 text-[#3B82F6] shrink-0 mt-0.5" />
-                <p className="text-[13px] text-[#1D4ED8] leading-[1.5]">
+                <Info className="w-4 h-4 text-[#374151] shrink-0 mt-0.5" />
+                <p className="text-[13px] text-[#1F2937] leading-[1.5]">
                   This creates two sub-folders (Flow 1 and Flow 2). Upload screens to each flow to compare them in the simulation.
                 </p>
               </div>

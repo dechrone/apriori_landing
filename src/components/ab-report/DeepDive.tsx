@@ -5,7 +5,7 @@ import type { PersonaDeepDive, PersonaVariantExperience } from "@/types/ab-repor
 
 /* ── Tokens ── */
 const AVATAR_COLORS = [
-  "#2563EB", "#7C3AED", "#0D9488", "#D97706",
+  "#1F2937", "#374151", "#0D9488", "#D97706",
   "#DB2777", "#059669", "#DC2626", "#0369A1",
 ];
 
@@ -112,6 +112,46 @@ function FilterBar({ active, onChange, counts }: {
         );
       })}
     </div>
+  );
+}
+
+/* ── Segment Row — vertical-list segment selector for the left rail ──
+   Replaces the old wrapping chip-grid which buried segment counts. Each row
+   is a full-width tap target with the segment name + user count + active
+   indicator, so users can see segment distribution at a glance and switch
+   filters in one tap. */
+function SegmentRow({ label, count, active, onClick }: {
+  label: string; count: number; active: boolean; onClick: () => void;
+}) {
+  return (
+    <button type="button" onClick={onClick} style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8,
+      width: "100%", padding: "8px 10px", borderRadius: 6,
+      backgroundColor: active ? "#FAFAFA" : "transparent",
+      border: active ? "1px solid #C4B5FD" : "1px solid transparent",
+      cursor: "pointer", textAlign: "left", transition: "all 120ms ease",
+    }}
+      onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = "#F7F7F9"; }}
+      onMouseLeave={(e) => { if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = "transparent"; }}
+    >
+      <span style={{
+        fontSize: 12, fontWeight: active ? 600 : 500,
+        color: active ? "#1F2937" : "#374151",
+        whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: 1, minWidth: 0,
+      }}>
+        {label}
+      </span>
+      <span style={{
+        fontSize: 11, fontWeight: 600,
+        color: active ? "#374151" : "#9CA3AF",
+        background: active ? "#FFFFFF" : "transparent",
+        padding: active ? "1px 7px" : "0",
+        borderRadius: 999,
+        flexShrink: 0,
+      }}>
+        {count}
+      </span>
+    </button>
   );
 }
 
@@ -318,43 +358,50 @@ export function AbReportDeepDive({ personas }: Props) {
           overflow: "hidden",
         }}>
           <div style={{ padding: "24px 0 0", flexShrink: 0 }}>
-            <p style={{ fontSize: 13, fontWeight: 500, color: "#0D0D14", marginBottom: 8 }}>
-              {filtered.length} user{filtered.length !== 1 ? "s" : ""}
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 12 }}>
+              <p style={{ fontSize: 18, fontWeight: 600, color: "#0D0D14", margin: 0, fontFamily: "var(--font-plus-jakarta), sans-serif" }}>
+                {filtered.length} user{filtered.length !== 1 ? "s" : ""}
+              </p>
+              {filtered.length !== personas.length && (
+                <button
+                  type="button"
+                  onClick={() => { setOutcomeFilter("all"); setSegmentFilter("all"); }}
+                  style={{ background: "none", border: "none", padding: 0, fontSize: 11, fontWeight: 500, color: "#374151", cursor: "pointer" }}
+                >
+                  Clear filters
+                </button>
+              )}
+            </div>
+
+            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9CA3AF", margin: "0 0 6px" }}>
+              Outcome
             </p>
-            <p style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 8 }}>Filter by outcome on either variant</p>
-            <div style={{ marginBottom: 8 }}>
+            <div style={{ marginBottom: 16 }}>
               <FilterBar active={outcomeFilter} onChange={setOutcomeFilter} counts={counts} />
             </div>
 
-            <div style={{ marginBottom: 16 }}>
-              <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9CA3AF", marginBottom: 6 }}>Segment</p>
-              <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-                <button type="button" onClick={() => setSegmentFilter("all")} style={{
-                  padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: segmentFilter === "all" ? 600 : 400,
-                  color: segmentFilter === "all" ? "#0D0D14" : "#9090A8",
-                  backgroundColor: segmentFilter === "all" ? "#FFFFFF" : "transparent",
-                  boxShadow: segmentFilter === "all" ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
-                  border: "none", cursor: "pointer", transition: "all 150ms ease", whiteSpace: "nowrap",
-                }}>
-                  All
-                </button>
-                {segments.map(s => {
-                  const isActive = segmentFilter === s;
-                  const count = personas.filter(p => p.segment === s).length;
-                  return (
-                    <button key={s} type="button" onClick={() => setSegmentFilter(isActive ? "all" : s)} style={{
-                      padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: isActive ? 600 : 400,
-                      color: isActive ? "#7C3AED" : "#9090A8",
-                      backgroundColor: isActive ? "#F5F3FF" : "transparent",
-                      boxShadow: isActive ? "0 1px 3px rgba(124,58,237,0.12)" : "none",
-                      border: isActive ? "1px solid #C4B5FD" : "1px solid transparent",
-                      cursor: "pointer", transition: "all 150ms ease", whiteSpace: "nowrap",
-                    }}>
-                      {s} <span style={{ opacity: 0.5 }}>{count}</span>
-                    </button>
-                  );
-                })}
-              </div>
+            <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "#9CA3AF", margin: "0 0 6px" }}>
+              Segment
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 2, marginBottom: 16 }}>
+              <SegmentRow
+                label="All segments"
+                count={personas.length}
+                active={segmentFilter === "all"}
+                onClick={() => setSegmentFilter("all")}
+              />
+              {segments.map(s => {
+                const count = personas.filter(p => p.segment === s).length;
+                return (
+                  <SegmentRow
+                    key={s}
+                    label={s}
+                    count={count}
+                    active={segmentFilter === s}
+                    onClick={() => setSegmentFilter(segmentFilter === s ? "all" : s)}
+                  />
+                );
+              })}
             </div>
           </div>
 
@@ -387,6 +434,23 @@ export function AbReportDeepDive({ personas }: Props) {
                   <p style={{ fontSize: 12, fontWeight: 400, color: "#9CA3AF", margin: 0, marginTop: 1 }}>
                     {selected.occupation} · {selected.age}y · {selected.city} · {selected.income_band}
                   </p>
+                  {/* Segment breadcrumb — clarifies which segment cohort this user
+                      sits in so the reader can frame the variant comparison
+                      against the segment-level lean shown on the Overview tab. */}
+                  <button
+                    type="button"
+                    onClick={() => setSegmentFilter(segmentFilter === selected.segment ? "all" : selected.segment)}
+                    style={{
+                      marginTop: 6, padding: "2px 9px", border: "1px solid #DDD6FE",
+                      background: "#FAFAFA", borderRadius: 999, cursor: "pointer",
+                      fontSize: 11, fontWeight: 600, color: "#1F2937",
+                      display: "inline-flex", alignItems: "center", gap: 4,
+                    }}
+                    title={`Filter list to "${selected.segment}"`}
+                  >
+                    <span style={{ fontSize: 9, opacity: 0.6 }}>SEGMENT</span>
+                    <span>{selected.segment}</span>
+                  </button>
                 </div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
