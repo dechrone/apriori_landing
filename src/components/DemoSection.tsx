@@ -5,7 +5,7 @@ import { motion, useInView } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { HeroVideo } from "./HeroVideo";
 
-const DEMO_VIDEO_ID = "txmtrfhLERg";
+const DEMO_VIDEO_ID = "FaTOzN6DRQo";
 
 export function DemoSection() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -37,7 +37,7 @@ export function DemoSection() {
             See it in action.
           </h2>
           <p className="text-text-secondary max-w-[600px]" style={{ fontSize: "1rem", lineHeight: 1.7 }}>
-            We ran a simulation on a rent payment app with 50 personas. The result: their onboarding assumes every tenant has a formal rental agreement. Outside metro premium apartments, that does not exist. 12% of users drop off at that single step.
+            We ran a simulation on Univest&apos;s post-signup activation flow with 50 personas. The result: users hesitated when the offer looked free but the ₹1 activation price was not visible upfront. Making price, proof, and the CTA clearer lifted conversion from 22% to 44%.
           </p>
         </motion.div>
 

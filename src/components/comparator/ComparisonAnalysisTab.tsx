@@ -1099,7 +1099,7 @@ function VariantScreenshotsSection({ screenshots, variants }: { screenshots: Rec
 function NextTestSection({ data, risks }: { data: RecommendedNextTest; risks?: string[] }) {
   return (
     <div>
-      <SectionHeader title="What to Test Next" subtitle="The concrete next experiment based on this study's findings." />
+      <SectionHeader title="Concept of Winning Design" subtitle="The concrete next experiment based on this study's findings." />
       <div style={{ background: "#1A1814", borderRadius: 16, padding: "28px 32px", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: -40, right: -40, width: 160, height: 160, borderRadius: "50%", background: "rgba(55, 65, 81,0.1)", filter: "blur(60px)", pointerEvents: "none" }} />
         <div style={{ position: "relative" }}>
