@@ -523,3 +523,48 @@ create policy "simulations_select_public" on public.simulations
 alter table public.assets
   add column if not exists cloudinary_public_id text,
   add column if not exists step_number          int not null default 0;
+
+
+-- =============================================================================
+-- Figma OAuth integration
+--
+-- Previously lived in a separate Neon Postgres database. Consolidated into
+-- Supabase so there's one app database. The backend connects as the postgres
+-- superuser (bypasses RLS); the frontend never reads these tables directly
+-- — it goes through the FastAPI /figma/* routes — so RLS is locked down to
+-- deny anon/authenticated clients entirely.
+-- =============================================================================
+
+create table if not exists public.figma_connections (
+  id                text primary key,
+  user_id           uuid not null unique references public.profiles(id) on delete cascade,
+  access_token      text not null,                  -- AES-256-CBC encrypted
+  figma_user_id     text not null,
+  figma_user_email  text not null,
+  figma_user_name   text not null,
+  scopes            text not null,
+  connected_at      timestamptz not null default now(),
+  updated_at        timestamptz not null default now()
+);
+
+create index if not exists figma_connections_user_idx on public.figma_connections(user_id);
+
+alter table public.figma_connections enable row level security;
+-- No policies → RLS denies all client access. Backend uses superuser → bypasses RLS.
+
+create table if not exists public.figma_project_sources (
+  id                text primary key,
+  project_id        text not null unique,
+  figma_file_key    text not null,
+  figma_file_name   text not null,
+  figma_page_id     text not null,
+  figma_page_name   text not null,
+  selected_frames   jsonb not null,
+  last_synced_at    timestamptz not null default now(),
+  created_at        timestamptz not null default now()
+);
+
+create index if not exists figma_project_sources_project_idx on public.figma_project_sources(project_id);
+
+alter table public.figma_project_sources enable row level security;
+-- No policies → RLS denies all client access. Backend uses superuser → bypasses RLS.
