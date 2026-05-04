@@ -48,19 +48,7 @@ export default function SettingsPage() {
               Connect external tools to import your designs directly.
             </p>
           </div>
-          <div className="relative">
-            <div
-              aria-hidden="true"
-              className="pointer-events-none select-none filter blur-[3px] opacity-60"
-            >
-              <FigmaConnectionCard key={cardKey} fetchDelay={isPostOAuth ? 800 : 0} />
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="inline-flex items-center gap-2 rounded-full bg-[#1F2937] px-4 py-2 text-[13px] font-semibold text-white shadow-[0_6px_18px_rgba(15,23,42,0.18)]">
-                Coming Soon!
-              </span>
-            </div>
-          </div>
+          <FigmaConnectionCard key={cardKey} fetchDelay={isPostOAuth ? 800 : 0} />
         </section>
 
         <Card>
