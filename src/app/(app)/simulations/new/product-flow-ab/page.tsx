@@ -204,12 +204,12 @@ export default function ProductFlowABSimulationPage() {
       }
 
       await Promise.all([
-        updateAssetMetadata(token, assetsA[0].id, folderA.id, { stepNumber: 1 }).catch(
-          () => {},
-        ),
-        updateAssetMetadata(token, assetsB[0].id, folderB.id, { stepNumber: 1 }).catch(
-          () => {},
-        ),
+        updateAssetMetadata(token, assetsA[0].id, folderA.id, {
+          productFlowMetadata: { stepNumber: 1 },
+        }).catch(() => {}),
+        updateAssetMetadata(token, assetsB[0].id, folderB.id, {
+          productFlowMetadata: { stepNumber: 1 },
+        }).catch(() => {}),
       ]);
 
       setUploading(false);

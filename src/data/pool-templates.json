@@ -205,6 +205,228 @@
       ],
       "country": "IN",
       "target_size": 10000
+    },
+    {
+      "pool_id": "urban_tech_affluent_us",
+      "display_name": "Urban Tech & Finance Professionals (US)",
+      "description": "Bachelor's-or-higher tech, finance, and consulting professionals in major metros (SF, NYC, Seattle, Boston, LA, Austin). 25–40, upper-middle to affluent.",
+      "ideal_customer_profile": "Premium fintech, wealth management, direct-equity platforms, B2B / vertical SaaS, premium health subscriptions, prosumer creator tools.",
+      "example_companies": [
+        "Wealthfront",
+        "Robinhood",
+        "Public",
+        "Notion",
+        "Linear",
+        "Ramp"
+      ],
+      "country": "US",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "urban_millennial_professionals_us",
+      "display_name": "Urban Millennial Professionals (US)",
+      "description": "College-educated salaried millennials (28–43) in metros across multiple sectors. Middle-to-upper-middle income. Broader than the tech-affluent template.",
+      "ideal_customer_profile": "Mass-premium consumer — food delivery, fitness, telehealth, broader fintech (Chime, Affirm, Cash App), upskilling, mid-tier insurance.",
+      "example_companies": [
+        "DoorDash",
+        "ClassPass",
+        "Hims",
+        "Better.com",
+        "Chime",
+        "Lemonade"
+      ],
+      "country": "US",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "urban_gen_z_us",
+      "display_name": "Urban Gen Z (18–27, US)",
+      "description": "Urban + suburban Americans 18–27, students or early career. High social-platform native, price-conscious, identity-aware.",
+      "ideal_customer_profile": "Social, BNPL, creator economy, mental health, dating, learning, early-credit, sustainable / mission-led brands.",
+      "example_companies": [
+        "Affirm",
+        "Klarna",
+        "BetterHelp",
+        "Hinge",
+        "Duolingo",
+        "Substack"
+      ],
+      "country": "US",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "suburban_millennial_families_us",
+      "display_name": "Suburban Millennial Families (US)",
+      "description": "Married millennials 30–45 in suburban America with kids. Mid-to-upper-middle income, mortgage-paying, family-budget-driven.",
+      "ideal_customer_profile": "Family insurance, home services, kids' edtech, grocery delivery, telehealth, mortgage refi, college savings.",
+      "example_companies": [
+        "Lemonade",
+        "Zillow",
+        "Outschool",
+        "ABCmouse",
+        "Kroger",
+        "Teladoc"
+      ],
+      "country": "US",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "gen_x_household_decisionmakers_us",
+      "display_name": "Gen X Household Decision-Makers (44–59, US)",
+      "description": "Married Gen X (44–59) in urban / suburban America. Primary financial decision-makers. Established income, peak earning years.",
+      "ideal_customer_profile": "Mortgage refi, life insurance, college 529, retirement planning, home services, healthcare, premium financial products.",
+      "example_companies": [
+        "Vanguard",
+        "Fidelity",
+        "Rocket Mortgage",
+        "USAA",
+        "Northwestern Mutual"
+      ],
+      "country": "US",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "boomer_retirees_us",
+      "display_name": "Boomer Retirees & Pre-Retirees (60+, US)",
+      "description": "Americans 60–80 in urban / suburban / small-city settings. Retirement-stage; many still actively managing investments and healthcare.",
+      "ideal_customer_profile": "Medicare Advantage, telehealth, estate planning, hearing aids, senior-care, group travel, premium hobby & wellness subscriptions.",
+      "example_companies": [
+        "Humana",
+        "UnitedHealth",
+        "Teladoc",
+        "Trust & Will",
+        "Viking",
+        "Eargo"
+      ],
+      "country": "US",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "small_town_middle_class_us",
+      "display_name": "Small-Town Middle America (US)",
+      "description": "Working- and middle-class adults 25–55 in small US cities (10K–250K population). Broad mix of skilled-trade, healthcare, education, and retail occupations.",
+      "ideal_customer_profile": "Walmart-tier ecommerce, regional banking, home improvement, community credit-union products, mid-tier insurance, family commerce.",
+      "example_companies": [
+        "Walmart",
+        "Lowe's",
+        "Home Depot",
+        "USAA",
+        "Local Credit Unions",
+        "Allstate"
+      ],
+      "country": "US",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "rural_heartland_us",
+      "display_name": "Rural Heartland Workers (US)",
+      "description": "Rural Americans 25–65 in agriculture, skilled trades, manual labor, transport, and rural retail. Lower-middle income, traditional values.",
+      "ideal_customer_profile": "Rural fintech, agri-tech, regional insurance, Tractor Supply / Cabela's-tier ecommerce, rural telehealth, hunting / outdoor brands.",
+      "example_companies": [
+        "Tractor Supply",
+        "Cabela's",
+        "Climate FieldView",
+        "Indigo Ag",
+        "Country Financial"
+      ],
+      "country": "US",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "gig_blue_collar_metro_us",
+      "display_name": "Metro Gig & Blue-Collar Workers (US)",
+      "description": "Drivers, delivery workers, skilled trades, retail and hospitality staff in metros 22–50. Low-to-middle income, variable / hourly pay.",
+      "ideal_customer_profile": "Earned-wage access, gig fintech, trade-tools software, banking-the-underbanked, prepaid cards, financial-wellness apps.",
+      "example_companies": [
+        "DailyPay",
+        "Branch",
+        "Moves",
+        "ServiceTitan",
+        "Uber",
+        "DoorDash",
+        "Instacart"
+      ],
+      "country": "US",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "stay_at_home_parents_us",
+      "display_name": "Stay-at-Home Parents (US)",
+      "description": "Married, primarily female, 28–50, urban / suburban America. Stay-at-home or out-of-workforce caregivers managing household decisions.",
+      "ideal_customer_profile": "Family commerce, kids' learning, telehealth, social commerce, parenting subscriptions, household financial products.",
+      "example_companies": [
+        "Target Circle",
+        "Thrive Market",
+        "Outschool",
+        "Maven",
+        "Honest Company"
+      ],
+      "country": "US",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "college_students_us",
+      "display_name": "College Students & Early Adults (18–24, US)",
+      "description": "American 18–24-year-olds in college or early jobs. Some-college / bachelors-in-progress, low income, first-time financial product users.",
+      "ideal_customer_profile": "Student loans / refi, first-job fintech, early credit cards, banking-for-students, social, dating, learning subscriptions.",
+      "example_companies": [
+        "SoFi",
+        "Earnest",
+        "Chime",
+        "Capital One Quicksilver",
+        "Coursera",
+        "Hinge"
+      ],
+      "country": "US",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "small_business_owners_us",
+      "display_name": "SMB Owners & Solopreneurs (US)",
+      "description": "American 30–60 small-business owners and solopreneurs in urban, suburban, and small-city markets. Revenue-generating, decision-makers for tooling spend.",
+      "ideal_customer_profile": "B2B SaaS, payment processors, accounting & payroll, marketing platforms, working-capital lenders, e-commerce enablement.",
+      "example_companies": [
+        "Square",
+        "Shopify",
+        "QuickBooks",
+        "Mailchimp",
+        "Gusto",
+        "Clearco"
+      ],
+      "country": "US",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "creative_freelancers_us",
+      "display_name": "Urban Creative Freelancers (US)",
+      "description": "Creators, designers, writers, and freelancers 25–45 in major US metros. Variable income, identity tied to craft, heavy creator-economy usage.",
+      "ideal_customer_profile": "Creator economy tools (Stripe, Substack, Patreon), payment apps, mental health, lifestyle / learning subscriptions, prosumer SaaS.",
+      "example_companies": [
+        "Substack",
+        "Patreon",
+        "Stripe",
+        "Headspace",
+        "MasterClass",
+        "Adobe Creative Cloud"
+      ],
+      "country": "US",
+      "target_size": 10000
+    },
+    {
+      "pool_id": "urban_singles_young_us",
+      "display_name": "Urban Never-Married Young Adults (US)",
+      "description": "Never-married urban Americans 22–35. Major metros, dating-app demographic, lifestyle-focused.",
+      "ideal_customer_profile": "Dating apps, modern social products, lifestyle subscriptions, mental health, solo travel, premium consumer subscriptions.",
+      "example_companies": [
+        "Hinge",
+        "Bumble",
+        "Tinder",
+        "Airbnb",
+        "Headspace",
+        "Spotify Premium"
+      ],
+      "country": "US",
+      "target_size": 10000
     }
   ]
 }

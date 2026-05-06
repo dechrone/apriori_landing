@@ -182,7 +182,7 @@ export function ReadingGuide() {
   const cols = [
     { title: "What you\u2019re seeing", desc: "A side-by-side comparison of two screen variants, tested against 40 synthetic personas across 3 runs each." },
     { title: "How to read the split-screen", desc: "Colored outlines mark elements as lifts (green), drags (red), or tradeoffs (amber). Click any outline for evidence." },
-    { title: "What to do with the ship list", desc: "Each row is a specific recommendation \u2014 keep, kill, or revisit. Copy them straight into your product tracker." },
+    { title: "What to do with the ship list", desc: "Each row is a specific recommendation: keep, kill, or revisit. Copy them straight into your product tracker." },
   ];
 
   return (
@@ -229,6 +229,11 @@ export function ReadingGuide() {
 
 /* ═══════════════════════════════════════════
    1.4 SectionHeader
+
+   Savesage-tier editorial header: numeric eyebrow rendered as a leading
+   chapter mark, Playfair Display title for editorial weight, a thin
+   accent rule that ties together the section. Falls back gracefully when
+   the host page hasn't loaded the flow-display font variable.
    ═══════════════════════════════════════════ */
 export function SectionHeader({
   eyebrow,
@@ -242,15 +247,76 @@ export function SectionHeader({
   rightSlot?: React.ReactNode;
 }) {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
-      <div>
-        <div style={{ fontSize: 11, fontWeight: 500, color: T.text3, letterSpacing: 1, textTransform: "uppercase" }}>
-          {eyebrow}
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "flex-end",
+        gap: 24,
+        marginBottom: 24,
+        paddingBottom: 18,
+        borderBottom: `1px solid ${T.borderWarm}`,
+      }}
+    >
+      <div style={{ minWidth: 0 }}>
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 10,
+            marginBottom: 10,
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "var(--font-flow-display), 'Playfair Display', Georgia, serif",
+              fontSize: 13,
+              fontWeight: 600,
+              color: T.accent,
+              letterSpacing: "0.04em",
+              fontFeatureSettings: '"lnum" 1',
+            }}
+          >
+            {eyebrow}
+          </span>
+          <span
+            aria-hidden
+            style={{
+              width: 28,
+              height: 1,
+              background: T.hairline,
+              display: "inline-block",
+            }}
+          />
         </div>
-        <div style={{ fontSize: 18, fontWeight: 500, color: T.ink, marginTop: 4 }}>{title}</div>
-        <div style={{ fontSize: 13, fontWeight: 400, color: T.text3, marginTop: 2 }}>{subtitle}</div>
+        <h2
+          style={{
+            fontFamily: "var(--font-flow-display), 'Playfair Display', Georgia, serif",
+            fontSize: "clamp(22px, 2.4vw, 30px)",
+            fontWeight: 600,
+            color: T.ink,
+            margin: 0,
+            lineHeight: 1.15,
+            letterSpacing: "-0.018em",
+          }}
+        >
+          {title}
+        </h2>
+        <p
+          style={{
+            fontSize: 14,
+            fontWeight: 400,
+            color: T.text2,
+            marginTop: 8,
+            marginBottom: 0,
+            lineHeight: 1.55,
+            maxWidth: 720,
+          }}
+        >
+          {subtitle}
+        </p>
       </div>
-      {rightSlot && <div style={{ flexShrink: 0, marginLeft: 16 }}>{rightSlot}</div>}
+      {rightSlot && <div style={{ flexShrink: 0 }}>{rightSlot}</div>}
     </div>
   );
 }

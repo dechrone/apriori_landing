@@ -140,8 +140,12 @@ export default function FolderDetailPage() {
     setAutoSaveStatus('saving');
     try {
       const token = await getAccessToken();
-      const metadata = asset.productFlowMetadata ?? asset.adCreativeMetadata ?? {};
-      await updateAssetMetadata(token, assetId, folderId, metadata);
+      const wrapped = asset.productFlowMetadata
+        ? { productFlowMetadata: asset.productFlowMetadata }
+        : asset.adCreativeMetadata
+          ? { adCreativeMetadata: asset.adCreativeMetadata }
+          : {};
+      await updateAssetMetadata(token, assetId, folderId, wrapped);
       setAutoSaveStatus('saved');
       setTimeout(() => setAutoSaveStatus('idle'), 3000);
     } catch (err) {

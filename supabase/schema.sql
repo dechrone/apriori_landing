@@ -505,7 +505,17 @@ alter table public.simulations
   add column if not exists retrieval_mode   text,
   add column if not exists public           boolean not null default false,
   add column if not exists public_share_id  text,
-  add column if not exists synthesis        jsonb;
+  add column if not exists synthesis        jsonb,
+  -- design_combiner_ready output: lever-driven design synthesis. Includes
+  -- the Cloudinary URL for the combined variant PNG (combined_variant_image_url),
+  -- the full combiner result dict, and the input_summary describing what was
+  -- fused. Distinct from `synthesis` (which is the simul2design cascade) so
+  -- both pipelines can coexist on a single simulation row.
+  add column if not exists design_combiner  jsonb,
+  -- revalidation_ready output: validated_lift after re-simulating the combined
+  -- variant against the same persona pool. Pro-tier surface; null when the
+  -- revalidation flag was off or the combiner was skipped.
+  add column if not exists revalidation     jsonb;
 
 create unique index if not exists simulations_user_sim_id_idx on public.simulations(user_id, simulation_id) where simulation_id is not null;
 create unique index if not exists simulations_public_share_idx on public.simulations(public_share_id) where public_share_id is not null;
@@ -519,10 +529,40 @@ drop policy if exists "simulations_select_public" on public.simulations;
 create policy "simulations_select_public" on public.simulations
   for select using (public is true and public_share_id is not null);
 
--- Asset metadata the backend writes alongside Cloudinary uploads.
+-- Asset metadata the backend writes alongside Supabase Storage uploads.
+-- `storage_path` (created earlier in this file) holds the bucket-relative
+-- path so the delete handler can `DELETE /storage/v1/object/{bucket}/{path}`
+-- after removing the row. The legacy `cloudinary_public_id` column was
+-- dropped on 2026-05; if you're migrating an older Apriori deployment,
+-- run `alter table public.assets drop column if exists cloudinary_public_id;`
+-- after backfilling `storage_path` from the public URL.
 alter table public.assets
-  add column if not exists cloudinary_public_id text,
-  add column if not exists step_number          int not null default 0;
+  add column if not exists step_number int not null default 0;
+
+-- =============================================================================
+-- Supabase Storage — `apriori-assets` bucket
+--
+-- Single public bucket holds: user-uploaded screenshots, Figma frames,
+-- simul2design variant renders, and design-combiner combined-variant PNGs.
+-- Public read mirrors the prior Cloudinary posture (URLs are unguessable
+-- enough that direct sharing is safe). Backend writes via the
+-- service-role key, which bypasses RLS on `storage.objects`.
+--
+-- Run these in the Supabase Dashboard SQL editor (or via supabase CLI) to
+-- provision the bucket. Idempotent.
+-- =============================================================================
+
+insert into storage.buckets (id, name, public)
+values ('apriori-assets', 'apriori-assets', true)
+on conflict (id) do update set public = excluded.public;
+
+-- Public read for everyone (matches Cloudinary's `secure_url` posture).
+drop policy if exists "apriori_assets_public_read" on storage.objects;
+create policy "apriori_assets_public_read" on storage.objects
+  for select using (bucket_id = 'apriori-assets');
+
+-- Writes are service-role only — no policy required (service role bypasses
+-- RLS). Authenticated and anon clients have no insert/update/delete privilege.
 
 
 -- =============================================================================

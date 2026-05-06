@@ -96,6 +96,16 @@ export interface SimulationRow {
    * the comparator route on `synthesis_ready` (~5 min after `comparison_ready`).
    * Null until the cascade runs. See SynthesisReadyData in @/types/ab-report. */
   synthesis: Json | null;
+  /** Lever-driven design combiner output. Populated server-side by the
+   * comparator route on `design_combiner_ready` (~2 min after `comparison_ready`).
+   * Carries `combined_variant_image_url` (Supabase Storage public URL), the full combiner
+   * `result` dict, and an `input_summary` describing what was fused. Null
+   * until the combiner runs. See DesignCombinerReadyData in @/types/ab-report. */
+  design_combiner: Json | null;
+  /** Pro-tier revalidation result. Populated when the combined variant is
+   * re-simulated against the same persona pool. Carries `validated_lift` +
+   * `completion_rate_combined`. Null when revalidation flag was off. */
+  revalidation: Json | null;
   credits_spent: number;
   created_at: string;
   updated_at: string;

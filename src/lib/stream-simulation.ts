@@ -4,7 +4,12 @@
  */
 
 import type { SimulationData } from "@/types/simulation";
-import type { AbReport, SynthesisReadyData } from "@/types/ab-report";
+import type {
+  AbReport,
+  DesignCombinerReadyData,
+  RevalidationReadyData,
+  SynthesisReadyData,
+} from "@/types/ab-report";
 
 export type SimulationEvent =
   | {
@@ -72,6 +77,32 @@ export type SimulationEvent =
   | { type: "synthesis_ready"; data: SynthesisReadyData }
   | {
       type: "synthesis_failed";
+      data: { message: string; comparison_id: string };
+    }
+  /**
+   * Lever-driven design combiner follow-on. Arrives ~2 min AFTER
+   * comparison_ready when APRIORI_DESIGN_COMBINER_ENABLED is on. Carries the
+   * Supabase Storage public URL of the fused variant PNG (`combined_variant_image_url`)
+   * so the results page can render it directly. Server also UPDATEs
+   * `public.simulations.design_combiner` so the URL survives refresh / share.
+   */
+  | { type: "design_combiner_ready"; data: DesignCombinerReadyData }
+  | {
+      type: "design_combiner_failed";
+      data: { message: string; comparison_id: string };
+    }
+  | {
+      type: "design_combiner_skipped";
+      data: { message: string; comparison_id: string };
+    }
+  /**
+   * Pro-tier revalidation event. Re-simulates the combined variant with
+   * the same persona pool and emits `validated_lift`. Server UPDATEs
+   * `public.simulations.revalidation`.
+   */
+  | { type: "revalidation_ready"; data: RevalidationReadyData }
+  | {
+      type: "revalidation_failed";
       data: { message: string; comparison_id: string };
     }
   | { type: "error"; data: { message: string; flow_id?: string } };

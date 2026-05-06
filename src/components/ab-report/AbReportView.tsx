@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Playfair_Display, DM_Sans } from "next/font/google";
 import {
   Check as CheckIcon,
   X as XIcon,
@@ -13,12 +14,31 @@ import {
   Sparkles,
   AlertTriangle,
   Link2,
+  ArrowUpRight,
 } from "lucide-react";
+
+/* Match the savesage demo's typographic system: editorial Playfair Display
+   for section titles + verdict, DM Sans for body. Loaded here so the CSS
+   variables resolve inside this report only — no global font churn. */
+const reportDisplayFont = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-flow-display",
+  display: "swap",
+});
+
+const reportBodyFont = DM_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-flow-body",
+  display: "swap",
+});
 import type {
   AbReport,
   AnnotatedScreenPair,
   PersonaSplit as PersonaSplitType,
   SynthesisReadyData,
+  DesignCombinerReadyData,
 } from "@/types/ab-report";
 import {
   TopBar,
@@ -28,7 +48,6 @@ import {
   Pill,
   PersonaChip,
   QuoteLine,
-  AnnotatedPhone,
 } from "./primitives";
 import { AbReportDeepDive } from "./DeepDive";
 import { LeverAnalysisView } from "./LeverAnalysisView";
@@ -45,10 +64,21 @@ const T = {
   text3: "#6B7280",
   text4: "#9CA3AF",
   border: "#E5E7EB",
+  borderWarm: "#E8E4DE",
   hairline: "#D1D5DB",
 };
 
 const fadeUp = { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.4 } };
+
+/* Strip em dashes from any backend-generated string before rendering.
+   The LLM router occasionally slips them into rationale / feature copy,
+   and the user has a standing rule that em dashes never reach the UI.
+   Em dashes most often mark a continuation or aside, so a comma flows
+   better than a period in almost every case the LLM produces. */
+function noDash(s: string | null | undefined): string {
+  if (!s) return "";
+  return s.replace(/\s*—\s*/g, ", ").replace(/\s+,/g, ",");
+}
 
 function stagger(i: number) {
   return { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.35, delay: i * 0.05 } };
@@ -363,42 +393,16 @@ function MonologueTileList({ items }: { items: AbReport["monologue_diff"] }) {
   );
 }
 
-function ScreenPairBlock({ pair, totalScreens }: { pair: AnnotatedScreenPair; totalScreens: number }) {
-  const showLabel = totalScreens > 1;
-  return (
-    <motion.div {...fadeUp} style={{ marginBottom: totalScreens > 1 ? 40 : 0 }}>
-      {showLabel && (
-        <div style={{ fontSize: 13, fontWeight: 600, color: T.ink, marginBottom: 16, letterSpacing: -0.01 }}>
-          <span style={{ display: "inline-block", padding: "2px 8px", background: T.ink, color: "#FFFFFF", borderRadius: 4, marginRight: 10, fontSize: 11, fontWeight: 700 }}>
-            {pair.index + 1}
-          </span>
-          {pair.screen_label}
-        </div>
-      )}
-      <div className="annotated-phones-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
-        <AnnotatedPhone
-          imagePath={pair.variant_a.image_path}
-          elements={pair.variant_a.elements}
-          variantLabel="VARIANT A"
-          calloutSide="left"
-        />
-        <AnnotatedPhone
-          imagePath={pair.variant_b.image_path}
-          elements={pair.variant_b.elements}
-          variantLabel="VARIANT B"
-          calloutSide="right"
-        />
-      </div>
-    </motion.div>
-  );
-}
-
 interface AbReportViewProps {
   data: AbReport;
   /** simul2design Multiverse Synthesis Engine output. Arrives ~5min after the
    * comparator finishes, surfaced via supabase realtime. Null until then; the
    * recommended-variant section is hidden in that case. */
   synthesis?: SynthesisReadyData | null;
+  /** Lever-driven design combiner output. Arrives ~2min after the comparator
+   * via the design_combiner_ready event. Null until then; the combined-variant
+   * section is hidden in that case. */
+  designCombiner?: DesignCombinerReadyData | null;
 }
 
 /** Pull the first paragraph (up to 480 chars) out of a markdown blob. The
@@ -506,9 +510,9 @@ function RecommendedVariantSection({ synthesis }: { synthesis: SynthesisReadyDat
                 textAlign: "center",
               }}
             >
-              Image generation unavailable —
+              Image generation unavailable.
               <br />
-              spec available below
+              Spec available below.
             </div>
           )}
         </div>
@@ -657,7 +661,521 @@ function ShareReportButton({ simulationId }: { simulationId: string | null | und
   );
 }
 
-export function AbReportView({ data, synthesis }: AbReportViewProps) {
+/* The hero card for "What to ship". Three real states, each pulled from
+   the design combiner payload shape. The right column is sized to fill
+   the height of the phone frame so the card never feels half-empty. */
+function WinningDesignCard({ payload }: { payload: DesignCombinerReadyData | null }) {
+  const imageUrl = payload?.combined_variant_image_url ?? null;
+  const status = payload?.result?.status;
+  const summary = payload?.input_summary ?? null;
+  const result = payload?.result ?? null;
+
+  const state: "loading" | "ready" | "failed" =
+    imageUrl ? "ready" : status === "failed" ? "failed" : "loading";
+
+  const totalElements =
+    (summary?.winning_elements_a ?? 0) + (summary?.winning_elements_b ?? 0);
+  const deviceLabel =
+    summary?.device_type === "MOBILE"
+      ? "Mobile"
+      : summary?.device_type === "DESKTOP"
+        ? "Desktop"
+        : summary?.device_type === "TABLET"
+          ? "Tablet"
+          : "Adaptive";
+  const renderSecs = result?.elapsed_seconds ?? 0;
+  const renderLabel =
+    renderSecs > 90
+      ? `${Math.floor(renderSecs / 60)}m ${Math.round(renderSecs % 60)}s`
+      : `${Math.round(renderSecs)}s`;
+
+  /* ---- Status badge in the top-right of the right column. ---- */
+  const badge =
+    state === "ready"
+      ? { label: "Ready to ship", dot: "#10B981", text: "#065F46", bg: "#ECFDF5", ring: "#A7F3D0" }
+      : state === "failed"
+        ? { label: "Generation failed", dot: "#EF4444", text: "#991B1B", bg: "#FEF2F2", ring: "#FECACA" }
+        : { label: "Synthesising", dot: T.accent, text: T.accent, bg: "#FCE9E2", ring: "#F5C9BD" };
+
+  /* ---- Headline + body, swapped per state. No em dashes. ---- */
+  const heroTitle =
+    state === "ready"
+      ? "Your shipping candidate."
+      : state === "failed"
+        ? "We couldn't compose this one."
+        : "Stitching the winners into one screen.";
+
+  const heroBody =
+    state === "ready"
+      ? "We composed the highest-converting copy, layout, and CTAs from each variant into a single screen you can hand to your engineering team."
+      : state === "failed"
+        ? "The design generator hit a snag. The keep list below still ships standalone, and you can re-run the comparator to retry the composition."
+        : "We're composing the highest-converting copy, layout, and CTAs from each variant into a single screen. This usually takes a couple of minutes.";
+
+  return (
+    <motion.div
+      {...fadeUp}
+      style={{
+        background: T.card,
+        border: `1px solid ${T.borderWarm}`,
+        borderRadius: 16,
+        overflow: "hidden",
+        display: "grid",
+        gridTemplateColumns: "minmax(260px, 320px) 1fr",
+        marginBottom: 24,
+        boxShadow: "0 1px 2px rgba(17,24,39,0.04), 0 12px 36px -12px rgba(17,24,39,0.10)",
+      }}
+    >
+      {/* ── Left: device frame ── */}
+      <div
+        style={{
+          background: "linear-gradient(180deg, #F4F1EC 0%, #EFEBE4 100%)",
+          borderRight: `1px solid ${T.borderWarm}`,
+          padding: 28,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: 460,
+        }}
+      >
+        {state === "ready" && imageUrl ? (
+          <div
+            style={{
+              width: 220,
+              background: "#0B0B0B",
+              borderRadius: 26,
+              overflow: "hidden",
+              boxShadow: "0 24px 48px -16px rgba(17,24,39,0.32), 0 4px 12px rgba(17,24,39,0.08)",
+              padding: 6,
+            }}
+          >
+            <div style={{ borderRadius: 20, overflow: "hidden", background: "#FFFFFF" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={imageUrl}
+                alt="Winning design"
+                style={{ width: "100%", height: "auto", display: "block" }}
+              />
+            </div>
+          </div>
+        ) : (
+          <div
+            style={{
+              width: 220,
+              aspectRatio: "375 / 812",
+              borderRadius: 26,
+              background: "#FAF8F4",
+              border: `1px solid ${T.borderWarm}`,
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.7), 0 1px 2px rgba(17,24,39,0.04)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 16,
+              padding: 24,
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            {state === "loading" && (
+              <motion.div
+                aria-hidden
+                initial={{ opacity: 0.18 }}
+                animate={{ opacity: [0.18, 0.42, 0.18] }}
+                transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "radial-gradient(circle at 50% 38%, rgba(232,88,58,0.18) 0%, rgba(232,88,58,0) 60%)",
+                  pointerEvents: "none",
+                }}
+              />
+            )}
+            <div
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 999,
+                background: state === "failed" ? "#FEF2F2" : "#FFFFFF",
+                border: `1px solid ${state === "failed" ? "#FECACA" : T.borderWarm}`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 1px 2px rgba(17,24,39,0.04)",
+                zIndex: 1,
+              }}
+            >
+              {state === "failed" ? (
+                <AlertTriangle size={18} style={{ color: "#B91C1C" }} />
+              ) : (
+                <Sparkles size={18} style={{ color: T.accent }} />
+              )}
+            </div>
+            <div
+              style={{
+                fontFamily: "var(--font-flow-display), 'Playfair Display', Georgia, serif",
+                fontSize: 16,
+                fontWeight: 500,
+                color: T.ink,
+                textAlign: "center",
+                letterSpacing: "-0.01em",
+                zIndex: 1,
+              }}
+            >
+              {state === "failed" ? "Composition unavailable" : "Composing preview"}
+            </div>
+            <div
+              style={{
+                fontSize: 11.5,
+                color: T.text3,
+                textAlign: "center",
+                lineHeight: 1.5,
+                maxWidth: 168,
+                zIndex: 1,
+              }}
+            >
+              {state === "failed"
+                ? "The fused screen will appear here on your next run."
+                : "The fused screen renders here when ready."}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── Right: editorial copy + status timeline + metadata ── */}
+      <div
+        style={{
+          padding: "28px 32px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 20,
+        }}
+      >
+        {/* eyebrow + status badge */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              color: T.text3,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+            }}
+          >
+            Composed Variant
+          </span>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              padding: "4px 10px",
+              borderRadius: 999,
+              background: badge.bg,
+              border: `1px solid ${badge.ring}`,
+              fontSize: 11.5,
+              fontWeight: 600,
+              color: badge.text,
+              letterSpacing: "0.01em",
+            }}
+          >
+            {state === "loading" ? (
+              <motion.span
+                aria-hidden
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+                style={{ width: 6, height: 6, borderRadius: 999, background: badge.dot, display: "inline-block" }}
+              />
+            ) : (
+              <span aria-hidden style={{ width: 6, height: 6, borderRadius: 999, background: badge.dot, display: "inline-block" }} />
+            )}
+            {badge.label}
+          </span>
+        </div>
+
+        {/* Editorial headline + body */}
+        <div>
+          <h3
+            style={{
+              fontFamily: "var(--font-flow-display), 'Playfair Display', Georgia, serif",
+              fontSize: "clamp(22px, 2.2vw, 28px)",
+              fontWeight: 600,
+              color: T.ink,
+              margin: 0,
+              lineHeight: 1.18,
+              letterSpacing: "-0.018em",
+            }}
+          >
+            {heroTitle}
+          </h3>
+          <p
+            style={{
+              fontSize: 14,
+              lineHeight: 1.6,
+              color: T.text2,
+              margin: "10px 0 0",
+              maxWidth: 540,
+            }}
+          >
+            {heroBody}
+          </p>
+        </div>
+
+        {/* Body content swaps per state: timeline (loading) vs summary (ready) vs hint (failed) */}
+        <div
+          style={{
+            background: "#FAFAF7",
+            border: `1px solid ${T.borderWarm}`,
+            borderRadius: 12,
+            padding: "16px 18px",
+          }}
+        >
+          {state === "loading" && (
+            <CompositionTimeline
+              steps={[
+                { label: "Identifying winning levers", state: "done" },
+                { label: "Composing layout from variants A and B", state: "active" },
+                { label: "Rendering preview", state: "pending" },
+              ]}
+            />
+          )}
+          {state === "ready" && summary && (
+            <CompositionSummary
+              fromA={summary.winning_elements_a}
+              fromB={summary.winning_elements_b}
+              total={totalElements}
+            />
+          )}
+          {state === "ready" && !summary && (
+            <div style={{ fontSize: 13, color: T.text3, lineHeight: 1.55 }}>
+              Composition complete. Open the design to inspect each fused element.
+            </div>
+          )}
+          {state === "failed" && (
+            <div style={{ fontSize: 13, color: T.text3, lineHeight: 1.6 }}>
+              Inspect the keep list below. Each row is independently shippable, even without the composed screen.
+            </div>
+          )}
+        </div>
+
+        {/* Footer metadata: real numbers when we have them, otherwise a single hint */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+          {state === "ready" && summary && (
+            <>
+              <MetaPill label="Device" value={deviceLabel} />
+              <MetaPill label="Render" value={renderLabel} />
+              {result?.backend && <MetaPill label="Backend" value={result.backend === "claude" ? "Claude" : "Stitch"} />}
+              {imageUrl && (
+                <a
+                  href={imageUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    marginLeft: "auto",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "8px 14px",
+                    background: T.ink,
+                    color: "#FFFFFF",
+                    borderRadius: 999,
+                    fontSize: 12.5,
+                    fontWeight: 600,
+                    textDecoration: "none",
+                    letterSpacing: "0.01em",
+                  }}
+                >
+                  Open full size
+                  <ArrowUpRight size={13} />
+                </a>
+              )}
+            </>
+          )}
+          {state === "loading" && summary && totalElements > 0 && (
+            <>
+              <MetaPill label="Elements" value={`${totalElements} keep`} />
+              <MetaPill label="Device" value={deviceLabel} />
+            </>
+          )}
+          {state === "loading" && (!summary || totalElements === 0) && (
+            <span style={{ fontSize: 12, color: T.text4, fontStyle: "italic" }}>
+              Composition runs after the comparator finishes.
+            </span>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* Inline progress timeline used while the design combiner is composing. */
+function CompositionTimeline({
+  steps,
+}: {
+  steps: { label: string; state: "done" | "active" | "pending" }[];
+}) {
+  return (
+    <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+      {steps.map((s, i) => {
+        const isDone = s.state === "done";
+        const isActive = s.state === "active";
+        const dotInner = isDone ? (
+          <CheckIcon size={10} strokeWidth={3} style={{ color: "#FFFFFF" }} />
+        ) : isActive ? (
+          <motion.span
+            aria-hidden
+            animate={{ scale: [0.85, 1.15, 0.85], opacity: [0.7, 1, 0.7] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+            style={{ width: 6, height: 6, borderRadius: 999, background: "#FFFFFF", display: "inline-block" }}
+          />
+        ) : null;
+        return (
+          <li key={i} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span
+              aria-hidden
+              style={{
+                width: 18,
+                height: 18,
+                borderRadius: 999,
+                background: isDone ? "#10B981" : isActive ? T.accent : "#FFFFFF",
+                border: `1px solid ${isDone ? "#10B981" : isActive ? T.accent : T.hairline}`,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              {dotInner}
+            </span>
+            <span
+              style={{
+                fontSize: 13,
+                fontWeight: isActive ? 500 : 400,
+                color: isActive ? T.ink : isDone ? T.text2 : T.text4,
+                lineHeight: 1.4,
+              }}
+            >
+              {s.label}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+/* Stat block for the loaded state: how many elements came from each side. */
+function CompositionSummary({ fromA, fromB, total }: { fromA: number; fromB: number; total: number }) {
+  const cell = (label: string, value: number, accent: boolean) => (
+    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+      <span
+        style={{
+          fontSize: 10.5,
+          fontWeight: 600,
+          color: T.text3,
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+        }}
+      >
+        {label}
+      </span>
+      <span
+        style={{
+          fontFamily: "var(--font-flow-display), 'Playfair Display', Georgia, serif",
+          fontSize: 22,
+          fontWeight: 600,
+          color: accent ? T.accent : T.ink,
+          lineHeight: 1,
+          letterSpacing: "-0.01em",
+        }}
+      >
+        {value}
+      </span>
+    </div>
+  );
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+      {cell("From Variant A", fromA, false)}
+      {cell("From Variant B", fromB, false)}
+      {cell("Total composed", total, true)}
+    </div>
+  );
+}
+
+function MetaPill({ label, value }: { label: string; value: string }) {
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "baseline",
+        gap: 6,
+        padding: "5px 11px",
+        background: "#FFFFFF",
+        border: `1px solid ${T.borderWarm}`,
+        borderRadius: 999,
+        fontSize: 11.5,
+        color: T.text2,
+      }}
+    >
+      <span style={{ color: T.text4, fontSize: 10.5, letterSpacing: "0.06em", textTransform: "uppercase", fontWeight: 600 }}>
+        {label}
+      </span>
+      <span style={{ color: T.ink, fontWeight: 500 }}>{value}</span>
+    </span>
+  );
+}
+
+function ScreensTestedBlock({ pair, totalScreens }: { pair: AnnotatedScreenPair; totalScreens: number }) {
+  const showLabel = totalScreens > 1;
+  const phoneStyle: React.CSSProperties = {
+    width: "100%",
+    maxWidth: 320,
+    aspectRatio: "375 / 812",
+    borderRadius: 16,
+    overflow: "hidden",
+    border: `1px solid ${T.border}`,
+    background: "#FFFFFF",
+    boxShadow: "0 8px 28px rgba(0,0,0,0.08)",
+  };
+  const labelStyle: React.CSSProperties = {
+    fontSize: 11,
+    fontWeight: 500,
+    color: T.text3,
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+    marginBottom: 12,
+  };
+  return (
+    <motion.div {...fadeUp} style={{ marginBottom: totalScreens > 1 ? 40 : 0 }}>
+      {showLabel && (
+        <div style={{ fontSize: 13, fontWeight: 600, color: T.ink, marginBottom: 16, letterSpacing: -0.01 }}>
+          <span style={{ display: "inline-block", padding: "2px 8px", background: T.ink, color: "#FFFFFF", borderRadius: 4, marginRight: 10, fontSize: 11, fontWeight: 700 }}>
+            {pair.index + 1}
+          </span>
+          {pair.screen_label}
+        </div>
+      )}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, justifyItems: "center" }}>
+        <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ ...labelStyle, alignSelf: "flex-start", marginLeft: "auto", marginRight: "auto", textAlign: "center", width: "100%" }}>Variant A</div>
+          <div style={phoneStyle}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={pair.variant_a.image_path} alt="Variant A" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          </div>
+        </div>
+        <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ ...labelStyle, textAlign: "center", width: "100%" }}>Variant B</div>
+          <div style={phoneStyle}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={pair.variant_b.image_path} alt="Variant B" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+export function AbReportView({ data, synthesis, designCombiner }: AbReportViewProps) {
   const [activeTab, setActiveTab] = useState("overview");
   const screens = data.annotated_screens.screens ?? [];
 
@@ -678,7 +1196,14 @@ export function AbReportView({ data, synthesis }: AbReportViewProps) {
   ];
 
   return (
-    <div style={{ background: T.pageBg, minHeight: "100vh" }}>
+    <div
+      className={`${reportDisplayFont.variable} ${reportBodyFont.variable}`}
+      style={{
+        background: T.pageBg,
+        minHeight: "100vh",
+        fontFamily: "var(--font-flow-body), 'DM Sans', system-ui, sans-serif",
+      }}
+    >
       <TopBar
         title="A/B Comparison Report"
         breadcrumb={`${data.meta.client} · ${data.meta.screen_label}`}
@@ -738,6 +1263,7 @@ export function AbReportView({ data, synthesis }: AbReportViewProps) {
                     title="What to ship"
                     subtitle="Specific elements to keep or kill, copy directly into your tracker."
                   />
+                  <WinningDesignCard payload={designCombiner ?? null} />
                   <motion.div {...fadeUp} style={{ background: "#FFF", borderRadius: 12, border: "1px solid #E5E7EB", overflow: "visible", boxShadow: "0 4px 24px rgba(0,0,0,0.08), 0 1px 6px rgba(0,0,0,0.04)" }}>
                     <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
                       <colgroup>
@@ -769,8 +1295,8 @@ export function AbReportView({ data, synthesis }: AbReportViewProps) {
                                 {ri + 1}
                               </td>
                               <td style={{ padding: "14px 16px", verticalAlign: "top" }}>
-                                <p style={{ fontSize: 13, fontWeight: 500, color: isKill ? T.text3 : T.ink, margin: 0, lineHeight: 1.4, textDecoration: isKill ? "line-through" : "none" }}>{item.feature}</p>
-                                <p style={{ fontSize: 13, fontWeight: 400, color: T.text3, margin: "2px 0 0", lineHeight: 1.4 }}>{item.rationale}</p>
+                                <p style={{ fontSize: 13, fontWeight: 500, color: isKill ? T.text3 : T.ink, margin: 0, lineHeight: 1.4, textDecoration: isKill ? "line-through" : "none" }}>{noDash(item.feature)}</p>
+                                <p style={{ fontSize: 13, fontWeight: 400, color: T.text3, margin: "2px 0 0", lineHeight: 1.4 }}>{noDash(item.rationale)}</p>
                               </td>
                               <td style={{ padding: "14px 16px", fontSize: 12, color: T.text3, textAlign: "left", verticalAlign: "top" }}>
                                 Variant {item.source_variant}
@@ -798,27 +1324,14 @@ export function AbReportView({ data, synthesis }: AbReportViewProps) {
 
             <SectionDivider />
 
-            {/* SECTION 3: ANNOTATED SCREENS — iterate one block per screen pair */}
+            {/* SECTION 02: SCREENS TESTED — plain side-by-side variant images. */}
             <SectionHeader
               eyebrow="02"
-              title={screens.length > 1 ? "How each screen landed" : "How the screen landed"}
-              subtitle="Element-level read of both variants. Click any callout to open evidence."
+              title="Screens Tested"
+              subtitle="Variant A and Variant B as shown to personas."
             />
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 24 }}>
-              {[
-                { dot: "#10B981", term: "Lift", desc: "moved users toward conversion" },
-                { dot: "#EF4444", term: "Drag", desc: "moved users away from conversion" },
-                { dot: "#F59E0B", term: "Tradeoff", desc: "lifted some segments, dragged others" },
-              ].map((p) => (
-                <span key={p.term} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#F9FAFB", border: "1px solid #E5E7EB", borderRadius: 999, padding: "6px 12px", whiteSpace: "nowrap" }}>
-                  <span style={{ width: 8, height: 8, borderRadius: 999, background: p.dot, flexShrink: 0 }} />
-                  <span style={{ fontSize: 12, fontWeight: 600, color: T.ink }}>{p.term}</span>
-                  <span style={{ fontSize: 12, fontWeight: 400, color: T.text3 }}>{p.desc}</span>
-                </span>
-              ))}
-            </div>
             {screens.map((pair) => (
-              <ScreenPairBlock key={pair.id} pair={pair} totalScreens={screens.length} />
+              <ScreensTestedBlock key={pair.id} pair={pair} totalScreens={screens.length} />
             ))}
 
             <SectionDivider />

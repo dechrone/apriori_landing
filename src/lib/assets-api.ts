@@ -198,7 +198,10 @@ export async function updateAssetMetadata(
   token: Token,
   assetId: string,
   folderId: string,
-  metadata: Partial<ProductFlowMetadata> | Partial<AdCreativeMetadata>
+  metadata: {
+    productFlowMetadata?: Partial<ProductFlowMetadata>;
+    adCreativeMetadata?: Partial<AdCreativeMetadata>;
+  }
 ): Promise<void> {
   await apiFetch<unknown>(
     token,

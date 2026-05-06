@@ -5,7 +5,9 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "logo.clearbit.com" },
       { protocol: "https", hostname: "img.logo.dev" },
-      { protocol: "https", hostname: "res.cloudinary.com" },
+      // Supabase Storage public URLs follow `{project-ref}.supabase.co/storage/v1/object/public/...`.
+      // The wildcard whitelists every project ref so dev / staging / prod all work.
+      { protocol: "https", hostname: "*.supabase.co" },
     ],
   },
   async redirects() {

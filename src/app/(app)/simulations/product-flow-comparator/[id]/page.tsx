@@ -11,7 +11,7 @@ import { useUser } from "@/contexts/UserContext";
 import { getSimulation } from "@/lib/db";
 import type { SimulationDoc } from "@/lib/db";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
-import type { AbReport, SynthesisReadyData } from "@/types/ab-report";
+import type { AbReport, SynthesisReadyData, DesignCombinerReadyData } from "@/types/ab-report";
 import { AbReportView } from "@/components/ab-report/AbReportView";
 import { ArrowLeft } from "lucide-react";
 
@@ -68,6 +68,8 @@ export default function ProductFlowComparatorResultsPage() {
             return {
               ...prev,
               synthesis: next.synthesis ?? prev.synthesis,
+              designCombiner: next.design_combiner ?? prev.designCombiner,
+              revalidation: next.revalidation ?? prev.revalidation,
               result: (next.result as unknown) ?? prev.result,
               status: ((next.status as SimulationDoc["status"]) ?? prev.status),
               updatedAt: (next.updated_at as string | null) ?? prev.updatedAt,
@@ -83,6 +85,7 @@ export default function ProductFlowComparatorResultsPage() {
 
   const data = simulation?.result as AbReport | undefined;
   const synthesis = simulation?.synthesis as SynthesisReadyData | undefined;
+  const designCombiner = simulation?.designCombiner as DesignCombinerReadyData | undefined;
 
   if (loading) {
     return (
@@ -126,5 +129,11 @@ export default function ProductFlowComparatorResultsPage() {
     );
   }
 
-  return <AbReportView data={data} synthesis={synthesis ?? null} />;
+  return (
+    <AbReportView
+      data={data}
+      synthesis={synthesis ?? null}
+      designCombiner={designCombiner ?? null}
+    />
+  );
 }

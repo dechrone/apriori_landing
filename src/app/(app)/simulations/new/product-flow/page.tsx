@@ -215,8 +215,9 @@ export default function ProductFlowSimulationPage() {
         // order is 1..N no matter what the upload endpoint defaulted to.
         await Promise.all(
           uploaded.map((asset, idx) =>
-            updateAssetMetadata(token, asset.id, folder.id, { stepNumber: idx + 1 })
-              .catch(() => { /* order fallback is fine, backend already ordered */ }),
+            updateAssetMetadata(token, asset.id, folder.id, {
+              productFlowMetadata: { stepNumber: idx + 1 },
+            }).catch(() => { /* order fallback is fine, backend already ordered */ }),
           ),
         );
         setFormData((prev) => ({

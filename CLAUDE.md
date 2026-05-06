@@ -56,13 +56,13 @@ No test suite.
 
 The comparator results page (`/simulations/product-flow-comparator/[id]`) renders `AbReportView` which now includes Section 02b "Winning lever combinations" between the per-screen overlay (02) and persona split (03). The section is hidden when the report's `lever_attribution` is null (legacy reports or runs where lever extraction couldn't produce an inventory). Schema: `LeverAttribution { top_combinations[], by_segment{}, notes }` with each `LeverCombination` carrying `levers[]` (lever_ids), `variant`, `persona_count`, `convert_rate`, `delta_vs_baseline`, optional `cohort`, and an LLM-written `interpretation`. The "How the screen landed" overlay (Section 02) reads the same `ScreenElement[]` shape it always did — backend just produces principled per-element verdicts when an inventory is present, falls back to vision-LLM inference when not.
 
-Image hosts: `next.config.ts::remotePatterns` whitelists `res.cloudinary.com` so user-uploaded variant screenshots render via `next/image` in the AB overlay (added 2026-04-28).
+Image hosts: `next.config.ts::remotePatterns` whitelists `*.supabase.co` so user-uploaded variant screenshots render via `next/image` in the AB overlay. Migrated from Cloudinary on 2026-05; assets now live in the `apriori-assets` Supabase Storage bucket.
 
 ### Key directories
 
 | Path | Purpose |
 |---|---|
-| `src/app/api/` | Route handlers: `upload-asset`, `delete-asset` (Cloudinary), `feedback`, `signup` |
+| `src/app/api/` | Route handlers: `upload-asset`, `delete-asset` (proxied to backend → Supabase Storage), `feedback`, `signup` |
 | `src/components/ui/` | Reusable base components |
 | `src/components/app/` | App shell (Sidebar, TopBar, AuthGuard, AppShell, ClientAppLayout) |
 | `src/components/flow-analysis/` | Flow analysis result views + reading guide |

@@ -111,14 +111,14 @@ export interface FunnelDropOff {
   screen_id: string;
   drop_offs: number;
   drop_off_pct: number;
-  // Populated when the run was uploaded via Cloudinary assets; empty for legacy runs.
+  // Populated when the run was uploaded via Supabase Storage assets; empty for legacy runs.
   screen_url?: string;
   step_number?: number | null;
   view_name?: string;
 }
 
 export interface ScreenImageMapEntry {
-  url: string;           // Cloudinary URL; empty string means no image available
+  url: string;           // Supabase Storage public URL; empty string means no image available
   step_number: number | null;
   view_name: string;
   node_type: string;

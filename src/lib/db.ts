@@ -82,6 +82,15 @@ export type SimulationDoc = {
   /** simul2design Multiverse Synthesis Engine payload — populated ~5min after
    * comparison_ready by the backend's `synthesis_ready` UPDATE. Null until then. */
   synthesis?: unknown;
+  /** Lever-driven design combiner payload — populated ~2min after
+   * comparison_ready by the backend's `design_combiner_ready` UPDATE. Carries
+   * `combined_variant_image_url` (Supabase Storage public URL), the full combiner result, and
+   * an `input_summary` of what was fused. Null until the combiner runs. */
+  designCombiner?: unknown;
+  /** Pro-tier revalidation payload (validated_lift + combined-variant
+   * insights) — populated by the `revalidation_ready` UPDATE. Null when
+   * the revalidation flag was off. */
+  revalidation?: unknown;
   creditsSpent?: number;
   /** ISO timestamp, or null for UI-only sample rows that never hit the DB. */
   createdAt: string | null;
@@ -145,6 +154,8 @@ function rowToSimulation(r: SimulationRow): SimulationDoc {
     simulationId: r.simulation_id ?? undefined,
     result: r.result ?? undefined,
     synthesis: r.synthesis ?? undefined,
+    designCombiner: r.design_combiner ?? undefined,
+    revalidation: r.revalidation ?? undefined,
     creditsSpent: r.credits_spent,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
@@ -610,7 +621,7 @@ export async function deleteAssetMetadata(
   if (error) throw new Error(`deleteAssetMetadata: ${error.message}`);
 }
 
-/** Create an asset row (e.g. after uploading to storage / Cloudinary / Figma CDN). */
+/** Create an asset row (e.g. after uploading to Supabase Storage / Figma CDN). */
 export async function addAssetDocument(
   userId: string,
   folderId: string,

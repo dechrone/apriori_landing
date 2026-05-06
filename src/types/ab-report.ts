@@ -227,7 +227,7 @@ export interface AbReport {
  *
  * The cascade turns the AbReport into a buildable V(N+1) spec (markdown +
  * structured JSON) and renders a phone-frame PNG via Playwright. The PNG is
- * uploaded to Cloudinary; `variant_image_url` carries the CDN URL.
+ * uploaded to Supabase Storage; `variant_image_url` carries the CDN URL.
  */
 export interface SynthesisResultCellRef {
   variant_id: string;
@@ -265,7 +265,7 @@ export interface SynthesisResult {
   /** v0.2.0 render — Playwright-rendered PNG of the V(N+1) screen. */
   variant_image_path?: string | null;
   variant_image_size_bytes?: number | null;
-  /** Cloudinary CDN URL set by our orchestrator after a successful upload. Null
+  /** Supabase Storage CDN URL set by our orchestrator after a successful upload. Null
    * when the render extra is missing, render failed, or upload errored. */
   variant_image_url?: string | null;
 }
@@ -281,4 +281,80 @@ export interface SynthesisReadyData {
    * or upload didn't produce a URL. */
   variant_image_url: string | null;
   result: SynthesisResult;
+}
+
+/**
+ * Lever-driven design combiner output. Emitted ~2 min AFTER
+ * `comparison_ready` on the `design_combiner_ready` SSE event when the
+ * backend's `APRIORI_DESIGN_COMBINER_ENABLED` flag is on.
+ *
+ * The combiner takes the AbReport's lever_attribution (winning levers per
+ * variant + interaction probe + Simpson flags) and Opus 4.5 paints a fused
+ * HTML+PNG variant honouring the empirical signal. The PNG is uploaded to
+ * Supabase Storage; `combined_variant_image_url` carries the CDN URL the frontend
+ * renders directly.
+ *
+ * Distinct from `synthesis` (simul2design cascade) — both can coexist on
+ * one simulation row.
+ */
+export interface DesignCombinerInputSummary {
+  control_variant: string;
+  device_type: "MOBILE" | "DESKTOP" | "TABLET" | "AGNOSTIC";
+  winning_elements_a: number;
+  winning_elements_b: number;
+  instructions_chars: number;
+}
+
+export interface DesignCombinerResult {
+  status: "ok" | "failed" | "skipped";
+  backend: "claude" | "stitch";
+  output_dir: string;
+  primary_html_path: string | null;
+  primary_png_path: string | null;
+  summary_path: string | null;
+  prompt_path: string | null;
+  validation: Record<string, unknown> | null;
+  describer: Record<string, unknown> | null;
+  generator: Record<string, unknown> | null;
+  validator: Record<string, unknown> | null;
+  cost_usd: number;
+  elapsed_seconds: number;
+  error: string | null;
+}
+
+export interface DesignCombinerReadyData {
+  comparison_id: string;
+  client: string;
+  /** Supabase Storage CDN URL of the fused variant PNG. The frontend should render
+   * this directly via <img src={...}>. Null when Supabase Storage upload failed
+   * (the local primary_png_path on the backend is still readable for
+   * debugging, but won't be reachable from the browser). */
+  combined_variant_image_url: string | null;
+  /** The full combiner result dict — paths, cost, validation iters,
+   * token usage. Useful for debug panels but not required to render the
+   * combined variant. */
+  result: DesignCombinerResult;
+  input_summary: DesignCombinerInputSummary;
+}
+
+/**
+ * Pro-tier revalidation output. Emitted on `revalidation_ready` after the
+ * design combiner when `APRIORI_LEVER_REVALIDATE_ENABLED=1`. Re-simulates
+ * the fused variant against the same persona pool and compares its
+ * completion rate to the better of A/B.
+ */
+export interface RevalidationReadyData {
+  comparison_id: string;
+  combined_variant_image_url: string | null;
+  completion_rate_a: number;
+  completion_rate_b: number;
+  completion_rate_combined: number;
+  completion_rate_winner: number;
+  /** combined - winner. Positive = the fused variant beat the better source. */
+  validated_lift: number;
+  num_personas: number;
+  /** Single-screen revalidation insights (same shape as a regular flow run
+   * but with one TERMINAL node). Useful for "drilldown into the
+   * revalidation personas" panels. */
+  insights: Record<string, unknown>;
 }
