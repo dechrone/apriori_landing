@@ -409,6 +409,16 @@ function simulationToRow(userId: string, s: Partial<SimulationPayload>) {
     timestamp_label: s.timestamp,
     simulation_id: s.simulationId,
     result: (s.result ?? undefined) as Json | undefined,
+    // Follow-on payloads. Historically these were populated only by backend
+    // server-side UPDATEs after the wizard's INSERT — but design_combiner
+    // emits its `ready` event BEFORE the wizard's saveSimulation runs, so
+    // the UPDATE landed on a non-existent row (0-row no-op) and the design
+    // never appeared. Plumbing them through the INSERT path lets the wizard
+    // persist whatever it captured during the stream; subsequent backend
+    // UPDATEs are idempotent over the same payload.
+    design_combiner: (s.designCombiner ?? undefined) as Json | undefined,
+    synthesis: (s.synthesis ?? undefined) as Json | undefined,
+    revalidation: (s.revalidation ?? undefined) as Json | undefined,
     credits_spent: s.creditsSpent,
   });
 }

@@ -23,7 +23,12 @@ import type { AudienceTemplate } from '@/lib/backend-simulation';
 import { getAudiences, getAssetFolders, saveSimulation } from '@/lib/db';
 import type { AudienceDoc } from '@/lib/db';
 import { consumeNDJSONStream } from '@/lib/stream-simulation';
-import type { AbReport } from '@/types/ab-report';
+import type {
+  AbReport,
+  DesignCombinerReadyData,
+  RevalidationReadyData,
+  SynthesisReadyData,
+} from '@/types/ab-report';
 import {
   SimulationRunningView,
   type RunningFlow,
@@ -200,6 +205,15 @@ export default function ProductFlowComparatorSimulationPage() {
       }
 
       let comparisonData: AbReport | null = null;
+      // Follow-on events that fire AFTER comparison_ready while the stream is
+      // still open. Capturing them here means the wizard's INSERT carries the
+      // full payload and the results page paints them on first load — no
+      // dependence on the backend's UPDATE landing on a row that may not
+      // exist yet (the UPDATE is ordered before the INSERT in the
+      // design_combiner case, which silently no-op'd and stranded the design).
+      let designCombinerData: DesignCombinerReadyData | null = null;
+      let synthesisData: SynthesisReadyData | null = null;
+      let revalidationData: RevalidationReadyData | null = null;
       let streamError: string | null = null;
 
       // Backend ships flow_name on flow_started; if it's missing we fall back
@@ -264,11 +278,33 @@ export default function ProductFlowComparatorSimulationPage() {
         } else if (event.type === 'comparison_ready') {
           comparisonData = event.data;
           setStreamProgress((prev) => prev ? { ...prev, phase: 'saving' } : null);
-        } else if (event.type === 'synthesis_ready' || event.type === 'synthesis_failed') {
+        } else if (event.type === 'design_combiner_ready') {
+          // Lever-driven combiner emits its `ready` event during the open
+          // stream, BEFORE the wizard's saveSimulation runs. The backend's
+          // server-side UPDATE races ahead of the row INSERT and silently
+          // no-ops. Capturing the payload here lets the wizard write it on
+          // INSERT and the results page paints it immediately.
+          designCombinerData = event.data;
+        } else if (event.type === 'synthesis_ready') {
           // simul2design cascade — arrives ~5 min AFTER comparison_ready.
-          // The wizard has typically redirected by now; the backend UPDATEs
-          // public.simulations.synthesis server-side and the results page
-          // reads it via supabase realtime. Nothing to do here.
+          // Usually after the wizard has redirected, in which case Supabase
+          // Realtime + the backend UPDATE handle persistence. But on the
+          // chance the user is still here when it lands, capture and
+          // include in the INSERT so first paint already has it.
+          synthesisData = event.data;
+        } else if (event.type === 'revalidation_ready') {
+          // Pro-tier revalidation result — same race-resilience pattern.
+          revalidationData = event.data;
+        } else if (
+          event.type === 'synthesis_failed' ||
+          event.type === 'design_combiner_failed' ||
+          event.type === 'design_combiner_skipped' ||
+          event.type === 'revalidation_failed'
+        ) {
+          // Non-fatal follow-on failures — surface in console but don't
+          // block the comparator save.
+          // eslint-disable-next-line no-console
+          console.warn(`[comparator] ${event.type}:`, event.data);
         } else if (event.type === 'error') {
           streamError = event.data.message;
         }
@@ -293,6 +329,14 @@ export default function ProductFlowComparatorSimulationPage() {
         timestamp: new Date().toLocaleDateString(undefined, { dateStyle: 'medium' }),
         simulationId: data.meta.simulation_id,
         result: data,
+        // Anything captured during the open stream — included on INSERT so
+        // the results page paints it on first load. Null/undefined entries
+        // are stripped by `clean(...)` in simulationToRow, so this is safe
+        // for runs where the combiner / synthesis / revalidation didn't
+        // emit before the wizard finished.
+        designCombiner: designCombinerData ?? undefined,
+        synthesis: synthesisData ?? undefined,
+        revalidation: revalidationData ?? undefined,
       });
       showToast('success', 'Comparison complete', 'Redirecting to results.');
       router.push(`/simulations/product-flow-comparator/${docId}`);

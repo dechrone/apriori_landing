@@ -83,6 +83,45 @@ export default function ProductFlowComparatorResultsPage() {
     };
   }, [userId, id]);
 
+  // Polling safety net for `design_combiner`. Realtime alone isn't enough
+  // here — design_combiner_ready arrives within seconds of comparison_ready
+  // while the SSE stream is still open, BEFORE the wizard's INSERT. The
+  // backend's UPDATE then no-ops on a non-existent row, so no UPDATE event
+  // ever fires for Realtime to relay. The backend now retries the UPDATE
+  // with backoff (see update_simulation_design_combiner) which usually
+  // catches up; this poll is defense-in-depth for the case where the
+  // backend retry window expires before the wizard finishes saving.
+  //
+  // Polls every 5s while design_combiner is null and the row is fresh
+  // (created within the last 10 minutes). Stops as soon as the column
+  // populates or the row ages out.
+  useEffect(() => {
+    if (!userId || !id || !simulation) return;
+    if (simulation.designCombiner) return;
+    if (simulation.createdAt) {
+      const ageMs = Date.now() - new Date(simulation.createdAt).getTime();
+      if (ageMs > 10 * 60 * 1000) return; // older than 10 min → give up
+    }
+    let cancelled = false;
+    const tick = async () => {
+      if (cancelled) return;
+      try {
+        const fresh = await getSimulation(userId, id);
+        if (cancelled || !fresh) return;
+        if (fresh.designCombiner) {
+          setSimulation(fresh);
+        }
+      } catch {
+        // best-effort — try again on next tick
+      }
+    };
+    const interval = setInterval(tick, 5000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [userId, id, simulation?.designCombiner, simulation?.createdAt, simulation]);
+
   const data = simulation?.result as AbReport | undefined;
   const synthesis = simulation?.synthesis as SynthesisReadyData | undefined;
   const designCombiner = simulation?.designCombiner as DesignCombinerReadyData | undefined;
