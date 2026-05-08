@@ -48,6 +48,15 @@ export interface ProductContextData {
 }
 
 /** Stored audience; includes filter tree and description so nothing is lost. */
+export type GeneratedSegmentDoc = {
+  id: string;
+  name: string;
+  description: string;
+  pool_id: string;
+  pool_name: string;
+  embedding: number[];
+};
+
 export type AudienceDoc = {
   id: string;
   name: string;
@@ -66,6 +75,15 @@ export type AudienceDoc = {
   painPoints?: unknown;
   decisionBehavior?: unknown;
   budgetDetails?: unknown;
+  // 2026-05-09: segments-v2 cache (populated by saveAudienceWithCachedPersonas).
+  // When `cachedPersonaUuids` is non-null AND `cachedCountry` matches the
+  // current country, the wizard shows "Re-use (instant)" and submits via
+  // /simulations/start-from-saved-audience instead of /start-product-flow.
+  segmentsV2?: GeneratedSegmentDoc[];
+  cachedPoolIds?: string[];
+  cachedPersonaUuids?: string[];
+  cachedCountry?: "IN" | "US";
+  cachedAt?: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -120,6 +138,9 @@ function rowToProfile(r: ProfileRow): UserProfile {
 function rowToAudience(r: AudienceRow): AudienceDoc {
   const demographics = Array.isArray(r.demographics) ? (r.demographics as string[]) : [];
   const psychographics = Array.isArray(r.psychographics) ? (r.psychographics as string[]) : [];
+  const segmentsV2 = Array.isArray(r.segments_v2)
+    ? (r.segments_v2 as GeneratedSegmentDoc[])
+    : undefined;
   return {
     id: r.id,
     name: r.name,
@@ -138,6 +159,11 @@ function rowToAudience(r: AudienceRow): AudienceDoc {
     painPoints: r.pain_points ?? undefined,
     decisionBehavior: r.decision_behavior ?? undefined,
     budgetDetails: r.budget_details ?? undefined,
+    segmentsV2: segmentsV2,
+    cachedPoolIds: r.cached_pool_ids ?? undefined,
+    cachedPersonaUuids: r.cached_persona_uuids ?? undefined,
+    cachedCountry: r.cached_country ?? undefined,
+    cachedAt: r.cached_at ?? undefined,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
   };

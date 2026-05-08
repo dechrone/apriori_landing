@@ -22,42 +22,52 @@ async function authHeaders(): Promise<Record<string, string>> {
   };
 }
 
-/**
- * Optional audience plumbing the backend uses for:
- *   - audienceId:         persona cache key (skips LLM filter extraction on repeat runs)
- *   - audienceTemplateId: curated audience template (skips filter extraction entirely)
- *   - poolId:             pre-selected persona pool (see shared/pool_templates.json) —
- *                         tells the backend to skip pool-picking in the audience router
- *                         and only sub-segment within the chosen pool.
- *
- * All three are optional. If none are supplied, the backend runs the full cold
- * retrieval pipeline keyed off `audience` (the free-text description).
- */
-export interface AudienceRoutingHints {
+// ---------------------------------------------------------------------------
+// Audience-segments wizard (two-phase) — single-flow free-PM path.
+// Phase 1: POST /start-product-flow → 9 generated segments + parallel PI.
+// Phase 2: POST /{sim_id}/run-with-segments → run sim against the 5 picks.
+// Re-use:  POST /start-from-saved-audience → run sim against cached uuids.
+// ---------------------------------------------------------------------------
+
+export interface ProductFlowStartPayload {
+  name: string;
+  description: string;
+  country: "IN" | "US";
+  optimizeMetric: string;
+  objective?: string;
+}
+
+export interface RunWithSegmentsPayload {
+  selectedSegmentIds: string[]; // exactly 5
+  selectedFolderIds: string[];  // exactly 1
+  optimizeMetric?: string;
+  saveAudience?: boolean;
+  audienceName?: string | null;
+}
+
+export interface StartFromSavedAudiencePayload {
+  audienceId: string;
+  name: string;
+  country: "IN" | "US";
+  optimizeMetric: string;
+  objective?: string;
+  selectedFolderIds: string[];
+}
+
+// Multi-flow comparator (legacy freeform-audience path; auto-picks segments
+// internally until the comparator wizard adopts the two-phase flow).
+export interface ProductFlowComparatorPayload {
+  name: string;
+  audience: string;
+  numPersonas?: number;
+  optimizeMetric: string;
+  selectedFolderIds: string[];
+  objective?: string;
+  // Routing hints carried by the comparator/AB pages until they adopt the
+  // two-phase wizard. Backend is tolerant: unknown ids fall back to auto-pick.
+  poolId?: string;
   audienceId?: string;
   audienceTemplateId?: string;
-  poolId?: string;
-}
-
-export interface ProductFlowSimulationPayload extends AudienceRoutingHints {
-  name: string;
-  audience: string;
-  /** Persona count, 1-50. Backend defaults to 25. */
-  numPersonas?: number;
-  optimizeMetric: string;
-  /** Free-text: what is this flow trying to achieve for the user? */
-  objective?: string;
-  selectedFolderIds: string[];
-}
-
-export interface ProductFlowComparatorPayload extends AudienceRoutingHints {
-  name: string;
-  audience: string;
-  /** Persona count, 1-100. Same set is reused across every variant. Backend defaults to 25. */
-  numPersonas?: number;
-  optimizeMetric: string;
-  selectedFolderIds: string[];
-  objective?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -117,23 +127,66 @@ export async function fetchAudienceTemplates(country?: string): Promise<Audience
   }
 }
 
-/** POST /api/v1/audiences/{id}/refresh-personas — invalidate persona cache */
-export async function refreshAudiencePersonas(audienceId: string): Promise<void> {
-  const res = await fetch(
-    `${BASE_URL}/api/v1/audiences/${encodeURIComponent(audienceId)}/refresh-personas`,
-    { method: "POST" }
-  );
-  if (!res.ok) throw new Error(`Failed to refresh audience personas (${res.status})`);
-}
+// `refreshAudiencePersonas` (legacy `/api/v1/audiences/{id}/refresh-personas`)
+// was deleted when the audience-segments wizard shipped. Saved audiences with
+// a populated `cached_persona_uuids` are re-used directly via
+// `startFromSavedAudience`; legacy rows show a "Regenerate cohorts" button
+// that hits `startProductFlow` with the saved description.
 
-/** POST /api/v1/simulations/product-flow with profileId + simulation payload */
-export async function triggerProductFlowSimulation(
+/** POST /api/v1/simulations/start-product-flow — phase 1 of the audience-segments wizard.
+ * Streams NDJSON: started → pool_routed → segments_ready → product_intelligence_ready
+ *               → awaiting_segment_selection. Caller stashes simulation_id from the
+ * `awaiting_segment_selection` event and calls runWithSegments to continue. */
+export async function startProductFlow(
   profileId: string,
-  payload: ProductFlowSimulationPayload
+  payload: ProductFlowStartPayload
 ): Promise<Response> {
   const headers = await authHeaders();
   try {
-    return await fetch(`${BASE_URL}/api/v1/simulations/product-flow`, {
+    return await fetch(`${BASE_URL}/api/v1/simulations/start-product-flow`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ profileId, ...payload }),
+    });
+  } catch {
+    throw new Error(
+      `Cannot connect to the backend server at ${BASE_URL}. Please check your network and try again.`
+    );
+  }
+}
+
+/** POST /api/v1/simulations/{sim_id}/run-with-segments — phase 2.
+ * Streams NDJSON: resumed → personas_loaded → persona_complete × N → insights_ready. */
+export async function runWithSegments(
+  simulationId: string,
+  payload: RunWithSegmentsPayload
+): Promise<Response> {
+  const headers = await authHeaders();
+  try {
+    return await fetch(
+      `${BASE_URL}/api/v1/simulations/${encodeURIComponent(simulationId)}/run-with-segments`,
+      {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+      }
+    );
+  } catch {
+    throw new Error(
+      `Cannot connect to the backend server at ${BASE_URL}. Please check your network and try again.`
+    );
+  }
+}
+
+/** POST /api/v1/simulations/start-from-saved-audience — re-use a saved audience
+ * with a populated cached_persona_uuids. Skips both segment generation and the picker. */
+export async function startFromSavedAudience(
+  profileId: string,
+  payload: StartFromSavedAudiencePayload
+): Promise<Response> {
+  const headers = await authHeaders();
+  try {
+    return await fetch(`${BASE_URL}/api/v1/simulations/start-from-saved-audience`, {
       method: "POST",
       headers,
       body: JSON.stringify({ profileId, ...payload }),
