@@ -275,14 +275,16 @@ export default function ProductFlowABSimulationPage() {
             phase: 'simulating',
           }));
         } else if (event.type === 'started') {
+          const fid = event.data.flow_id;
+          if (!fid) return;
           setStreamProgress((prev) => {
-            const existing = prev?.flows[event.data.flow_id];
+            const existing = prev?.flows[fid];
             return {
               flows: {
                 ...(prev?.flows ?? {}),
-                [event.data.flow_id]: {
-                  displayName: existing?.displayName ?? event.data.flow_name ?? event.data.flow_id,
-                  personasTotal: event.data.num_personas,
+                [fid]: {
+                  displayName: existing?.displayName ?? event.data.flow_name ?? fid,
+                  personasTotal: event.data.num_personas ?? 25,
                   personasDone: existing?.personasDone ?? 0,
                 },
               },

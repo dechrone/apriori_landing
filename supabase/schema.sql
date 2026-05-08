@@ -608,3 +608,31 @@ create index if not exists figma_project_sources_project_idx on public.figma_pro
 
 alter table public.figma_project_sources enable row level security;
 -- No policies → RLS denies all client access. Backend uses superuser → bypasses RLS.
+
+
+-- =============================================================================
+-- 2026-05-09 — Audience segments + persona caching
+--
+-- The new free-PM flow asks the user for a freeform target-audience
+-- description, generates 9 distinct sub-cohorts (Nemotron-shaped) within a
+-- backend-picked pool, the user picks 5, and we cache the resolved persona
+-- UUIDs against the audiences row so re-runs skip retrieval entirely.
+--
+-- segments_v2 = the 5 selected segments (full objects, including each
+-- segment's 1536-dim search embedding) so we can re-rank if cached UUIDs go
+-- stale (pool rebuild). No per-row search_embedding column — it's redundant
+-- with the segment-level embeddings.
+-- =============================================================================
+
+create extension if not exists vector;
+
+alter table public.audiences
+  add column if not exists segments_v2          jsonb,
+  add column if not exists cached_pool_ids      text[],
+  add column if not exists cached_persona_uuids text[],
+  add column if not exists cached_country       text check (cached_country in ('IN','US')),
+  add column if not exists cached_at            timestamptz;
+
+create index if not exists audiences_cached_country_idx
+  on public.audiences(user_id, cached_country)
+  where cached_persona_uuids is not null;

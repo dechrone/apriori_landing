@@ -78,6 +78,16 @@ export interface AudienceRow {
   pain_points: Json | null;
   decision_behavior: Json | null;
   budget_details: Json | null;
+  // 2026-05-09: segments-v2 cache for the audience-segments wizard. Populated
+  // when the user opts into "Save this audience for re-use" at phase 2 of
+  // /start-product-flow + /run-with-segments. Re-use uses cached_persona_uuids
+  // to skip retrieval; segments_v2 holds the 5 GeneratedSegment objects (with
+  // 1536-dim search embeddings) for downstream re-rank if uuids go stale.
+  segments_v2: Json | null;
+  cached_pool_ids: string[] | null;
+  cached_persona_uuids: string[] | null;
+  cached_country: "IN" | "US" | null;
+  cached_at: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
-import { AuditModalProvider } from "@/contexts/AuditModalContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ConditionalSiteHeader } from "@/components/ConditionalSiteHeader";
 import "./globals.css";
@@ -62,10 +61,8 @@ export default function RootLayout({
         className={`${inter.variable} ${geistMono.variable} ${plusJakartaSans.variable} antialiased bg-bg-primary text-text-primary`}
       >
         <AuthProvider>
-          <AuditModalProvider>
-            <ConditionalSiteHeader />
-            {children}
-          </AuditModalProvider>
+          <ConditionalSiteHeader />
+          {children}
         </AuthProvider>
       </body>
     </html>
