@@ -174,6 +174,20 @@ export default function ProductFlowSimulationPage() {
     selectedFolderIds: [],
   });
 
+  // audienceTab is hoisted out of SetupStep so it survives step navigation
+  // (SetupStep unmounts on step 2 and remounts on Back). The one-shot flip
+  // also bails when the user is mid-flow so we don't yank them off 'describe'
+  // after they've already typed/picked.
+  const [audienceTab, setAudienceTab] = useState<'describe' | 'saved'>('describe');
+  const didInitAudienceTab = useRef(false);
+  useEffect(() => {
+    if (didInitAudienceTab.current) return;
+    if (audiences.length === 0) return;
+    if (formData.audienceState !== 'input') return;
+    setAudienceTab('saved');
+    didInitAudienceTab.current = true;
+  }, [audiences.length, formData.audienceState]);
+
   const canProceedStep1 =
     formData.name.trim().length >= 3 &&
     formData.objective.trim().length >= 10 &&
@@ -544,6 +558,8 @@ export default function ProductFlowSimulationPage() {
               formData={formData}
               setFormData={setFormData}
               audiences={audiences}
+              audienceTab={audienceTab}
+              setAudienceTab={setAudienceTab}
               onGenerateSegments={generateSegments}
             />
           )}
@@ -641,10 +657,19 @@ interface SetupStepProps {
   formData: ProductFlowFormData;
   setFormData: Dispatch<SetStateAction<ProductFlowFormData>>;
   audiences: AudienceDoc[];
+  audienceTab: 'describe' | 'saved';
+  setAudienceTab: Dispatch<SetStateAction<'describe' | 'saved'>>;
   onGenerateSegments: (descriptionOverride?: string) => Promise<void>;
 }
 
-function SetupStep({ formData, setFormData, audiences, onGenerateSegments }: SetupStepProps) {
+function SetupStep({
+  formData,
+  setFormData,
+  audiences,
+  audienceTab,
+  setAudienceTab,
+  onGenerateSegments,
+}: SetupStepProps) {
   const reusableAudiences = useMemo(
     () => audiences.filter((a) => Array.isArray(a.cachedPersonaUuids) && a.cachedPersonaUuids.length > 0),
     [audiences],
@@ -653,16 +678,6 @@ function SetupStep({ formData, setFormData, audiences, onGenerateSegments }: Set
     () => audiences.filter((a) => !a.cachedPersonaUuids || a.cachedPersonaUuids.length === 0),
     [audiences],
   );
-
-  const [audienceTab, setAudienceTab] = useState<'describe' | 'saved'>('describe');
-  const didInitAudienceTab = useRef(false);
-  useEffect(() => {
-    if (didInitAudienceTab.current) return;
-    if (audiences.length > 0) {
-      setAudienceTab('saved');
-      didInitAudienceTab.current = true;
-    }
-  }, [audiences.length]);
 
   return (
     <div className="bg-white border border-[#E8E4DE] rounded-[14px] p-7 sm:px-8">
