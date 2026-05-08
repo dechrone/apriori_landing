@@ -654,9 +654,15 @@ function SetupStep({ formData, setFormData, audiences, onGenerateSegments }: Set
     [audiences],
   );
 
-  const [audienceTab, setAudienceTab] = useState<'describe' | 'saved'>(
-    audiences.length > 0 ? 'saved' : 'describe',
-  );
+  const [audienceTab, setAudienceTab] = useState<'describe' | 'saved'>('describe');
+  const didInitAudienceTab = useRef(false);
+  useEffect(() => {
+    if (didInitAudienceTab.current) return;
+    if (audiences.length > 0) {
+      setAudienceTab('saved');
+      didInitAudienceTab.current = true;
+    }
+  }, [audiences.length]);
 
   return (
     <div className="bg-white border border-[#E8E4DE] rounded-[14px] p-7 sm:px-8">
