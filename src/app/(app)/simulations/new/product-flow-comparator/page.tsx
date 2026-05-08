@@ -240,14 +240,20 @@ export default function ProductFlowComparatorSimulationPage() {
             phase: 'simulating',
           }));
         } else if (event.type === 'started') {
+          const fid = event.data.flow_id;
+          if (!fid) {
+            // Phase-1-style started event (no flow_id) is not used by the
+            // comparator pipeline. Skip.
+            return;
+          }
           setStreamProgress((prev) => {
-            const existing = prev?.flows[event.data.flow_id];
+            const existing = prev?.flows[fid];
             return {
               flows: {
                 ...(prev?.flows ?? {}),
-                [event.data.flow_id]: {
-                  displayName: existing?.displayName ?? event.data.flow_name ?? event.data.flow_id,
-                  personasTotal: event.data.num_personas,
+                [fid]: {
+                  displayName: existing?.displayName ?? event.data.flow_name ?? fid,
+                  personasTotal: event.data.num_personas ?? NUM_PERSONAS_PER_FLOW,
                   personasDone: existing?.personasDone ?? 0,
                 },
               },

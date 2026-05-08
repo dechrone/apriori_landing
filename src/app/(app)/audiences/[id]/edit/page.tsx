@@ -10,7 +10,6 @@ import { useUser } from "@/contexts/UserContext";
 import { AudienceFiltersStep } from "@/components/audiences/AudienceFiltersStep";
 import { ArrowLeft, ArrowRight, Users, Loader2, RefreshCw } from "lucide-react";
 import { getAudience, updateAudience, type AudienceDoc } from "@/lib/db";
-import { refreshAudiencePersonas } from "@/lib/backend-simulation";
 import type { AdvancedFilters } from "@/types/audience-filters";
 
 export default function EditAudiencePage() {
@@ -131,15 +130,16 @@ export default function EditAudiencePage() {
     if (!audienceId) return;
     setRefreshingPersonas(true);
     try {
-      // Backend: POST /api/v1/audiences/{id}/refresh-personas. Invalidates the
-      // Supabase persona cache so the next simulation against this audience
-      // re-runs the full filter-first retrieval pipeline. Idempotent — 200
-      // even if nothing was cached.
-      await refreshAudiencePersonas(audienceId);
+      // Persona caches are now keyed off `cached_persona_uuids` on the audiences
+      // row itself; there's nothing server-side to invalidate. The "Refresh"
+      // button shown on legacy audiences (no segments_v2 yet) lives in the
+      // wizard's Tab 2 as "Regenerate cohorts" — running phase 1 with the
+      // saved description is the migration path. This action stays for
+      // muscle memory: editing copy or filters now is a no-op next-run.
       showToast(
         "success",
-        "Persona cache cleared",
-        "Next simulation will re-run retrieval against the latest audience text.",
+        "Audience saved",
+        "Re-run a simulation to regenerate cohorts with the updated text.",
       );
     } catch (err) {
       console.error(err);
