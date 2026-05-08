@@ -249,6 +249,11 @@ export default function ProductFlowSimulationPage() {
       poolName: undefined,
       reuseAudienceId: undefined,
     }));
+    // The loading spinner + 9-tile picker live inside DescribeAudiencePane,
+    // so make sure that's the visible tab regardless of where regenerate
+    // was triggered from (e.g., the "Regenerate cohorts" button on the
+    // saved-audiences pane).
+    setAudienceTab('describe');
 
     try {
       const res = await startProductFlow(userId, {
