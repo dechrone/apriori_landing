@@ -270,6 +270,7 @@ export default function ProductFlowSimulationPage() {
         return;
       }
       let streamErr: string | null = null;
+      let gotTerminal = false;
       await consumeNDJSONStream(res, (event) => {
         if (event.type === 'pool_routed') {
           setFormData((prev) => ({ ...prev, poolName: event.data.pool_name }));
@@ -285,12 +286,25 @@ export default function ProductFlowSimulationPage() {
             simulationId: event.data.simulation_id,
             audienceState: 'picking',
           }));
+          gotTerminal = true;
         } else if (event.type === 'error') {
           streamErr = event.data.message;
+          gotTerminal = true;
         }
       });
       if (streamErr) {
         showToast('error', 'Cohort generation failed', streamErr);
+        setFormData((prev) => ({ ...prev, audienceState: 'input' }));
+      } else if (!gotTerminal) {
+        // Stream closed without `awaiting_segment_selection` AND no `error`
+        // event (network truncation, backend crash, proxy close). Without
+        // this fallback the audienceState stays at 'loading' and the 9-tile
+        // skeleton renders forever — only escape would be a page refresh.
+        showToast(
+          'error',
+          'Cohort generation interrupted',
+          'The backend connection closed before cohorts were ready. Try again.',
+        );
         setFormData((prev) => ({ ...prev, audienceState: 'input' }));
       }
     } catch (err) {
