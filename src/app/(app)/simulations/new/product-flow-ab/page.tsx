@@ -8,10 +8,13 @@ import { useUser } from '@/contexts/UserContext';
 import { useAuthContext } from '@/contexts/AuthContext';
 import {
   ArrowLeft,
+  CheckCircle,
+  ChevronDown,
   ChevronRight,
   Columns2,
   ExternalLink,
   Loader2,
+  Sparkles,
   Upload,
   X,
 } from 'lucide-react';
@@ -19,12 +22,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createFolder, uploadAssets, updateAssetMetadata } from '@/lib/assets-api';
 import {
-  triggerProductFlowComparatorSimulation,
-  fetchAudienceTemplates,
+  startProductFlow,
+  runAbWithSegments,
 } from '@/lib/backend-simulation';
-import type { AudienceTemplate } from '@/lib/backend-simulation';
 import { saveSimulation, getSimulations } from '@/lib/db';
 import { consumeNDJSONStream } from '@/lib/stream-simulation';
+import type { GeneratedSegmentSummary } from '@/lib/stream-simulation';
 import { OBJECTIVE_PRESETS, CUSTOM_OBJECTIVE_ID } from '@/data/objective-presets';
 import type { AbReport } from '@/types/ab-report';
 import {
@@ -68,21 +71,23 @@ export default function ProductFlowABSimulationPage() {
       .catch(() => setHasPriorSims(true)); // fail closed, hide hero on error
   }, [userId, profileReady]);
 
-  // Audience templates (curated, loaded from local pool JSON)
-  const [templates, setTemplates] = useState<AudienceTemplate[]>([]);
-  useEffect(() => {
-    fetchAudienceTemplates('IN')
-      .then(setTemplates)
-      .catch((err) => console.warn('[templates] fetch failed:', err));
-  }, []);
-
   // Form state — single page, no step machine
   const [name, setName] = useState('');
   const [variantA, setVariantA] = useState<PendingVariant | null>(null);
   const [variantB, setVariantB] = useState<PendingVariant | null>(null);
   const [objectivePresetId, setObjectivePresetId] = useState<string>(OBJECTIVE_PRESETS[0].id);
   const [customObjective, setCustomObjective] = useState('');
-  const [audienceTemplateId, setAudienceTemplateId] = useState<string>('');
+
+  // Audience-segments state — mirrors product-flow's freeform → 9-tile picker.
+  // Phase 1 (`startProductFlow`) generates 9 segment tiles from `description`;
+  // user picks 5; phase 2 (`runAbWithSegments`) runs the comparator.
+  type AudienceState = 'input' | 'loading' | 'picking';
+  const [description, setDescription] = useState('');
+  const [audienceState, setAudienceState] = useState<AudienceState>('input');
+  const [simulationId, setSimulationId] = useState<string | undefined>();
+  const [poolName, setPoolName] = useState<string | undefined>();
+  const [generatedSegments, setGeneratedSegments] = useState<GeneratedSegmentSummary[]>([]);
+  const [selectedSegmentIds, setSelectedSegmentIds] = useState<string[]>([]);
 
   const resolvedObjective =
     objectivePresetId === CUSTOM_OBJECTIVE_ID
@@ -93,7 +98,9 @@ export default function ProductFlowABSimulationPage() {
     !!variantA &&
     !!variantB &&
     resolvedObjective.length >= 10 &&
-    !!audienceTemplateId &&
+    audienceState === 'picking' &&
+    selectedSegmentIds.length === 5 &&
+    !!simulationId &&
     !running &&
     !uploading;
 
@@ -143,6 +150,66 @@ export default function ProductFlowABSimulationPage() {
     [],
   );
 
+  /** Phase 1: POST /start-product-flow → 9 segment tiles. */
+  const generateSegments = async () => {
+    if (!userId) {
+      showToast('error', 'Not signed in', 'Please sign in to run a simulation.');
+      return;
+    }
+    const desc = description.trim();
+    if (desc.length < 10) {
+      showToast('error', 'Add a target audience description', 'At least 10 characters.');
+      return;
+    }
+    setAudienceState('loading');
+    setGeneratedSegments([]);
+    setSelectedSegmentIds([]);
+    setSimulationId(undefined);
+    setPoolName(undefined);
+
+    try {
+      const res = await startProductFlow(userId, {
+        name: name.trim() || 'Untitled A/B run',
+        description: desc,
+        country: 'IN',
+        optimizeMetric: 'activation',
+        objective: resolvedObjective || undefined,
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        showToast('error', 'Failed to generate cohorts', text || `Status ${res.status}`);
+        setAudienceState('input');
+        return;
+      }
+      let streamErr: string | null = null;
+      await consumeNDJSONStream(res, (event) => {
+        if (event.type === 'pool_routed') {
+          setPoolName(event.data.pool_name);
+        } else if (event.type === 'segments_ready') {
+          setGeneratedSegments(event.data.segments);
+          setPoolName(event.data.pool_name);
+        } else if (event.type === 'awaiting_segment_selection') {
+          setSimulationId(event.data.simulation_id);
+          setAudienceState('picking');
+        } else if (event.type === 'error') {
+          streamErr = event.data.message;
+        }
+      });
+      if (streamErr) {
+        showToast('error', 'Cohort generation failed', streamErr);
+        setAudienceState('input');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast(
+        'error',
+        'Could not reach the simulation engine',
+        err instanceof Error ? err.message : 'Try again in a moment.',
+      );
+      setAudienceState('input');
+    }
+  };
+
   const handleSubmit = async () => {
     setValidationError('');
     if (!canSubmit) {
@@ -150,20 +217,21 @@ export default function ProductFlowABSimulationPage() {
       if (!variantA || !variantB) msg = 'Upload both Variant A and Variant B screens.';
       else if (resolvedObjective.length < 10)
         msg = 'Pick a preset or write at least 10 characters for the objective.';
-      else if (!audienceTemplateId) msg = 'Pick an audience template to continue.';
+      else if (audienceState === 'input')
+        msg = 'Generate cohort segments and pick 5 to continue.';
+      else if (audienceState === 'loading')
+        msg = 'Hold on a few seconds while we generate the cohorts.';
+      else if (selectedSegmentIds.length !== 5)
+        msg = `Pick exactly 5 cohorts (currently selected ${selectedSegmentIds.length}).`;
       setValidationError(msg);
       setShake(true);
       setTimeout(() => setShake(false), 400);
       return;
     }
-    if (!userId) {
+    if (!userId || !simulationId) {
       showToast('error', 'Not signed in', 'Please sign in to run a simulation.');
       return;
     }
-
-    const selectedTemplate = templates.find((t) => t.id === audienceTemplateId);
-    const audienceText =
-      selectedTemplate?.target_group_seed || selectedTemplate?.name || '';
 
     const runName = name.trim() || `A/B · ${new Date().toLocaleString()}`;
 
@@ -218,15 +286,11 @@ export default function ProductFlowABSimulationPage() {
 
       let res: Response;
       try {
-        res = await triggerProductFlowComparatorSimulation(userId, {
-          name: runName,
-          audience: audienceText,
-          numPersonas: NUM_PERSONAS_PER_VARIANT,
-          optimizeMetric: 'activation',
+        res = await runAbWithSegments(simulationId, {
+          selectedSegmentIds,
           selectedFolderIds: [folderA.id, folderB.id],
-          audienceTemplateId,
-          poolId: audienceTemplateId,
-          objective: resolvedObjective,
+          optimizeMetric: 'activation',
+          name: runName,
         });
       } catch (e) {
         throw new Error(`Couldn't start the simulation: ${e instanceof Error ? e.message : 'unknown error'}`);
@@ -243,6 +307,18 @@ export default function ProductFlowABSimulationPage() {
             detail?.message ||
               `You need ${detail?.required ?? '?'} credits but have ${detail?.available ?? 0}. Visit /pricing to upgrade.`,
           );
+          return;
+        }
+        if (res.status === 410) {
+          showToast(
+            'error',
+            'Cohort selection expired',
+            'Your 9-tile picker timed out. Regenerate cohorts to continue.',
+          );
+          setAudienceState('input');
+          setSimulationId(undefined);
+          setGeneratedSegments([]);
+          setSelectedSegmentIds([]);
           return;
         }
         const text = await res.text();
@@ -450,58 +526,30 @@ export default function ProductFlowABSimulationPage() {
 
               <div className="border-t border-[#F3F4F6] my-6" />
 
-              {/* Audience template picker (templates only — no free-text mode) */}
+              {/* Audience: freeform description → 9-tile picker → pick 5. Same
+                  pattern as the single-flow wizard, hits POST /start-product-flow
+                  for phase 1 and runAbWithSegments for phase 2. */}
               <div>
                 <label className="block text-[14px] font-semibold text-[#1A1A1A] mb-2">
-                  Audience <span className="text-[#EF4444]">*</span>
+                  Target audience <span className="text-[#EF4444]">*</span>
                 </label>
                 <p className="text-[13px] text-[#6B7280] mb-4">
-                  Pick a curated template, pre-cached for speed.
+                  Describe your power users. Apriori proposes 9 candidate cohorts under one matched pool, you pick 5 to drive the A/B.
                 </p>
-                {templates.length === 0 ? (
-                  <div className="bg-[#FAFAFA] border-[1.5px] border-dashed border-[#E5E7EB] rounded-xl p-6 text-center">
-                    <Loader2 className="w-5 h-5 animate-spin text-[#9CA3AF] mx-auto" />
-                    <p className="text-[13px] text-[#9CA3AF] mt-2">Loading templates…</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {templates.map((tpl) => {
-                      const isSelected = audienceTemplateId === tpl.id;
-                      return (
-                        <button
-                          key={tpl.id}
-                          type="button"
-                          onClick={() => setAudienceTemplateId(tpl.id)}
-                          className={`
-                            text-left rounded-xl border-[1.5px] px-[18px] py-4 transition-all duration-150 cursor-pointer flex items-start gap-3
-                            ${
-                              isSelected
-                                ? 'border-[#1F2937] bg-[#F3F4F6]'
-                                : 'border-[#E5E7EB] bg-white hover:border-[#1F2937] hover:bg-[#F3F4F6]'
-                            }
-                          `}
-                        >
-                          <div className="mt-0.5 flex-shrink-0">
-                            <div
-                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
-                                ${isSelected ? 'border-[#1F2937] bg-[#1F2937]' : 'border-[#D1D5DB] bg-white'}`}
-                            >
-                              {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
-                            </div>
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-[14px] font-semibold text-[#1A1A1A] truncate">
-                              {tpl.name}
-                            </p>
-                            <p className="text-[12px] text-[#6B7280] mt-0.5 leading-[1.5] line-clamp-2">
-                              {tpl.description}
-                            </p>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
+
+                <AudiencePicker
+                  description={description}
+                  setDescription={setDescription}
+                  audienceState={audienceState}
+                  setAudienceState={setAudienceState}
+                  generatedSegments={generatedSegments}
+                  setGeneratedSegments={setGeneratedSegments}
+                  selectedSegmentIds={selectedSegmentIds}
+                  setSelectedSegmentIds={setSelectedSegmentIds}
+                  poolName={poolName}
+                  setSimulationId={setSimulationId}
+                  onGenerate={generateSegments}
+                />
               </div>
 
               {validationError && (
@@ -642,6 +690,200 @@ function ObjectiveOption({ label, selected, onSelect }: ObjectiveOptionProps) {
         </span>
       </div>
     </button>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────
+   Audience picker — freeform input + 9-tile matrix
+   ──────────────────────────────────────────────────────────────── */
+
+interface AudiencePickerProps {
+  description: string;
+  setDescription: (v: string) => void;
+  audienceState: 'input' | 'loading' | 'picking';
+  setAudienceState: (s: 'input' | 'loading' | 'picking') => void;
+  generatedSegments: GeneratedSegmentSummary[];
+  setGeneratedSegments: (segs: GeneratedSegmentSummary[]) => void;
+  selectedSegmentIds: string[];
+  setSelectedSegmentIds: (ids: string[] | ((prev: string[]) => string[])) => void;
+  poolName?: string;
+  setSimulationId: (id: string | undefined) => void;
+  onGenerate: () => Promise<void>;
+}
+
+function AudiencePicker({
+  description,
+  setDescription,
+  audienceState,
+  setAudienceState,
+  generatedSegments,
+  setGeneratedSegments,
+  selectedSegmentIds,
+  setSelectedSegmentIds,
+  poolName,
+  setSimulationId,
+  onGenerate,
+}: AudiencePickerProps) {
+  const [expandedTileId, setExpandedTileId] = useState<string | null>(null);
+
+  if (audienceState === 'loading') {
+    return (
+      <div>
+        <div className="mb-3 text-[13px] text-[#6B7280] flex items-center gap-2">
+          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          Discovering 9 cohorts in your audience. This takes about 12 seconds.
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          {Array.from({ length: 9 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-[88px] rounded-[10px] border border-[#E5E7EB] bg-[#FAFAFA] animate-pulse"
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (audienceState === 'picking' && generatedSegments.length > 0) {
+    const selectedCount = selectedSegmentIds.length;
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
+          <p className="text-[13px] text-[#6B7280]">
+            Pick the 5 cohorts that match your real power users. Tap a tile for details.
+            {poolName && (
+              <span className="text-[#9CA3AF]"> All within: {poolName}.</span>
+            )}
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setAudienceState('input');
+              setGeneratedSegments([]);
+              setSelectedSegmentIds([]);
+              setSimulationId(undefined);
+            }}
+            className="text-[12px] font-medium text-[#6B7280] hover:text-[#1A1A1A] underline-offset-2 hover:underline"
+          >
+            Edit description
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          {generatedSegments.map((seg) => {
+            const isSelected = selectedSegmentIds.includes(seg.id);
+            const isExpanded = expandedTileId === seg.id;
+            const limitReached = selectedCount >= 5 && !isSelected;
+            return (
+              <div
+                key={seg.id}
+                className={`rounded-[10px] border-[1.5px] transition-all overflow-hidden ${
+                  isSelected
+                    ? 'border-[#1F2937] bg-[#F3F4F6]'
+                    : limitReached
+                      ? 'border-[#E5E7EB] bg-[#FAFAFA] opacity-60'
+                      : 'border-[#E5E7EB] bg-white hover:border-[#1F2937]'
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isSelected) {
+                      setSelectedSegmentIds((prev) => prev.filter((id) => id !== seg.id));
+                    } else if (!limitReached) {
+                      setSelectedSegmentIds((prev) => [...prev, seg.id]);
+                    } else {
+                      setExpandedTileId((prev) => (prev === seg.id ? null : seg.id));
+                    }
+                  }}
+                  disabled={limitReached && !isSelected}
+                  className="w-full text-left px-3 py-2.5 flex items-start gap-2"
+                >
+                  <div
+                    className={`mt-0.5 w-4 h-4 rounded-md border-[1.5px] flex items-center justify-center shrink-0 ${
+                      isSelected ? 'border-[#1F2937] bg-[#1F2937]' : 'border-[#D1D5DB] bg-white'
+                    }`}
+                  >
+                    {isSelected && <CheckCircle className="w-3 h-3 text-white" />}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[13px] font-semibold text-[#1A1A1A] leading-[1.3]">
+                      {seg.name}
+                    </p>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setExpandedTileId((prev) => (prev === seg.id ? null : seg.id));
+                  }}
+                  className="w-full px-3 pb-2 text-left text-[11px] text-[#6B7280] hover:text-[#1A1A1A] flex items-center gap-1"
+                >
+                  <ChevronDown
+                    className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                  />
+                  {isExpanded ? 'Hide details' : 'Show details'}
+                </button>
+                {isExpanded && (
+                  <div className="px-3 pb-3 border-t border-[#F3F4F6]">
+                    <p className="text-[12px] text-[#4B5563] mt-2 leading-[1.55]">{seg.description}</p>
+                    <p className="mt-2 text-[10px] uppercase tracking-wider text-[#9CA3AF]">
+                      Pool: <span className="font-medium text-[#6B7280]">{seg.pool_name}</span>
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <p className="mt-3 text-[13px] font-medium text-[#1A1A1A]">
+          Selected:{' '}
+          <span className={selectedCount === 5 ? 'text-emerald-700' : 'text-[#1F2937]'}>
+            {selectedCount}
+          </span>{' '}
+          / 5
+        </p>
+      </div>
+    );
+  }
+
+  // Default: input
+  return (
+    <div>
+      <textarea
+        value={description}
+        onChange={(e) => {
+          setDescription(e.target.value);
+          if (audienceState !== 'input') setAudienceState('input');
+        }}
+        placeholder="Tech-savvy millennials in metro India who use UPI for everything and want to start investing in mutual funds without overwhelming research."
+        rows={4}
+        maxLength={800}
+        className="w-full text-[15px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[10px] px-4 py-3 focus:border-[#1F2937] focus:shadow-[0_0_0_3px_rgba(31,41,55,0.12)] focus:outline-none transition-all resize-none"
+      />
+      <div className="flex items-center justify-between mt-2">
+        <p className="text-[12px] text-[#6B7280]">
+          Apriori will propose 9 candidate cohorts. You&apos;ll pick the 5 that match your real power users.
+        </p>
+        <p className="text-[11px] text-[#9CA3AF]">{description.length} / 800</p>
+      </div>
+      <button
+        type="button"
+        onClick={() => void onGenerate()}
+        disabled={description.trim().length < 10}
+        className={`mt-4 inline-flex items-center gap-2 text-[14px] font-semibold rounded-[10px] px-5 py-2.5 transition-all ${
+          description.trim().length >= 10
+            ? 'bg-[#1F2937] text-white hover:bg-[#111827]'
+            : 'bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed'
+        }`}
+      >
+        <Sparkles className="w-4 h-4" />
+        Generate cohort segments
+      </button>
+    </div>
   );
 }
 
