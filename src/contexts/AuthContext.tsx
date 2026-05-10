@@ -95,11 +95,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     let cancelled = false;
 
-    supabase.auth.getSession().then(({ data }) => {
-      if (cancelled) return;
-      setSession(data.session ?? null);
-      setLoading(false);
-    });
+    supabase.auth.getSession()
+      .then(({ data }) => {
+        if (cancelled) return;
+        setSession(data.session ?? null);
+      })
+      .catch((err) => {
+        // Network failure / Supabase unreachable. Don't deadlock loading=true
+        // forever — the header would render blank (no Sign In button).
+        if (typeof window !== "undefined") {
+          console.warn("[AuthProvider] getSession failed:", err);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);

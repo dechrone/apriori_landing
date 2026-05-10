@@ -45,6 +45,13 @@ export interface RunWithSegmentsPayload {
   audienceName?: string | null;
 }
 
+export interface RunAbWithSegmentsPayload {
+  selectedSegmentIds: string[];      // exactly 5
+  selectedFolderIds: string[];       // 2 for A/B (Variant A + B)
+  optimizeMetric?: string;
+  name?: string | null;
+}
+
 export interface StartFromSavedAudiencePayload {
   audienceId: string;
   name: string;
@@ -165,6 +172,30 @@ export async function runWithSegments(
   try {
     return await fetch(
       `${BASE_URL}/api/v1/simulations/${encodeURIComponent(simulationId)}/run-with-segments`,
+      {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+      }
+    );
+  } catch {
+    throw new Error(
+      `Cannot connect to the backend server at ${BASE_URL}. Please check your network and try again.`
+    );
+  }
+}
+
+/** POST /api/v1/simulations/{sim_id}/run-ab-with-segments — phase 2 (single-screen A/B).
+ * Reuses the same phase 1 (`startProductFlow`) as single-flow; then runs the
+ * comparator with the 5 picked segments against the 2 variant folders. */
+export async function runAbWithSegments(
+  simulationId: string,
+  payload: RunAbWithSegmentsPayload
+): Promise<Response> {
+  const headers = await authHeaders();
+  try {
+    return await fetch(
+      `${BASE_URL}/api/v1/simulations/${encodeURIComponent(simulationId)}/run-ab-with-segments`,
       {
         method: "POST",
         headers,

@@ -277,7 +277,7 @@ function VerdictBanner({ data, variants, segmentVerdicts, personaCount }: { data
           <div style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, padding: "10px 16px", flex: "1 1 260px" }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: winnerColor, marginBottom: 4 }}>Confidence</p>
             <p style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", lineHeight: 1.5 }}>
-              {data.confidence.personas_preferring_winner} of {data.confidence.total_personas} persona sub-segments had their best experience in {winner?.label ?? "the recommended variant"}
+              {data.confidence.personas_preferring_winner} of {data.confidence.total_personas} personas had their best experience in {winner?.label ?? "the recommended variant"}
             </p>
           </div>
           {dissentingDetails.length > 0 && (
