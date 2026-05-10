@@ -242,8 +242,12 @@ export default function ProductFlowABSimulationPage() {
       setTimeout(() => setShake(false), 400);
       return;
     }
-    if (!userId || !simulationId) {
+    if (!userId) {
       showToast('error', 'Not signed in', 'Please sign in to run a simulation.');
+      return;
+    }
+    if (!simulationId) {
+      showToast('error', 'Audience missing', 'Generate cohort segments and pick 5 to continue.');
       return;
     }
 
