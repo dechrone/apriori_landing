@@ -81,7 +81,6 @@ export default function ProductFlowABSimulationPage() {
   // Audience-segments state — mirrors product-flow's freeform → 9-tile picker.
   // Phase 1 (`startProductFlow`) generates 9 segment tiles from `description`;
   // user picks 5; phase 2 (`runAbWithSegments`) runs the comparator.
-  type AudienceState = 'input' | 'loading' | 'picking';
   const [description, setDescription] = useState('');
   const [audienceState, setAudienceState] = useState<AudienceState>('input');
   const [simulationId, setSimulationId] = useState<string | undefined>();
