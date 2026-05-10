@@ -46,6 +46,12 @@ interface PendingVariant {
   previewUrl: string;
 }
 
+/** Audience-segments wizard sub-state inside Step 1.
+ *  - input:    user is typing the freeform description
+ *  - loading:  phase 1 NDJSON streaming; 9 skeleton tiles
+ *  - picking:  9 tiles populated; user must select exactly 5 */
+type AudienceState = 'input' | 'loading' | 'picking';
+
 export default function ProductFlowABSimulationPage() {
   const { toggleMobileMenu } = useAppShell();
   const { showToast } = useToast();
