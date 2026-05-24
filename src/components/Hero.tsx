@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { PersonaField } from "./PersonaField";
+import { BackgroundSquares } from "./BackgroundSquares";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -30,6 +31,16 @@ const itemVariants = {
 export function Hero() {
   return (
     <section className="relative pt-24 pb-20 md:pt-32 md:pb-28 min-h-[85vh] flex items-center overflow-hidden">
+      {/* Animated square-grid background with radial fade */}
+      <BackgroundSquares
+        squareColor="#1A1714"
+        squareSize={5}
+        spacing={32}
+        opacity={0.7}
+        amplitude={8}
+        speed={0.015}
+      />
+
       {/* Persona grid on the right - desktop only */}
       <PersonaField />
 
