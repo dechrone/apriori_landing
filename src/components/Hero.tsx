@@ -64,16 +64,6 @@ export function Hero() {
         />
       </div>
 
-      <div
-        className="absolute inset-0 w-full h-full bg-black pointer-events-none"
-        style={{
-          maskImage:
-            "radial-gradient(ellipse 90% 80% at 50% 50%, transparent 60%, black 95%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 90% 80% at 50% 50%, transparent 60%, black 95%)",
-        }}
-      />
-
       <TaggedSparkle side="left" cycleSeconds={6} driftSeconds={28} startDelay={0.8} />
       <TaggedSparkle side="right" cycleSeconds={6} driftSeconds={32} startDelay={2.4} />
 
