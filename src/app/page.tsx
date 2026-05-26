@@ -9,7 +9,7 @@ import { FinalCTA } from "@/components/FinalCTA";
 
 export default function Home() {
   return (
-    <main className="landing-light relative min-h-screen">
+    <main className="landing-dark relative min-h-screen bg-black">
       <Hero />
       <TheProblem />
       <WorkflowSteps />
@@ -26,7 +26,7 @@ export default function Home() {
             <div>
               <div
                 className="text-sm font-semibold tracking-[0.15em] uppercase mb-3"
-                style={{ color: "#B8860B" }}
+                style={{ color: "#F5D76E" }}
               >
                 APRIORI
               </div>

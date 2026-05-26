@@ -17,7 +17,7 @@ export function FinalCTA() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: "radial-gradient(ellipse at 30% 50%, rgba(184, 134, 11, 0.03) 0%, transparent 60%)",
+          background: "radial-gradient(ellipse at 30% 50%, rgba(245, 215, 110, 0.07) 0%, transparent 60%)",
         }}
       />
 
@@ -44,16 +44,20 @@ export function FinalCTA() {
 
           <a
             href="/signup"
-            className="group inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium text-sm text-white transition-all duration-200 hover:shadow-lg"
-            style={{ backgroundColor: "#B8860B" }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#9A7209")}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#B8860B")}
+            className="group inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 hover:shadow-lg cursor-pointer"
+            style={{
+              backgroundColor: "#F5D76E",
+              color: "#0A0A0A",
+              boxShadow: "0 0 30px rgba(245, 215, 110, 0.2)",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#FFE680")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#F5D76E")}
           >
             Run a Free Simulation
             <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
           </a>
 
-          <p className="mt-8 text-xs" style={{ color: "#9C9488" }}>
+          <p className="mt-8 text-xs" style={{ color: "#7A7368" }}>
             Working with design partners in fintech and consumer apps.
           </p>
         </motion.div>

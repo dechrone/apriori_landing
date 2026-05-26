@@ -59,21 +59,21 @@ export function WhatYouGet() {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.4, delay: 0.1 + index * 0.06 }}
               className="group p-6 rounded-lg border bg-bg-secondary transition-all duration-300 cursor-default"
-              style={{ borderColor: "#E8E2D8" }}
+              style={{ borderColor: "#1F1A12", backgroundColor: "#0B0907" }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "#B8860B";
-                e.currentTarget.style.boxShadow = "0 4px 16px rgba(184, 134, 11, 0.08)";
+                e.currentTarget.style.borderColor = "rgba(245, 215, 110, 0.35)";
+                e.currentTarget.style.boxShadow = "0 4px 16px rgba(245, 215, 110, 0.12)";
                 e.currentTarget.style.transform = "translateY(-2px)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "#E8E2D8";
+                e.currentTarget.style.borderColor = "#1F1A12";
                 e.currentTarget.style.boxShadow = "none";
                 e.currentTarget.style.transform = "translateY(0)";
               }}
             >
               <div
                 className="w-1.5 h-1.5 rounded-full mb-4 transition-transform duration-300 group-hover:scale-150"
-                style={{ backgroundColor: "#B8860B" }}
+                style={{ backgroundColor: "#F5D76E", boxShadow: "0 0 8px rgba(245, 215, 110, 0.6)" }}
               />
               <h3 className="text-sm font-semibold text-text-primary mb-2">
                 {item.title}

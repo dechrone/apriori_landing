@@ -29,7 +29,7 @@ export function ConditionalSiteHeader() {
   const isLandingPage = pathname === "/";
 
   return (
-    <div className={isLandingPage ? "landing-light" : ""}>
+    <div className={isLandingPage ? "landing-dark" : ""}>
       <SiteHeader />
     </div>
   );
