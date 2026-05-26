@@ -43,7 +43,7 @@ export function TheProblem() {
               lineHeight: 1.2,
             }}
           >
-            Product teams fly blind on the <span style={{ color: "#B8860B" }}>why</span>.
+            Product teams fly blind on the <span style={{ color: "#F5D76E" }}>why</span>.
           </h2>
           <p className="text-text-secondary max-w-[600px]" style={{ fontSize: "1rem", lineHeight: 1.7 }}>
             Analytics tells you where users drop off. Session replays show you clicks. User interviews give you 5 opinions in 3 weeks. None of them tell you why different types of users behave differently in your flow. That gap costs you engineering cycles, lost users, and wrong bets.
@@ -58,21 +58,21 @@ export function TheProblem() {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.4, delay: 0.15 + index * 0.08 }}
               className="group relative p-6 rounded-lg border bg-bg-secondary transition-all duration-300 cursor-default"
-              style={{ borderColor: "#E8E2D8" }}
+              style={{ borderColor: "#1F1A12", backgroundColor: "#0B0907" }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "#B8860B";
-                e.currentTarget.style.boxShadow = "0 4px 16px rgba(184, 134, 11, 0.08)";
+                e.currentTarget.style.borderColor = "rgba(245, 215, 110, 0.35)";
+                e.currentTarget.style.boxShadow = "0 4px 16px rgba(245, 215, 110, 0.12)";
                 e.currentTarget.style.transform = "translateY(-2px)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "#E8E2D8";
+                e.currentTarget.style.borderColor = "#1F1A12";
                 e.currentTarget.style.boxShadow = "none";
                 e.currentTarget.style.transform = "translateY(0)";
               }}
             >
               <div
                 className="absolute left-0 top-4 bottom-4 w-[2px] rounded-full transition-all duration-300"
-                style={{ backgroundColor: "rgba(184, 134, 11, 0.2)" }}
+                style={{ backgroundColor: "rgba(245, 215, 110, 0.3)" }}
               />
               <h3 className="text-sm font-semibold text-text-primary mb-2 pl-3">
                 {point.title}

@@ -72,7 +72,7 @@ export function FAQ() {
                 >
                   <h3
                     className="text-[15px] font-medium transition-colors duration-200"
-                    style={{ color: isOpen ? "#B8860B" : "#1A1714" }}
+                    style={{ color: isOpen ? "#F5D76E" : "#F5E6A8" }}
                   >
                     {faq.question}
                   </h3>
@@ -84,7 +84,7 @@ export function FAQ() {
                     <ChevronDown
                       size={18}
                       className="transition-colors duration-200"
-                      style={{ color: isOpen ? "#B8860B" : "#9C9488" }}
+                      style={{ color: isOpen ? "#F5D76E" : "#7A7368" }}
                     />
                   </motion.div>
                 </button>

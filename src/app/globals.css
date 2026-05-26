@@ -757,6 +757,53 @@ body:has(.dashboard-theme) {
   background: #FDFCFA;
 }
 
+/* ===== LANDING DARK (black / yellow hero theme) ===== */
+.landing-dark {
+  --bg-primary: #000000;
+  --bg-secondary: #0B0907;
+  --bg-elevated: #0F0D0A;
+  --bg-hover: #161310;
+  --bg-input: #0F0D0A;
+  --bg-deep: #000000;
+  --bg-glass: rgba(245, 215, 110, 0.04);
+
+  --text-primary: #F5E6A8;
+  --text-secondary: #B8B0A0;
+  --text-tertiary: #7A7368;
+  --text-quaternary: #4D483F;
+  --text-inverse: #0A0A0A;
+
+  --border-subtle: #1F1A12;
+  --border-medium: #2F2718;
+  --border-strong: #3E3220;
+  --border-emphasis: rgba(245, 215, 110, 0.22);
+
+  --accent-gold: #E5B84B;
+  --accent-gold-hover: #F5D76E;
+  --accent-gold-dim: rgba(245, 215, 110, 0.08);
+  --accent-amber: #F5D76E;
+  --accent-amber-glow: rgba(245, 215, 110, 0.12);
+  --accent-amber-dim: rgba(245, 215, 110, 0.05);
+
+  --gradient-gold: linear-gradient(135deg, #F5D76E 0%, #E5B84B 100%);
+  --gradient-dark: linear-gradient(180deg, #000000 0%, #0B0907 100%);
+  --gradient-glow: radial-gradient(ellipse at 30% 50%, rgba(245, 215, 110, 0.06) 0%, transparent 60%);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-glass: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-glow-gold: 0 0 20px rgba(245, 215, 110, 0.18);
+  --shadow-amber-glow: 0 0 16px rgba(245, 215, 110, 0.14);
+  --shadow-amber-glow-sm: 0 0 10px rgba(245, 215, 110, 0.1);
+  --shadow-inner: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+
+  color: var(--text-primary);
+  background: #000000;
+}
+
 /* ===== FLOW ANALYSIS (PRD) THEME ===== */
 .flow-analysis {
   --fa-bg: #1A1917;

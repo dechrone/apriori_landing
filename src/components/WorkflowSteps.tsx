@@ -61,9 +61,9 @@ export function WorkflowSteps() {
               className="group flex flex-col p-6 rounded-lg border transition-all duration-300 cursor-default"
               style={{ borderColor: "transparent", backgroundColor: "transparent" }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "#E8E2D8";
-                e.currentTarget.style.backgroundColor = "#FFFFFF";
-                e.currentTarget.style.boxShadow = "0 4px 16px rgba(184, 134, 11, 0.06)";
+                e.currentTarget.style.borderColor = "rgba(245, 215, 110, 0.22)";
+                e.currentTarget.style.backgroundColor = "#0B0907";
+                e.currentTarget.style.boxShadow = "0 4px 16px rgba(245, 215, 110, 0.1)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor = "transparent";
@@ -74,8 +74,8 @@ export function WorkflowSteps() {
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold mb-4"
                 style={{
-                  backgroundColor: "rgba(184, 134, 11, 0.08)",
-                  color: "#B8860B",
+                  backgroundColor: "rgba(245, 215, 110, 0.1)",
+                  color: "#F5D76E",
                 }}
               >
                 {step.number}

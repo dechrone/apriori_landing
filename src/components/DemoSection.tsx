@@ -15,7 +15,7 @@ export function DemoSection() {
     <section
       ref={containerRef}
       className="py-20 md:py-28 border-t border-border-subtle"
-      style={{ backgroundColor: "#F8F6F1" }}
+      style={{ backgroundColor: "#0B0907" }}
     >
       <div className="max-w-[960px] mx-auto px-6 md:px-16">
         {/* Section Header */}
@@ -60,7 +60,7 @@ export function DemoSection() {
           <a
             href="/demo/univest"
             className="group inline-flex items-center gap-2 text-sm font-medium transition-all duration-200"
-            style={{ color: "#B8860B" }}
+            style={{ color: "#F5D76E" }}
           >
             View Full Report
             <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />

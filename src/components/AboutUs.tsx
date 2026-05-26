@@ -61,7 +61,7 @@ export function AboutUs() {
           >
             <div
               className="p-6 rounded-lg border"
-              style={{ borderColor: "#E8E2D8", backgroundColor: "#FDFCFA" }}
+              style={{ borderColor: "#1F1A12", backgroundColor: "#0B0907" }}
             >
               <h3 className="text-sm font-semibold text-text-primary mb-3">The team</h3>
               <p className="text-sm text-text-secondary leading-relaxed mb-4">
@@ -74,14 +74,14 @@ export function AboutUs() {
 
             <div
               className="p-6 rounded-lg border"
-              style={{ borderColor: "#E8E2D8", backgroundColor: "#FDFCFA" }}
+              style={{ borderColor: "#1F1A12", backgroundColor: "#0B0907" }}
             >
               <h3 className="text-sm font-semibold text-text-primary mb-3">What we believe</h3>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
                   <div
                     className="w-1.5 h-1.5 rounded-full mt-2 shrink-0"
-                    style={{ backgroundColor: "#B8860B" }}
+                    style={{ backgroundColor: "#F5D76E", boxShadow: "0 0 6px rgba(245, 215, 110, 0.5)" }}
                   />
                   <p className="text-sm text-text-secondary leading-relaxed">
                     Every product decision should be backed by evidence, not authority.
@@ -90,7 +90,7 @@ export function AboutUs() {
                 <li className="flex items-start gap-3">
                   <div
                     className="w-1.5 h-1.5 rounded-full mt-2 shrink-0"
-                    style={{ backgroundColor: "#B8860B" }}
+                    style={{ backgroundColor: "#F5D76E", boxShadow: "0 0 6px rgba(245, 215, 110, 0.5)" }}
                   />
                   <p className="text-sm text-text-secondary leading-relaxed">
                     Understanding users is not a luxury for funded teams. It should be fast, cheap, and available to anyone who ships product.
@@ -99,7 +99,7 @@ export function AboutUs() {
                 <li className="flex items-start gap-3">
                   <div
                     className="w-1.5 h-1.5 rounded-full mt-2 shrink-0"
-                    style={{ backgroundColor: "#B8860B" }}
+                    style={{ backgroundColor: "#F5D76E", boxShadow: "0 0 6px rgba(245, 215, 110, 0.5)" }}
                   />
                   <p className="text-sm text-text-secondary leading-relaxed">
                     Honesty compounds. We will always tell you what our simulations can and cannot do.
