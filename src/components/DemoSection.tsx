@@ -1,71 +1,59 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 import { HeroVideo } from "./HeroVideo";
 
 const DEMO_VIDEO_ID = "FaTOzN6DRQo";
 
 export function DemoSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(containerRef, { once: true, margin: "-80px" });
-
   return (
     <section
-      ref={containerRef}
-      className="py-20 md:py-28 border-t border-border-subtle"
+      className="border-t border-border-subtle overflow-hidden"
       style={{ backgroundColor: "#0B0907" }}
     >
-      <div className="max-w-[960px] mx-auto px-6 md:px-16">
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="mb-10"
-        >
-          <h2
-            className="text-text-primary mb-4"
-            style={{
-              fontSize: "clamp(1.5rem, 3vw, 2rem)",
-              fontWeight: 600,
-              letterSpacing: "-0.02em",
-              lineHeight: 1.2,
-            }}
-          >
-            See it in action.
-          </h2>
-          <p className="text-text-secondary max-w-[600px]" style={{ fontSize: "1rem", lineHeight: 1.7 }}>
-            We ran a simulation on Univest&apos;s post-signup activation flow with 50 personas. The result: users hesitated when the offer looked free but the ₹1 activation price was not visible upfront. Making price, proof, and the CTA clearer lifted conversion from 22% to 44%.
-          </p>
-        </motion.div>
+      <ContainerScroll
+        titleComponent={
+          <div className="px-6 md:px-12">
+            <h2
+              className="mb-5"
+              style={{
+                color: "#F5E6A8",
+                fontSize: "clamp(1.75rem, 4vw, 2.75rem)",
+                fontWeight: 600,
+                letterSpacing: "-0.02em",
+                lineHeight: 1.15,
+              }}
+            >
+              See it in action.
+            </h2>
+            <p
+              className="mx-auto max-w-[640px]"
+              style={{
+                color: "#A8A294",
+                fontSize: "clamp(0.95rem, 1.2vw, 1.05rem)",
+                lineHeight: 1.65,
+              }}
+            >
+              We ran a simulation on Univest&apos;s post-signup activation flow with 50 personas. The result: users hesitated when the offer looked free but the ₹1 activation price was not visible upfront. Making price, proof, and the CTA clearer lifted conversion from 22% to 44%.
+            </p>
+          </div>
+        }
+      >
+        <div className="h-full w-full">
+          <HeroVideo videoId={DEMO_VIDEO_ID} className="h-full" />
+        </div>
+      </ContainerScroll>
 
-        {/* Video */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.15 }}
-          className="mb-8"
+      <div className="max-w-[960px] mx-auto px-6 md:px-16 pb-20 md:pb-24 -mt-24 md:-mt-40 text-center">
+        <a
+          href="/demo/univest"
+          className="group inline-flex items-center gap-2 text-sm font-medium transition-all duration-200 cursor-pointer"
+          style={{ color: "#F5D76E" }}
         >
-          <HeroVideo videoId={DEMO_VIDEO_ID} />
-        </motion.div>
-
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.4, delay: 0.3 }}
-        >
-          <a
-            href="/demo/univest"
-            className="group inline-flex items-center gap-2 text-sm font-medium transition-all duration-200"
-            style={{ color: "#F5D76E" }}
-          >
-            View Full Report
-            <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
-          </a>
-        </motion.div>
+          View Full Report
+          <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
+        </a>
       </div>
     </section>
   );

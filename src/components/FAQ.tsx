@@ -17,10 +17,6 @@ const faqs = [
     question: "What do you need from us to start?",
     answer: "Product flow screenshots and a brief on your target audience. That is it. First simulation results come back within 24 hours.",
   },
-  {
-    question: "What does it cost?",
-    answer: "First simulation is free. After that, pay-per-simulation at 10K INR or a monthly retainer at 50K INR for unlimited runs.",
-  },
 ];
 
 export function FAQ() {
