@@ -20,6 +20,7 @@ import {
   fetchSimulationById,
 } from "@/lib/backend-simulation";
 import { useToast } from "@/components/ui/Toast";
+import { SimulationChat } from "@/components/simulation-chat";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -259,6 +260,11 @@ export default function SimulationDetailsPage() {
         <div className={`${playfair.variable} ${dmSans.variable}`}>
           <FlowAnalysisView data={flowData} simulationData={result} />
         </div>
+        <SimulationChat
+          simulationId={result.simulation_id ?? simulation.simulationId ?? null}
+          title={simulation.name || result.flow_name || "Product Flow"}
+          subtitle={simulation.timestamp}
+        />
       </>
     );
   }

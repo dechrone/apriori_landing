@@ -11,6 +11,10 @@ export type ChatStatus = "idle" | "streaming" | "error";
 
 export interface UseSimulationChatResult {
   messages: ChatMessage[];
+  /** The in-flight assistant draft. Empty unless status === "streaming" and at
+   * least one token has arrived. The UI renders it as a transient last bubble
+   * while `messages` only contains completed turns. */
+  streamingDraft: string;
   status: ChatStatus;
   error: string | null;
   send: (question: string) => void;
@@ -33,15 +37,17 @@ export function useSimulationChat(
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [status, setStatus] = useState<ChatStatus>("idle");
   const [error, setError] = useState<string | null>(null);
-
-  // Live assistant draft that mutates per delta, surfaced to the UI by the
-  // `messages` list when streaming finishes (or is aborted). While streaming,
-  // we drive renders via `streamingDraft` + the tick.
+  // Live assistant draft that mutates per delta. While streaming the UI
+  // renders `streamingDraft` as a transient last bubble; on done/abort it
+  // gets folded into `messages` and cleared.
   const [streamingDraft, setStreamingDraft] = useState<string>("");
   const draftRef = useRef<string>("");
   const abortRef = useRef<AbortController | null>(null);
 
-  // Reset everything when the simulation id changes.
+  // Reset on simulationId change. Calls setState + touches refs because the
+  // abort controller can't live in state and the chat history must clear when
+  // the user navigates to a different sim. Lint flags the setState-in-effect
+  // pattern here, matching the codebase-wide convention for prop-keyed resets.
   useEffect(() => {
     abortRef.current?.abort();
     abortRef.current = null;
@@ -144,20 +150,17 @@ export function useSimulationChat(
     setError(null);
   }, []);
 
-  // Surface the in-flight draft as a transient last message for the UI.
-  // We don't write it into `messages` proper (so callers iterating
-  // messages don't see a half-baked assistant turn) — the panel reads
-  // `streamingDraft` separately and renders it after the message list.
-  const result: UseSimulationChatResult = {
+  // Surface the in-flight draft as a separate field. We don't merge it into
+  // `messages` (so callers iterating completed turns don't see a half-baked
+  // assistant entry) — the panel reads `streamingDraft` and renders it as a
+  // transient last bubble.
+  return {
     messages,
+    streamingDraft,
     status,
     error,
     send,
     stop,
     reset,
   };
-
-  // Expose the streaming draft as a synthetic last "message" when active.
-  // The UI knows status === "streaming" implies draft is the live bubble.
-  return Object.assign(result, { _streamingDraft: streamingDraft }) as UseSimulationChatResult;
 }

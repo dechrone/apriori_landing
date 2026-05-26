@@ -14,6 +14,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 import type { AbReport, SynthesisReadyData, DesignCombinerReadyData } from "@/types/ab-report";
 import { AbReportView } from "@/components/ab-report/AbReportView";
 import { ArrowLeft } from "lucide-react";
+import { SimulationChat } from "@/components/simulation-chat";
 
 export default function ProductFlowComparatorResultsPage() {
   const { toggleMobileMenu } = useAppShell();
@@ -169,10 +170,22 @@ export default function ProductFlowComparatorResultsPage() {
   }
 
   return (
-    <AbReportView
-      data={data}
-      synthesis={synthesis ?? null}
-      designCombiner={designCombiner ?? null}
-    />
+    <>
+      <AbReportView
+        data={data}
+        synthesis={synthesis ?? null}
+        designCombiner={designCombiner ?? null}
+      />
+      <SimulationChat
+        simulationId={data.meta?.simulation_id ?? simulation.simulationId ?? null}
+        title={simulation.name || "A/B Comparison"}
+        subtitle="A/B Comparator"
+        suggestions={[
+          "Which variant wins and why?",
+          "Where do the variants diverge most?",
+          "Which lever combos drove the biggest lift?",
+        ]}
+      />
+    </>
   );
 }
