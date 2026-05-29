@@ -505,17 +505,20 @@ alter table public.simulations
   add column if not exists retrieval_mode   text,
   add column if not exists public           boolean not null default false,
   add column if not exists public_share_id  text,
-  add column if not exists synthesis        jsonb,
-  -- design_combiner_ready output: lever-driven design synthesis. Includes
-  -- the Cloudinary URL for the combined variant PNG (combined_variant_image_url),
-  -- the full combiner result dict, and the input_summary describing what was
-  -- fused. Distinct from `synthesis` (which is the simul2design cascade) so
-  -- both pipelines can coexist on a single simulation row.
+  -- design_combiner terminal output: lever-driven design synthesis. Includes
+  -- the Supabase Storage URL for the combined variant PNG
+  -- (combined_variant_image_url), the full combiner result dict, and the
+  -- input_summary describing what was fused (null on skip/failure).
   add column if not exists design_combiner  jsonb,
   -- revalidation_ready output: validated_lift after re-simulating the combined
   -- variant against the same persona pool. Pro-tier surface; null when the
   -- revalidation flag was off or the combiner was skipped.
   add column if not exists revalidation     jsonb;
+
+-- The legacy `synthesis` column (simul2design Multiverse Synthesis cascade) was
+-- dropped on 2026-05 when the always-on design_combiner replaced it. Migrating
+-- an older Apriori deployment? Run:
+--   alter table public.simulations drop column if exists synthesis;
 
 create unique index if not exists simulations_user_sim_id_idx on public.simulations(user_id, simulation_id) where simulation_id is not null;
 create unique index if not exists simulations_public_share_idx on public.simulations(public_share_id) where public_share_id is not null;
@@ -543,7 +546,7 @@ alter table public.assets
 -- Supabase Storage — `apriori-assets` bucket
 --
 -- Single public bucket holds: user-uploaded screenshots, Figma frames,
--- simul2design variant renders, and design-combiner combined-variant PNGs.
+-- and design-combiner combined-variant PNGs.
 -- Public read mirrors the prior Cloudinary posture (URLs are unguessable
 -- enough that direct sharing is safe). Backend writes via the
 -- service-role key, which bypasses RLS on `storage.objects`.

@@ -11,7 +11,11 @@ import { useUser } from "@/contexts/UserContext";
 import { getSimulation } from "@/lib/db";
 import type { SimulationDoc } from "@/lib/db";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
-import type { AbReport, SynthesisReadyData, DesignCombinerReadyData } from "@/types/ab-report";
+import type { AbReport, DesignCombinerReadyData } from "@/types/ab-report";
+
+// The combiner runs right after comparison_ready. If it hasn't reported a
+// terminal state within this budget, flip the card out of its loading spinner.
+const COMBINER_STALL_BUDGET_MS = 5 * 60 * 1000;
 import { AbReportView } from "@/components/ab-report/AbReportView";
 import { ArrowLeft } from "lucide-react";
 import { SimulationChat } from "@/components/simulation-chat";
@@ -23,6 +27,7 @@ export default function ProductFlowComparatorResultsPage() {
   const id = typeof params?.id === "string" ? params.id : null;
   const [simulation, setSimulation] = useState<SimulationDoc | null>(null);
   const [loading, setLoading] = useState(true);
+  const [combinerStalled, setCombinerStalled] = useState(false);
 
   useEffect(() => {
     if (!userId || !profileReady || !id) {
@@ -42,12 +47,12 @@ export default function ProductFlowComparatorResultsPage() {
     };
   }, [userId, profileReady, id]);
 
-  // Subscribe to row updates so the simul2design synthesis (which arrives
-  // ~5 min AFTER the comparator finishes — long after the wizard redirected)
-  // reveals automatically. The backend writes `synthesis` server-side via
-  // update_simulation_synthesis on the synthesis_ready event. Realtime
-  // pushes the UPDATE to this open page; the V(N+1) section in
-  // AbReportView fades in once `synthesis` is non-null.
+  // Subscribe to row updates so the design combiner (which lands shortly
+  // after the comparator finishes — often after the wizard redirected) reveals
+  // automatically. The backend writes `design_combiner` server-side via
+  // update_simulation_design_combiner on the terminal combiner event. Realtime
+  // pushes the UPDATE to this open page; the WinningDesignCard in AbReportView
+  // swaps out of "Synthesising" once `design_combiner` is non-null.
   useEffect(() => {
     if (!userId || !id) return;
     const sb = getSupabaseBrowserClient();
@@ -68,7 +73,6 @@ export default function ProductFlowComparatorResultsPage() {
             if (!prev) return prev;
             return {
               ...prev,
-              synthesis: next.synthesis ?? prev.synthesis,
               designCombiner: next.design_combiner ?? prev.designCombiner,
               revalidation: next.revalidation ?? prev.revalidation,
               result: (next.result as unknown) ?? prev.result,
@@ -123,8 +127,22 @@ export default function ProductFlowComparatorResultsPage() {
     };
   }, [userId, id, simulation?.designCombiner, simulation?.createdAt, simulation]);
 
+  // Client-side stall guard for the combiner. Arm a one-shot timer: if no
+  // terminal `design_combiner` payload has arrived within the budget (measured
+  // from row creation), flip the card out of "Synthesising" so it can never
+  // hang forever. No reset needed — once any payload lands, WinningDesignCard
+  // reads its status directly and ignores `combinerStalled`.
+  useEffect(() => {
+    if (!simulation || simulation.designCombiner) return;
+    const created = simulation.createdAt
+      ? new Date(simulation.createdAt).getTime()
+      : Date.now();
+    const remaining = Math.max(0, COMBINER_STALL_BUDGET_MS - (Date.now() - created));
+    const t = setTimeout(() => setCombinerStalled(true), remaining);
+    return () => clearTimeout(t);
+  }, [simulation?.designCombiner, simulation?.createdAt, simulation]);
+
   const data = simulation?.result as AbReport | undefined;
-  const synthesis = simulation?.synthesis as SynthesisReadyData | undefined;
   const designCombiner = simulation?.designCombiner as DesignCombinerReadyData | undefined;
 
   if (loading) {
@@ -173,8 +191,8 @@ export default function ProductFlowComparatorResultsPage() {
     <>
       <AbReportView
         data={data}
-        synthesis={synthesis ?? null}
         designCombiner={designCombiner ?? null}
+        combinerStalled={combinerStalled}
       />
       <SimulationChat
         simulationId={data.meta?.simulation_id ?? simulation.simulationId ?? null}

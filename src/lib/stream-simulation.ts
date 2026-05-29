@@ -8,7 +8,6 @@ import type {
   AbReport,
   DesignCombinerReadyData,
   RevalidationReadyData,
-  SynthesisReadyData,
 } from "@/types/ab-report";
 
 /** A single tile in the 9-segment picker. The full GeneratedSegment also
@@ -119,23 +118,12 @@ export type SimulationEvent =
     }
   | { type: "comparison_ready"; data: AbReport }
   /**
-   * Multiverse Synthesis Engine (simul2design) follow-on. Arrives ~4-5 min
-   * AFTER comparison_ready when SIMUL2DESIGN_ENABLED is on in the backend.
-   * The wizard typically redirects on comparison_ready before this lands;
-   * the durable write is the server-side UPDATE to `public.simulations.synthesis`,
-   * which the results page reads via supabase realtime.
-   */
-  | { type: "synthesis_ready"; data: SynthesisReadyData }
-  | {
-      type: "synthesis_failed";
-      data: { message: string; comparison_id: string };
-    }
-  /**
-   * Lever-driven design combiner follow-on. Arrives ~2 min AFTER
-   * comparison_ready when APRIORI_DESIGN_COMBINER_ENABLED is on. Carries the
-   * Supabase Storage public URL of the fused variant PNG (`combined_variant_image_url`)
-   * so the results page can render it directly. Server also UPDATEs
-   * `public.simulations.design_combiner` so the URL survives refresh / share.
+   * Lever-driven design combiner follow-on. Runs after comparison_ready on
+   * every A/B + comparator run. `design_combiner_ready` carries the Supabase
+   * Storage public URL of the fused variant PNG (`combined_variant_image_url`)
+   * so the results page can render it directly; `skipped`/`failed` carry a
+   * message. The server UPDATEs `public.simulations.design_combiner` with a
+   * terminal payload for all three so the URL/status survives refresh / share.
    */
   | { type: "design_combiner_ready"; data: DesignCombinerReadyData }
   | {

@@ -102,10 +102,6 @@ export interface SimulationRow {
   timestamp_label: string | null;
   simulation_id: string | null;
   result: Json | null;
-  /** simul2design Multiverse Synthesis Engine output. Populated server-side by
-   * the comparator route on `synthesis_ready` (~5 min after `comparison_ready`).
-   * Null until the cascade runs. See SynthesisReadyData in @/types/ab-report. */
-  synthesis: Json | null;
   /** Lever-driven design combiner output. Populated server-side by the
    * comparator route on `design_combiner_ready` (~2 min after `comparison_ready`).
    * Carries `combined_variant_image_url` (Supabase Storage public URL), the full combiner

@@ -29,7 +29,7 @@ import { saveSimulation, getSimulations } from '@/lib/db';
 import { consumeNDJSONStream } from '@/lib/stream-simulation';
 import type { GeneratedSegmentSummary } from '@/lib/stream-simulation';
 import { OBJECTIVE_PRESETS, CUSTOM_OBJECTIVE_ID } from '@/data/objective-presets';
-import type { AbReport } from '@/types/ab-report';
+import type { AbReport, DesignCombinerReadyData } from '@/types/ab-report';
 import {
   SimulationRunningView,
   type RunningFlow,
@@ -350,6 +350,11 @@ export default function ProductFlowABSimulationPage() {
       }
 
       let comparisonData: AbReport | null = null;
+      // Combiner runs after comparison_ready but still inside the open stream,
+      // so it lands before saveSimulation (below) runs — capturing it here lets
+      // the results page paint the fused variant (or its terminal state) on
+      // first load instead of waiting for the backend UPDATE + realtime.
+      let designCombinerData: DesignCombinerReadyData | null = null;
       let streamError: string | null = null;
 
       // For the single-screen A/B page, flow_index 0 always maps to the
@@ -414,6 +419,23 @@ export default function ProductFlowABSimulationPage() {
         } else if (event.type === 'comparison_ready') {
           comparisonData = event.data;
           setStreamProgress((prev) => (prev ? { ...prev, phase: 'saving' } : null));
+        } else if (event.type === 'design_combiner_ready') {
+          designCombinerData = event.data;
+        } else if (
+          event.type === 'design_combiner_skipped' ||
+          event.type === 'design_combiner_failed'
+        ) {
+          // Terminal non-success outcome — capture a minimal payload so the
+          // results page leaves the "Synthesising" state on first load.
+          designCombinerData = {
+            comparison_id: event.data.comparison_id,
+            combined_variant_image_url: null,
+            input_summary: null,
+            result: {
+              status: event.type === 'design_combiner_skipped' ? 'skipped' : 'failed',
+              error: event.data.message ?? null,
+            },
+          };
         } else if (event.type === 'error') {
           streamError = event.data.message;
         }
@@ -438,6 +460,7 @@ export default function ProductFlowABSimulationPage() {
         timestamp: new Date().toLocaleDateString(undefined, { dateStyle: 'medium' }),
         simulationId: data.meta.simulation_id,
         result: data,
+        designCombiner: designCombinerData ?? undefined,
       });
       showToast('success', 'A/B complete', 'Redirecting to results.');
       router.push(`/simulations/product-flow-comparator/${docId}`);

@@ -37,7 +37,6 @@ import type {
   AbReport,
   AnnotatedScreenPair,
   PersonaSplit as PersonaSplitType,
-  SynthesisReadyData,
   DesignCombinerReadyData,
 } from "@/types/ab-report";
 import {
@@ -45,7 +44,6 @@ import {
   TabBar,
   SectionHeader,
   SectionDivider,
-  Pill,
   PersonaChip,
   QuoteLine,
 } from "./primitives";
@@ -395,198 +393,15 @@ function MonologueTileList({ items }: { items: AbReport["monologue_diff"] }) {
 
 interface AbReportViewProps {
   data: AbReport;
-  /** simul2design Multiverse Synthesis Engine output. Arrives ~5min after the
-   * comparator finishes, surfaced via supabase realtime. Null until then; the
-   * recommended-variant section is hidden in that case. */
-  synthesis?: SynthesisReadyData | null;
-  /** Lever-driven design combiner output. Arrives ~2min after the comparator
-   * via the design_combiner_ready event. Null until then; the combined-variant
-   * section is hidden in that case. */
+  /** Lever-driven design combiner output. Arrives after the comparator via the
+   * design_combiner_ready / _skipped / _failed events. Null until the first
+   * terminal event lands; the WinningDesignCard shows a "Synthesising" state
+   * until then and a terminal state (ready / failed / skipped) after. */
   designCombiner?: DesignCombinerReadyData | null;
-}
-
-/** Pull the first paragraph (up to 480 chars) out of a markdown blob. The
- * upstream spec_markdown leads with §0 Executive summary so this is the right
- * teaser to surface. Returns null if the markdown is empty. */
-function specBrief(md: string | null | undefined): string | null {
-  if (!md) return null;
-  const stripped = md.replace(/^<!--[\s\S]*?-->\s*/m, "").trim();
-  // First non-heading paragraph
-  const para = stripped
-    .split(/\n\s*\n/)
-    .map((p) => p.trim())
-    .find((p) => p && !p.startsWith("#"));
-  if (!para) return null;
-  if (para.length <= 480) return para;
-  return para.slice(0, 477).trimEnd() + "…";
-}
-
-function RecommendedVariantSection({ synthesis }: { synthesis: SynthesisReadyData }) {
-  const result = synthesis.result;
-  const imageUrl = synthesis.variant_image_url ?? result?.variant_image_url ?? null;
-  const brief = specBrief(result?.spec_markdown);
-  const adversaryObjections: Array<{ title: string; severity?: string; note?: string }> = (() => {
-    const ar = result?.adversary_review;
-    if (!ar || typeof ar !== "object") return [];
-    const list = (ar as Record<string, unknown>).objections;
-    if (!Array.isArray(list)) return [];
-    return list.slice(0, 3).map((o) => {
-      if (typeof o === "string") return { title: o };
-      if (o && typeof o === "object") {
-        const r = o as Record<string, unknown>;
-        return {
-          title: String(r.title ?? r.objection ?? r.summary ?? r.name ?? "Objection"),
-          severity: typeof r.severity === "string" ? r.severity : undefined,
-          note: typeof r.note === "string" ? r.note : (typeof r.detail === "string" ? r.detail : undefined),
-        };
-      }
-      return { title: "Objection" };
-    });
-  })();
-  const reviewCount = result?.cells_needing_review?.length ?? 0;
-
-  return (
-    <motion.div {...fadeUp}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-        <Sparkles size={16} style={{ color: T.accent }} />
-        <span style={{ fontSize: 11, fontWeight: 600, color: T.accent, letterSpacing: "0.16em", textTransform: "uppercase" }}>
-          Recommended next variant
-        </span>
-        <span style={{ fontSize: 11, color: T.text3 }}>
-          · simul2design synthesis · {result?.pipeline_version ?? "v0.2"}
-        </span>
-      </div>
-      <div
-        style={{
-          ...cardStyle,
-          padding: 0,
-          overflow: "hidden",
-          display: "grid",
-          gridTemplateColumns: "minmax(320px, 420px) 1fr",
-          gap: 0,
-        }}
-      >
-        {/* Left: phone-frame mockup */}
-        <div
-          style={{
-            background: "#F9FAFB",
-            borderRight: `0.5px solid ${T.hairline}`,
-            padding: 24,
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "center",
-          }}
-        >
-          {imageUrl ? (
-            <div
-              style={{
-                width: 320,
-                background: "#000",
-                borderRadius: 28,
-                overflow: "hidden",
-                boxShadow: "0 16px 48px rgba(0,0,0,0.18)",
-              }}
-            >
-              <img
-                src={imageUrl}
-                alt="V(N+1) recommended variant"
-                style={{ width: "100%", height: "auto", display: "block" }}
-              />
-            </div>
-          ) : (
-            <div
-              style={{
-                width: 320,
-                aspectRatio: "375 / 812",
-                borderRadius: 28,
-                background: "#EEEEEC",
-                border: `1px dashed ${T.hairline}`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: 16,
-                color: T.text3,
-                fontSize: 12,
-                textAlign: "center",
-              }}
-            >
-              Image generation unavailable.
-              <br />
-              Spec available below.
-            </div>
-          )}
-        </div>
-
-        {/* Right: spec summary */}
-        <div style={{ padding: "24px 28px", display: "flex", flexDirection: "column", gap: 18, minWidth: 0 }}>
-          {brief && (
-            <p style={{ fontSize: 14, lineHeight: 1.55, color: T.ink, margin: 0 }}>
-              {brief}
-            </p>
-          )}
-          {!brief && (
-            <p style={{ fontSize: 13, lineHeight: 1.55, color: T.text3, margin: 0, fontStyle: "italic" }}>
-              The cascade did not return a written brief. The image alone reflects the recommendation.
-            </p>
-          )}
-
-          {adversaryObjections.length > 0 && (
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: T.text3, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8 }}>
-                Adversary objections
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {adversaryObjections.map((o, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: 10,
-                      padding: "10px 12px",
-                      background: "#FEF7F4",
-                      border: `1px solid ${T.hairline}`,
-                      borderRadius: 8,
-                    }}
-                  >
-                    <AlertTriangle size={14} style={{ color: T.accent, flexShrink: 0, marginTop: 2 }} />
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: 13, fontWeight: 500, color: T.ink, lineHeight: 1.35 }}>
-                        {o.title}
-                        {o.severity && (
-                          <span style={{ marginLeft: 8, fontSize: 10, fontWeight: 600, color: T.text3, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                            {o.severity}
-                          </span>
-                        )}
-                      </div>
-                      {o.note && (
-                        <div style={{ fontSize: 12, color: T.text2, lineHeight: 1.4, marginTop: 2 }}>
-                          {o.note}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            <Pill intent="neutral">{result?.client_slug ?? "synthesis"}</Pill>
-            {typeof result?.estimated_cost_usd === "number" && (
-              <Pill intent="neutral">${result.estimated_cost_usd.toFixed(2)} cascade cost</Pill>
-            )}
-            {reviewCount > 0 && (
-              <Pill intent="warning">{reviewCount} cell{reviewCount === 1 ? "" : "s"} need review</Pill>
-            )}
-            {!result?.ready_for_synthesis && reviewCount === 0 && (
-              <Pill intent="neutral">Awaiting human review</Pill>
-            )}
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
+  /** True when the combiner hasn't reported a terminal state within the
+   * client-side budget — flips the WinningDesignCard out of its loading spinner
+   * into a neutral "timed out" state so it can't hang forever. */
+  combinerStalled?: boolean;
 }
 
 /**
@@ -661,17 +476,40 @@ function ShareReportButton({ simulationId }: { simulationId: string | null | und
   );
 }
 
-/* The hero card for "What to ship". Three real states, each pulled from
-   the design combiner payload shape. The right column is sized to fill
-   the height of the phone frame so the card never feels half-empty. */
-function WinningDesignCard({ payload }: { payload: DesignCombinerReadyData | null }) {
+/* The hero card for "What to ship". Reaches a terminal state (ready / failed /
+   skipped / timeout) so it never spins forever: `stalled` flips a stuck loading
+   card to a neutral timed-out state. State is pulled from the design combiner
+   payload; the right column fills the phone-frame height. */
+function WinningDesignCard({
+  payload,
+  stalled = false,
+}: {
+  payload: DesignCombinerReadyData | null;
+  stalled?: boolean;
+}) {
   const imageUrl = payload?.combined_variant_image_url ?? null;
   const status = payload?.result?.status;
   const summary = payload?.input_summary ?? null;
   const result = payload?.result ?? null;
 
-  const state: "loading" | "ready" | "failed" =
-    imageUrl ? "ready" : status === "failed" ? "failed" : "loading";
+  // Terminal as soon as we have an image (ready), an explicit skip, or a
+  // failure. `status === "ok"` with no URL means the upload failed, so treat
+  // it as failed rather than spinning. A stalled card with no terminal event
+  // yet flips to "timeout" so it can never hang on the spinner forever.
+  const state: "loading" | "ready" | "failed" | "skipped" | "timeout" =
+    imageUrl
+      ? "ready"
+      : status === "skipped"
+        ? "skipped"
+        : status === "failed" || status === "ok"
+          ? "failed"
+          : stalled
+            ? "timeout"
+            : "loading";
+
+  // Terminal states that show a placeholder rather than the fused screen.
+  const isError = state === "failed";
+  const isAlert = state === "failed" || state === "timeout";
 
   const totalElements =
     (summary?.winning_elements_a ?? 0) + (summary?.winning_elements_b ?? 0);
@@ -689,13 +527,17 @@ function WinningDesignCard({ payload }: { payload: DesignCombinerReadyData | nul
       ? `${Math.floor(renderSecs / 60)}m ${Math.round(renderSecs % 60)}s`
       : `${Math.round(renderSecs)}s`;
 
-  /* ---- Status badge in the top-right of the right column. ---- */
+  /* ---- Status badge in the top-right of the right column. No em dashes. ---- */
   const badge =
     state === "ready"
       ? { label: "Ready to ship", dot: "#10B981", text: "#065F46", bg: "#ECFDF5", ring: "#A7F3D0" }
       : state === "failed"
         ? { label: "Generation failed", dot: "#EF4444", text: "#991B1B", bg: "#FEF2F2", ring: "#FECACA" }
-        : { label: "Synthesising", dot: T.accent, text: T.accent, bg: "#FCE9E2", ring: "#F5C9BD" };
+        : state === "skipped"
+          ? { label: "No clear winner", dot: "#9CA3AF", text: "#374151", bg: "#F3F4F6", ring: "#E5E7EB" }
+          : state === "timeout"
+            ? { label: "Timed out", dot: "#F59E0B", text: "#92400E", bg: "#FFFBEB", ring: "#FDE68A" }
+            : { label: "Synthesising", dot: T.accent, text: T.accent, bg: "#FCE9E2", ring: "#F5C9BD" };
 
   /* ---- Headline + body, swapped per state. No em dashes. ---- */
   const heroTitle =
@@ -703,14 +545,22 @@ function WinningDesignCard({ payload }: { payload: DesignCombinerReadyData | nul
       ? "Your shipping candidate."
       : state === "failed"
         ? "We couldn't compose this one."
-        : "Stitching the winners into one screen.";
+        : state === "skipped"
+          ? "No single screen to compose."
+          : state === "timeout"
+            ? "Composition is taking longer than expected."
+            : "Stitching the winners into one screen.";
 
   const heroBody =
     state === "ready"
       ? "We composed the highest-converting copy, layout, and CTAs from each variant into a single screen you can hand to your engineering team."
       : state === "failed"
         ? "The design generator hit a snag. The keep list below still ships standalone, and you can re-run the comparator to retry the composition."
-        : "We're composing the highest-converting copy, layout, and CTAs from each variant into a single screen. This usually takes a couple of minutes.";
+        : state === "skipped"
+          ? "The variants didn't differ enough for a confident fused design. The keep list below still tells you what to ship."
+          : state === "timeout"
+            ? "The composed screen didn't finish in time. The keep list below still ships, and you can re-run the comparator to retry."
+            : "We're composing the highest-converting copy, layout, and CTAs from each variant into a single screen. This usually takes a couple of minutes.";
 
   return (
     <motion.div
@@ -796,8 +646,8 @@ function WinningDesignCard({ payload }: { payload: DesignCombinerReadyData | nul
                 width: 44,
                 height: 44,
                 borderRadius: 999,
-                background: state === "failed" ? "#FEF2F2" : "#FFFFFF",
-                border: `1px solid ${state === "failed" ? "#FECACA" : T.borderWarm}`,
+                background: isError ? "#FEF2F2" : "#FFFFFF",
+                border: `1px solid ${isError ? "#FECACA" : T.borderWarm}`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -805,8 +655,8 @@ function WinningDesignCard({ payload }: { payload: DesignCombinerReadyData | nul
                 zIndex: 1,
               }}
             >
-              {state === "failed" ? (
-                <AlertTriangle size={18} style={{ color: "#B91C1C" }} />
+              {isAlert ? (
+                <AlertTriangle size={18} style={{ color: isError ? "#B91C1C" : "#B45309" }} />
               ) : (
                 <Sparkles size={18} style={{ color: T.accent }} />
               )}
@@ -822,7 +672,13 @@ function WinningDesignCard({ payload }: { payload: DesignCombinerReadyData | nul
                 zIndex: 1,
               }}
             >
-              {state === "failed" ? "Composition unavailable" : "Composing preview"}
+              {state === "failed"
+                ? "Composition unavailable"
+                : state === "skipped"
+                  ? "Nothing to compose"
+                  : state === "timeout"
+                    ? "Still composing"
+                    : "Composing preview"}
             </div>
             <div
               style={{
@@ -836,7 +692,11 @@ function WinningDesignCard({ payload }: { payload: DesignCombinerReadyData | nul
             >
               {state === "failed"
                 ? "The fused screen will appear here on your next run."
-                : "The fused screen renders here when ready."}
+                : state === "skipped"
+                  ? "The variants were too close to fuse into one screen."
+                  : state === "timeout"
+                    ? "Re-run the comparator to retry the composition."
+                    : "The fused screen renders here when ready."}
             </div>
           </div>
         )}
@@ -921,7 +781,8 @@ function WinningDesignCard({ payload }: { payload: DesignCombinerReadyData | nul
           </p>
         </div>
 
-        {/* Body content swaps per state: timeline (loading) vs summary (ready) vs hint (failed) */}
+        {/* Body content swaps per state: timeline (loading) vs summary (ready)
+            vs a keep-list hint (failed / skipped / timeout). */}
         <div
           style={{
             background: "#FAFAF7",
@@ -951,7 +812,7 @@ function WinningDesignCard({ payload }: { payload: DesignCombinerReadyData | nul
               Composition complete. Open the design to inspect each fused element.
             </div>
           )}
-          {state === "failed" && (
+          {(state === "failed" || state === "skipped" || state === "timeout") && (
             <div style={{ fontSize: 13, color: T.text3, lineHeight: 1.6 }}>
               Inspect the keep list below. Each row is independently shippable, even without the composed screen.
             </div>
@@ -1175,7 +1036,7 @@ function ScreensTestedBlock({ pair, totalScreens }: { pair: AnnotatedScreenPair;
   );
 }
 
-export function AbReportView({ data, synthesis, designCombiner }: AbReportViewProps) {
+export function AbReportView({ data, designCombiner, combinerStalled }: AbReportViewProps) {
   const [activeTab, setActiveTab] = useState("overview");
   const screens = data.annotated_screens.screens ?? [];
 
@@ -1218,22 +1079,6 @@ export function AbReportView({ data, synthesis, designCombiner }: AbReportViewPr
       <div style={{ background: T.flowBg }}>
         {activeTab === "overview" && (
           <div style={{ maxWidth: 1280, margin: "0 auto", padding: "32px 24px 80px" }}>
-            {/* SECTION 0: RECOMMENDED V(N+1) — only when simul2design synthesis arrives */}
-            <AnimatePresence initial={false}>
-              {synthesis && (
-                <motion.div
-                  key="synthesis-section"
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.45 }}
-                  style={{ marginBottom: 32 }}
-                >
-                  <RecommendedVariantSection synthesis={synthesis} />
-                </motion.div>
-              )}
-            </AnimatePresence>
-
             {/* SECTION 1: VERDICT — winner + why only. Run metadata + screen
                 filename + confidence used to live as pills here; the user
                 explicitly asked for them removed (visual noise; not what the
@@ -1263,7 +1108,12 @@ export function AbReportView({ data, synthesis, designCombiner }: AbReportViewPr
                     title="What to ship"
                     subtitle="Specific elements to keep or kill, copy directly into your tracker."
                   />
-                  <WinningDesignCard payload={designCombiner ?? null} />
+                  {(data.lever_attribution || designCombiner) && (
+                    <WinningDesignCard
+                      payload={designCombiner ?? null}
+                      stalled={combinerStalled ?? false}
+                    />
+                  )}
                   <motion.div {...fadeUp} style={{ background: "#FFF", borderRadius: 12, border: "1px solid #E5E7EB", overflow: "visible", boxShadow: "0 4px 24px rgba(0,0,0,0.08), 0 1px 6px rgba(0,0,0,0.04)" }}>
                     <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
                       <colgroup>

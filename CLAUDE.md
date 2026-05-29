@@ -20,7 +20,7 @@ No test suite.
 
 - `/` — public landing (Hero, TheProblem, WorkflowSteps, WhatYouGet, DemoSection, FAQ, AboutUs, FinalCTA). CTAs route to `/signup`.
 - `/r/[shareId]` — **public** unauthenticated viewer for shared simulation reports.
-- `/demo/univest` — frozen founder-demo report linked from the public landing.
+- `/demo/univest` (+ `/demo/univest1`..`univest6`) and `/simulations/savesage/...` — frozen founder-demo reports.
 - `/signup`, `/joinwaitlist` — public signup / waitlist.
 - `/sign-in`, `/sign-up` — Supabase Auth pages (Google OAuth).
 - `/auth/callback` — OAuth redirect; exchanges `?code=` for a session cookie.
@@ -48,7 +48,7 @@ No test suite.
 
 ### A/B comparator: lever attribution
 
-The comparator results page (`/simulations/product-flow-comparator/[id]`) renders `AbReportView` which includes Section 02b "Winning lever combinations" between the per-screen overlay (02) and persona split (03). Section is hidden when the report's `lever_attribution` is null (legacy reports or runs where lever extraction couldn't produce an inventory). Schema: `LeverAttribution { top_combinations[], by_segment{}, notes }` with each `LeverCombination` carrying `levers[]` (lever_ids), `variant`, `persona_count`, `convert_rate`, `delta_vs_baseline`, optional `cohort`, and an LLM-written `interpretation`. The "How the screen landed" overlay (Section 02) reads the same `ScreenElement[]` shape it always did — backend produces principled per-element verdicts when an inventory is present, falls back to vision-LLM inference when not.
+The comparator results page (`/simulations/product-flow-comparator/[id]`) renders `AbReportView` as tabs (Overview / Deep Dive / Lever Analysis). Winning lever combinations live in the dedicated **Lever Analysis** tab (`src/components/ab-report/LeverAnalysisView.tsx`), not inline in Overview. The tab shows only when there is lever data — at least one screen carries a lever inventory OR `lever_attribution.top_combinations` is non-empty (a null/empty `lever_attribution` with no screen levers hides it). Schema: `LeverAttribution { top_combinations[], by_segment{}, notes }` with each `LeverCombination` carrying `levers[]` (lever_ids), `variant`, `persona_count`, `convert_rate`, `delta_vs_baseline`, a nullable `cohort` (null = global row), and an LLM-written `interpretation`. The "How the screen landed" overlay (Section 02 in the Overview tab) reads the same `ScreenElement[]` shape it always did — backend produces principled per-element verdicts when an inventory is present, falls back to vision-LLM inference when not.
 
 Image hosts: `next.config.ts::remotePatterns` whitelists `*.supabase.co` so user-uploaded variant screenshots render via `next/image` in the AB overlay. Assets live in the `apriori-assets` Supabase Storage bucket.
 
@@ -56,18 +56,20 @@ Image hosts: `next.config.ts::remotePatterns` whitelists `*.supabase.co` so user
 
 | Path | Purpose |
 |---|---|
-| `src/app/api/` | Route handlers: `upload-asset`, `delete-asset` (proxied to backend → Supabase Storage), `feedback`, `signup` |
+| `src/app/api/` | Route handlers: `feedback`, `signup` only. (Asset upload/delete go browser→FastAPI directly via `src/lib/assets-api.ts`; `/auth/callback` lives under `src/app/auth`.) |
 | `src/components/ui/` | Reusable base components |
-| `src/components/app/` | App shell (Sidebar, TopBar, AuthGuard, AppShell, ClientAppLayout) |
+| `src/components/app/` | App shell (Sidebar, TopBar, AuthGuard, AppShell, CreditBadge, TalkToUs, WelcomeModal). `ClientAppLayout.tsx` lives at `src/app/(app)/ClientAppLayout.tsx` |
 | `src/components/flow-analysis/` | Flow analysis result views + reading guide |
 | `src/components/comparator/`, `deep-dive/`, `SimulationOverview/`, `ab-report/` | Report sub-views |
-| `src/lib/supabase/` | `browser.ts` / `server.ts` / `admin.ts` clients + row types |
+| `src/components/figma/` | Figma OAuth import surface (rendered from settings + assets pages); calls FastAPI `/api/v1/figma/*` |
+| `src/components/simulation-chat/` | In-report chat panel (`ChatPanel`, `useSimulationChat`) on both result pages |
+| `src/lib/supabase/` | `browser.ts` / `server.ts` / `admin.ts` clients + `types.ts` (row types) |
 | `src/lib/db.ts` | Supabase data layer (profile, audiences, simulations, assets, credits) |
+| `src/lib/assets-api.ts` | Browser→backend Assets HTTP client (the real upload/delete path) |
 | `src/lib/backend-simulation.ts` | Simulation triggers + share helpers |
 | `src/lib/stream-simulation.ts` | NDJSON stream consumer |
 | `src/contexts/` | `AuthContext`, `UserContext` |
-| `src/config/content.ts` | UI copy for the landing page |
 
 ### Supabase
 
-Schema + RLS policies + credit RPCs live in `supabase/schema.sql` — run once per environment via the SQL Editor. Required env: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_BACKEND_URL`, `NEXT_PUBLIC_CONTACT_EMAIL`. The FastAPI backend verifies the same Supabase JWTs.
+Schema + RLS policies + credit RPCs live in `supabase/schema.sql` — run once per environment via the SQL Editor. Required env: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_BACKEND_URL`, `NEXT_PUBLIC_CONTACT_EMAIL`, `NEXT_PUBLIC_API_URL` (base for Figma `/api/v1/figma/*` calls), plus optional `FEEDBACK_WEBHOOK_URL`. The FastAPI backend verifies the same Supabase JWTs.

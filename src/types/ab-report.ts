@@ -221,81 +221,19 @@ export interface AbReport {
 }
 
 /**
- * simul2design Multiverse Synthesis Engine output. Emitted ~4-5 min AFTER
- * `comparison_ready` on the `synthesis_ready` SSE event when the backend's
- * `SIMUL2DESIGN_ENABLED` flag is on. Mirrors `simul2design/schemas.py::SynthesisResult`.
+ * Lever-driven design combiner output. The combiner runs after
+ * `comparison_ready` on every A/B + comparator run and emits one of three SSE
+ * events: `design_combiner_ready` (a fused variant was produced),
+ * `design_combiner_skipped` (no decisive lever signal), or
+ * `design_combiner_failed` (pipeline error). The route persists a terminal
+ * payload for all three so the results page never hangs on "Synthesising".
  *
- * The cascade turns the AbReport into a buildable V(N+1) spec (markdown +
- * structured JSON) and renders a phone-frame PNG via Playwright. The PNG is
- * uploaded to Supabase Storage; `variant_image_url` carries the CDN URL.
- */
-export interface SynthesisResultCellRef {
-  variant_id: string;
-  dimension: string;
-  /** "low_default" | "needs_review" | "auto_mapped_llm" | "high" */
-  confidence: string;
-  current_value: unknown;
-}
-
-export interface SynthesisResultTokenUsage {
-  input_tokens: number;
-  output_tokens: number;
-  cache_read_tokens: number;
-  cache_write_tokens: number;
-}
-
-export interface SynthesisResult {
-  client_slug: string;
-  pipeline_version: string;
-  element_matrix: Record<string, unknown>;
-  automap_trace: Record<string, unknown>;
-  source_markdown: string;
-  cells_needing_review: SynthesisResultCellRef[];
-  ready_for_synthesis: boolean;
-  estimated_cost_usd: number;
-  token_usage: SynthesisResultTokenUsage;
-  /** Phase 3c outputs — populated when run_full_cascade=True (our default). */
-  weighted_scores: Record<string, unknown> | null;
-  synthesized_variant: Record<string, unknown> | null;
-  adversary_review: Record<string, unknown> | null;
-  conversion_estimates: Record<string, unknown> | null;
-  spec_markdown: string | null;
-  /** Reserved upstream — never populated today. */
-  report_html: string | null;
-  /** v0.2.0 render — Playwright-rendered PNG of the V(N+1) screen. */
-  variant_image_path?: string | null;
-  variant_image_size_bytes?: number | null;
-  /** Supabase Storage CDN URL set by our orchestrator after a successful upload. Null
-   * when the render extra is missing, render failed, or upload errored. */
-  variant_image_url?: string | null;
-}
-
-/**
- * The full payload of a `synthesis_ready` SSE event AND the shape persisted
- * server-side to `public.simulations.synthesis`.
- */
-export interface SynthesisReadyData {
-  synthesis_input_source: "ab_report" | "comparison_data";
-  ready_for_human: boolean;
-  /** Top-level convenience copy of result.variant_image_url. Null when render
-   * or upload didn't produce a URL. */
-  variant_image_url: string | null;
-  result: SynthesisResult;
-}
-
-/**
- * Lever-driven design combiner output. Emitted ~2 min AFTER
- * `comparison_ready` on the `design_combiner_ready` SSE event when the
- * backend's `APRIORI_DESIGN_COMBINER_ENABLED` flag is on.
- *
- * The combiner takes the AbReport's lever_attribution (winning levers per
- * variant + interaction probe + Simpson flags) and Opus 4.5 paints a fused
- * HTML+PNG variant honouring the empirical signal. The PNG is uploaded to
- * Supabase Storage; `combined_variant_image_url` carries the CDN URL the frontend
- * renders directly.
- *
- * Distinct from `synthesis` (simul2design cascade) — both can coexist on
- * one simulation row.
+ * On success the combiner takes the AbReport's lever_attribution (winning
+ * levers per variant) and paints a fused HTML+PNG variant honouring the
+ * empirical signal. The PNG is uploaded to Supabase Storage;
+ * `combined_variant_image_url` carries the CDN URL the frontend renders
+ * directly. On skip/failure that URL is null and `result.status` is
+ * "skipped"/"failed".
  */
 export interface DesignCombinerInputSummary {
   control_variant: string;
@@ -305,36 +243,41 @@ export interface DesignCombinerInputSummary {
   instructions_chars: number;
 }
 
+/**
+ * The combiner result. On the success path every field is populated; on the
+ * skipped/failed terminal path only `status` (+ `error`) is set, so the rest
+ * are optional.
+ */
 export interface DesignCombinerResult {
   status: "ok" | "failed" | "skipped";
-  backend: "claude" | "stitch";
-  output_dir: string;
-  primary_html_path: string | null;
-  primary_png_path: string | null;
-  summary_path: string | null;
-  prompt_path: string | null;
-  validation: Record<string, unknown> | null;
-  describer: Record<string, unknown> | null;
-  generator: Record<string, unknown> | null;
-  validator: Record<string, unknown> | null;
-  cost_usd: number;
-  elapsed_seconds: number;
-  error: string | null;
+  backend?: "claude" | "stitch";
+  output_dir?: string;
+  primary_html_path?: string | null;
+  primary_png_path?: string | null;
+  summary_path?: string | null;
+  prompt_path?: string | null;
+  validation?: Record<string, unknown> | null;
+  describer?: Record<string, unknown> | null;
+  generator?: Record<string, unknown> | null;
+  validator?: Record<string, unknown> | null;
+  cost_usd?: number;
+  elapsed_seconds?: number;
+  error?: string | null;
 }
 
 export interface DesignCombinerReadyData {
   comparison_id: string;
-  client: string;
+  client?: string;
   /** Supabase Storage CDN URL of the fused variant PNG. The frontend should render
-   * this directly via <img src={...}>. Null when Supabase Storage upload failed
-   * (the local primary_png_path on the backend is still readable for
-   * debugging, but won't be reachable from the browser). */
+   * this directly via <img src={...}>. Null on skip/failure, or when the
+   * Supabase Storage upload failed. */
   combined_variant_image_url: string | null;
   /** The full combiner result dict — paths, cost, validation iters,
    * token usage. Useful for debug panels but not required to render the
    * combined variant. */
   result: DesignCombinerResult;
-  input_summary: DesignCombinerInputSummary;
+  /** Present on the success path; null on skip/failure. */
+  input_summary: DesignCombinerInputSummary | null;
 }
 
 /**

@@ -97,11 +97,8 @@ export type SimulationDoc = {
   timestamp: string;
   simulationId?: string;
   result?: unknown;
-  /** simul2design Multiverse Synthesis Engine payload — populated ~5min after
-   * comparison_ready by the backend's `synthesis_ready` UPDATE. Null until then. */
-  synthesis?: unknown;
-  /** Lever-driven design combiner payload — populated ~2min after
-   * comparison_ready by the backend's `design_combiner_ready` UPDATE. Carries
+  /** Lever-driven design combiner payload — populated after comparison_ready
+   * by the backend's terminal `design_combiner` UPDATE. Carries
    * `combined_variant_image_url` (Supabase Storage public URL), the full combiner result, and
    * an `input_summary` of what was fused. Null until the combiner runs. */
   designCombiner?: unknown;
@@ -179,7 +176,6 @@ function rowToSimulation(r: SimulationRow): SimulationDoc {
     timestamp: r.timestamp_label ?? "",
     simulationId: r.simulation_id ?? undefined,
     result: r.result ?? undefined,
-    synthesis: r.synthesis ?? undefined,
     designCombiner: r.design_combiner ?? undefined,
     revalidation: r.revalidation ?? undefined,
     creditsSpent: r.credits_spent,
@@ -443,7 +439,6 @@ function simulationToRow(userId: string, s: Partial<SimulationPayload>) {
     // persist whatever it captured during the stream; subsequent backend
     // UPDATEs are idempotent over the same payload.
     design_combiner: (s.designCombiner ?? undefined) as Json | undefined,
-    synthesis: (s.synthesis ?? undefined) as Json | undefined,
     revalidation: (s.revalidation ?? undefined) as Json | undefined,
     credits_spent: s.creditsSpent,
   });

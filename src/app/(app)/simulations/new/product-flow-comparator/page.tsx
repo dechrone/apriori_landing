@@ -27,7 +27,6 @@ import type {
   AbReport,
   DesignCombinerReadyData,
   RevalidationReadyData,
-  SynthesisReadyData,
 } from '@/types/ab-report';
 import {
   SimulationRunningView,
@@ -212,7 +211,6 @@ export default function ProductFlowComparatorSimulationPage() {
       // exist yet (the UPDATE is ordered before the INSERT in the
       // design_combiner case, which silently no-op'd and stranded the design).
       let designCombinerData: DesignCombinerReadyData | null = null;
-      let synthesisData: SynthesisReadyData | null = null;
       let revalidationData: RevalidationReadyData | null = null;
       let streamError: string | null = null;
 
@@ -291,25 +289,27 @@ export default function ProductFlowComparatorSimulationPage() {
           // no-ops. Capturing the payload here lets the wizard write it on
           // INSERT and the results page paints it immediately.
           designCombinerData = event.data;
-        } else if (event.type === 'synthesis_ready') {
-          // simul2design cascade — arrives ~5 min AFTER comparison_ready.
-          // Usually after the wizard has redirected, in which case Supabase
-          // Realtime + the backend UPDATE handle persistence. But on the
-          // chance the user is still here when it lands, capture and
-          // include in the INSERT so first paint already has it.
-          synthesisData = event.data;
+        } else if (
+          event.type === 'design_combiner_skipped' ||
+          event.type === 'design_combiner_failed'
+        ) {
+          // Terminal non-success outcomes. Capture a minimal payload so the
+          // results page leaves the "Synthesising" state on first load instead
+          // of waiting for a `ready` event that will never arrive.
+          designCombinerData = {
+            comparison_id: event.data.comparison_id,
+            combined_variant_image_url: null,
+            input_summary: null,
+            result: {
+              status: event.type === 'design_combiner_skipped' ? 'skipped' : 'failed',
+              error: event.data.message ?? null,
+            },
+          };
         } else if (event.type === 'revalidation_ready') {
           // Pro-tier revalidation result — same race-resilience pattern.
           revalidationData = event.data;
-        } else if (
-          event.type === 'synthesis_failed' ||
-          event.type === 'design_combiner_failed' ||
-          event.type === 'design_combiner_skipped' ||
-          event.type === 'revalidation_failed'
-        ) {
-          // Non-fatal follow-on failures — surface in console but don't
-          // block the comparator save.
-          // eslint-disable-next-line no-console
+        } else if (event.type === 'revalidation_failed') {
+          // Non-fatal follow-on failure — surface in console but don't block save.
           console.warn(`[comparator] ${event.type}:`, event.data);
         } else if (event.type === 'error') {
           streamError = event.data.message;
@@ -338,10 +338,9 @@ export default function ProductFlowComparatorSimulationPage() {
         // Anything captured during the open stream — included on INSERT so
         // the results page paints it on first load. Null/undefined entries
         // are stripped by `clean(...)` in simulationToRow, so this is safe
-        // for runs where the combiner / synthesis / revalidation didn't
-        // emit before the wizard finished.
+        // for runs where the combiner / revalidation didn't emit before the
+        // wizard finished.
         designCombiner: designCombinerData ?? undefined,
-        synthesis: synthesisData ?? undefined,
         revalidation: revalidationData ?? undefined,
       });
       showToast('success', 'Comparison complete', 'Redirecting to results.');
