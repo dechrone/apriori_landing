@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Pin the Turbopack workspace root to this app's directory (landing/). The
+  // repo is a polyglot monorepo (backend/ + landing/); without an explicit
+  // root, a stray lockfile elsewhere makes Next infer the wrong root and fail
+  // to resolve workspace-local deps like `tailwindcss` ("Can't resolve
+  // 'tailwindcss'"). process.cwd() is the landing/ dir for the `npm run
+  // dev|build` scripts, which always run from this package.
+  turbopack: {
+    root: process.cwd(),
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "logo.clearbit.com" },
