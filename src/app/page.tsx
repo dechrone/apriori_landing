@@ -49,6 +49,11 @@ export default function Home() {
                       Sample Report
                     </a>
                   </li>
+                  <li>
+                    <a href="/research" className="text-sm text-text-secondary hover:text-text-primary transition-colors">
+                      Research
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div>
