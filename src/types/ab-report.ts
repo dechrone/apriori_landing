@@ -34,6 +34,14 @@ export interface ReportMeta {
 export interface Verdict {
   sentence: string;
   confidence: Confidence;
+  /** Canonical ship direction, computed deterministically from net lever
+   * ownership — the SAME signal the design combiner uses to pick its base
+   * variant. The headline, lever table, and generated fused design therefore
+   * never disagree on who won. "neither" = no decisive lever signal. Legacy
+   * reports omit it (treat as "neither"). */
+  winner?: LeaningTag;
+  /** How `winner` was derived: "net_lever_ownership" | "no_decisive_lever_signal". */
+  winner_basis?: string | null;
 }
 
 export interface ShipItem {
@@ -60,8 +68,16 @@ export interface ScreenElement {
   anchor: Anchor;
   verdict: ElementVerdict;
   callout: string;
-  persona_count: number;
+  /** Real count of decisive persona reactions — populated ONLY when
+   * source === "lever". null on the vision-fallback path (the count would be a
+   * model guess). Render as "model-estimated", not a number, when null. */
+  persona_count: number | null;
   summary: string;
+  /** Provenance of this element + its persona_count. "lever" = deterministic
+   * from structured lever_reactions (count is real); "vision" = legacy
+   * vision-LLM estimate (count is null). Legacy reports omit it (treat as
+   * "vision"). */
+  source?: "lever" | "vision";
 }
 
 export interface AnnotatedVariant {
@@ -197,9 +213,26 @@ export interface LeverCombination {
   interpretation: string;
 }
 
+/** One row of the lever-interaction matrix: how a top-K combo behaves when
+ * a designer FUSES its levers into one variant. Backend-populated by
+ * `lever_attribution.interactions.probe_lever_interactions`. */
+export interface LeverInteractionRow {
+  combo_levers: string[];
+  variant: "A" | "B";
+  /** reinforce: levers strengthen each other when fused. neutral: independent.
+   * contradict: visual/semantic tension expected. */
+  interaction: "reinforce" | "neutral" | "contradict";
+  conflict_reason?: string | null;   // populated when interaction === "contradict"
+  confidence?: Confidence;
+}
+
 export interface LeverAttribution {
   top_combinations: LeverCombination[];          // ≤10, sorted by |delta|
   by_segment: Record<string, LeverCombination[]>;
+  /** reinforce / neutral / contradict per top-K combo. reinforce = "these
+   * levers amplify each other"; contradict = visual tension; neutral =
+   * independent. Drives the Lever Interactions section. */
+  interactions?: LeverInteractionRow[];
   notes: string;
 }
 
