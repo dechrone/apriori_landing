@@ -42,6 +42,15 @@ export interface Verdict {
   winner?: LeaningTag;
   /** How `winner` was derived: "net_lever_ownership" | "no_decisive_lever_signal". */
   winner_basis?: string | null;
+  /** Deterministic predicted-completion metrics so the hero can lead with a
+   * number. These are the SYMPTOM (how many personas completed each variant),
+   * NOT the winner signal — `winner` stays lever-derived. When sign(lift_pp)
+   * disagrees with `winner`, show a reconcile note rather than letting the
+   * number contradict the badge. Legacy reports omit these (treat as null). */
+  completion_rate_a?: number | null;   // 0..100 percent
+  completion_rate_b?: number | null;   // 0..100 percent
+  lift_pp?: number | null;             // signed B - A in percentage points
+  persona_n?: number | null;           // personas the rates are computed over
 }
 
 export interface ShipItem {

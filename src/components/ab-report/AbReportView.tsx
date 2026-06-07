@@ -15,6 +15,7 @@ import {
   AlertTriangle,
   Link2,
   ArrowUpRight,
+  Info,
 } from "lucide-react";
 
 /* Match the savesage demo's typographic system: editorial Playfair Display
@@ -46,6 +47,10 @@ import {
   SectionDivider,
   PersonaChip,
   QuoteLine,
+  ConfidenceBadge,
+  CopyButton,
+  AnnotatedPhone,
+  Pill,
 } from "./primitives";
 import { AbReportDeepDive } from "./DeepDive";
 import { LeverAnalysisView } from "./LeverAnalysisView";
@@ -89,6 +94,84 @@ const cardStyle: React.CSSProperties = {
   padding: "18px 20px",
   transition: "border-color 0.15s",
 };
+
+function fmtPct(n: number | null | undefined): string {
+  if (n == null || Number.isNaN(n)) return "—";
+  return `${Math.round(n)}%`;
+}
+
+/* Data-quality + caveats strip. Surfaces `lever_attribution.notes` (degraded
+   personas, base confidence, top drag-levers) right under the verdict — the
+   "show me the caveats" content that earns a veteran's trust instead of
+   reading as overclaiming. */
+function CaveatsStrip({ notes }: { notes: string }) {
+  return (
+    <motion.div
+      {...fadeUp}
+      style={{ marginTop: 16, display: "flex", gap: 11, alignItems: "flex-start", background: "#FFF", border: `0.5px solid ${T.hairline}`, borderRadius: 10, padding: "12px 16px" }}
+    >
+      <Info size={14} style={{ color: T.text4, flexShrink: 0, marginTop: 2 }} />
+      <div>
+        <div style={{ fontSize: 10.5, fontWeight: 700, color: T.text3, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 3 }}>
+          Data quality &amp; caveats
+        </div>
+        <p style={{ fontSize: 12.5, color: T.text2, lineHeight: 1.5, margin: 0 }}>{noDash(notes)}</p>
+      </div>
+    </motion.div>
+  );
+}
+
+/* One predicted-completion bar inside the dark verdict hero. `emphasis` tints
+   the variant that completes more in the brand accent. */
+function CompletionBar({ label, pct, emphasis }: { label: string; pct: number | null | undefined; emphasis: boolean }) {
+  const w = pct == null ? 0 : Math.max(0, Math.min(100, pct));
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <span style={{ width: 62, fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.6)", letterSpacing: "0.04em", textTransform: "uppercase", flexShrink: 0 }}>
+        {label}
+      </span>
+      <div style={{ flex: 1, height: 8, borderRadius: 999, background: "rgba(255,255,255,0.12)", overflow: "hidden" }}>
+        <div style={{ width: `${w}%`, height: "100%", borderRadius: 999, background: emphasis ? T.accent : "rgba(255,255,255,0.5)", transition: "width 0.7s cubic-bezier(0.22,1,0.36,1)" }} />
+      </div>
+      <span style={{ width: 42, textAlign: "right", fontSize: 14, fontWeight: 700, color: "#FFFFFF", fontVariantNumeric: "tabular-nums", flexShrink: 0 }}>
+        {fmtPct(pct)}
+      </span>
+    </div>
+  );
+}
+
+/* The hero's right-hand metric card: per-variant predicted completion + the
+   signed lift as the headline number. Returns null when the backend didn't
+   stamp the deterministic rates (legacy / cached reports). */
+function HeroCompletion({ verdict }: { verdict: AbReport["verdict"] }) {
+  const a = verdict.completion_rate_a;
+  const b = verdict.completion_rate_b;
+  const lift = verdict.lift_pp;
+  if (a == null || b == null || lift == null) return null;
+
+  const compLeader = lift > 0 ? "B" : lift < 0 ? "A" : "neither";
+  const magnitude = Math.abs(Math.round(lift));
+
+  return (
+    <div style={{ flex: "0 0 auto", minWidth: 280, maxWidth: 360, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 16, padding: "22px 24px" }}>
+      <div style={{ fontSize: 10.5, fontWeight: 700, color: "rgba(255,255,255,0.55)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 16 }}>
+        Predicted completion
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <CompletionBar label="Variant A" pct={a} emphasis={compLeader === "A"} />
+        <CompletionBar label="Variant B" pct={b} emphasis={compLeader === "B"} />
+      </div>
+      <div style={{ marginTop: 18, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "baseline", gap: 9 }}>
+        <span style={{ fontFamily: "var(--font-flow-display), serif", fontSize: 34, fontWeight: 600, color: "#FFFFFF", lineHeight: 1, letterSpacing: "-0.02em" }}>
+          {compLeader === "neither" ? "Even" : `${lift > 0 ? "+" : "−"}${magnitude}pp`}
+        </span>
+        <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.65)", lineHeight: 1.35 }}>
+          {compLeader === "neither" ? "identical completion" : `higher on Variant ${compLeader}`}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 /* ── Source tag palette ── */
 const sourceTagStyle: Record<string, { bg: string; color: string; label: string }> = {
@@ -992,8 +1075,62 @@ function MetaPill({ label, value }: { label: string; value: string }) {
   );
 }
 
+/* Legend for the annotated screenshots — maps the marker colors to
+   lift / drag / tradeoff so a PM can read the overlays at a glance. */
+function VerdictLegend() {
+  const items = [
+    { c: "#10B981", label: "Lift" },
+    { c: "#EF4444", label: "Drag" },
+    { c: "#F59E0B", label: "Tradeoff" },
+  ];
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap", marginBottom: 28 }}>
+      {items.map((i) => (
+        <span key={i.label} style={{ display: "inline-flex", alignItems: "center", gap: 7, fontSize: 12, fontWeight: 600, color: T.text2 }}>
+          <span style={{ width: 9, height: 9, borderRadius: 999, background: i.c, boxShadow: "0 0 0 2px #FFF, 0 0 4px rgba(0,0,0,0.12)" }} />
+          {i.label}
+        </span>
+      ))}
+      <span style={{ fontSize: 12, color: T.text4, fontStyle: "italic" }}>Click any marker for the persona evidence behind it.</span>
+    </div>
+  );
+}
+
+/* "Test next" — the revisit-action items the high-confidence ship table
+   filters out. A veteran wants these (the follow-up experiments), so surface
+   them as a lighter group instead of dropping them on the floor. */
+function TestNextGroup({ items }: { items: AbReport["ship_list"] }) {
+  return (
+    <div style={{ marginTop: 24 }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 11, fontWeight: 700, color: T.text3, letterSpacing: "0.12em", textTransform: "uppercase" }}>Test next</span>
+        <span style={{ fontSize: 12, color: T.text4 }}>Lower-confidence calls worth a follow-up experiment.</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {items.map((item) => (
+          <div key={item.id} style={{ display: "flex", gap: 12, alignItems: "flex-start", background: "#FFF", border: `0.5px solid ${T.hairline}`, borderRadius: 10, padding: "12px 16px" }}>
+            <span style={{ width: 8, height: 8, borderRadius: 999, background: "#F59E0B", flexShrink: 0, marginTop: 5 }} />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: T.ink, margin: 0, lineHeight: 1.4 }}>{noDash(item.feature)}</p>
+              <p style={{ fontSize: 12.5, color: T.text3, margin: "2px 0 0", lineHeight: 1.45 }}>{noDash(item.rationale)}</p>
+            </div>
+            <span style={{ flexShrink: 0 }}><Pill intent="warning">Revisit</Pill></span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ScreensTestedBlock({ pair, totalScreens }: { pair: AnnotatedScreenPair; totalScreens: number }) {
   const showLabel = totalScreens > 1;
+  const elsA = pair.variant_a.elements ?? [];
+  const elsB = pair.variant_b.elements ?? [];
+  // Annotate whenever the report carries element overlays (lever-derived or
+  // vision-estimated). The pins + leader lines pin the empirical signal to the
+  // actual screen — the single most scannable, most differentiated view.
+  const hasAnnotations = elsA.length > 0 || elsB.length > 0;
+
   const phoneStyle: React.CSSProperties = {
     width: "100%",
     maxWidth: 320,
@@ -1022,22 +1159,32 @@ function ScreensTestedBlock({ pair, totalScreens }: { pair: AnnotatedScreenPair;
           {pair.screen_label}
         </div>
       )}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, justifyItems: "center" }}>
-        <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div style={{ ...labelStyle, alignSelf: "flex-start", marginLeft: "auto", marginRight: "auto", textAlign: "center", width: "100%" }}>Variant A</div>
-          <div style={phoneStyle}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={pair.variant_a.image_path} alt="Variant A" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+      {hasAnnotations ? (
+        <>
+          <VerdictLegend />
+          <div className="annotated-phones-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, justifyItems: "center", alignItems: "start" }}>
+            <AnnotatedPhone imagePath={pair.variant_a.image_path} elements={elsA} variantLabel="Variant A" calloutSide="left" />
+            <AnnotatedPhone imagePath={pair.variant_b.image_path} elements={elsB} variantLabel="Variant B" calloutSide="right" />
+          </div>
+        </>
+      ) : (
+        <div className="annotated-phones-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, justifyItems: "center" }}>
+          <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{ ...labelStyle, alignSelf: "flex-start", marginLeft: "auto", marginRight: "auto", textAlign: "center", width: "100%" }}>Variant A</div>
+            <div style={phoneStyle}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={pair.variant_a.image_path} alt="Variant A" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            </div>
+          </div>
+          <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{ ...labelStyle, textAlign: "center", width: "100%" }}>Variant B</div>
+            <div style={phoneStyle}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={pair.variant_b.image_path} alt="Variant B" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            </div>
           </div>
         </div>
-        <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div style={{ ...labelStyle, textAlign: "center", width: "100%" }}>Variant B</div>
-          <div style={phoneStyle}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={pair.variant_b.image_path} alt="Variant B" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-          </div>
-        </div>
-      </div>
+      )}
     </motion.div>
   );
 }
@@ -1093,40 +1240,88 @@ export function AbReportView({ data, designCombiner, combinerStalled, readOnly }
             <motion.div {...fadeUp}>
               <div style={{ background: T.heroBg, borderRadius: 20, padding: "40px 44px", position: "relative", overflow: "hidden" }}>
                 <div style={{ position: "absolute", top: -60, right: -60, width: 280, height: 280, borderRadius: "50%", background: "rgba(232,88,58,0.18)", filter: "blur(90px)", pointerEvents: "none" }} />
-                <div style={{ fontSize: 12, fontWeight: 600, color: T.accent, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 16, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                  <span>THE VERDICT</span>
-                  {(() => {
-                    // Canonical winner — the lever-derived ship direction the
-                    // design combiner also builds on. Shown as the headline
-                    // badge so the winner is unambiguous and machine-derived,
-                    // not parsed out of the prose.
-                    const w = data.verdict.winner;
-                    if (w !== "A" && w !== "B" && w !== "neither") return null;
-                    const label = w === "neither" ? "NO CLEAR WINNER" : `SHIP VARIANT ${w}`;
-                    return (
-                      <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", background: w === "neither" ? "rgba(255,255,255,0.18)" : "rgba(232,88,58,0.85)", borderRadius: 999, padding: "3px 12px", letterSpacing: "0.08em" }}>
-                        {label}
-                      </span>
-                    );
-                  })()}
+                <div style={{ position: "relative", display: "flex", gap: 36, flexWrap: "wrap", alignItems: "flex-start", justifyContent: "space-between" }}>
+                  {/* Left: winner badge + the WHY prose + epistemic framing */}
+                  <div style={{ flex: "1 1 460px", minWidth: 0 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: T.accent, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 16, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                      <span>THE VERDICT</span>
+                      {(() => {
+                        // Canonical winner — the lever-derived ship direction the
+                        // design combiner also builds on. Shown as the headline
+                        // badge so the winner is unambiguous and machine-derived,
+                        // not parsed out of the prose.
+                        const w = data.verdict.winner;
+                        if (w !== "A" && w !== "B" && w !== "neither") return null;
+                        const label = w === "neither" ? "NO CLEAR WINNER" : `SHIP VARIANT ${w}`;
+                        return (
+                          <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", background: w === "neither" ? "rgba(255,255,255,0.18)" : "rgba(232,88,58,0.85)", borderRadius: 999, padding: "3px 12px", letterSpacing: "0.08em" }}>
+                            {label}
+                          </span>
+                        );
+                      })()}
+                    </div>
+                    <p style={{ fontFamily: "var(--font-flow-display), serif", fontSize: 24, fontWeight: 500, color: "#FFFFFF", lineHeight: 1.4, letterSpacing: "-0.01em", maxWidth: 640, margin: 0 }}>
+                      {noDash(data.verdict.sentence)}
+                    </p>
+                    {/* Epistemic framing — converts a veteran's reflexive
+                        skepticism ("is this just N LLM personas?") into trust by
+                        stating the basis up front + the confidence we computed. */}
+                    <div style={{ marginTop: 20, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                      {data.verdict.persona_n != null && (
+                        <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.55)" }}>
+                          Predicted from {data.verdict.persona_n} simulated personas
+                        </span>
+                      )}
+                      <ConfidenceBadge level={data.verdict.confidence} />
+                      {data.verdict.winner_basis === "net_lever_ownership" && (
+                        <span style={{ fontSize: 11.5, color: "rgba(255,255,255,0.4)" }}>
+                          · winner decided by net lever ownership
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {/* Right: the headline number */}
+                  <HeroCompletion verdict={data.verdict} />
                 </div>
-                <p style={{ fontFamily: "var(--font-flow-display), serif", fontSize: 24, fontWeight: 500, color: "#FFFFFF", lineHeight: 1.4, letterSpacing: "-0.01em", maxWidth: 980, margin: 0 }}>
-                  {data.verdict.sentence}
-                </p>
+                {/* Reconcile note — only when raw completion and the
+                    lever-derived winner point opposite ways. Keeps the number
+                    honest without letting it contradict the badge. */}
+                {(() => {
+                  const w = data.verdict.winner;
+                  const lift = data.verdict.lift_pp;
+                  if (lift == null || (w !== "A" && w !== "B")) return null;
+                  const compLeader = lift > 0 ? "B" : lift < 0 ? "A" : "neither";
+                  if (compLeader === "neither" || compLeader === w) return null;
+                  return (
+                    <div style={{ position: "relative", marginTop: 24, padding: "12px 16px", background: "rgba(232,88,58,0.12)", border: "1px solid rgba(232,88,58,0.3)", borderRadius: 10, fontSize: 12.5, color: "rgba(255,255,255,0.85)", lineHeight: 1.5, display: "flex", gap: 10, alignItems: "flex-start" }}>
+                      <AlertTriangle size={15} style={{ color: T.accent, flexShrink: 0, marginTop: 1 }} />
+                      <span>
+                        Raw predicted completion leans Variant {compLeader} by {Math.abs(Math.round(lift))}pp, but the design levers decisively favour Variant {w}. Completion is the symptom, the levers are the cause, see Lever Analysis.
+                      </span>
+                    </div>
+                  );
+                })()}
               </div>
             </motion.div>
+            {data.lever_attribution?.notes && <CaveatsStrip notes={data.lever_attribution.notes} />}
 
             <SectionDivider />
 
             {/* SECTION 2: SHIP LIST */}
             {(() => {
               const filtered = data.ship_list.filter((s) => s.confidence === "high" && s.action !== "revisit");
+              // "revisit" items used to be silently dropped; surface them as
+              // "Test next" so the follow-up experiments aren't lost.
+              const revisit = data.ship_list.filter((s) => s.action === "revisit");
+              const copyAll = () =>
+                filtered.map((s) => noDash(s.markdown) || `- [ ] ${s.action} ${noDash(s.feature)}`).join("\n");
               return (
                 <>
                   <SectionHeader
                     eyebrow="01"
                     title="What to ship"
                     subtitle="Specific elements to keep or kill, copy directly into your tracker."
+                    rightSlot={filtered.length > 0 ? <CopyButton getText={copyAll} labeled="Copy to tracker" /> : undefined}
                   />
                   {/* On a read-only shared view with no persisted fused-design
                       payload, skip the card entirely — its "timed out / re-run
@@ -1137,6 +1332,11 @@ export function AbReportView({ data, designCombiner, combinerStalled, readOnly }
                       stalled={combinerStalled ?? false}
                     />
                   )}
+                  {filtered.length === 0 ? (
+                    <div style={{ background: "#FFF", border: "1px solid #E5E7EB", borderRadius: 12, padding: "20px 24px", fontSize: 13, color: T.text3 }}>
+                      No high-confidence ship recommendations for this comparison{revisit.length ? ", see the items to test next below." : "."}
+                    </div>
+                  ) : (
                   <motion.div {...fadeUp} style={{ background: "#FFF", borderRadius: 12, border: "1px solid #E5E7EB", overflow: "visible", boxShadow: "0 4px 24px rgba(0,0,0,0.08), 0 1px 6px rgba(0,0,0,0.04)" }}>
                     <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
                       <colgroup>
@@ -1191,17 +1391,19 @@ export function AbReportView({ data, designCombiner, combinerStalled, readOnly }
                       </tbody>
                     </table>
                   </motion.div>
+                  )}
+                  {revisit.length > 0 && <TestNextGroup items={revisit} />}
                 </>
               );
             })()}
 
             <SectionDivider />
 
-            {/* SECTION 02: SCREENS TESTED — plain side-by-side variant images. */}
+            {/* SECTION 02: SCREENS TESTED — annotated side-by-side variants. */}
             <SectionHeader
               eyebrow="02"
               title="Screens Tested"
-              subtitle="Variant A and Variant B as shown to personas."
+              subtitle="Colored markers flag the elements that lifted or dragged conversion. Click any marker for the persona evidence."
             />
             {screens.map((pair) => (
               <ScreensTestedBlock key={pair.id} pair={pair} totalScreens={screens.length} />
