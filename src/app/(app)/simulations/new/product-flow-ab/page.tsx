@@ -900,31 +900,10 @@ function AudiencePicker({
                         Targeting: <span className="font-medium text-[#6B7280] normal-case tracking-normal">{segmentPredicateSummary(seg)}</span>
                       </p>
                     )}
-                    {(seg.entry_intent || isSelected) && (
-                      <div className="mt-2.5">
-                        <p className="text-[10px] uppercase tracking-wider text-[#9CA3AF] mb-1">Why this cohort is here</p>
-                        {isSelected ? (
-                          <>
-                            <textarea
-                              value={segmentIntentOverrides[seg.id] ?? seg.entry_intent ?? ''}
-                              onClick={(e) => e.stopPropagation()}
-                              onChange={(e) => {
-                                const v = e.target.value;
-                                setSegmentIntentOverrides((prev) => ({ ...prev, [seg.id]: v }));
-                              }}
-                              placeholder="e.g. Saw a friend's referral and wants to compare before switching."
-                              rows={2}
-                              maxLength={500}
-                              className="w-full text-[12px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[8px] px-2.5 py-2 focus:border-[#1F2937] focus:outline-none transition-all resize-none leading-[1.5]"
-                            />
-                            <p className="mt-1 text-[10px] text-[#9CA3AF] leading-[1.4]">
-                              Their mindset on arrival — it shapes how they judge this screen. Not their goal.
-                            </p>
-                          </>
-                        ) : (
-                          <p className="text-[12px] text-[#4B5563] leading-[1.55] italic">{seg.entry_intent}</p>
-                        )}
-                      </div>
+                    {seg.entry_intent && (
+                      <p className="mt-2 text-[10px] uppercase tracking-wider text-[#9CA3AF]">
+                        Arrives: <span className="font-medium text-[#6B7280] normal-case tracking-normal italic">{seg.entry_intent}</span>
+                      </p>
                     )}
                     <p className="mt-2 text-[10px] uppercase tracking-wider text-[#9CA3AF]">
                       Pool: <span className="font-medium text-[#6B7280]">{seg.pool_name}</span>
@@ -943,6 +922,39 @@ function AudiencePicker({
           </span>{' '}
           / 5
         </p>
+
+        {selectedCount > 0 && (
+          <div className="mt-5 border-t border-[#F3F4F6] pt-4">
+            <p className="text-[13px] font-semibold text-[#1A1A1A]">
+              Why each cohort is here <span className="font-normal text-[#9CA3AF]">· optional</span>
+            </p>
+            <p className="text-[12px] text-[#6B7280] mt-0.5 mb-3 leading-[1.5]">
+              The mindset each cohort arrives with — it shapes how they judge each variant. We pre-fill it; tweak to match your real funnel. (This is their entry mindset, not their goal.)
+            </p>
+            <div className="space-y-3">
+              {selectedSegmentIds.map((id) => {
+                const seg = generatedSegments.find((s) => s.id === id);
+                if (!seg) return null;
+                return (
+                  <div key={id}>
+                    <label className="text-[12px] font-medium text-[#374151]">{seg.name}</label>
+                    <textarea
+                      value={segmentIntentOverrides[id] ?? seg.entry_intent ?? ''}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        setSegmentIntentOverrides((prev) => ({ ...prev, [id]: v }));
+                      }}
+                      placeholder="e.g. Saw a friend's referral and wants to compare before switching."
+                      rows={2}
+                      maxLength={500}
+                      className="mt-1 w-full text-[13px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[8px] px-3 py-2 focus:border-[#1F2937] focus:outline-none transition-all resize-none leading-[1.5]"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     );
   }
