@@ -43,6 +43,10 @@ export interface RunWithSegmentsPayload {
   optimizeMetric?: string;
   saveAudience?: boolean;
   audienceName?: string | null;
+  // snake_case to match the backend Pydantic field exactly (the rest of this
+  // payload is camelCase; the body is sent verbatim with no case conversion).
+  // Keyed by segment id → the user's edited entry-intent for that cohort.
+  segment_intent_overrides?: Record<string, string>;
 }
 
 export interface RunAbWithSegmentsPayload {
@@ -50,6 +54,8 @@ export interface RunAbWithSegmentsPayload {
   selectedFolderIds: string[];       // 2 for A/B (Variant A + B)
   optimizeMetric?: string;
   name?: string | null;
+  // See RunWithSegmentsPayload — snake_case to match the backend field.
+  segment_intent_overrides?: Record<string, string>;
 }
 
 export interface StartFromSavedAudiencePayload {

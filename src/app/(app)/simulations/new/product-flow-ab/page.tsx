@@ -26,7 +26,7 @@ import {
   runAbWithSegments,
 } from '@/lib/backend-simulation';
 import { saveSimulation, getSimulations } from '@/lib/db';
-import { consumeNDJSONStream } from '@/lib/stream-simulation';
+import { consumeNDJSONStream, segmentPredicateSummary, buildSegmentIntentOverrides } from '@/lib/stream-simulation';
 import type { GeneratedSegmentSummary } from '@/lib/stream-simulation';
 import { OBJECTIVE_PRESETS, CUSTOM_OBJECTIVE_ID } from '@/data/objective-presets';
 import type { AbReport, DesignCombinerReadyData } from '@/types/ab-report';
@@ -93,6 +93,7 @@ export default function ProductFlowABSimulationPage() {
   const [poolName, setPoolName] = useState<string | undefined>();
   const [generatedSegments, setGeneratedSegments] = useState<GeneratedSegmentSummary[]>([]);
   const [selectedSegmentIds, setSelectedSegmentIds] = useState<string[]>([]);
+  const [segmentIntentOverrides, setSegmentIntentOverrides] = useState<Record<string, string>>({});
 
   const resolvedObjective =
     objectivePresetId === CUSTOM_OBJECTIVE_ID
@@ -169,6 +170,7 @@ export default function ProductFlowABSimulationPage() {
     setAudienceState('loading');
     setGeneratedSegments([]);
     setSelectedSegmentIds([]);
+    setSegmentIntentOverrides({});
     setSimulationId(undefined);
     setPoolName(undefined);
 
@@ -314,6 +316,11 @@ export default function ProductFlowABSimulationPage() {
           selectedFolderIds: [folderA.id, folderB.id],
           optimizeMetric: 'activation',
           name: runName,
+          segment_intent_overrides: buildSegmentIntentOverrides(
+            selectedSegmentIds,
+            segmentIntentOverrides,
+            generatedSegments,
+          ),
         });
       } catch (e) {
         throw new Error(`Couldn't start the simulation: ${e instanceof Error ? e.message : 'unknown error'}`);
@@ -342,6 +349,7 @@ export default function ProductFlowABSimulationPage() {
           setSimulationId(undefined);
           setGeneratedSegments([]);
           setSelectedSegmentIds([]);
+          setSegmentIntentOverrides({});
           return;
         }
         const text = await res.text();
@@ -418,9 +426,13 @@ export default function ProductFlowABSimulationPage() {
           });
         } else if (event.type === 'comparison_ready') {
           comparisonData = event.data;
-          setStreamProgress((prev) => (prev ? { ...prev, phase: 'saving' } : null));
+          // The design combiner runs next, still inside the open stream — move
+          // the tracker to "Composing the winning design" so the wait reflects
+          // what's actually happening instead of sitting on the verdict.
+          setStreamProgress((prev) => (prev ? { ...prev, phase: 'combining' } : null));
         } else if (event.type === 'design_combiner_ready') {
           designCombinerData = event.data;
+          setStreamProgress((prev) => (prev ? { ...prev, phase: 'saving' } : null));
         } else if (
           event.type === 'design_combiner_skipped' ||
           event.type === 'design_combiner_failed'
@@ -436,6 +448,7 @@ export default function ProductFlowABSimulationPage() {
               error: event.data.message ?? null,
             },
           };
+          setStreamProgress((prev) => (prev ? { ...prev, phase: 'saving' } : null));
         } else if (event.type === 'error') {
           streamError = event.data.message;
         }
@@ -592,6 +605,8 @@ export default function ProductFlowABSimulationPage() {
                   setGeneratedSegments={setGeneratedSegments}
                   selectedSegmentIds={selectedSegmentIds}
                   setSelectedSegmentIds={setSelectedSegmentIds}
+                  segmentIntentOverrides={segmentIntentOverrides}
+                  setSegmentIntentOverrides={setSegmentIntentOverrides}
                   poolName={poolName}
                   setSimulationId={setSimulationId}
                   onGenerate={generateSegments}
@@ -752,6 +767,8 @@ interface AudiencePickerProps {
   setGeneratedSegments: (segs: GeneratedSegmentSummary[]) => void;
   selectedSegmentIds: string[];
   setSelectedSegmentIds: (ids: string[] | ((prev: string[]) => string[])) => void;
+  segmentIntentOverrides: Record<string, string>;
+  setSegmentIntentOverrides: (v: Record<string, string> | ((prev: Record<string, string>) => Record<string, string>)) => void;
   poolName?: string;
   setSimulationId: (id: string | undefined) => void;
   onGenerate: () => Promise<void>;
@@ -766,6 +783,8 @@ function AudiencePicker({
   setGeneratedSegments,
   selectedSegmentIds,
   setSelectedSegmentIds,
+  segmentIntentOverrides,
+  setSegmentIntentOverrides,
   poolName,
   setSimulationId,
   onGenerate,
@@ -808,6 +827,7 @@ function AudiencePicker({
               setAudienceState('input');
               setGeneratedSegments([]);
               setSelectedSegmentIds([]);
+              setSegmentIntentOverrides({});
               setSimulationId(undefined);
             }}
             className="text-[12px] font-medium text-[#6B7280] hover:text-[#1A1A1A] underline-offset-2 hover:underline"
@@ -875,6 +895,37 @@ function AudiencePicker({
                 {isExpanded && (
                   <div className="px-3 pb-3 border-t border-[#F3F4F6]">
                     <p className="text-[12px] text-[#4B5563] mt-2 leading-[1.55]">{seg.description}</p>
+                    {segmentPredicateSummary(seg) && (
+                      <p className="mt-2 text-[10px] uppercase tracking-wider text-[#9CA3AF]">
+                        Targeting: <span className="font-medium text-[#6B7280] normal-case tracking-normal">{segmentPredicateSummary(seg)}</span>
+                      </p>
+                    )}
+                    {(seg.entry_intent || isSelected) && (
+                      <div className="mt-2.5">
+                        <p className="text-[10px] uppercase tracking-wider text-[#9CA3AF] mb-1">Why this cohort is here</p>
+                        {isSelected ? (
+                          <>
+                            <textarea
+                              value={segmentIntentOverrides[seg.id] ?? seg.entry_intent ?? ''}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) => {
+                                const v = e.target.value;
+                                setSegmentIntentOverrides((prev) => ({ ...prev, [seg.id]: v }));
+                              }}
+                              placeholder="e.g. Saw a friend's referral and wants to compare before switching."
+                              rows={2}
+                              maxLength={500}
+                              className="w-full text-[12px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[8px] px-2.5 py-2 focus:border-[#1F2937] focus:outline-none transition-all resize-none leading-[1.5]"
+                            />
+                            <p className="mt-1 text-[10px] text-[#9CA3AF] leading-[1.4]">
+                              Their mindset on arrival — it shapes how they judge this screen. Not their goal.
+                            </p>
+                          </>
+                        ) : (
+                          <p className="text-[12px] text-[#4B5563] leading-[1.55] italic">{seg.entry_intent}</p>
+                        )}
+                      </div>
+                    )}
                     <p className="mt-2 text-[10px] uppercase tracking-wider text-[#9CA3AF]">
                       Pool: <span className="font-medium text-[#6B7280]">{seg.pool_name}</span>
                     </p>

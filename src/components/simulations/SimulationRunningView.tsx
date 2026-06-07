@@ -4,17 +4,20 @@
  * SimulationRunningView
  *
  * Long-form (3-5 min) "in flight" panel rendered while a comparator / A-B
- * simulation is streaming. The visual is intentionally muted (graphite,
- * not blue) so the wait reads as a working dashboard rather than a marketing
- * spinner. Progress is real: the head dot's position on each lane is tied
- * to personasDone/personasTotal, not a looping animation.
+ * simulation is streaming. The visual is a calm, working dashboard — graphite
+ * chrome with a single warm accent on whatever is live right now, so the wait
+ * reads as an enterprise pipeline rather than a marketing spinner. Progress is
+ * REAL: the head dot's position on each lane is tied to personasDone/
+ * personasTotal, and the stage tracker follows the actual stream phase
+ * (including the post-comparison design-combiner and revalidation steps), not
+ * a looping animation.
  *
  * Used by:
  *   - product-flow-ab/page.tsx     (Variant A / Variant B)
  *   - product-flow-comparator/...  (Flow 1 / Flow 2, names from backend)
  */
 import { useEffect, useRef, useState } from "react";
-import { Check, Layers, BrainCircuit, FileText, Users } from "lucide-react";
+import { Check, Layers, BrainCircuit, FileText, Users, Sparkles, ShieldCheck } from "lucide-react";
 
 export interface RunningFlow {
   /** Friendly label, e.g. "Variant A" or the backend's flow_name. */
@@ -23,17 +26,31 @@ export interface RunningFlow {
   personasDone: number;
 }
 
+export interface RunStage {
+  key: string;
+  label: string;
+  sub: string;
+  Icon: typeof Users;
+}
+
 interface SimulationRunningViewProps {
   /** True while client-side asset upload is happening (before the stream). */
   uploading: boolean;
-  /** Stream phase: "starting" | "simulating" | "saving". */
-  phase: "starting" | "simulating" | "saving" | string | undefined;
+  /**
+   * Stream phase. Beyond the original "starting" | "simulating" | "saving",
+   * the pages now also emit "combining" (design combiner running after
+   * comparison_ready) and "revalidating" (Pro-tier fused-variant re-sim) so the
+   * tracker reflects what's actually happening instead of sitting on "saving".
+   */
+  phase: "starting" | "simulating" | "combining" | "revalidating" | "saving" | string | undefined;
   /** Per-flow progress, keyed by stable flow id. Order is preserved. */
   flows: Record<string, RunningFlow>;
   /** Audience-retrieval notice (relaxed / random fallback). */
   retrievalNotice?: string;
   /** Title prefix above the phase line. Defaults to "Running A/B simulation". */
   eyebrow?: string;
+  /** Append the "Validating the design" stage (comparator Pro revalidation). */
+  showRevalidation?: boolean;
 }
 
 const INSIGHT_TIPS = [
@@ -46,8 +63,8 @@ const INSIGHT_TIPS = [
   "Counterfactual probes ask each persona what one change would have flipped their choice.",
 ];
 
-// Graphite palette. Single source of truth so we don't sprinkle
-// colour literals across every sub-component.
+// Graphite palette + a single warm accent for the live element. Single source
+// of truth so we don't sprinkle colour literals across every sub-component.
 const C = {
   ink: "#111827", // gray-900
   inkSoft: "#1F2937", // gray-800
@@ -58,6 +75,23 @@ const C = {
   hairlineSoft: "#F3F4F6", // gray-100
   surface: "#FAFAFA", // near-white
   shell: "#FFFFFF",
+  accent: "#E8583A", // brand coral — ties the run to the report it produces
+  accentSoft: "#FCEDE9",
+};
+
+const DEFAULT_STAGES: RunStage[] = [
+  { key: "source", label: "Sourcing personas", sub: "Drawing the cohort", Icon: Users },
+  { key: "walk", label: "Walking the screens", sub: "Reading + deciding", Icon: Layers },
+  { key: "cluster", label: "Clustering behaviour", sub: "Patterns by cohort", Icon: BrainCircuit },
+  { key: "verdict", label: "Writing the verdict", sub: "Attributing the levers", Icon: FileText },
+  { key: "compose", label: "Composing the design", sub: "Fusing both winners", Icon: Sparkles },
+];
+
+const VALIDATE_STAGE: RunStage = {
+  key: "validate",
+  label: "Validating the design",
+  sub: "Re-running on personas",
+  Icon: ShieldCheck,
 };
 
 export function SimulationRunningView({
@@ -66,6 +100,7 @@ export function SimulationRunningView({
   flows,
   retrievalNotice,
   eyebrow = "Running A/B simulation",
+  showRevalidation = false,
 }: SimulationRunningViewProps) {
   const startedAtRef = useRef<number | null>(null);
   const [elapsed, setElapsed] = useState(0);
@@ -95,50 +130,92 @@ export function SimulationRunningView({
   const totalPersonas = flowEntries.reduce((s, [, f]) => s + (f.personasTotal || 0), 0);
   const donePersonas = flowEntries.reduce((s, [, f]) => s + f.personasDone, 0);
 
-  // Stage tracker driver. We progress: source -> walk -> cluster -> verdict.
-  const activeStageIdx = (() => {
-    if (uploading) return 0;
-    if (phase === "saving") return 3;
-    if (phase === "starting" || flowEntries.length === 0) return 0;
-    if (totalPersonas > 0 && donePersonas >= totalPersonas) return 2;
-    return 1;
-  })();
+  const stages = showRevalidation ? [...DEFAULT_STAGES, VALIDATE_STAGE] : DEFAULT_STAGES;
 
-  const stages: { key: string; label: string; sub: string; Icon: typeof Users }[] = [
-    { key: "source", label: "Sourcing personas", sub: "Drawing the cohort", Icon: Users },
-    { key: "walk", label: "Walking the screens", sub: "Reading + deciding", Icon: Layers },
-    { key: "cluster", label: "Clustering behaviour", sub: "Patterns by cohort", Icon: BrainCircuit },
-    { key: "verdict", label: "Writing the verdict", sub: "Synthesizing insight", Icon: FileText },
-  ];
+  // Map the stream phase to a stage KEY, then resolve its index. Phase-keyed
+  // (not index-keyed) so adding/removing the revalidation stage can't desync
+  // the tracker. The persona walk + design compose are the long stages; the
+  // rest pass quickly.
+  const personasAllDone = totalPersonas > 0 && donePersonas >= totalPersonas;
+  const phaseKey = uploading || phase === "starting" || flowEntries.length === 0
+    ? "source"
+    : phase === "revalidating"
+      ? "validate"
+      : phase === "combining"
+        ? "compose"
+        : phase === "saving"
+          ? (showRevalidation ? "validate" : "compose")
+          : personasAllDone
+            ? "cluster"
+            : "walk";
+  let activeStageIdx = stages.findIndex((s) => s.key === phaseKey);
+  if (activeStageIdx < 0) activeStageIdx = uploading ? 0 : 1;
+
+  // Overall, monotonic-forward progress for the top rail. During the walk it
+  // tracks personas done; afterwards it steps through the synthesis phases.
+  const overallPct = uploading
+    ? 4
+    : phase === "saving"
+      ? 99
+      : phaseKey === "validate"
+        ? 96
+        : phaseKey === "compose"
+          ? 90
+          : phaseKey === "cluster"
+            ? 80
+            : phase === "simulating" && totalPersonas > 0
+              ? Math.min(72, 10 + Math.round((donePersonas / totalPersonas) * 62))
+              : 8;
 
   const headerTitle = uploading
     ? "Uploading your variants"
-    : phase === "saving"
-      ? "Synthesizing the verdict"
-      : phase === "simulating" && totalPersonas > 0
-        ? `${donePersonas} of ${totalPersonas} personas done`
-        : "Sourcing personas from the cohort pool";
+    : phase === "revalidating"
+      ? "Validating the fused design"
+      : phase === "combining"
+        ? "Composing the winning design"
+        : phase === "saving"
+          ? "Finalising your report"
+          : phase === "simulating" && totalPersonas > 0
+            ? `${donePersonas} of ${totalPersonas} personas done`
+            : "Sourcing personas from the cohort pool";
 
   const subline = uploading
     ? "Pushing your screens to the simulator. A few seconds."
-    : phase === "saving"
-      ? "Almost there. Clustering the verdict and saving your report."
-      : "Sit tight. A full A/B run usually takes 3 to 5 minutes.";
+    : phase === "revalidating"
+      ? "Re-running the fused design against the same personas to validate the lift."
+      : phase === "combining"
+        ? "Fusing the highest-converting elements from both variants into one screen."
+        : phase === "saving"
+          ? "Almost there. Saving your report."
+          : "Sit tight. A full A/B run usually takes 3 to 5 minutes.";
 
   return (
     <div
-      className="rounded-[14px] p-6 sm:p-8 overflow-hidden"
+      className="relative rounded-[14px] p-6 sm:p-8 overflow-hidden"
       style={{
         background: C.shell,
         border: `1px solid ${C.hairline}`,
+        boxShadow: "0 1px 2px rgba(17,24,39,0.04), 0 12px 36px -16px rgba(17,24,39,0.12)",
       }}
     >
+      {/* Top progress rail — overall forward progress across the whole run. */}
+      <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: C.hairlineSoft }}>
+        <div
+          style={{
+            height: "100%",
+            width: `${overallPct}%`,
+            background: C.accent,
+            transition: "width 700ms cubic-bezier(0.22, 1, 0.36, 1)",
+          }}
+        />
+      </div>
+
       {/* Header row: phase title + elapsed-time chip */}
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div className="min-w-0">
           <p
             className="text-[11px] font-semibold uppercase tracking-[0.12em] mb-1.5"
-            style={{ color: C.muted }}
+            style={{ color: C.accent }}
           >
             {eyebrow}
           </p>
@@ -155,9 +232,8 @@ export function SimulationRunningView({
         <ElapsedChip elapsedSec={elapsed} />
       </div>
 
-      {/* Progress lanes (replaces the looping particle diorama). The head
-          dot's position is bound to personasDone/personasTotal so it
-          actually moves as the run advances. */}
+      {/* Progress lanes. The head dot's position is bound to personasDone/
+          personasTotal so it actually moves as the run advances. */}
       <FlowProgressBoard flows={flowEntries} />
 
       {/* Stage tracker */}
@@ -249,6 +325,10 @@ function Lane({ flow }: { flow: RunningFlow }) {
   // Express progress as a percent — this is what the head dot's `left`
   // and the fill bar's `width` snap to. CSS transitions make the slide smooth.
   const pct = Math.round(ratio * 100);
+  const done = pct >= 100;
+  // The lane is "live" while it still has personas to walk; it turns graphite
+  // (settled) once complete so the eye is drawn to whatever is still running.
+  const liveColor = done ? C.ink : C.accent;
 
   return (
     <div className="relative">
@@ -277,8 +357,8 @@ function Lane({ flow }: { flow: RunningFlow }) {
             className="absolute left-0 top-1/2 -translate-y-1/2 h-[3px] rounded-full"
             style={{
               width: `${pct}%`,
-              background: C.ink,
-              transition: "width 600ms cubic-bezier(0.22, 1, 0.36, 1)",
+              background: liveColor,
+              transition: "width 600ms cubic-bezier(0.22, 1, 0.36, 1), background 300ms",
             }}
           />
           {/* Head dot — moves with progress */}
@@ -286,9 +366,9 @@ function Lane({ flow }: { flow: RunningFlow }) {
             className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full"
             style={{
               left: `${pct}%`,
-              background: C.ink,
-              boxShadow: `0 0 0 4px ${C.shell}, 0 0 0 5px ${C.hairline}`,
-              transition: "left 600ms cubic-bezier(0.22, 1, 0.36, 1)",
+              background: liveColor,
+              boxShadow: `0 0 0 4px ${C.shell}, 0 0 0 5px ${done ? C.hairline : C.accentSoft}`,
+              transition: "left 600ms cubic-bezier(0.22, 1, 0.36, 1), background 300ms",
             }}
             aria-hidden
           />
@@ -307,9 +387,9 @@ function Lane({ flow }: { flow: RunningFlow }) {
           </div>
           <p
             className="text-[10px] uppercase tracking-wider font-medium mt-1"
-            style={{ color: C.faint }}
+            style={{ color: done ? C.muted : C.accent }}
           >
-            done
+            {done ? "done" : "running"}
           </p>
         </div>
       </div>
@@ -321,11 +401,13 @@ function StageTracker({
   stages,
   activeIdx,
 }: {
-  stages: { key: string; label: string; sub: string; Icon: typeof Users }[];
+  stages: RunStage[];
   activeIdx: number;
 }) {
+  // Flex-wrap so 5 or 6 stages sit on one row on desktop and wrap to 2-3 per
+  // row on mobile without depending on dynamic Tailwind column classes.
   return (
-    <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-2">
+    <div className="mt-6 flex flex-wrap gap-2">
       {stages.map((s, idx) => {
         const isDone = idx < activeIdx;
         const isActive = idx === activeIdx;
@@ -335,17 +417,19 @@ function StageTracker({
             key={s.key}
             className="rounded-[10px] px-3 py-2.5 transition-colors"
             style={{
-              background: isActive ? C.hairlineSoft : isDone ? C.shell : C.surface,
-              border: `1px solid ${isActive ? C.ink : C.hairline}`,
+              flex: "1 1 140px",
+              minWidth: 132,
+              background: isActive ? C.accentSoft : isDone ? C.shell : C.surface,
+              border: `1px solid ${isActive ? C.accent : C.hairline}`,
             }}
           >
             <div className="flex items-center gap-2">
               <span
                 className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
                 style={{
-                  background: isDone ? C.ink : C.shell,
-                  border: `${isDone ? 0 : 1.5}px solid ${isActive ? C.ink : C.hairline}`,
-                  color: isDone ? C.shell : isActive ? C.ink : C.faint,
+                  background: isDone ? C.ink : isActive ? C.accent : C.shell,
+                  border: `${isDone || isActive ? 0 : 1.5}px solid ${C.hairline}`,
+                  color: isDone || isActive ? C.shell : C.faint,
                 }}
               >
                 {isDone ? <Check className="w-3 h-3" /> : <Icon className="w-2.5 h-2.5" />}
@@ -388,7 +472,7 @@ function Dot({ delay }: { delay: number }) {
     <span
       className="inline-block w-[3px] h-[3px] rounded-full"
       style={{
-        background: C.body,
+        background: C.accent,
         animation: `dot-pulse 0.9s ease-in-out ${delay}s infinite alternate`,
       }}
     />

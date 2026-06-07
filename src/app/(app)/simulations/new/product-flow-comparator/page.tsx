@@ -281,7 +281,8 @@ export default function ProductFlowComparatorSimulationPage() {
           });
         } else if (event.type === 'comparison_ready') {
           comparisonData = event.data;
-          setStreamProgress((prev) => prev ? { ...prev, phase: 'saving' } : null);
+          // Combiner runs next inside the open stream — reflect it.
+          setStreamProgress((prev) => prev ? { ...prev, phase: 'combining' } : null);
         } else if (event.type === 'design_combiner_ready') {
           // Lever-driven combiner emits its `ready` event during the open
           // stream, BEFORE the wizard's saveSimulation runs. The backend's
@@ -289,6 +290,7 @@ export default function ProductFlowComparatorSimulationPage() {
           // no-ops. Capturing the payload here lets the wizard write it on
           // INSERT and the results page paints it immediately.
           designCombinerData = event.data;
+          setStreamProgress((prev) => prev ? { ...prev, phase: 'saving' } : null);
         } else if (
           event.type === 'design_combiner_skipped' ||
           event.type === 'design_combiner_failed'
@@ -305,6 +307,7 @@ export default function ProductFlowComparatorSimulationPage() {
               error: event.data.message ?? null,
             },
           };
+          setStreamProgress((prev) => prev ? { ...prev, phase: 'saving' } : null);
         } else if (event.type === 'revalidation_ready') {
           // Pro-tier revalidation result — same race-resilience pattern.
           revalidationData = event.data;

@@ -41,7 +41,7 @@ import {
 } from '@/lib/backend-simulation';
 import { getAudiences, getAssetFolders, saveSimulation } from '@/lib/db';
 import type { AudienceDoc } from '@/lib/db';
-import { consumeNDJSONStream } from '@/lib/stream-simulation';
+import { consumeNDJSONStream, segmentPredicateSummary, buildSegmentIntentOverrides } from '@/lib/stream-simulation';
 import type { GeneratedSegmentSummary } from '@/lib/stream-simulation';
 import type { SimulationData } from '@/types/simulation';
 import { createFolder, uploadAssets, updateAssetMetadata } from '@/lib/assets-api';
@@ -81,6 +81,7 @@ type ProductFlowFormData = {
   poolName?: string;               // pool the segments live in (transparency on tile click)
   generatedSegments?: GeneratedSegmentSummary[];  // 9 from phase 1
   selectedSegmentIds: string[];    // 5 picks
+  segmentIntentOverrides: Record<string, string>;  // segment id → user-edited entry-intent (phase 2)
   reuseAudienceId?: string;        // when reusing a saved audience, run via /start-from-saved-audience
   saveAudienceForReuse: boolean;
   optimizeMetric: string;
@@ -169,6 +170,7 @@ export default function ProductFlowSimulationPage() {
     description: '',
     audienceState: 'input',
     selectedSegmentIds: [],
+    segmentIntentOverrides: {},
     saveAudienceForReuse: false,
     optimizeMetric: 'activation',
     selectedFolderIds: [],
@@ -245,6 +247,7 @@ export default function ProductFlowSimulationPage() {
       audienceState: 'loading',
       generatedSegments: undefined,
       selectedSegmentIds: [],
+      segmentIntentOverrides: {},
       simulationId: undefined,
       poolName: undefined,
       reuseAudienceId: undefined,
@@ -345,12 +348,18 @@ export default function ProductFlowSimulationPage() {
           ? (formData.generatedSegments
               ?.find((s) => s.id === formData.selectedSegmentIds[0])?.name ?? formData.name.trim().slice(0, 60))
           : null;
+        const intentOverrides = buildSegmentIntentOverrides(
+          formData.selectedSegmentIds,
+          formData.segmentIntentOverrides,
+          formData.generatedSegments,
+        );
         res = await runWithSegments(formData.simulationId, {
           selectedSegmentIds: formData.selectedSegmentIds,
           selectedFolderIds: formData.selectedFolderIds,
           optimizeMetric: formData.optimizeMetric,
           saveAudience: formData.saveAudienceForReuse,
           audienceName,
+          segment_intent_overrides: intentOverrides,
         });
       } else {
         showToast('error', 'No audience selected', 'Pick 5 cohorts or a saved audience first.');
@@ -372,7 +381,7 @@ export default function ProductFlowSimulationPage() {
             'Cohort selection expired',
             'Your 9-tile picker timed out. Regenerate the cohorts to continue.',
           );
-          setFormData((prev) => ({ ...prev, audienceState: 'input', simulationId: undefined, generatedSegments: undefined, selectedSegmentIds: [] }));
+          setFormData((prev) => ({ ...prev, audienceState: 'input', simulationId: undefined, generatedSegments: undefined, selectedSegmentIds: [], segmentIntentOverrides: {} }));
           setCurrentStep(1);
         } else {
           const text = await res.text();
@@ -847,6 +856,7 @@ function DescribeAudiencePane({
                 audienceState: 'input',
                 generatedSegments: undefined,
                 selectedSegmentIds: [],
+                segmentIntentOverrides: {},
                 simulationId: undefined,
                 poolName: undefined,
               }));
@@ -914,6 +924,40 @@ function DescribeAudiencePane({
                 {isExpanded && (
                   <div className="px-3 pb-3 border-t border-[#F3F4F6]">
                     <p className="text-[12px] text-[#4B5563] mt-2 leading-[1.55]">{seg.description}</p>
+                    {segmentPredicateSummary(seg) && (
+                      <p className="mt-2 text-[10px] uppercase tracking-wider text-[#9CA3AF]">
+                        Targeting: <span className="font-medium text-[#6B7280] normal-case tracking-normal">{segmentPredicateSummary(seg)}</span>
+                      </p>
+                    )}
+                    {(seg.entry_intent || isSelected) && (
+                      <div className="mt-2.5">
+                        <p className="text-[10px] uppercase tracking-wider text-[#9CA3AF] mb-1">Why this cohort is here</p>
+                        {isSelected ? (
+                          <>
+                            <textarea
+                              value={formData.segmentIntentOverrides[seg.id] ?? seg.entry_intent ?? ''}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) => {
+                                const v = e.target.value;
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  segmentIntentOverrides: { ...prev.segmentIntentOverrides, [seg.id]: v },
+                                }));
+                              }}
+                              placeholder="e.g. Saw a friend's referral and wants to compare before switching."
+                              rows={2}
+                              maxLength={500}
+                              className="w-full text-[12px] text-[#1A1A1A] placeholder:text-[#9CA3AF] border-[1.5px] border-[#E5E7EB] rounded-[8px] px-2.5 py-2 focus:border-[#1F2937] focus:outline-none transition-all resize-none leading-[1.5]"
+                            />
+                            <p className="mt-1 text-[10px] text-[#9CA3AF] leading-[1.4]">
+                              Their mindset on arrival — it shapes how they judge this screen. Not their goal.
+                            </p>
+                          </>
+                        ) : (
+                          <p className="text-[12px] text-[#4B5563] leading-[1.55] italic">{seg.entry_intent}</p>
+                        )}
+                      </div>
+                    )}
                     <p className="mt-2 text-[10px] uppercase tracking-wider text-[#9CA3AF]">
                       Pool: <span className="font-medium text-[#6B7280]">{seg.pool_name}</span>
                     </p>
@@ -1024,6 +1068,7 @@ function SavedAudiencesPane({
                       simulationId: undefined,
                       generatedSegments: undefined,
                       selectedSegmentIds: [],
+                      segmentIntentOverrides: {},
                     }));
                   }}
                   className={`text-left rounded-xl border-[1.5px] px-[18px] py-4 transition-all duration-150 cursor-pointer flex items-start gap-3 ${

@@ -362,6 +362,7 @@ function ScreenLeverBlock({
       >
         {/* Header row */}
         <div
+          className="lever-row-header"
           style={{
             display: "grid",
             gridTemplateColumns: "minmax(160px, 1.2fr) minmax(0, 1.2fr) minmax(0, 1.2fr) minmax(0, 1fr)",
@@ -391,6 +392,7 @@ function ScreenLeverBlock({
           return (
             <div
               key={lev.lever_id}
+              className="lever-row"
               style={{
                 display: "grid",
                 gridTemplateColumns: "minmax(160px, 1.2fr) minmax(0, 1.2fr) minmax(0, 1.2fr) minmax(0, 1fr)",
@@ -553,6 +555,7 @@ function LeverComboRow({
   return (
     <motion.div
       {...stagger(index)}
+      className="combo-row"
       style={{
         display: "grid",
         gridTemplateColumns: "minmax(0, 2fr) auto auto auto auto",
@@ -562,9 +565,9 @@ function LeverComboRow({
         borderBottom: `1px solid ${T.border}`,
       }}
     >
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 0 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 7, minWidth: 0 }}>
         <LeverChipRow ids={combo.levers} labels={labels} />
-        <div style={{ fontSize: 12, color: T.text2, lineHeight: 1.45 }}>
+        <div style={{ fontSize: 12.5, color: T.text2, lineHeight: 1.5 }}>
           {combo.interpretation}
         </div>
       </div>
@@ -621,6 +624,7 @@ function CombinationsBlock({
         }}
       >
         <div
+          className="combo-row-header"
           style={{
             display: "grid",
             gridTemplateColumns: "minmax(0, 2fr) auto auto auto auto",
@@ -918,13 +922,20 @@ export function LeverAnalysisView({ data }: LeverAnalysisViewProps) {
         <CombinationsBlock attribution={data.lever_attribution} labels={labels} />
       )}
 
-      {/* Mobile responsiveness for the per-lever grid */}
+      {/* Mobile responsiveness for the lever + combo grids. The column
+          headers don't make sense once the row stacks vertically, so hide them
+          and let each row read as a labelled card instead of a squished grid. */}
       <style jsx global>{`
         @media (max-width: 900px) {
           .lever-row,
-          .lever-row-header {
+          .combo-row {
             grid-template-columns: 1fr !important;
-            row-gap: 8px !important;
+            row-gap: 10px !important;
+            align-items: start !important;
+          }
+          .lever-row-header,
+          .combo-row-header {
+            display: none !important;
           }
         }
       `}</style>
