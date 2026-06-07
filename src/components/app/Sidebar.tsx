@@ -8,6 +8,7 @@ import {
   Beaker,
   Users,
   Image as ImageIcon,
+  Globe,
   Settings,
   CreditCard,
   X,
@@ -41,6 +42,7 @@ const navigation = [
   // Hidden in v1 — re-enable when product-context flow is ready.
   // { name: 'Product Context', href: '/product-context', icon: Package },
   { name: 'Assets', href: '/assets', icon: ImageIcon },
+  { name: 'Live URL', href: '/live-url', icon: Globe },
 ];
 
 const secondaryNavigation = [

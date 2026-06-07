@@ -258,6 +258,62 @@ export async function triggerProductFlowComparatorSimulation(
 }
 
 // ---------------------------------------------------------------------------
+// Live URL testing — synthetic personas autonomously drive a real website.
+// Streams NDJSON: started → personas_loaded → persona_started
+//                → step × N (per-action) → persona_complete → insights_ready.
+// Fully separate from the design-sim / live-app paths; backend route lives at
+// /api/v1/simulations/live-url/run (src/api/routes/live_web.py).
+// ---------------------------------------------------------------------------
+
+// Shape mirrors backend LiveWebSimulationRequest / LiveWebAuth (src/api/models/requests.py).
+// Field names are snake_case to match the Pydantic model exactly — uid comes from
+// the JWT, so no profileId in the body.
+export interface LiveUrlAuth {
+  username?: string;            // existing-user login
+  password?: string;
+  login_url?: string;          // defaults to start_url if the form is on the start page
+  storage_state?: Record<string, unknown>;  // pre-exported Playwright session — skips login UI
+  create_account?: boolean;    // self-signup mode (AgentMail); mutually distinct from username/password
+}
+
+export interface LiveUrlPayload {
+  start_url: string;
+  goal: string;                // PRODUCT CONTEXT — derives each persona's own intent (never a "complete" mandate)
+  objective?: string;          // PM measurement objective — graded post-hoc, never shown to the persona
+  target_group: string;        // free-text audience segment
+  num_personas?: number;       // 1-20, default 5
+  max_steps_per_persona?: number;  // 5-200, default 40
+  mode?: "autonomous" | "screenshot";
+  viewport?: "mobile" | "desktop";
+  block_irreversible?: boolean;    // default true — blocks pay/place-order/OTP controls
+  auth?: LiveUrlAuth;
+  product_domain?: "investment" | "fintech" | "dating";
+  country?: "IN" | "US";
+  pool_id?: string;            // optional pin; else the audience-router picks
+}
+
+/** POST /api/v1/simulations/live-url/run — streaming NDJSON live URL walk.
+ * Pass an AbortSignal so the caller's Stop control cancels the in-flight fetch. */
+export async function runLiveUrlSimulation(
+  payload: LiveUrlPayload,
+  signal?: AbortSignal,
+): Promise<Response> {
+  const headers = await authHeaders();
+  try {
+    return await fetch(`${BASE_URL}/api/v1/simulations/live-url/run`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(payload),
+      signal,
+    });
+  } catch {
+    throw new Error(
+      `Cannot connect to the backend server at ${BASE_URL}. Please check your network and try again.`,
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Server-persisted simulation results & public sharing
 // ---------------------------------------------------------------------------
 

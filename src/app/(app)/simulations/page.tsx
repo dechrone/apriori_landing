@@ -35,6 +35,7 @@ function getSimulationHref(sim: SimulationDoc) {
   if (sim.id === 'sample-flent') return '/demo/univest';
   if (sim.id === 'sample-hexahealth') return '/demo/univest';
   if (sim.type === 'Product Flow Comparator') return `/simulations/product-flow-comparator/${sim.id}`;
+  if (sim.type === 'live-url') return `/live-url/${sim.id}`;
   return `/simulations/${sim.id}`;
 }
 
@@ -120,6 +121,12 @@ function extractStats(sim: SimulationDoc): { label: string; value: string; sub?:
 const TYPE_TAG_STYLES: Record<string, string> = {
   'Product Flow': 'bg-[#F3F4F6] text-[#1F2937]',
   'Product Flow Comparator': 'bg-[#E5E7EB] text-[#1F2937]',
+  'live-url': 'bg-[#FDF6E3] text-[#92710A]',
+};
+
+/* Display label for raw backend `type` values that aren't already human-readable. */
+const TYPE_LABEL: Record<string, string> = {
+  'live-url': 'Live URL',
 };
 
 const STATUS_TAG_STYLES: Record<string, string> = {
@@ -571,7 +578,7 @@ export default function SimulationsPage() {
                               <span
                                 className={`text-[12px] font-semibold rounded-full px-3 py-1 ${TYPE_TAG_STYLES[simulation.type] || 'bg-[#F3F4F6] text-[#6B7280]'}`}
                               >
-                                {simulation.type}
+                                {TYPE_LABEL[simulation.type] ?? simulation.type}
                               </span>
                               {/* Status tag */}
                               <span
