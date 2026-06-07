@@ -286,14 +286,19 @@ export interface LiveUrlPayload {
   pool_id?: string;            // optional pin; else the audience-router picks
 }
 
-/** POST /api/v1/simulations/live-url/run — streaming NDJSON live URL walk. */
-export async function runLiveUrlSimulation(payload: LiveUrlPayload): Promise<Response> {
+/** POST /api/v1/simulations/live-url/run — streaming NDJSON live URL walk.
+ * Pass an AbortSignal so the caller's Stop control cancels the in-flight fetch. */
+export async function runLiveUrlSimulation(
+  payload: LiveUrlPayload,
+  signal?: AbortSignal,
+): Promise<Response> {
   const headers = await authHeaders();
   try {
     return await fetch(`${BASE_URL}/api/v1/simulations/live-url/run`, {
       method: "POST",
       headers,
       body: JSON.stringify(payload),
+      signal,
     });
   } catch {
     throw new Error(

@@ -229,13 +229,16 @@ export default function LiveUrlPage() {
     const ctrl = new AbortController();
     abortRef.current = ctrl;
     try {
-      const res = await runLiveUrlSimulation(payload);
+      const res = await runLiveUrlSimulation(payload, ctrl.signal);
       if (!res.ok || !res.body) {
-        err(`Run failed ()`);
+        err(`Run failed (${res.status})`);
         setPhase("setup");
         return;
       }
       const reader = res.body.getReader();
+      // Cancel a pending reader.read() the moment Stop is pressed — otherwise the
+      // loop blocks in read() between NDJSON chunks and the run stays "running".
+      ctrl.signal.addEventListener("abort", () => { reader.cancel().catch(() => {}); }, { once: true });
       const dec = new TextDecoder();
       let buf = "";
       while (true) {
