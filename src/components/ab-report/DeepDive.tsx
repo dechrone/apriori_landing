@@ -232,14 +232,21 @@ function VariantCard({ label, experience }: { label: string; experience: Persona
         <blockquote style={{ borderLeft: "3px solid #E2E8F0", paddingLeft: 12, margin: 0, fontSize: 15, fontStyle: "italic", color: "#334155", lineHeight: 1.6 }}>
           &ldquo;{monologue}&rdquo;
         </blockquote>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 14, flexWrap: "wrap" }}>
           <span style={{ fontSize: 11, fontWeight: 500, padding: "2px 8px", borderRadius: 9999, backgroundColor: es.bg, color: es.color, flexShrink: 0 }}>
             {primary_emotion}
           </span>
-          <span style={{ fontSize: 13, fontWeight: 400, color: "#475569", lineHeight: 1.4 }}>
-            {why}
-          </span>
         </div>
+        {why && (
+          <div style={{ marginTop: 10, display: "flex", gap: 8, alignItems: "baseline" }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: "#94A3B8", letterSpacing: "0.06em", textTransform: "uppercase", flexShrink: 0 }}>
+              Why
+            </span>
+            <span style={{ fontSize: 13, fontWeight: 400, color: "#475569", lineHeight: 1.5 }}>
+              {why}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* ZONE 3 — Liked / Disliked */}
