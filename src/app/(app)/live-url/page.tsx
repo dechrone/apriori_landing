@@ -135,6 +135,8 @@ export default function LiveUrlPage() {
   const [selStep, setSelStep] = useState<number | "live">("live");
   const [insights, setInsights] = useState<Insights | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const sawInsightsRef = useRef(false);  // did insights_ready arrive this run?
+  const sawErrorRef = useRef(false);     // was an error already surfaced this run?
 
   const upsertAgent = useCallback((uuid: string, patch: Partial<AgentState>) => {
     setAgents((prev) => {
@@ -184,10 +186,12 @@ export default function LiveUrlPage() {
         upsertAgent(uuid, { status: "error", error: d.message });
         break;
       case "insights_ready":
+        sawInsightsRef.current = true;
         setInsights(d as Insights);
         setPhase("done");
         break;
       case "error":
+        sawErrorRef.current = true;
         err(d.message ?? "Run failed");
         break;
     }
@@ -208,6 +212,7 @@ export default function LiveUrlPage() {
     }
 
     setAgents({}); setOrder([]); setActiveUuid(null); setSelStep("live"); setInsights(null);
+    sawInsightsRef.current = false; sawErrorRef.current = false;
     setPhase("running");
 
     const payload: LiveUrlPayload = {
@@ -228,6 +233,7 @@ export default function LiveUrlPage() {
 
     const ctrl = new AbortController();
     abortRef.current = ctrl;
+    let streamed = false;
     try {
       const res = await runLiveUrlSimulation(payload, ctrl.signal);
       if (!res.ok || !res.body) {
@@ -239,6 +245,7 @@ export default function LiveUrlPage() {
       // Cancel a pending reader.read() the moment Stop is pressed — otherwise the
       // loop blocks in read() between NDJSON chunks and the run stays "running".
       ctrl.signal.addEventListener("abort", () => { reader.cancel().catch(() => {}); }, { once: true });
+      streamed = true;
       const dec = new TextDecoder();
       let buf = "";
       while (true) {
@@ -255,7 +262,18 @@ export default function LiveUrlPage() {
         }
       }
     } catch (e) {
-      if (!ctrl.signal.aborted) err(e instanceof Error ? e.message : "Stream error");
+      if (!ctrl.signal.aborted) { sawErrorRef.current = true; err(e instanceof Error ? e.message : "Stream error"); }
+    } finally {
+      // Stream closed without insights_ready (backend error / timeout / early
+      // termination) — don't leave the UI stuck on "Agents working…". The normal
+      // insights_ready path already set phase to "done" (sawInsightsRef), and Stop
+      // set it via abort, so this only fires on an abnormal close.
+      if (streamed && !ctrl.signal.aborted) {
+        setPhase((p) => (p === "running" ? "done" : p));
+        if (!sawInsightsRef.current && !sawErrorRef.current) {
+          err("The run ended without a final report (backend error or timeout).");
+        }
+      }
     }
   }, [userId, startUrl, targetGroup, goal, objective, numPersonas, maxSteps, viewport, blockIrreversible, productDomain, country, poolId, authMode, username, password, loginUrl, storageState, handleEvent, err]);
 
