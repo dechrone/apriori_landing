@@ -694,7 +694,7 @@ export function AnnotatedPhone({
         </div>
 
         {/* Dots, lines, badges — all above the phone */}
-        {elements.map((el) => {
+        {elements.map((el, idx) => {
           const hovered = hoveredId === el.id;
           const dotY = el.anchor.y * PHONE_H;
           const dotX = calloutSide === "left"
@@ -770,7 +770,7 @@ export function AnnotatedPhone({
           };
 
           return (
-            <React.Fragment key={el.id}>
+            <React.Fragment key={`${el.id}-${idx}`}>
               {/* Dot */}
               <div style={dotStyle} {...interact(el.id)} onClick={() => setSelectedEl(el)} />
               {/* Line */}
@@ -787,9 +787,9 @@ export function AnnotatedPhone({
 
       {/* Mobile fallback */}
       <div className="mobile-callouts" style={{ display: "none", flexDirection: "column", gap: 12, marginTop: 16 }}>
-        {elements.map((el) => (
+        {elements.map((el, idx) => (
           <div
-            key={el.id}
+            key={`${el.id}-${idx}`}
             onClick={() => setSelectedEl(el)}
             style={{ display: "flex", gap: 8, alignItems: "flex-start", cursor: "pointer" }}
           >
