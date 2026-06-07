@@ -128,6 +128,11 @@ export interface ScreenMonologue {
   friction_points: string[];
   selected_choice: "CONTINUE" | "DROP_OFF";
   decision_outcome: "CONTINUE" | "DROP_OFF";
+  /** LLM counterfactual probe (sampled ~25% of non-LINEAR decisions): the one
+   * change to THE PRODUCT that would have flipped this persona's decision.
+   * Null on un-probed screens. Richer than a heuristic missing-element guess —
+   * surfaced in the "What would have helped" slot when present. */
+  marginal_driver?: string | null;
 }
 
 export interface Demographics {

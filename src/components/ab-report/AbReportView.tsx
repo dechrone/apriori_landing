@@ -402,6 +402,12 @@ interface AbReportViewProps {
    * client-side budget — flips the WinningDesignCard out of its loading spinner
    * into a neutral "timed out" state so it can't hang forever. */
   combinerStalled?: boolean;
+  /** Read-only public view (e.g. the /r/[shareId] shared link). Omits the
+   * owner-only Share button (which would 401 for a logged-out viewer and leak
+   * the simulation_id) and suppresses the live "Composed Variant" combiner card
+   * when no fused-design payload was persisted with the share (nothing to act
+   * on / re-run on a static link). */
+  readOnly?: boolean;
 }
 
 /**
@@ -1036,7 +1042,7 @@ function ScreensTestedBlock({ pair, totalScreens }: { pair: AnnotatedScreenPair;
   );
 }
 
-export function AbReportView({ data, designCombiner, combinerStalled }: AbReportViewProps) {
+export function AbReportView({ data, designCombiner, combinerStalled, readOnly }: AbReportViewProps) {
   const [activeTab, setActiveTab] = useState("overview");
   const screens = data.annotated_screens.screens ?? [];
 
@@ -1068,7 +1074,7 @@ export function AbReportView({ data, designCombiner, combinerStalled }: AbReport
       <TopBar
         title="A/B Comparison Report"
         breadcrumb={`${data.meta.client} · ${data.meta.screen_label}`}
-        actions={<ShareReportButton simulationId={data.meta.simulation_id} />}
+        actions={readOnly ? null : <ShareReportButton simulationId={data.meta.simulation_id} />}
       />
       <TabBar
         tabs={tabs}
@@ -1087,8 +1093,22 @@ export function AbReportView({ data, designCombiner, combinerStalled }: AbReport
             <motion.div {...fadeUp}>
               <div style={{ background: T.heroBg, borderRadius: 20, padding: "40px 44px", position: "relative", overflow: "hidden" }}>
                 <div style={{ position: "absolute", top: -60, right: -60, width: 280, height: 280, borderRadius: "50%", background: "rgba(232,88,58,0.18)", filter: "blur(90px)", pointerEvents: "none" }} />
-                <div style={{ fontSize: 12, fontWeight: 600, color: T.accent, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 16 }}>
-                  THE VERDICT
+                <div style={{ fontSize: 12, fontWeight: 600, color: T.accent, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 16, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                  <span>THE VERDICT</span>
+                  {(() => {
+                    // Canonical winner — the lever-derived ship direction the
+                    // design combiner also builds on. Shown as the headline
+                    // badge so the winner is unambiguous and machine-derived,
+                    // not parsed out of the prose.
+                    const w = data.verdict.winner;
+                    if (w !== "A" && w !== "B" && w !== "neither") return null;
+                    const label = w === "neither" ? "NO CLEAR WINNER" : `SHIP VARIANT ${w}`;
+                    return (
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF", background: w === "neither" ? "rgba(255,255,255,0.18)" : "rgba(232,88,58,0.85)", borderRadius: 999, padding: "3px 12px", letterSpacing: "0.08em" }}>
+                        {label}
+                      </span>
+                    );
+                  })()}
                 </div>
                 <p style={{ fontFamily: "var(--font-flow-display), serif", fontSize: 24, fontWeight: 500, color: "#FFFFFF", lineHeight: 1.4, letterSpacing: "-0.01em", maxWidth: 980, margin: 0 }}>
                   {data.verdict.sentence}
@@ -1108,7 +1128,10 @@ export function AbReportView({ data, designCombiner, combinerStalled }: AbReport
                     title="What to ship"
                     subtitle="Specific elements to keep or kill, copy directly into your tracker."
                   />
-                  {(data.lever_attribution || designCombiner) && (
+                  {/* On a read-only shared view with no persisted fused-design
+                      payload, skip the card entirely — its "timed out / re-run
+                      the comparator" state reads as actionable but isn't. */}
+                  {(designCombiner || (!readOnly && data.lever_attribution)) && (
                     <WinningDesignCard
                       payload={designCombiner ?? null}
                       stalled={combinerStalled ?? false}

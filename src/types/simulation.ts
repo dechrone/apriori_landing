@@ -143,6 +143,9 @@ export interface ScreenMonologue {
   trust_score?: number;
   clarity_score?: number;
   value_score?: number;
+  /** LLM counterfactual: the product change that would have flipped this
+   * decision (sampled subset; null otherwise). */
+  marginal_driver?: string | null;
   time_seconds?: number;
   selected_choice?: string;
 }

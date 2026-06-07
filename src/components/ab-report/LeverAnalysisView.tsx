@@ -31,6 +31,7 @@ import type {
   AnnotatedScreenPair,
   LeverAttribution,
   LeverCombination,
+  LeverInteractionRow,
   ScreenElement,
 } from "@/types/ab-report";
 
@@ -144,7 +145,30 @@ function VerdictPill({ verdict }: { verdict: string }) {
   );
 }
 
-function PersonaCount({ count }: { count: number }) {
+function PersonaCount({ count }: { count: number | null | undefined }) {
+  // null/undefined => vision-fallback estimate, not a measured count. Show a
+  // neutral "model-estimated" affordance instead of a fabricated number so the
+  // user never reads a hallucinated count as real persona data.
+  if (count == null) {
+    return (
+      <span
+        title="No structured lever reactions for this screen — element estimated by the vision model, not a measured persona count."
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 4,
+          fontSize: 11,
+          fontWeight: 500,
+          color: T.text4,
+          whiteSpace: "nowrap",
+          fontStyle: "italic",
+        }}
+      >
+        <Users size={11} />
+        est.
+      </span>
+    );
+  }
   return (
     <span
       style={{
@@ -706,7 +730,107 @@ function CombinationsBlock({
           )}
         </div>
       )}
+
+      {(attribution.interactions?.length ?? 0) > 0 && (
+        <div style={{ marginTop: 28 }}>
+          <div style={{ fontSize: 11, fontWeight: 500, color: T.text3, letterSpacing: 1, textTransform: "uppercase" }}>
+            Interactions
+          </div>
+          <div style={{ fontSize: 18, fontWeight: 500, color: T.ink, marginTop: 4 }}>
+            How the winning levers behave when fused
+          </div>
+          <div style={{ fontSize: 13, color: T.text3, marginTop: 2, marginBottom: 12 }}>
+            Whether each combo&apos;s levers amplify, sit independent, or clash
+            when combined into one design — the same signal the design combiner
+            uses to decide what to keep together vs. soften.
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {(attribution.interactions ?? []).map((row, i) => (
+              <LeverInteractionRowView key={`int-${i}`} row={row} labels={labels} />
+            ))}
+          </div>
+        </div>
+      )}
     </>
+  );
+}
+
+/* ── Lever interactions (reinforce / neutral / contradict) ─────────────────── */
+
+const _INTERACTION_STYLES: Record<
+  LeverInteractionRow["interaction"],
+  { bg: string; fg: string; label: string; blurb: string }
+> = {
+  reinforce: { bg: "#ECFDF5", fg: "#047857", label: "Reinforce", blurb: "amplify each other — keep both" },
+  neutral: { bg: "#F3F4F6", fg: "#6B7280", label: "Neutral", blurb: "independent — safe to mix" },
+  contradict: { bg: "#FEF2F2", fg: "#B91C1C", label: "Contradict", blurb: "visual tension — soften one" },
+};
+
+function LeverInteractionRowView({
+  row,
+  labels,
+}: {
+  row: LeverInteractionRow;
+  labels: Record<string, string>;
+}) {
+  const s = _INTERACTION_STYLES[row.interaction] ?? _INTERACTION_STYLES.neutral;
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 12,
+        padding: "12px 16px",
+        background: T.card,
+        borderRadius: 10,
+        border: `1px solid ${T.border}`,
+      }}
+    >
+      <span
+        style={{
+          flexShrink: 0,
+          fontSize: 11,
+          fontWeight: 700,
+          color: s.fg,
+          background: s.bg,
+          borderRadius: 999,
+          padding: "3px 10px",
+          letterSpacing: 0.3,
+          textTransform: "uppercase",
+        }}
+      >
+        {s.label}
+      </span>
+      <div style={{ minWidth: 0 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 4 }}>
+          {row.combo_levers.map((id) => (
+            <span
+              key={id}
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                color: T.text2,
+                background: "#F9FAFB",
+                border: `1px solid ${T.border}`,
+                borderRadius: 6,
+                padding: "1px 7px",
+              }}
+            >
+              {labels[id] || id}
+            </span>
+          ))}
+          <span style={{ fontSize: 11, color: T.text4, alignSelf: "center" }}>
+            (Variant {row.variant})
+          </span>
+        </div>
+        <div style={{ fontSize: 12, color: T.text3, lineHeight: 1.4 }}>
+          {s.blurb}
+          {row.interaction === "contradict" && row.conflict_reason
+            ? ` — ${row.conflict_reason}`
+            : ""}
+        </div>
+      </div>
+    </div>
   );
 }
 

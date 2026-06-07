@@ -50,7 +50,12 @@ export function PersonaScreenCard({ monologue, missingElement }: Props) {
     clarity_score,
     decision_outcome,
     friction_points,
+    marginal_driver,
   } = monologue;
+
+  // Prefer the LLM counterfactual (marginal_driver) — what product change would
+  // have flipped THIS decision — over the heuristic missing-element guess.
+  const whatWouldHelp = marginal_driver || missingElement;
 
   const emotions = parseEmotions(emotional_state);
 
@@ -201,14 +206,14 @@ export function PersonaScreenCard({ monologue, missingElement }: Props) {
             },
           )}
 
-          {/* Missing element */}
-          {missingElement && (
+          {/* What would have helped — LLM counterfactual preferred over heuristic */}
+          {whatWouldHelp && (
             <div className="mt-4 rounded-md border border-dashed border-slate-200 bg-slate-50 px-3 py-2.5">
               <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-1">
                 💡&ensp;What would have helped
               </p>
               <p className="text-[14px] text-slate-600 leading-relaxed">
-                {missingElement}
+                {whatWouldHelp}
               </p>
             </div>
           )}

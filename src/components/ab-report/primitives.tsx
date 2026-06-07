@@ -778,7 +778,7 @@ export function AnnotatedPhone({
               {/* Badge */}
               <div style={badgeStyle} {...interact(el.id)} onClick={() => setSelectedEl(el)}>
                 <Users size={12} />
-                {el.persona_count}
+                {el.persona_count ?? "est."}
               </div>
             </React.Fragment>
           );
@@ -795,7 +795,7 @@ export function AnnotatedPhone({
           >
             <span style={{ width: 8, height: 8, borderRadius: 999, background: verdictColor[el.verdict], flexShrink: 0, marginTop: 4 }} />
             <div>
-              <div style={{ fontSize: 13, fontWeight: 500, color: T.ink, lineHeight: 1.3 }}>{el.persona_count} personas</div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: T.ink, lineHeight: 1.3 }}>{el.persona_count == null ? "Model-estimated" : `${el.persona_count} personas`}</div>
               <div style={{ fontSize: 11, fontWeight: 400, color: T.text4, marginTop: 1 }}>{el.label}</div>
             </div>
           </div>
@@ -812,7 +812,9 @@ export function AnnotatedPhone({
               </Pill>
             </div>
             <div style={{ fontSize: 11, fontWeight: 500, color: T.text4, marginBottom: 4 }}>
-              {selectedEl.persona_count} personas whose decision hinged on this
+              {selectedEl.persona_count == null
+                ? "Model-estimated (no measured persona count for this screen)"
+                : `${selectedEl.persona_count} personas whose decision hinged on this`}
             </div>
             <p style={{ fontSize: 14, fontWeight: 500, color: T.ink, margin: "8px 0 8px", lineHeight: 1.4 }}>{selectedEl.callout}</p>
             <p style={{ fontSize: 13, lineHeight: 1.5, color: T.text2, margin: 0 }}>{selectedEl.summary}</p>
