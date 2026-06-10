@@ -73,6 +73,30 @@ export function Hero() {
         animate="visible"
         className="relative z-20 flex flex-col items-center text-center max-w-5xl"
       >
+        <motion.div
+          variants={itemVariants}
+          className="mb-8 flex items-center justify-center gap-3 sm:gap-4"
+        >
+          <span
+            className="hidden sm:block h-px w-8 md:w-12"
+            style={{
+              background: "linear-gradient(90deg, transparent, rgba(245, 215, 110, 0.45))",
+            }}
+          />
+          <span
+            className="text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.22em] sm:tracking-[0.3em]"
+            style={{ color: "rgba(245, 215, 110, 0.72)" }}
+          >
+            World&apos;s most advanced human simulation model
+          </span>
+          <span
+            className="hidden sm:block h-px w-8 md:w-12"
+            style={{
+              background: "linear-gradient(90deg, rgba(245, 215, 110, 0.45), transparent)",
+            }}
+          />
+        </motion.div>
+
         <motion.h1
           variants={itemVariants}
           className="font-semibold"
@@ -141,8 +165,135 @@ export function Hero() {
             Run It On Your Flow
           </a>
         </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <CredibilityStrip />
+        </motion.div>
       </motion.div>
     </section>
+  );
+}
+
+type Brand = { name: string; domain: string; color: string };
+
+const BACKERS: Brand[] = [
+  { name: "Microsoft", domain: "microsoft.com", color: "#737373" },
+  { name: "Amazon", domain: "amazon.com", color: "#FF9900" },
+  { name: "Y Combinator Startup School", domain: "ycombinator.com", color: "#FF6600" },
+];
+
+const GOOGLE: Brand = { name: "Google", domain: "google.com", color: "#4285F4" };
+const ANTLER: Brand = { name: "Antler", domain: "antler.co", color: "#E8472B" };
+
+function CredibilityStrip() {
+  return (
+    <div className="mt-14 flex flex-col items-center gap-6">
+      {/* Backed by — grayscale trust row, color on hover */}
+      <div className="flex flex-wrap items-center justify-center gap-x-7 sm:gap-x-9 gap-y-4">
+        <span
+          className="text-[10px] font-semibold uppercase tracking-[0.24em]"
+          style={{ color: "rgba(168, 162, 148, 0.65)" }}
+        >
+          Backed by
+        </span>
+        {BACKERS.map((b) => (
+          <TrustLogo key={b.name} brand={b} />
+        ))}
+      </div>
+
+      {/* hairline divider */}
+      <span
+        className="h-px w-20"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent, rgba(245, 215, 110, 0.22), transparent)",
+        }}
+      />
+
+      {/* Programme + pedigree */}
+      <div
+        className="flex flex-col sm:flex-row items-center gap-x-4 gap-y-2.5 text-center text-[12.5px] sm:text-[13px]"
+        style={{ color: MUTED_TEXT }}
+      >
+        <span className="inline-flex items-center gap-2">
+          <span>Part of the</span>
+          <span className="inline-flex items-center gap-1.5">
+            <BrandFavicon brand={GOOGLE} size={17} />
+            <span style={{ color: "rgba(168, 162, 148, 0.45)" }}>&times;</span>
+            <BrandFavicon brand={ANTLER} size={17} />
+          </span>
+          <span>Immersion Programme</span>
+        </span>
+        <span
+          className="hidden sm:block h-3.5 w-px"
+          style={{ background: "rgba(168, 162, 148, 0.22)" }}
+        />
+        <span>
+          Built by brains from{" "}
+          <span className="font-semibold" style={{ color: PRIMARY_YELLOW }}>
+            IIT Delhi
+          </span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function TrustLogo({ brand }: { brand: Brand }) {
+  return (
+    <div className="group flex items-center gap-2" title={brand.name}>
+      <BrandFavicon
+        brand={brand}
+        size={18}
+        className="grayscale opacity-65 transition duration-300 group-hover:grayscale-0 group-hover:opacity-100"
+      />
+      <span
+        className="text-[13px] font-medium transition-colors duration-300"
+        style={{ color: "rgba(213, 208, 196, 0.8)" }}
+      >
+        {brand.name}
+      </span>
+    </div>
+  );
+}
+
+function BrandFavicon({
+  brand,
+  size,
+  className = "",
+}: {
+  brand: Brand;
+  size: number;
+  className?: string;
+}) {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <span
+        className={`flex items-center justify-center rounded-[4px] font-bold text-white flex-shrink-0 ${className}`}
+        style={{
+          width: size,
+          height: size,
+          fontSize: size * 0.55,
+          backgroundColor: brand.color,
+        }}
+        aria-label={brand.name}
+      >
+        {brand.name[0]}
+      </span>
+    );
+  }
+  return (
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img
+      src={`https://www.google.com/s2/favicons?domain=${brand.domain}&sz=128`}
+      alt={brand.name}
+      width={size}
+      height={size}
+      className={`rounded-[4px] flex-shrink-0 ${className}`}
+      style={{ width: size, height: size, objectFit: "contain" }}
+      onError={() => setFailed(true)}
+    />
   );
 }
 
