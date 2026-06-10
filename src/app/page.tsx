@@ -1,5 +1,6 @@
 import { Hero } from "@/components/Hero";
 import { HeroLogoMarquee } from "@/components/HeroLogoMarquee";
+import { Testimonials } from "@/components/Testimonials";
 import { DemoSection } from "@/components/DemoSection";
 import { TheProblem } from "@/components/TheProblem";
 import { WorkflowSteps } from "@/components/WorkflowSteps";
@@ -13,6 +14,7 @@ export default function Home() {
     <main className="landing-dark relative min-h-screen bg-black">
       <Hero />
       <HeroLogoMarquee />
+      <Testimonials />
       <TheProblem />
       <WorkflowSteps />
       <WhatYouGet />

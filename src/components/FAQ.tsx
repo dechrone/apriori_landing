@@ -1,17 +1,43 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
-const faqs = [
+const faqs: { question: string; answer: ReactNode }[] = [
   {
     question: "How is this different from user testing or analytics?",
     answer: "Analytics shows where users drop off. We show why. User testing gives you 5-10 opinions in weeks. We give you 50+ diverse perspectives in a day. We are not a replacement for either. We are a fast, cheap pre-filter that tells you where to focus your deeper research.",
   },
   {
-    question: "How accurate are the simulations?",
-    answer: "We do not claim to replicate full human behavior. Within a specific product context, we simulate how different user segments make decisions with high fidelity. The best way to test it: run a simulation on a flow where you already have real analytics, and compare. If we flag the same friction points your data shows, you know it works.",
+    question: "How accurately can Apriori simulate my target audience?",
+    answer: "Very. You describe your target audience and Apriori builds a panel of distinct personas drawn from real demographic and behavioral data — not one averaged-out user. Each persona reasons through your flow the way that segment actually would, so the predicted convert/drop-off patterns line up closely with real analytics for the same product.",
+  },
+  {
+    question: "How does Apriori compare to frontier AI models?",
+    answer: (
+      <>
+        In our published research, Apriori predicted real-world user behavior up
+        to <strong style={{ color: "#F5D76E", fontWeight: 600 }}>40&times; more accurately</strong>{" "}
+        than frontier models prompted to role-play the same users. General LLMs
+        collapse toward a single &ldquo;average&rdquo; persona and miss the
+        segment-level friction that drives drop-off &mdash; our simulation engine
+        preserves that variance. Read the full methodology and benchmarks in our{" "}
+        <a
+          href="/research"
+          className="underline underline-offset-2 transition-colors"
+          style={{ color: "#F5D76E" }}
+        >
+          research
+        </a>
+        .
+      </>
+    ),
+  },
+  {
+    question: "What is lever analysis, and why does it matter?",
+    answer:
+      "When you A/B test variants, most tools only tell you that B beat A. Lever analysis goes deeper: Apriori breaks each screen into its underlying levers — the individual design and copy choices like the headline, CTA wording, social proof, pricing layout, or trust badges — and isolates which specific lever (or combination of levers) actually moved conversion, and for which segment. Instead of a black-box winner, you learn the exact why behind the lift, so you can carry the winning lever into your other flows with confidence.",
   },
   {
     question: "What do you need from us to start?",

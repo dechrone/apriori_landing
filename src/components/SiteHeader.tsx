@@ -27,11 +27,17 @@ export function SiteHeader() {
           : "border-b border-border-subtle bg-bg-primary/80 backdrop-blur-md"
       }`}
     >
-      <div className={`${isDemo ? "max-w-none px-8" : "max-w-[960px] px-6 md:px-16"} mx-auto py-3 flex items-center justify-between`}>
+      <div className={`${isDemo ? "max-w-none px-8" : isHome ? "max-w-none px-6 md:px-10" : "max-w-[960px] px-6 md:px-16"} mx-auto py-3 flex items-center justify-between relative`}>
         <Link
           href="/"
-          aria-label="Apriori"
-          className="text-base font-semibold tracking-tight lowercase hover:opacity-70 transition-opacity shrink-0"
+          aria-label="Apriori — back to top"
+          onClick={(e) => {
+            if (isHome) {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+          }}
+          className="text-xl md:text-2xl font-semibold tracking-tight lowercase hover:opacity-70 transition-opacity shrink-0 cursor-pointer"
           style={{ color: isHome ? "#F5D76E" : "#B8860B" }}
         >
           apr<span aria-hidden>i</span>or
@@ -54,7 +60,7 @@ export function SiteHeader() {
 
         {/* Nav links - only show on homepage */}
         {isHome && (
-          <nav className="hidden md:flex items-center gap-6 ml-12">
+          <nav className="hidden md:flex items-center gap-6 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             {navLinks.map((link) => (
               <a
                 key={link.label}
