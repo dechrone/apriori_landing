@@ -24,13 +24,13 @@ const TESTIMONIALS: Testimonial[] = [
       "It's a focus group that runs in minutes. The persona reasoning maps unnervingly close to how our real users actually decide.",
   },
   {
-    name: "Yash",
+    name: "Yashvardhan Singh",
     company: "Slice",
     quote:
       "It caught friction on our KYC screen we'd normally only find post-launch. The 'why' behind every drop-off is the real unlock.",
   },
   {
-    name: "Dhruv",
+    name: "Dhruv Negi",
     company: "Dezerv",
     quote:
       "We A/B tested five paywall variants overnight and shipped the winner with conviction — no more opinion-driven product reviews.",

@@ -5,6 +5,14 @@ import { useState } from "react";
 type Logo = { name: string; domain: string; color: string };
 
 const LOGOS: Logo[] = [
+  { name: "SaveSage", domain: "savesage.club", color: "#16A34A" },
+  { name: "Microsoft", domain: "microsoft.com", color: "#737373" },
+  { name: "Salesforce", domain: "salesforce.com", color: "#00A1E0" },
+  { name: "Slice", domain: "sliceit.com", color: "#6C5CE7" },
+  { name: "Cred", domain: "cred.club", color: "#0A0A0A" },
+  { name: "Snitch", domain: "snitch.co.in", color: "#111111" },
+  { name: "Ambak", domain: "ambak.com", color: "#2563EB" },
+  { name: "Unify Apps", domain: "unifyapps.com", color: "#6D28D9" },
   { name: "Flipkart", domain: "flipkart.com", color: "#2874F0" },
   { name: "Snapdeal", domain: "snapdeal.com", color: "#E40046" },
   { name: "Jar", domain: "myjar.app", color: "#1A1A1A" },

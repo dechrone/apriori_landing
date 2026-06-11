@@ -26,10 +26,11 @@ export function ConditionalSiteHeader() {
     return null;
   }
 
-  const isLandingPage = pathname === "/";
-
+  // The header only renders on dark, landing-style routes (app routes return
+  // null above), so keep its theme tokens dark everywhere for a consistent,
+  // premium look — otherwise non-home pages fall back to the light theme.
   return (
-    <div className={isLandingPage ? "landing-dark" : ""}>
+    <div className="landing-dark">
       <SiteHeader />
     </div>
   );

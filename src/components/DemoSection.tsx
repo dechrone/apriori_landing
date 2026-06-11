@@ -45,7 +45,7 @@ export function DemoSection() {
         </div>
       </ContainerScroll>
 
-      <div className="max-w-[960px] mx-auto px-6 md:px-16 pb-20 md:pb-24 -mt-24 md:-mt-40 text-center">
+      <div className="max-w-[960px] mx-auto px-6 md:px-16 pb-20 md:pb-24 mt-6 md:-mt-40 text-center">
         <a
           href="/demo/univest"
           className="group inline-flex items-center gap-2 text-sm font-medium transition-all duration-200 cursor-pointer"
