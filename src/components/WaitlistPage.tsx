@@ -353,7 +353,7 @@ function WaitlistModal({ onClose }: { onClose: () => void }) {
     } catch (err) {
       console.error(err);
       setErrorMsg(
-        "Something went wrong. Email alpha@apriori.work and we'll sort it."
+        "Something went wrong. Email rahul.bissa@apriori.work and we'll sort it."
       );
       setStatus("error");
     }
@@ -429,7 +429,7 @@ function WaitlistModal({ onClose }: { onClose: () => void }) {
             >
               We&apos;ll be in touch from{" "}
               <span style={{ color: "#141008", fontWeight: 500 }}>
-                alpha@apriori.work
+                rahul.bissa@apriori.work
               </span>. <br /> Welcome to the Future of how product teams ship.
             </p>
           </div>

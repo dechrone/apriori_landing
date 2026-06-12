@@ -62,8 +62,8 @@ export default function Home() {
                 <h4 className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-3">Contact</h4>
                 <ul className="space-y-2">
                   <li>
-                    <a href="mailto:alpha@apriori.work" className="text-sm text-text-secondary hover:text-text-primary transition-colors">
-                      alpha@apriori.work
+                    <a href="mailto:rahul.bissa@apriori.work" className="text-sm text-text-secondary hover:text-text-primary transition-colors">
+                      rahul.bissa@apriori.work
                     </a>
                   </li>
                   <li>

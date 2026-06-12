@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { useCreditProfile } from "@/lib/credits";
 
 const CONTACT_EMAIL =
-  process.env.NEXT_PUBLIC_CONTACT_EMAIL || "alpha@apriori.work";
+  process.env.NEXT_PUBLIC_CONTACT_EMAIL || "rahul.bissa@apriori.work";
 
 interface Tier {
   id: "free" | "pro" | "custom";

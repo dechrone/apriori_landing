@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { SparklesCore } from "@/components/ui/sparkles";
+import { CredibilityBand } from "@/components/CredibilityBand";
 
 const PRIMARY_YELLOW = "#F5D76E";
 const ACCENT_GOLD = "#E5B84B";
@@ -84,8 +86,8 @@ export function Hero() {
             textShadow: "0 0 70px rgba(245, 215, 110, 0.2)",
           }}
         >
-          World&apos;s Most Advanced{" "}
-          <span style={{ color: ACCENT_GOLD }}>Human Simulation Model</span>
+          The simulation model that{" "}
+          <span style={{ color: ACCENT_GOLD }}>out-predicts GPT-5.5 and Claude</span>.
         </motion.h1>
 
         <motion.p
@@ -97,7 +99,15 @@ export function Hero() {
             lineHeight: 1.6,
           }}
         >
-          A/B test 100s of product ideas against a replica of your target audience, before writing any code.
+          A/B test hundreds of product ideas against a replica of your target
+          audience, before writing any code.{" "}
+          <Link
+            href="/research"
+            className="underline decoration-1 underline-offset-4 transition-colors"
+            style={{ color: PRIMARY_YELLOW }}
+          >
+            We published the proof.
+          </Link>
         </motion.p>
 
         <motion.div
@@ -123,9 +133,7 @@ export function Hero() {
             <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
           </a>
           <a
-            href="https://calendly.com/rahul-bissa-apriori/30min"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/book"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium text-sm transition-colors duration-200 cursor-pointer border"
             style={{
               borderColor: "rgba(245, 215, 110, 0.35)",
@@ -143,6 +151,10 @@ export function Hero() {
           </a>
         </motion.div>
 
+        <motion.div variants={itemVariants} className="w-full flex justify-center">
+          <CredibilityBand />
+        </motion.div>
+
         <motion.div variants={itemVariants}>
           <CredibilityStrip />
         </motion.div>
@@ -151,140 +163,43 @@ export function Hero() {
   );
 }
 
-type Brand = { name: string; domain: string; color: string };
-
-const BACKERS: Brand[] = [
-  { name: "Microsoft", domain: "microsoft.com", color: "#737373" },
-  { name: "Y Combinator Startup School", domain: "ycombinator.com", color: "#FF6600" },
-];
-
-const GOOGLE: Brand = { name: "Google", domain: "google.com", color: "#4285F4" };
-const ANTLER: Brand = { name: "Antler", domain: "antler.co", color: "#E8472B" };
-
 function CredibilityStrip() {
   return (
-    <div className="mt-16 flex flex-col items-center gap-7">
-      {/* Pedigree on top */}
-      <div className="flex flex-col items-center gap-4">
-        <span
-          className="font-medium"
-          style={{
-            color: MUTED_TEXT,
-            fontSize: "clamp(1.25rem, 2.2vw, 1.85rem)",
-          }}
-        >
-          Built by brains from{" "}
-          <span className="font-semibold" style={{ color: PRIMARY_YELLOW }}>
-            IIT Delhi
-          </span>
-        </span>
-        <span
-          className="h-px w-24"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent, rgba(245, 215, 110, 0.22), transparent)",
-          }}
-        />
-      </div>
-
-      {/* Two sections: programme (left) · startup programmes (right) */}
-      <div className="flex flex-col sm:flex-row items-center sm:items-stretch justify-center gap-x-10 md:gap-x-14 gap-y-7">
-        {/* LEFT — Immersion Programme */}
-        <div className="flex flex-col items-center gap-3">
-          <span
-            className="text-[10.5px] font-semibold uppercase tracking-[0.18em]"
-            style={{ color: "rgba(168, 162, 148, 0.7)" }}
-          >
-            Part of Immersion Programme by
-          </span>
-          <div className="flex items-center gap-4">
-            <TrustLogo brand={GOOGLE} />
-            <span className="text-lg" style={{ color: "rgba(168, 162, 148, 0.45)" }}>
-              &times;
-            </span>
-            <TrustLogo brand={ANTLER} />
-          </div>
-        </div>
-
-        {/* vertical divider */}
-        <span
-          className="hidden sm:block w-px self-stretch"
-          style={{
-            background:
-              "linear-gradient(180deg, transparent, rgba(168, 162, 148, 0.22), transparent)",
-          }}
-        />
-
-        {/* RIGHT — Startup Programmes */}
-        <div className="flex flex-col items-center gap-3">
-          <span
-            className="text-[10.5px] font-semibold uppercase tracking-[0.18em]"
-            style={{ color: "rgba(168, 162, 148, 0.7)" }}
-          >
-            Powered by Startup Programmes
-          </span>
-          <div className="flex flex-wrap items-center justify-center gap-x-7 gap-y-3">
-            {BACKERS.map((b) => (
-              <TrustLogo key={b.name} brand={b} />
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TrustLogo({ brand }: { brand: Brand }) {
-  return (
-    <div className="flex items-center gap-2.5" title={brand.name}>
-      <BrandFavicon brand={brand} size={22} />
+    <div className="mt-14 flex flex-col items-center gap-4">
       <span
-        className="text-[14.5px] font-medium"
-        style={{ color: "rgba(213, 208, 196, 0.82)" }}
-      >
-        {brand.name}
-      </span>
-    </div>
-  );
-}
-
-function BrandFavicon({
-  brand,
-  size,
-  className = "",
-}: {
-  brand: Brand;
-  size: number;
-  className?: string;
-}) {
-  const [failed, setFailed] = useState(false);
-  if (failed) {
-    return (
-      <span
-        className={`flex items-center justify-center rounded-[4px] font-bold text-white flex-shrink-0 ${className}`}
+        className="h-px w-24"
         style={{
-          width: size,
-          height: size,
-          fontSize: size * 0.55,
-          backgroundColor: brand.color,
+          background:
+            "linear-gradient(90deg, transparent, rgba(245, 215, 110, 0.22), transparent)",
         }}
-        aria-label={brand.name}
+      />
+      <p
+        className="max-w-2xl px-4 text-center text-[12.5px] font-medium leading-relaxed md:text-[13.5px]"
+        style={{ color: "rgba(168, 162, 148, 0.85)" }}
       >
-        {brand.name[0]}
-      </span>
-    );
-  }
+        <Link href="/research" className="transition-colors hover:text-[#F5D76E]">
+          Research published on arXiv
+        </Link>
+        <Middot />
+        Google for Startups Immersion
+        <Middot />
+        Antler
+        <Middot />
+        Founded by{" "}
+        <span className="font-semibold" style={{ color: PRIMARY_YELLOW }}>
+          IIT Delhi
+        </span>{" "}
+        alumni, ex-Microsoft
+      </p>
+    </div>
+  );
+}
+
+function Middot() {
   return (
-    /* eslint-disable-next-line @next/next/no-img-element */
-    <img
-      src={`https://www.google.com/s2/favicons?domain=${brand.domain}&sz=128`}
-      alt={brand.name}
-      width={size}
-      height={size}
-      className={`rounded-[4px] flex-shrink-0 ${className}`}
-      style={{ width: size, height: size, objectFit: "contain" }}
-      onError={() => setFailed(true)}
-    />
+    <span aria-hidden className="mx-2" style={{ color: "rgba(168, 162, 148, 0.4)" }}>
+      ·
+    </span>
   );
 }
 
