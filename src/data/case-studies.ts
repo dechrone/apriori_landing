@@ -3,9 +3,16 @@
    ─────────────────────────────────────────────────────────────────────────
    Static manifest powering the public `/case-studies` gallery. Each entry
    points at an existing frozen founder-demo report page (under `/demo/*` or
-   `/simulations/*`). Curated — only polished, presentable studies live here.
-   To add a study: build its report page, drop assets in `public/`, append an
-   entry below. No DB query; these reports are hand-frozen, not user runs.
+   `/simulations/*`). Curated — only presentable studies live here.
+
+   Recovered from git history (the `landing-page` branch held the full set of
+   real-company demos that had been trimmed from main). Excluded on purpose:
+   GoodScore (n=2, incomplete run) and Blink (dummy data) — their pages still
+   exist under /demo/* but are not featured until they have real, complete runs.
+
+   To add a study: ensure its report page renders, drop any assets in `public/`,
+   append an entry below. No DB query; these reports are hand-frozen, not user
+   runs.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export interface CaseStudyVariant {
@@ -22,7 +29,7 @@ export interface CaseStudy {
   slug: string;
   /** Customer / product name. */
   client: string;
-  /** Sector framing, e.g. "Fintech · Stock investing". */
+  /** Sector framing, e.g. "Fintech · Bond investing". */
   category: string;
   /** Headline of the study. */
   title: string;
@@ -34,7 +41,7 @@ export interface CaseStudy {
   metric: { value: string; label: string };
   /** Scannable chips: method, surface, scale. */
   tags: string[];
-  /** Optional thumbnail from `public/`. */
+  /** Optional thumbnail from `public/`. Falls back to a branded tile. */
   thumbnail?: string;
   /** Card accent (hex). */
   accent: string;
@@ -65,6 +72,67 @@ export const CASE_STUDIES: CaseStudy[] = [
     ],
   },
   {
+    slug: "superastro-onboarding",
+    client: "SuperAstro",
+    category: "Consumer · AI astrology",
+    title: "Getting users to the ₹1 AI-astrology chat",
+    summary:
+      "100 personas — metro and NRI — onboarded into SuperAstro's ₹1 AI Vedic-astrology chat. The phone-number gate was the single biggest drop-off: users balked at handing over their number before seeing any value.",
+    href: "/demo/superastro",
+    metric: { value: "62%", label: "flow completion · 100 personas" },
+    tags: ["Onboarding", "100 personas", "AI astrology"],
+    thumbnail: "/screens/superastro/1.jpeg",
+    accent: "#A855F7",
+  },
+  {
+    slug: "gripinvest-onboarding",
+    client: "Grip Invest",
+    category: "Fintech · Bond investing",
+    title: "Reading a non-linear bond-investing funnel",
+    summary:
+      "50 personas through Grip Invest's SEBI-registered corporate-bond flow (up to 12.5% fixed returns). 64% reached invest-ready — the non-linear discovery dashboard held attention, with only a small KYC/PAN dip.",
+    href: "/demo/gripinvest",
+    metric: { value: "64%", label: "flow completion · 50 personas" },
+    tags: ["Onboarding", "50 personas", "Bond investing"],
+    accent: "#14B8A6",
+  },
+  {
+    slug: "flent-onboarding",
+    client: "Flent",
+    category: "Fintech · Rent payments",
+    title: "Where rent-payment onboarding leaks",
+    summary:
+      "50 personas through Flent's rent-payment onboarding (1% cashback, card float, ₹1.5L landlord insurance). 62% completed — the rental-agreement step was the main friction, costing a 12% drop.",
+    href: "/demo/flent",
+    metric: { value: "62%", label: "flow completion · 50 personas" },
+    tags: ["Onboarding", "50 personas", "Rent payments"],
+    accent: "#3B82F6",
+  },
+  {
+    slug: "fitsquare-onboarding",
+    client: "Fit Square",
+    category: "Consumer · Fitness",
+    title: "What sells a pay-per-session gym pass",
+    summary:
+      "50 personas evaluating Fit Square's pay-per-session gym aggregator. Nearby-gym inventory was the strongest pull; plan selection was where price-sensitive users hesitated, a 10% drop.",
+    href: "/demo/fitsquare",
+    metric: { value: "60%", label: "flow completion · 50 personas" },
+    tags: ["Onboarding", "50 personas", "Fitness"],
+    accent: "#22C55E",
+  },
+  {
+    slug: "dailymantra-onboarding",
+    client: "Daily Mantra",
+    category: "Consumer · Devotional",
+    title: "Converting belief into a devotional subscription",
+    summary:
+      "50 personas — devout, skeptical, and curious — onboarding into Daily Mantra's Vedic app. 58% reached the paywall; conversion ran on spiritual trust, and the early phone-number ask cost 8%.",
+    href: "/demo/dailymantra",
+    metric: { value: "58%", label: "flow completion · 50 personas" },
+    tags: ["Onboarding", "50 personas", "Devotional"],
+    accent: "#F59E0B",
+  },
+  {
     slug: "savesage-pricing",
     client: "SaveSage",
     category: "Fintech · Credit-card advisory",
@@ -74,7 +142,18 @@ export const CASE_STUDIES: CaseStudy[] = [
     href: "/simulations/savesage/1ef345g7hjklo9",
     metric: { value: "4×", label: "price points stress-tested" },
     tags: ["A/B test", "Pricing", "Revenue / signup"],
-    thumbnail: "/savesage/var1-pro.png",
     accent: "#0D9488",
+  },
+  {
+    slug: "loophealth-enrollment",
+    client: "Loop Health",
+    category: "Insurtech · Health insurance",
+    title: "A clarity gap at insurance checkout",
+    summary:
+      "A directional 5-persona read on Loop Health's Healthflex enrollment. 40% dropped at plan selection — the checkout lacked a clear order summary, so users were unsure what they were actually paying for.",
+    href: "/demo/loop",
+    metric: { value: "40%", label: "drop-off at plan selection · directional (5)" },
+    tags: ["Enrollment", "Directional", "Health insurance"],
+    accent: "#EF4444",
   },
 ];
