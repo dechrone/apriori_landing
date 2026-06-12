@@ -38,13 +38,13 @@ function CaseStudyCard({
         e.currentTarget.style.transform = "translateY(0)";
       }}
     >
-      {/* Thumbnail */}
+      {/* Thumbnail (screenshot) or branded fallback tile */}
       <Link
         href={study.href}
         className="relative block h-48 w-full overflow-hidden"
         style={{ backgroundColor: "#000" }}
       >
-        {study.thumbnail && (
+        {study.thumbnail ? (
           <Image
             src={study.thumbnail}
             alt={`${study.client} — ${study.title}`}
@@ -52,6 +52,23 @@ function CaseStudyCard({
             sizes="(max-width: 768px) 100vw, 460px"
             className="object-cover object-top opacity-70 transition-all duration-500 group-hover:scale-[1.03] group-hover:opacity-90"
           />
+        ) : (
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center transition-transform duration-500 group-hover:scale-[1.03]"
+            style={{
+              background: `radial-gradient(ellipse at 50% 35%, ${study.accent}26 0%, rgba(0,0,0,0) 70%), #000`,
+            }}
+          >
+            <span
+              className="text-[26px] font-semibold tracking-tight"
+              style={{ color: study.accent }}
+            >
+              {study.client}
+            </span>
+            <span className="mt-1 text-[11px] font-medium uppercase tracking-[0.18em] text-text-tertiary">
+              {study.category.replace(/\s*·\s*/, " · ")}
+            </span>
+          </div>
         )}
         <div
           className="pointer-events-none absolute inset-0"
