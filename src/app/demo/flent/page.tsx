@@ -21,11 +21,7 @@ const flentFlowData: FlowAnalysisData = {
   meta: {
     product: "Flent Secured",
     flow: flentSimData.flow_name || "Rent Payment Onboarding",
-    date: new Date().toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    }),
+    date: "January 2026",
     totalPersonas: flentSimData.summary?.total_personas ?? 50,
     completionRate: flentSimData.summary?.completion_rate_pct ?? 0,
   },

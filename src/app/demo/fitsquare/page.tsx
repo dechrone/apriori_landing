@@ -21,11 +21,7 @@ const fitSquareFlowData: FlowAnalysisData = {
   meta: {
     product: "Fit Square",
     flow: fitSquareSimData.flow_name || "Gym Session Membership Onboarding",
-    date: new Date().toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    }),
+    date: "January 2026",
     totalPersonas: fitSquareSimData.summary?.total_personas ?? 50,
     completionRate: fitSquareSimData.summary?.completion_rate_pct ?? 0,
   },

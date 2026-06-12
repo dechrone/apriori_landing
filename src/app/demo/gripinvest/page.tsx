@@ -21,11 +21,7 @@ const gripFlowData: FlowAnalysisData = {
   meta: {
     product: "Grip Invest",
     flow: gripInvestSimData.flow_name || "Fixed Income Investment Onboarding",
-    date: new Date().toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    }),
+    date: "January 2026",
     totalPersonas: gripInvestSimData.summary?.total_personas ?? 50,
     completionRate: gripInvestSimData.summary?.completion_rate_pct ?? 0,
   },

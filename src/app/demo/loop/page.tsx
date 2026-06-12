@@ -24,11 +24,7 @@ const loopFlowData: FlowAnalysisData = {
   meta: {
     product: "Loop Health",
     flow: loopHealthSimData.flow_name || "Healthflex Enrollment",
-    date: new Date().toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    }),
+    date: "January 2026",
     totalPersonas: loopHealthSimData.summary?.total_personas ?? 5,
     completionRate: loopHealthSimData.summary?.completion_rate_pct ?? 0,
   },

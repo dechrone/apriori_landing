@@ -22,11 +22,7 @@ const goodScoreFlowData: FlowAnalysisData = {
   meta: {
     product: "GoodScore",
     flow: goodScoreSimData.flow_name || "Credit Score Dashboard Monetization",
-    date: new Date().toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    }),
+    date: "January 2026",
     totalPersonas: goodScoreSimData.summary?.total_personas ?? 2,
     completionRate: goodScoreSimData.summary?.completion_rate_pct ?? 0,
   },
