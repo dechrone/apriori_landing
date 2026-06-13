@@ -2,15 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
-import { Quote } from "lucide-react";
+import { Linkedin, Quote } from "lucide-react";
 
 const GOLD = "#F5D76E";
 const ACCENT = "#E5B84B";
 const MUTED = "#A8A294";
 
-type Testimonial = { name: string; company: string; quote: string };
+type Testimonial = { name: string; company: string; quote: string; linkedin?: string };
 
 const TESTIMONIALS: Testimonial[] = [
+  {
+    name: "Priyanshu Joshi",
+    company: "Diginix Solutions",
+    quote:
+      "Apriori worked out great for us, helped us fasten up our product lifecycle in total, plus the founders are extremely professional. Looking ahead to invest in them.",
+    linkedin: "https://www.linkedin.com/in/priyanshujoshi/",
+  },
   {
     name: "Chaitanya Srivastava",
     company: "Flipkart",
@@ -191,7 +198,7 @@ function CardContent({ data }: { data: Testimonial }) {
         >
           {data.name[0]}
         </span>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="text-[14px] font-semibold" style={{ color: GOLD }}>
             {data.name}
           </div>
@@ -199,6 +206,18 @@ function CardContent({ data }: { data: Testimonial }) {
             {data.company}
           </div>
         </div>
+        {data.linkedin && (
+          <a
+            href={data.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${data.name} on LinkedIn`}
+            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border transition-colors"
+            style={{ borderColor: "rgba(245, 215, 110, 0.22)", color: ACCENT }}
+          >
+            <Linkedin size={15} />
+          </a>
+        )}
       </div>
     </div>
   );

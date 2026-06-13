@@ -47,9 +47,24 @@ export interface CaseStudy {
   accent: string;
   /** Optional per-variant deep-dive links surfaced under the card. */
   variants?: CaseStudyVariant[];
+  /** Optional CTA label override (defaults to "View full report"). */
+  ctaLabel?: string;
 }
 
 export const CASE_STUDIES: CaseStudy[] = [
+  {
+    slug: "diginix-velocity",
+    client: "Diginix Solutions",
+    category: "Customer Story · Dubai",
+    title: "Shipping 25% faster — without hiring another PM",
+    summary:
+      "Diginix, a Dubai AI product studio, was about to hire a $66K PM to hit a four-month delivery. We gave their existing PMs a replica of their target audience instead — they shipped in under three months and saved the hire. Now they're rolling Apriori into three more projects.",
+    href: "/case-studies/diginix",
+    metric: { value: "25%", label: "faster time-to-delivery" },
+    tags: ["Customer story", "Dubai", "$66K saved", "0 new hires"],
+    accent: "#38BDF8",
+    ctaLabel: "Read the full story",
+  },
   {
     slug: "univest-activation",
     client: "Univest",

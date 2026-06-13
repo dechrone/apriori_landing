@@ -164,7 +164,7 @@ function CaseStudyCard({
           className="mt-auto inline-flex items-center gap-1.5 text-[14px] font-semibold transition-all"
           style={{ color: GOLD }}
         >
-          View full report
+          {study.ctaLabel ?? "View full report"}
           <ArrowUpRight
             size={16}
             className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
@@ -211,10 +211,10 @@ export function CaseStudiesView() {
               className="max-w-[620px] text-text-secondary"
               style={{ fontSize: "1rem", lineHeight: 1.7 }}
             >
-              Every study below is a real Apriori run — synthetic personas walking
-              a live product flow, scoring each screen, and surfacing exactly where
-              and why users hesitate. Open any report to see the full funnel,
-              per-screen analysis, and variant comparison.
+              Every study below is real work — synthetic personas walking live
+              product flows, and the outcomes teams shipped on the back of them.
+              Open any one to see the full funnel, per-screen analysis, and the
+              decision it drove.
             </p>
           </motion.div>
         </section>
