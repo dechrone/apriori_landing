@@ -27,19 +27,19 @@ const TESTIMONIALS: Testimonial[] = [
     name: "Yashvardhan Singh",
     company: "Slice",
     quote:
-      "It caught friction on our KYC screen we'd normally only find post-launch. The 'why' behind every drop-off is the real unlock.",
+      "It brought interesting insights on our KYC screen we'd normally only find post-launch or after lots of ideation. The 'why' behind every drop-off is interesting.",
   },
   {
     name: "Dhruv Negi",
     company: "Dezerv",
     quote:
-      "We A/B tested five paywall variants overnight and shipped the winner with conviction, no more opinion-driven product reviews.",
+      "I A/B tested five paywall variants overnight and shipped the winner with conviction, its so fast and quite accurate.",
   },
   {
     name: "Gunjit Jindal",
     company: "Loop Health",
     quote:
-      "Apriori is our first stop for any new flow now. We validate the idea before engineering ever touches it.",
+      "Apriori is my first stop for any new flow now. I validate the idea before engineering ever touches it.",
   },
 ];
 
