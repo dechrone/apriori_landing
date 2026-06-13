@@ -15,13 +15,13 @@ const TESTIMONIALS: Testimonial[] = [
     name: "Chaitanya Srivastava",
     company: "Flipkart",
     quote:
-      "Apriori pre-tested three onboarding flows before we wrote a line of code. It surfaced the exact drop-off our PMs had argued about for weeks.",
+      "I always use Apriori to stress test my flows before I ship them. It's quite accurate and so much faster to do it this way!",
   },
   {
     name: "Ashmith Singh",
     company: "Unify Apps",
     quote:
-      "It's a focus group that runs in minutes. The persona reasoning maps unnervingly close to how our real users actually decide.",
+      "It's a focus group that runs in minutes. The persona reasoning maps quite close to how our real users actually decide.",
   },
   {
     name: "Yashvardhan Singh",
@@ -33,7 +33,7 @@ const TESTIMONIALS: Testimonial[] = [
     name: "Dhruv Negi",
     company: "Dezerv",
     quote:
-      "We A/B tested five paywall variants overnight and shipped the winner with conviction — no more opinion-driven product reviews.",
+      "We A/B tested five paywall variants overnight and shipped the winner with conviction, no more opinion-driven product reviews.",
   },
   {
     name: "Gunjit Jindal",
