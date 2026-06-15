@@ -5,16 +5,19 @@ import { motion, useInView } from "framer-motion";
 
 const painPoints = [
   {
-    title: "Engineering waste",
-    description: "Wrong fixes ship because the diagnosis was wrong. Each iteration costs 2-3 sprints.",
+    title: "Rework eats your margin",
+    description:
+      "On fixed-bid projects, every “client wants it different” rebuild is pure margin loss. One prevented redo pays for Apriori across the whole project.",
   },
   {
-    title: "Slow feedback loops",
-    description: "Weeks of interviews and replay analysis to build one hypothesis. Then you still ship on gut feel.",
+    title: "Knowing what to build is the gap",
+    description:
+      "AI has made building 10x faster, but what to build still remains unsolved. Having your target audience at your fingertips solves that bottleneck.",
   },
   {
-    title: "No segment clarity",
-    description: "Aggregate data hides the fact that different user types fail at different points for different reasons.",
+    title: "You win deals you’d otherwise lose",
+    description:
+      "“We validate flows against your audience before building” beats “we’ll build what you ask.” Apriori isn’t just a tool. It’s a line in your pitch that wins the project.",
   },
 ];
 
@@ -43,10 +46,10 @@ export function TheProblem() {
               lineHeight: 1.2,
             }}
           >
-            Product teams fly blind on the <span style={{ color: "#F5D76E" }}>why</span>.
+            You&apos;re billing to build it <span style={{ color: "#F5D76E" }}>twice</span>.
           </h2>
-          <p className="text-text-secondary max-w-[600px]" style={{ fontSize: "1rem", lineHeight: 1.7 }}>
-            Analytics tells you where users drop off. Session replays show you clicks. User interviews give you 5 opinions in 3 weeks. None of them tell you why different types of users behave differently in your flow. That gap costs you engineering cycles, lost users, and wrong bets.
+          <p className="text-text-secondary max-w-[640px]" style={{ fontSize: "1rem", lineHeight: 1.7 }}>
+            AI made building fast. Knowing <em>what</em> to build is still guesswork, and on fixed-bid work, every wrong guess comes out of your margin. You design the flow, the client second-guesses it, you rebuild, you defend it in review on gut feel. Apriori lets you test a flow against a replica of your client&apos;s target audience before engineering touches it, so you ship the right thing the first time, and win approval with evidence, not opinions.
           </p>
         </motion.div>
 

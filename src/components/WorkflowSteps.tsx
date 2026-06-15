@@ -47,7 +47,7 @@ export function WorkflowSteps() {
               lineHeight: 1.2,
             }}
           >
-            Three steps. Results in a day.
+            Three steps. Results in <span style={{ color: "#F5D76E" }}>minutes</span>.
           </h2>
         </motion.div>
 

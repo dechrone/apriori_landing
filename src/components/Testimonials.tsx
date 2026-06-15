@@ -1,14 +1,22 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
-import { Linkedin, Quote } from "lucide-react";
+import { ArrowRight, Linkedin, Quote } from "lucide-react";
 
 const GOLD = "#F5D76E";
 const ACCENT = "#E5B84B";
 const MUTED = "#A8A294";
 
-type Testimonial = { name: string; company: string; quote: string; linkedin?: string };
+type Testimonial = {
+  name: string;
+  company: string;
+  quote: string;
+  linkedin?: string;
+  caseStudy?: string;
+  caseStudyLabel?: string;
+};
 
 const TESTIMONIALS: Testimonial[] = [
   {
@@ -17,6 +25,8 @@ const TESTIMONIALS: Testimonial[] = [
     quote:
       "Apriori worked out great for us, helped us fasten up our product lifecycle in total, plus the founders are extremely professional. Looking ahead to invest in them.",
     linkedin: "https://www.linkedin.com/in/priyanshujoshi/",
+    caseStudy: "/case-studies/diginix",
+    caseStudyLabel: "Helped us deliver project much faster",
   },
   {
     name: "Chaitanya Srivastava",
@@ -180,12 +190,28 @@ function CardContent({ data }: { data: Testimonial }) {
         <Quote size={20} style={{ color: "rgba(245, 215, 110, 0.35)" }} />
       </div>
 
-      <p
-        className="mt-4 flex-1 text-[13.5px] leading-relaxed"
-        style={{ color: "rgba(213, 208, 196, 0.92)" }}
-      >
-        &ldquo;{data.quote}&rdquo;
-      </p>
+      <div className="mt-4 flex-1">
+        <p
+          className="text-[13.5px] leading-relaxed"
+          style={{ color: "rgba(213, 208, 196, 0.92)" }}
+        >
+          &ldquo;{data.quote}&rdquo;
+        </p>
+
+        {data.caseStudy && (
+          <Link
+            href={data.caseStudy}
+            className="group/cs mt-3 inline-flex items-center gap-1.5 text-[12px] font-medium transition-opacity hover:opacity-80"
+            style={{ color: ACCENT }}
+          >
+            {data.caseStudyLabel ?? "Read the case study"}
+            <ArrowRight
+              size={13}
+              className="transition-transform group-hover/cs:translate-x-0.5"
+            />
+          </Link>
+        )}
+      </div>
 
       <div className="mt-5 flex items-center gap-3">
         <span
