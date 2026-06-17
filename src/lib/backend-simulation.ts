@@ -54,6 +54,8 @@ export interface RunAbWithSegmentsPayload {
   selectedFolderIds: string[];       // 2 for A/B (Variant A + B)
   optimizeMetric?: string;
   name?: string | null;
+  saveAudience?: boolean;            // persist the resolved persona set for re-use
+  audienceName?: string | null;
   // See RunWithSegmentsPayload — snake_case to match the backend field.
   segment_intent_overrides?: Record<string, string>;
 }
@@ -65,6 +67,19 @@ export interface StartFromSavedAudiencePayload {
   optimizeMetric: string;
   objective?: string;
   selectedFolderIds: string[];
+}
+
+// A/B (single-screen) re-use of a saved audience: skips phase-1 + the picker
+// and runs the two-variant comparator against the audience's cached uuids.
+export interface StartAbFromSavedAudiencePayload {
+  audienceId: string;
+  name: string;
+  country: "IN" | "US";
+  optimizeMetric: string;
+  objective?: string;
+  selectedFolderIds: string[];       // exactly 2 (Variant A + B)
+  segment_intent_overrides?: Record<string, string>;
+  expectedCompletionRatePct?: number | null;
 }
 
 // Multi-flow comparator (legacy freeform-audience path; auto-picks segments
@@ -224,6 +239,27 @@ export async function startFromSavedAudience(
   const headers = await authHeaders();
   try {
     return await fetch(`${BASE_URL}/api/v1/simulations/start-from-saved-audience`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ profileId, ...payload }),
+    });
+  } catch {
+    throw new Error(
+      `Cannot connect to the backend server at ${BASE_URL}. Please check your network and try again.`
+    );
+  }
+}
+
+/** POST /api/v1/simulations/start-ab-from-saved-audience — A/B counterpart to
+ * startFromSavedAudience. Runs the two-variant comparator against the audience's
+ * cached_persona_uuids (no phase-1, no picker). Exactly 2 variant folders. */
+export async function startAbFromSavedAudience(
+  profileId: string,
+  payload: StartAbFromSavedAudiencePayload
+): Promise<Response> {
+  const headers = await authHeaders();
+  try {
+    return await fetch(`${BASE_URL}/api/v1/simulations/start-ab-from-saved-audience`, {
       method: "POST",
       headers,
       body: JSON.stringify({ profileId, ...payload }),

@@ -24,8 +24,10 @@ import { createFolder, uploadAssets, updateAssetMetadata } from '@/lib/assets-ap
 import {
   startProductFlow,
   runAbWithSegments,
+  startAbFromSavedAudience,
 } from '@/lib/backend-simulation';
-import { saveSimulation, getSimulations } from '@/lib/db';
+import { saveSimulation, getSimulations, getAudiences } from '@/lib/db';
+import type { AudienceDoc } from '@/lib/db';
 import { consumeNDJSONStream, segmentPredicateSummary, buildSegmentIntentOverrides } from '@/lib/stream-simulation';
 import type { GeneratedSegmentSummary } from '@/lib/stream-simulation';
 import { OBJECTIVE_PRESETS, CUSTOM_OBJECTIVE_ID } from '@/data/objective-presets';
@@ -49,8 +51,9 @@ interface PendingVariant {
 /** Audience-segments wizard sub-state inside Step 1.
  *  - input:    user is typing the freeform description
  *  - loading:  phase 1 NDJSON streaming; 9 skeleton tiles
- *  - picking:  9 tiles populated; user must select exactly 5 */
-type AudienceState = 'input' | 'loading' | 'picking';
+ *  - picking:  9 tiles populated; user must select exactly 5
+ *  - reusing:  a saved audience is selected; skip phase 1 + picker */
+type AudienceState = 'input' | 'loading' | 'picking' | 'reusing';
 
 export default function ProductFlowABSimulationPage() {
   const { toggleMobileMenu } = useAppShell();
@@ -95,18 +98,39 @@ export default function ProductFlowABSimulationPage() {
   const [selectedSegmentIds, setSelectedSegmentIds] = useState<string[]>([]);
   const [segmentIntentOverrides, setSegmentIntentOverrides] = useState<Record<string, string>>({});
 
+  // Saved-audience re-use (mirrors the single-flow wizard): describe a new
+  // cohort set OR re-run both variants on a previously-saved persona set.
+  const [saveAudienceForReuse, setSaveAudienceForReuse] = useState(false);
+  const [reuseAudienceId, setReuseAudienceId] = useState<string | undefined>();
+  const [audiences, setAudiences] = useState<AudienceDoc[]>([]);
+  const [audienceTab, setAudienceTab] = useState<'describe' | 'saved'>('describe');
+
+  useEffect(() => {
+    if (!userId || !profileReady) return;
+    getAudiences(userId).then(setAudiences).catch(() => {});
+  }, [userId, profileReady]);
+
+  // Only audiences with a cached persona set can be re-used for a one-click run.
+  const reusableAudiences = audiences.filter(
+    (a) => Array.isArray(a.cachedPersonaUuids) && a.cachedPersonaUuids.length > 0,
+  );
+
   const resolvedObjective =
     objectivePresetId === CUSTOM_OBJECTIVE_ID
       ? customObjective.trim()
       : OBJECTIVE_PRESETS.find((p) => p.id === objectivePresetId)?.objective ?? '';
 
+  // Audience is ready either via the picker (5 picks + a phase-1 simulationId)
+  // or by selecting a saved audience to re-use.
+  const audienceReady =
+    (audienceState === 'picking' && selectedSegmentIds.length === 5 && !!simulationId) ||
+    (audienceState === 'reusing' && !!reuseAudienceId);
+
   const canSubmit =
     !!variantA &&
     !!variantB &&
     resolvedObjective.length >= 10 &&
-    audienceState === 'picking' &&
-    selectedSegmentIds.length === 5 &&
-    !!simulationId &&
+    audienceReady &&
     !running &&
     !uploading;
 
@@ -253,7 +277,12 @@ export default function ProductFlowABSimulationPage() {
       showToast('error', 'Not signed in', 'Please sign in to run a simulation.');
       return;
     }
-    if (!simulationId) {
+    if (audienceState === 'reusing') {
+      if (!reuseAudienceId) {
+        showToast('error', 'Audience missing', 'Pick a saved audience or describe a new one.');
+        return;
+      }
+    } else if (!simulationId) {
       showToast('error', 'Audience missing', 'Generate cohort segments and pick 5 to continue.');
       return;
     }
@@ -311,17 +340,34 @@ export default function ProductFlowABSimulationPage() {
 
       let res: Response;
       try {
-        res = await runAbWithSegments(simulationId, {
-          selectedSegmentIds,
-          selectedFolderIds: [folderA.id, folderB.id],
-          optimizeMetric: 'activation',
-          name: runName,
-          segment_intent_overrides: buildSegmentIntentOverrides(
+        if (audienceState === 'reusing' && reuseAudienceId) {
+          // Re-run both variants on a saved persona set — no picker, no phase 1.
+          res = await startAbFromSavedAudience(userId, {
+            audienceId: reuseAudienceId,
+            name: runName,
+            country: 'IN',
+            optimizeMetric: 'activation',
+            selectedFolderIds: [folderA.id, folderB.id],
+          });
+        } else {
+          // Opt-in: persist the resolved persona set for one-click re-use later.
+          const audienceName = saveAudienceForReuse
+            ? (generatedSegments.find((s) => s.id === selectedSegmentIds[0])?.name ?? runName.slice(0, 60))
+            : null;
+          res = await runAbWithSegments(simulationId!, {
             selectedSegmentIds,
-            segmentIntentOverrides,
-            generatedSegments,
-          ),
-        });
+            selectedFolderIds: [folderA.id, folderB.id],
+            optimizeMetric: 'activation',
+            name: runName,
+            saveAudience: saveAudienceForReuse,
+            audienceName,
+            segment_intent_overrides: buildSegmentIntentOverrides(
+              selectedSegmentIds,
+              segmentIntentOverrides,
+              generatedSegments,
+            ),
+          });
+        }
       } catch (e) {
         throw new Error(`Couldn't start the simulation: ${e instanceof Error ? e.message : 'unknown error'}`);
       }
@@ -372,7 +418,11 @@ export default function ProductFlowABSimulationPage() {
       const labelForIndex = (idx: number) => `Variant ${String.fromCharCode(65 + idx)}`;
 
       await consumeNDJSONStream(res, (event) => {
-        if (event.type === 'flow_started') {
+        if (event.type === 'personas_loaded') {
+          if (event.data.retrieval_mode === 'cached') {
+            showToast('info', 'Audience re-used', 'Running both variants on your saved personas.');
+          }
+        } else if (event.type === 'flow_started') {
           const displayName = labelForIndex(event.data.flow_index);
           setStreamProgress((prev) => ({
             flows: {
@@ -596,21 +646,78 @@ export default function ProductFlowABSimulationPage() {
                   Describe your power users. Apriori proposes 9 candidate cohorts under one matched pool, you pick 5 to drive the A/B.
                 </p>
 
-                <AudiencePicker
-                  description={description}
-                  setDescription={setDescription}
-                  audienceState={audienceState}
-                  setAudienceState={setAudienceState}
-                  generatedSegments={generatedSegments}
-                  setGeneratedSegments={setGeneratedSegments}
-                  selectedSegmentIds={selectedSegmentIds}
-                  setSelectedSegmentIds={setSelectedSegmentIds}
-                  segmentIntentOverrides={segmentIntentOverrides}
-                  setSegmentIntentOverrides={setSegmentIntentOverrides}
-                  poolName={poolName}
-                  setSimulationId={setSimulationId}
-                  onGenerate={generateSegments}
-                />
+                {/* Describe a new cohort set vs re-use a saved audience (same
+                    personas across both variants — skips phase 1 + the picker). */}
+                <div className="inline-flex items-center bg-[#F3F4F6] rounded-lg p-1 mb-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAudienceTab('describe');
+                      if (audienceState === 'reusing') {
+                        setAudienceState('input');
+                        setReuseAudienceId(undefined);
+                      }
+                    }}
+                    className={`text-[13px] font-medium px-3 py-1.5 rounded-md transition-all ${
+                      audienceTab === 'describe' ? 'bg-white text-[#1A1A1A] shadow-sm' : 'text-[#6B7280] hover:text-[#1A1A1A]'
+                    }`}
+                  >
+                    Describe
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAudienceTab('saved')}
+                    className={`text-[13px] font-medium px-3 py-1.5 rounded-md transition-all ${
+                      audienceTab === 'saved' ? 'bg-white text-[#1A1A1A] shadow-sm' : 'text-[#6B7280] hover:text-[#1A1A1A]'
+                    }`}
+                  >
+                    Your audiences{reusableAudiences.length > 0 ? ` (${reusableAudiences.length})` : ''}
+                  </button>
+                </div>
+
+                {audienceTab === 'describe' ? (
+                  <>
+                    <AudiencePicker
+                      description={description}
+                      setDescription={setDescription}
+                      audienceState={audienceState}
+                      setAudienceState={setAudienceState}
+                      generatedSegments={generatedSegments}
+                      setGeneratedSegments={setGeneratedSegments}
+                      selectedSegmentIds={selectedSegmentIds}
+                      setSelectedSegmentIds={setSelectedSegmentIds}
+                      segmentIntentOverrides={segmentIntentOverrides}
+                      setSegmentIntentOverrides={setSegmentIntentOverrides}
+                      poolName={poolName}
+                      setSimulationId={setSimulationId}
+                      onGenerate={generateSegments}
+                    />
+                    {audienceState === 'picking' && selectedSegmentIds.length === 5 && (
+                      <label className="flex items-center gap-2 mt-4 text-[12px] text-[#4B5563] cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={saveAudienceForReuse}
+                          onChange={(e) => setSaveAudienceForReuse(e.target.checked)}
+                          className="w-3.5 h-3.5 accent-[#1F2937]"
+                        />
+                        Save this audience to my profile for re-use
+                      </label>
+                    )}
+                  </>
+                ) : (
+                  <SavedAudiencesReuse
+                    audiences={reusableAudiences}
+                    selectedId={audienceState === 'reusing' ? reuseAudienceId : undefined}
+                    onPick={(id) => {
+                      setReuseAudienceId(id);
+                      setAudienceState('reusing');
+                    }}
+                    onClear={() => {
+                      setReuseAudienceId(undefined);
+                      setAudienceState('input');
+                    }}
+                  />
+                )}
               </div>
 
               {validationError && (
@@ -761,8 +868,8 @@ function ObjectiveOption({ label, selected, onSelect }: ObjectiveOptionProps) {
 interface AudiencePickerProps {
   description: string;
   setDescription: (v: string) => void;
-  audienceState: 'input' | 'loading' | 'picking';
-  setAudienceState: (s: 'input' | 'loading' | 'picking') => void;
+  audienceState: AudienceState;
+  setAudienceState: (s: AudienceState) => void;
   generatedSegments: GeneratedSegmentSummary[];
   setGeneratedSegments: (segs: GeneratedSegmentSummary[]) => void;
   selectedSegmentIds: string[];
@@ -1070,6 +1177,75 @@ function VariantUploader({ label, variant, onFile, onClear }: VariantUploaderPro
         className="hidden"
         onChange={(e) => onFile(e.target.files?.[0] ?? null)}
       />
+    </div>
+  );
+}
+
+interface SavedAudiencesReuseProps {
+  audiences: AudienceDoc[];
+  selectedId?: string;
+  onPick: (id: string) => void;
+  onClear: () => void;
+}
+
+/** Re-use picker for the A/B wizard: pick a saved audience (cached personas) to
+ *  run both variants against — skips phase-1 cohort generation + the picker. */
+function SavedAudiencesReuse({ audiences, selectedId, onPick, onClear }: SavedAudiencesReuseProps) {
+  if (audiences.length === 0) {
+    return (
+      <div className="rounded-[10px] border border-dashed border-[#E5E7EB] bg-[#FAFAFA] px-4 py-6 text-center">
+        <p className="text-[13px] text-[#6B7280]">
+          No re-usable audiences yet. Run a simulation and tick &ldquo;Save this audience&rdquo; to
+          cache its personas for one-click A/B re-runs.
+        </p>
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-2">
+      {audiences.map((aud) => {
+        const selected = aud.id === selectedId;
+        const count = aud.cachedPersonaUuids?.length ?? 0;
+        return (
+          <button
+            key={aud.id}
+            type="button"
+            onClick={() => (selected ? onClear() : onPick(aud.id))}
+            className={`w-full text-left rounded-[10px] border px-4 py-3 transition-all ${
+              selected
+                ? 'border-[#1F2937] bg-[#1F2937]/[0.03] ring-1 ring-[#1F2937]'
+                : 'border-[#E5E7EB] hover:border-[#9CA3AF] bg-white'
+            }`}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[13px] font-semibold text-[#1A1A1A] truncate">{aud.name}</p>
+                {aud.description && (
+                  <p className="text-[12px] text-[#6B7280] truncate">{aud.description.slice(0, 80)}</p>
+                )}
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-[11px] font-medium text-[#059669] bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
+                  Re-use, instant
+                </span>
+                {selected && <CheckCircle className="w-4 h-4 text-[#1F2937]" />}
+              </div>
+            </div>
+            <p className="mt-1 text-[11px] text-[#9CA3AF]">
+              {count} personas{aud.cachedCountry ? ` · ${aud.cachedCountry}` : ''}
+            </p>
+          </button>
+        );
+      })}
+      {selectedId && (
+        <button
+          type="button"
+          onClick={onClear}
+          className="text-[12px] text-[#6B7280] hover:text-[#1A1A1A] underline"
+        >
+          Clear selection
+        </button>
+      )}
     </div>
   );
 }
