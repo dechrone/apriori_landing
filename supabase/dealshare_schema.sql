@@ -73,9 +73,14 @@ drop policy if exists "scouts_insert_self" on public.dealshare_scouts;
 drop policy if exists "scouts_update" on public.dealshare_scouts;
 drop policy if exists "scouts_admin_all" on public.dealshare_scouts;
 
--- A scout sees their own row; an admin sees all.
+-- A scout sees their own row; an admin sees all. An invited-but-unclaimed row
+-- (user_id is null) must also be visible to the matching-email user, otherwise
+-- the email-based invite lookup in getMyScout returns nothing and the claim
+-- can never run (the user then hits the unique-email constraint on insert).
 create policy "scouts_select" on public.dealshare_scouts for select
-  using (user_id = auth.uid() or public.is_app_admin());
+  using (user_id = auth.uid() or public.is_app_admin()
+         or (user_id is null
+             and lower(email) = lower(coalesce(auth.jwt() ->> 'email', ''))));
 
 -- Self-serve onboarding: a signed-in user may create their OWN scout row
 -- (claiming the invite) as long as the email matches their auth email and
