@@ -95,7 +95,7 @@ export default function DealDetailPage() {
   }, [load]);
 
   async function advance(stage: DealStage, lostReason?: string) {
-    if (!deal) return;
+    if (!deal || !canWrite) return; // defense-in-depth; controls are also hidden + RLS-enforced
     setSavingStage(true);
     try {
       await updateDealStage(deal.id, stage, { lostReason });
@@ -368,6 +368,7 @@ function MeetingSection({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!canWrite) return; // defense-in-depth; the form is also hidden + RLS-enforced
     if (!form.meetingAt) {
       showToast("warning", "Pick a meeting date/time.");
       return;
