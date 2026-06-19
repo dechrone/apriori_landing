@@ -35,7 +35,7 @@ interface AuthContextValue {
   loading: boolean;
   /** True when Supabase env vars are missing — public pages still render. */
   configError: string | null;
-  signInWithGoogle: () => Promise<void>;
+  signInWithGoogle: (next?: string) => Promise<void>;
   signOut: () => Promise<void>;
   /** Current Supabase access token (JWT). null if signed out or unconfigured. */
   getAccessToken: () => Promise<string | null>;
@@ -48,6 +48,7 @@ const AuthContext = createContext<AuthContextValue>({
   configError: null,
   signInWithGoogle: async () => {},
   signOut: async () => {},
+  // (default no-op; real impl provided by the provider)
   getAccessToken: async () => null,
 });
 
@@ -122,13 +123,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [supabase]);
 
-  const signInWithGoogle = useCallback(async () => {
+  const signInWithGoogle = useCallback(async (next?: string) => {
     if (!supabase) {
       throw new Error(configError ?? "Supabase is not configured");
     }
+    // Only allow same-origin relative paths as the post-login destination —
+    // never an absolute URL (open-redirect guard).
+    const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard";
     const redirectTo =
       typeof window !== "undefined"
-        ? `${window.location.origin}/auth/callback?next=/dashboard`
+        ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeNext)}`
         : undefined;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
