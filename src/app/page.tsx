@@ -5,6 +5,7 @@ import { DemoSection } from "@/components/DemoSection";
 import { TheProblem } from "@/components/TheProblem";
 import { WorkflowSteps } from "@/components/WorkflowSteps";
 import { WhatYouGet } from "@/components/WhatYouGet";
+import { ScienceTeaser } from "@/components/ScienceTeaser";
 import { FAQ } from "@/components/FAQ";
 import { AboutUs } from "@/components/AboutUs";
 import { FinalCTA } from "@/components/FinalCTA";
@@ -19,6 +20,7 @@ export default function Home() {
       <WorkflowSteps />
       <WhatYouGet />
       <DemoSection />
+      <ScienceTeaser />
       <FAQ />
       <AboutUs />
       <FinalCTA />
