@@ -1,19 +1,24 @@
 "use client";
 
 import { useAuthContext } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuthContext();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!loading && !user) {
-      router.replace("/sign-in");
+      // Preserve where the user was headed so sign-in returns them there
+      // (e.g. a scout who opened a shared /dealshare link).
+      const next =
+        pathname && pathname !== "/dashboard" ? `?next=${encodeURIComponent(pathname)}` : "";
+      router.replace(`/sign-in${next}`);
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, pathname]);
 
   if (loading) {
     return (

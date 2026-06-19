@@ -12,7 +12,9 @@ import { getSupabaseServerClient } from "@/lib/supabase/server";
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  const next = url.searchParams.get("next") || "/dashboard";
+  const rawNext = url.searchParams.get("next") || "/dashboard";
+  // Same-origin relative paths only — never honor an absolute URL (open-redirect guard).
+  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/dashboard";
 
   if (!code) {
     return NextResponse.redirect(new URL("/sign-in?error=missing_code", url.origin));

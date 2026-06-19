@@ -1,21 +1,28 @@
 "use client";
 
 import { useAuthContext } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 export default function SignInPage() {
   const { user, loading, signInWithGoogle, configError } = useAuthContext();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Same-origin relative paths only (open-redirect guard).
+  const rawNext = searchParams.get("next") || "/dashboard";
+  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/dashboard";
+  const isDealshare = next.startsWith("/dealshare");
+
   const [signingIn, setSigningIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && user) {
-      router.replace("/dashboard");
+      router.replace(next);
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, next]);
 
   const handleGoogleSignIn = async () => {
     setSigningIn(true);
@@ -23,7 +30,7 @@ export default function SignInPage() {
     try {
       // Supabase OAuth redirects the browser to Google; control won't return
       // here on success. If we get back, something went wrong locally.
-      await signInWithGoogle();
+      await signInWithGoogle(next);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Sign-in failed. Please try again.";
       if (!message.toLowerCase().includes("cancelled")) {
@@ -53,9 +60,13 @@ export default function SignInPage() {
         >
           {/* Logo */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-white tracking-tight">Apriori</h1>
+            <h1 className="text-2xl font-bold text-white tracking-tight">
+              {isDealshare ? "Apriori Dealshare" : "Apriori"}
+            </h1>
             <p className="text-[14px] text-[#9CA3AF] mt-2">
-              Sign in to access your dashboard
+              {isDealshare
+                ? "Sign in to your scout dashboard"
+                : "Sign in to access your dashboard"}
             </p>
           </div>
 
