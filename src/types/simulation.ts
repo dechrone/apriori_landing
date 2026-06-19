@@ -11,6 +11,9 @@ export interface SimulationSummary {
   avg_time_to_complete_seconds: number;
   dominant_plan: string;
   dominant_plan_pct: number;
+  // % of personas that met the run's objective (vs just completing the flow).
+  // Present when the run carried an explicit objective; optional for legacy runs.
+  objective_match_rate_pct?: number;
 }
 
 export interface SampleQuality {
@@ -241,6 +244,9 @@ export interface FixRecommendation {
   impact_feasibility_score: number;
   affected_segment: string;
   expected_uplift: string;
+  // LLM counterfactual quotes: what would have flipped the personas this fix
+  // targets (sampled subset; absent on legacy runs).
+  marginal_driver_quotes?: string[];
 }
 
 // ── Segment Completion Summary (Segment Scorecard) ───────────────────────────
@@ -293,6 +299,50 @@ export interface QuestionAnalysis {
   top_reasons_against: QuestionReasonAgainst[];
 }
 
+// ── Decision Brief (Section 0: the forward-to-VP card) ───────────────────────
+
+/** Reproducible Ship / Fix-first / Hold verdict (no model self-assessment). */
+export type DecisionVerdict = "ship" | "fix_first" | "hold";
+
+export interface DecisionBriefCalibration {
+  expected_completion_rate_pct: number;
+  delta_pp: number;
+  grade?: "strong" | "good" | "fair" | "weak";
+  grade_label?: string;
+  direction?: "over" | "under" | "exact";
+}
+
+export interface DecisionBriefBarrier {
+  screen: string;
+  screen_id?: string;
+  drop_off_pct: number;
+  reason?: string;
+}
+
+export interface DecisionBriefSegment {
+  segment: string;
+  completion_pct: number;
+  top_drop_off_reason?: string;
+}
+
+export interface DecisionBriefFix {
+  recommendation: string;
+  screen?: string;
+  expected_uplift?: string;
+  estimated_impact?: string;
+}
+
+export interface DecisionBriefData {
+  verdict_label: DecisionVerdict;
+  completion_rate_pct: number;
+  overall_verdict?: string;
+  headline_barrier?: DecisionBriefBarrier | null;
+  worst_segment?: DecisionBriefSegment | null;
+  top_fix?: DecisionBriefFix | null;
+  calibration?: DecisionBriefCalibration | null;
+  confidence_note?: string;
+}
+
 // ── Root simulation data ──────────────────────────────────────────────────────
 
 export interface SimulationData {
@@ -311,6 +361,8 @@ export interface SimulationData {
   top_friction_points: FrictionPoint[];
   screen_metrics: Record<string, ScreenMetric>;
   executive_summary: string;
+  // Deterministic forward-to-VP verdict card (Section 0). Absent on legacy runs.
+  decision_brief?: DecisionBriefData | null;
   // New user-testing fields (optional for backward compat with existing sample data)
   usability_findings?: UsabilityFinding[];
   segment_analysis?: SegmentAnalysis;

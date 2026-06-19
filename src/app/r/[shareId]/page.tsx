@@ -13,6 +13,7 @@ import Link from "next/link";
 import { Playfair_Display, DM_Sans } from "next/font/google";
 import { FlowAnalysisView } from "@/components/flow-analysis/FlowAnalysisView";
 import { AbReportView } from "@/components/ab-report/AbReportView";
+import { ExportMenu } from "@/components/ExportMenu";
 import { fetchSharedSimulation } from "@/lib/backend-simulation";
 import type { ServerSimulationRecord } from "@/lib/backend-simulation";
 import type { SimulationData } from "@/types/simulation";
@@ -108,6 +109,9 @@ export default function SharedSimulationPage() {
   }
 
   const result: unknown = record.result;
+  // A/B reports get their own export control inside AbReportView's toolbar; the
+  // single-flow report has none, so the banner carries ExportMenu for it.
+  const ab = isAbReport(result);
 
   // Public-share banner — shared on both the funnel view and the A/B view.
   const banner = (
@@ -123,14 +127,22 @@ export default function SharedSimulationPage() {
             {record.num_personas ? ` · ${record.num_personas} synthetic users` : ""}
           </span>
         </div>
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-[12px] sm:text-[13px] font-semibold text-white rounded-lg px-3 py-1.5 transition-colors"
-          style={{ backgroundColor: "#B8860B" }}
-        >
-          Run your own simulation
-          <ArrowRight className="w-3.5 h-3.5" />
-        </Link>
+        <div className="flex items-center gap-2.5">
+          {!ab && (
+            <ExportMenu
+              data={result as SimulationData}
+              name={record.name || undefined}
+            />
+          )}
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-[12px] sm:text-[13px] font-semibold text-white rounded-lg px-3 py-1.5 transition-colors"
+            style={{ backgroundColor: "#B8860B" }}
+          >
+            Run your own simulation
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
       </div>
     </div>
   );

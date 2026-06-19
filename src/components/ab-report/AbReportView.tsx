@@ -16,6 +16,7 @@ import {
   Link2,
   ArrowUpRight,
   Info,
+  Download,
 } from "lucide-react";
 
 /* Match the savesage demo's typographic system: editorial Playfair Display
@@ -55,6 +56,8 @@ import {
 import { AbReportDeepDive } from "./DeepDive";
 import { LeverAnalysisView } from "./LeverAnalysisView";
 import { toggleSimulationShare } from "@/lib/backend-simulation";
+import { abReportToMarkdown } from "@/lib/exportAbReport";
+import { copyToClipboard, downloadFile, safeFilename } from "@/lib/exportSimulation";
 
 const T = {
   accent: "#E8583A",
@@ -491,6 +494,144 @@ interface AbReportViewProps {
    * when no fused-design payload was persisted with the share (nothing to act
    * on / re-run on a static link). */
   readOnly?: boolean;
+}
+
+/**
+ * A/B export menu (client-side, no backend). Assembles the verdict + ship list
+ * + segment leanings + top lever combos into a paste-ready Markdown memo. Shown
+ * on both the owner view and the read-only public share, since exporting is pure
+ * assembly over already-loaded data (nothing leaks, no API call).
+ */
+function AbExportButton({ data }: { data: AbReport }) {
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const base = safeFilename(data.meta?.study_name || "ab-comparison");
+
+  const flash = () => {
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2200);
+  };
+
+  const onCopy = async () => {
+    try {
+      await copyToClipboard(abReportToMarkdown(data));
+      flash();
+    } catch {
+      /* clipboard blocked — silent; the download path still works */
+    }
+    setOpen(false);
+  };
+
+  const onDownload = () => {
+    downloadFile(`${base}.md`, abReportToMarkdown(data), "text/markdown");
+    setOpen(false);
+  };
+
+  const btnStyle: React.CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 8,
+    padding: "8px 14px",
+    fontSize: 13,
+    fontWeight: 600,
+    borderRadius: 8,
+    cursor: "pointer",
+    background: copied ? "#111827" : "#FFFFFF",
+    color: copied ? "#FFFFFF" : "#111827",
+    border: `1px solid ${copied ? "#111827" : "#D1D5DB"}`,
+    transition: "background 0.15s, border-color 0.15s, color 0.15s",
+  };
+
+  return (
+    <div style={{ position: "relative", display: "inline-block" }}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        style={btnStyle}
+        title="Export this report"
+        onMouseEnter={(e) => {
+          if (!copied) {
+            e.currentTarget.style.background = "#F9FAFB";
+            e.currentTarget.style.borderColor = "#9CA3AF";
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!copied) {
+            e.currentTarget.style.background = "#FFFFFF";
+            e.currentTarget.style.borderColor = "#D1D5DB";
+          }
+        }}
+      >
+        {copied ? <CheckIcon size={14} /> : <Download size={14} />}
+        {copied ? "Copied" : "Export"}
+      </button>
+
+      {open && (
+        <>
+          <div
+            style={{ position: "fixed", inset: 0, zIndex: 40 }}
+            onClick={() => setOpen(false)}
+          />
+          <div
+            style={{
+              position: "absolute",
+              right: 0,
+              marginTop: 6,
+              zIndex: 50,
+              width: 224,
+              background: "#FFFFFF",
+              border: `1px solid ${T.borderWarm}`,
+              borderRadius: 10,
+              boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+              overflow: "hidden",
+            }}
+          >
+            <AbMenuItem
+              label="Copy as Markdown"
+              sub="Paste into Notion / Slack"
+              divider
+              onClick={onCopy}
+            />
+            <AbMenuItem label="Download Markdown" sub={`${base}.md`} onClick={onDownload} />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function AbMenuItem({
+  label,
+  sub,
+  divider,
+  onClick,
+}: {
+  label: string;
+  sub: string;
+  divider?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        display: "block",
+        width: "100%",
+        textAlign: "left",
+        padding: "10px 14px",
+        background: "transparent",
+        border: "none",
+        borderBottom: divider ? `1px solid ${T.border}` : "none",
+        cursor: "pointer",
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.background = "#F9FAFB")}
+      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+    >
+      <p style={{ fontSize: 13, fontWeight: 600, color: T.ink, margin: 0 }}>{label}</p>
+      <p style={{ fontSize: 11, color: T.text4, margin: "2px 0 0" }}>{sub}</p>
+    </button>
+  );
 }
 
 /**
@@ -1221,7 +1362,12 @@ export function AbReportView({ data, designCombiner, combinerStalled, readOnly }
       <TopBar
         title="A/B Comparison Report"
         breadcrumb={`${data.meta.client} · ${data.meta.screen_label}`}
-        actions={readOnly ? null : <ShareReportButton simulationId={data.meta.simulation_id} />}
+        actions={
+          <>
+            <AbExportButton data={data} />
+            {!readOnly && <ShareReportButton simulationId={data.meta.simulation_id} />}
+          </>
+        }
       />
       <TabBar
         tabs={tabs}

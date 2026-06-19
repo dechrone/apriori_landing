@@ -1,7 +1,9 @@
 "use client";
 
 import type { SimulationOverviewProps } from "@/types/simulation";
+import { DecisionBrief } from "./DecisionBrief";
 import { ExecutiveVerdict } from "./ExecutiveVerdict";
+import { BehaviorBreakdown } from "./BehaviorBreakdown";
 import { SegmentScorecard } from "./SegmentScorecard";
 import { FlowFunnel } from "./FlowFunnel";
 import { SegmentDivergence } from "./SegmentDivergence";
@@ -118,6 +120,13 @@ export function SimulationOverview({
           </p>
         )}
 
+        {/* Section 0 — Decision Brief (the forward-to-VP card; only on runs that carry it) */}
+        {d.decision_brief && (
+          <section style={{ marginBottom: 48 }}>
+            <DecisionBrief data={d} />
+          </section>
+        )}
+
         {/* Section 1 — The Verdict */}
         <section style={{ marginBottom: 48 }}>
           <ExecutiveVerdict data={d} />
@@ -147,6 +156,15 @@ export function SimulationOverview({
         <section style={{ marginBottom: 64 }}>
           <ClusteredDropOffs data={d} />
         </section>
+
+        {/* Section 5b — Behavioral Analysis (per-screen depth + emotional arc + cognitive load) */}
+        {(Object.keys(d.behavior_analysis || {}).length > 0 ||
+          d.flow_assessment?.emotional_journey_map ||
+          (d.flow_assessment?.cognitive_load_assessment?.length ?? 0) > 0) && (
+          <section style={{ marginBottom: 64 }}>
+            <BehaviorBreakdown data={d} />
+          </section>
+        )}
 
         {/* Section 6 — Fix Recommendations */}
         <section style={{ marginBottom: 64 }}>

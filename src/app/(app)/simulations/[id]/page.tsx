@@ -14,6 +14,7 @@ import type { SimulationDoc } from "@/lib/db";
 import type { SimulationData } from "@/types/simulation";
 import type { FlowAnalysisData } from "@/types/flow-analysis";
 import { FlowAnalysisView } from "@/components/flow-analysis/FlowAnalysisView";
+import { ExportMenu } from "@/components/ExportMenu";
 import { ArrowLeft, Link2, Check } from "lucide-react";
 import {
   toggleSimulationShare,
@@ -211,6 +212,11 @@ export default function SimulationDetailsPage() {
           onMenuClick={toggleMobileMenu}
           actions={
             <div className="flex items-center gap-3">
+              <ExportMenu
+                data={result}
+                name={simulation.name || result.flow_name || undefined}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-body-sm font-semibold border bg-white text-text-primary border-border-subtle hover:bg-[#F8F6F1] transition-colors"
+              />
               <button
                 onClick={handleToggleShare}
                 disabled={shareBusy}
