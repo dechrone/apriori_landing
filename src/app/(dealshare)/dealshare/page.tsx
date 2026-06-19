@@ -110,14 +110,16 @@ export default function DealshareDashboardPage() {
                 commission you&apos;ve earned.
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {scout && <WhatsAppReferButton scout={scout} size="sm" />}
-              <Link href="/dealshare/new">
-                <Button variant="secondary" size="sm" leftIcon={<Plus className="h-4 w-4" />}>
-                  Refer with form
-                </Button>
-              </Link>
-            </div>
+            {scout && scout.status === "active" && (
+              <div className="flex flex-wrap items-center gap-2">
+                <WhatsAppReferButton scout={scout} size="sm" />
+                <Link href="/dealshare/new">
+                  <Button variant="secondary" size="sm" leftIcon={<Plus className="h-4 w-4" />}>
+                    Refer with form
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
 
           {admin && (
@@ -130,13 +132,20 @@ export default function DealshareDashboardPage() {
             </Link>
           )}
 
+          {scout && scout.status !== "active" && (
+            <div className="mt-5 rounded-[var(--radius-md)] border border-[#FED7AA] bg-[#FFF7ED] px-4 py-3 text-[13px] text-[#9A3412]">
+              Your scout account is <strong>paused</strong>. You can still view your pipeline, but
+              referring and updating deals is disabled — contact the Apriori team to resume.
+            </div>
+          )}
+
           {loading ? (
             <div className="flex justify-center py-24">
               <Spinner />
             </div>
           ) : (
             <>
-              {scout && (
+              {scout && scout.status === "active" && (
                 <div className="mt-5">
                   <WhatsAppReferCard scout={scout} />
                 </div>

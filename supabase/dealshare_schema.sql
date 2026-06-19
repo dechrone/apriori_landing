@@ -61,8 +61,16 @@ create table if not exists public.dealshare_scouts (
   updated_at        timestamptz not null default now()
 );
 
+-- Emails are canonicalised to lowercase on write (data layer), so a PLAIN
+-- unique index on email both enforces case-insensitive uniqueness AND is usable
+-- by the `email = $1` lookup in getMyScout (a functional lower(email) index
+-- would force a seq scan for `.eq`/`.ilike`).
+-- Normalise any pre-existing rows, then drop the old functional index (same
+-- name, so `if not exists` alone would keep it) and rebuild it as plain.
+update public.dealshare_scouts set email = lower(email) where email <> lower(email);
+drop index if exists public.dealshare_scouts_email_key;
 create unique index if not exists dealshare_scouts_email_key
-  on public.dealshare_scouts (lower(email));
+  on public.dealshare_scouts (email);
 create index if not exists dealshare_scouts_user_idx
   on public.dealshare_scouts (user_id);
 
@@ -138,7 +146,8 @@ create index if not exists dealshare_deals_stage_idx
 
 alter table public.dealshare_deals enable row level security;
 
--- True iff the calling user owns the scout that owns this deal.
+-- True iff the calling user owns the scout that owns this deal. Used for READ
+-- access — a paused scout can still view their pipeline.
 create or replace function public.dealshare_owns_deal(p_scout_id uuid)
 returns boolean
 language sql
@@ -152,6 +161,22 @@ as $$
   );
 $$;
 
+-- True iff the caller owns the scout AND that scout is ACTIVE. Used for WRITE
+-- access so a paused scout cannot advance stages, log meetings, or refer deals
+-- even with a live session hitting the API directly.
+create or replace function public.dealshare_owns_active_deal(p_scout_id uuid)
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1 from public.dealshare_scouts s
+    where s.id = p_scout_id and s.user_id = auth.uid() and s.status = 'active'
+  );
+$$;
+
 drop policy if exists "deals_select" on public.dealshare_deals;
 drop policy if exists "deals_insert" on public.dealshare_deals;
 drop policy if exists "deals_update" on public.dealshare_deals;
@@ -161,14 +186,14 @@ create policy "deals_select" on public.dealshare_deals for select
   using (public.dealshare_owns_deal(scout_id) or public.is_app_admin());
 
 create policy "deals_insert" on public.dealshare_deals for insert
-  with check (public.dealshare_owns_deal(scout_id) or public.is_app_admin());
+  with check (public.dealshare_owns_active_deal(scout_id) or public.is_app_admin());
 
 create policy "deals_update" on public.dealshare_deals for update
-  using (public.dealshare_owns_deal(scout_id) or public.is_app_admin())
-  with check (public.dealshare_owns_deal(scout_id) or public.is_app_admin());
+  using (public.dealshare_owns_active_deal(scout_id) or public.is_app_admin())
+  with check (public.dealshare_owns_active_deal(scout_id) or public.is_app_admin());
 
 create policy "deals_delete" on public.dealshare_deals for delete
-  using (public.dealshare_owns_deal(scout_id) or public.is_app_admin());
+  using (public.dealshare_owns_active_deal(scout_id) or public.is_app_admin());
 
 
 -- =============================================================================
@@ -189,6 +214,7 @@ create index if not exists dealshare_stage_events_deal_idx
 
 alter table public.dealshare_stage_events enable row level security;
 
+-- READ access to a deal's children (a paused scout can still view).
 create or replace function public.dealshare_can_access_deal(p_deal_id uuid)
 returns boolean
 language sql
@@ -204,13 +230,29 @@ as $$
   );
 $$;
 
+-- WRITE access to a deal's children — requires the owning scout be ACTIVE.
+create or replace function public.dealshare_can_write_deal(p_deal_id uuid)
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select public.is_app_admin() or exists (
+    select 1
+    from public.dealshare_deals d
+    join public.dealshare_scouts s on s.id = d.scout_id
+    where d.id = p_deal_id and s.user_id = auth.uid() and s.status = 'active'
+  );
+$$;
+
 drop policy if exists "stage_events_select" on public.dealshare_stage_events;
 drop policy if exists "stage_events_insert" on public.dealshare_stage_events;
 
 create policy "stage_events_select" on public.dealshare_stage_events for select
   using (public.dealshare_can_access_deal(deal_id));
 create policy "stage_events_insert" on public.dealshare_stage_events for insert
-  with check (public.dealshare_can_access_deal(deal_id));
+  with check (public.dealshare_can_write_deal(deal_id));
 
 
 -- =============================================================================
@@ -242,12 +284,12 @@ drop policy if exists "meetings_delete" on public.dealshare_meetings;
 create policy "meetings_select" on public.dealshare_meetings for select
   using (public.dealshare_can_access_deal(deal_id));
 create policy "meetings_insert" on public.dealshare_meetings for insert
-  with check (public.dealshare_can_access_deal(deal_id));
+  with check (public.dealshare_can_write_deal(deal_id));
 create policy "meetings_update" on public.dealshare_meetings for update
-  using (public.dealshare_can_access_deal(deal_id))
-  with check (public.dealshare_can_access_deal(deal_id));
+  using (public.dealshare_can_write_deal(deal_id))
+  with check (public.dealshare_can_write_deal(deal_id));
 create policy "meetings_delete" on public.dealshare_meetings for delete
-  using (public.dealshare_can_access_deal(deal_id));
+  using (public.dealshare_can_write_deal(deal_id));
 
 
 -- =============================================================================

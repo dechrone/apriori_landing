@@ -86,6 +86,11 @@ function clean<T extends Record<string, unknown>>(obj: T): Record<string, unknow
   return Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined));
 }
 
+/** Canonical email form stored + queried — lowercased & trimmed. */
+function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
 function rowToScout(r: any): Scout {
   return {
     id: r.id,
@@ -181,11 +186,13 @@ export async function getMyScout(userId: string, email: string): Promise<Scout |
   if (linked.error) throw new Error(`getMyScout: ${linked.error.message}`);
   if (linked.data) return rowToScout(linked.data);
 
-  // 2. An invite by email waiting to be claimed?
+  // 2. An invite by email waiting to be claimed? Emails are stored lowercase,
+  // so an equality match on the canonical value hits the unique index (vs a
+  // case-insensitive ILIKE, which can't use it and forces a seq scan).
   const invited = await sb
     .from("dealshare_scouts")
     .select("*")
-    .ilike("email", email)
+    .eq("email", normalizeEmail(email))
     .is("user_id", null)
     .maybeSingle();
   if (invited.error) throw new Error(`getMyScout(invite): ${invited.error.message}`);
@@ -215,7 +222,7 @@ export async function createMyScout(
     .insert(
       clean({
         user_id: userId,
-        email,
+        email: normalizeEmail(email),
         name: fields.name,
         company: fields.company,
         phone: fields.phone,
@@ -271,7 +278,7 @@ export async function inviteScout(fields: {
     .from("dealshare_scouts")
     .insert(
       clean({
-        email: fields.email,
+        email: normalizeEmail(fields.email),
         name: fields.name,
         company: fields.company,
         commission_rate: fields.commissionRate,

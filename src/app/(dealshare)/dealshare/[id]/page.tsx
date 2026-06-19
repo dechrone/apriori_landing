@@ -19,11 +19,15 @@ import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { Spinner } from "@/components/ui/Spinner";
 import { useToast } from "@/components/ui/Toast";
+import { useUser } from "@/contexts/UserContext";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { StageBadge } from "@/components/dealshare/DealshareUI";
 import {
   getDeal,
   getMeetings,
   getStageEvents,
+  getMyScout,
+  isAdmin,
   logMeeting,
   updateDealStage,
   type Deal,
@@ -45,12 +49,19 @@ export default function DealDetailPage() {
   const params = useParams();
   const dealId = String(params?.id ?? "");
   const { showToast } = useToast();
+  const { userId, profile } = useUser();
+  const { user } = useAuthContext();
+  const email = profile?.email || user?.email || "";
 
   const [loading, setLoading] = useState(true);
   const [deal, setDeal] = useState<Deal | null>(null);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [events, setEvents] = useState<StageEvent[]>([]);
   const [savingStage, setSavingStage] = useState(false);
+  // Write access: admins always; otherwise the owning scout must be active.
+  // Paused scouts keep read-only access — mirrors the RLS write helpers.
+  const [canWrite, setCanWrite] = useState(false);
+  const [writeBlock, setWriteBlock] = useState<"paused" | null>(null);
 
   const load = useCallback(async () => {
     if (!dealId) return;
@@ -59,9 +70,17 @@ export default function DealDetailPage() {
       const d = await getDeal(dealId);
       setDeal(d);
       if (d) {
-        const [m, e] = await Promise.all([getMeetings(dealId), getStageEvents(dealId)]);
+        const [m, e, admin, myScout] = await Promise.all([
+          getMeetings(dealId),
+          getStageEvents(dealId),
+          userId ? isAdmin(userId) : Promise.resolve(false),
+          userId ? getMyScout(userId, email) : Promise.resolve(null),
+        ]);
         setMeetings(m);
         setEvents(e);
+        const ownsDeal = myScout?.id === d.scoutId;
+        setCanWrite(admin || (ownsDeal && myScout?.status === "active"));
+        setWriteBlock(ownsDeal && myScout?.status !== "active" ? "paused" : null);
       }
     } catch (err) {
       showToast("error", err instanceof Error ? err.message : "Could not load the deal.");
@@ -69,7 +88,7 @@ export default function DealDetailPage() {
       setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dealId]);
+  }, [dealId, userId, email]);
 
   useEffect(() => {
     void load();
@@ -170,13 +189,25 @@ export default function DealDetailPage() {
             )}
           </Card>
 
+          {writeBlock === "paused" && (
+            <div className="mt-6 rounded-[var(--radius-md)] border border-[#FED7AA] bg-[#FFF7ED] px-4 py-3 text-[13px] text-[#9A3412]">
+              Your scout account is <strong>paused</strong>, so this deal is read-only. Contact the
+              Apriori team to resume referring and updating deals.
+            </div>
+          )}
+
           {/* Pipeline rail + stage control */}
-          <PipelineRail deal={deal} onAdvance={advance} saving={savingStage} />
+          <PipelineRail deal={deal} onAdvance={advance} saving={savingStage} canWrite={canWrite} />
 
           <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-5">
             {/* Meetings */}
             <div className="lg:col-span-3">
-              <MeetingSection dealId={deal.id} meetings={meetings} onLogged={() => void load()} />
+              <MeetingSection
+                dealId={deal.id}
+                meetings={meetings}
+                onLogged={() => void load()}
+                canWrite={canWrite}
+              />
             </div>
             {/* Stage history */}
             <div className="lg:col-span-2">
@@ -195,10 +226,12 @@ function PipelineRail({
   deal,
   onAdvance,
   saving,
+  canWrite,
 }: {
   deal: Deal;
   onAdvance: (stage: DealStage, lostReason?: string) => void;
   saving: boolean;
+  canWrite: boolean;
 }) {
   const isLost = deal.stage === "lost";
   const reached = stageIndex(deal.stage);
@@ -214,23 +247,25 @@ function PipelineRail({
     <Card className="mt-6 !p-5">
       <div className="flex items-center justify-between">
         <h2 className="text-h4 font-semibold text-text-primary">Pipeline</h2>
-        <div className="flex gap-2">
-          {nextStage && (
-            <Button variant="primary" size="sm" disabled={saving} onClick={() => onAdvance(nextStage)}>
-              {saving ? "Saving…" : `Advance to ${stageMeta(nextStage).label}`}
-            </Button>
-          )}
-          {!isLost && deal.stage !== "won" && (
-            <Button variant="secondary" size="sm" disabled={saving} onClick={() => setShowLost((v) => !v)}>
-              Mark lost
-            </Button>
-          )}
-          {isLost && (
-            <Button variant="secondary" size="sm" disabled={saving} onClick={() => onAdvance("submitted")}>
-              Reopen
-            </Button>
-          )}
-        </div>
+        {canWrite && (
+          <div className="flex gap-2">
+            {nextStage && (
+              <Button variant="primary" size="sm" disabled={saving} onClick={() => onAdvance(nextStage)}>
+                {saving ? "Saving…" : `Advance to ${stageMeta(nextStage).label}`}
+              </Button>
+            )}
+            {!isLost && deal.stage !== "won" && (
+              <Button variant="secondary" size="sm" disabled={saving} onClick={() => setShowLost((v) => !v)}>
+                Mark lost
+              </Button>
+            )}
+            {isLost && (
+              <Button variant="secondary" size="sm" disabled={saving} onClick={() => onAdvance("submitted")}>
+                Reopen
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Rail */}
@@ -312,10 +347,12 @@ function MeetingSection({
   dealId,
   meetings,
   onLogged,
+  canWrite,
 }: {
   dealId: string;
   meetings: Meeting[];
   onLogged: () => void;
+  canWrite: boolean;
 }) {
   const { showToast } = useToast();
   const [open, setOpen] = useState(false);
@@ -362,17 +399,19 @@ function MeetingSection({
         <h2 className="text-h4 font-semibold text-text-primary">
           Meetings <span className="text-text-tertiary">({meetings.length})</span>
         </h2>
-        <Button
-          variant="secondary"
-          size="sm"
-          leftIcon={<CalendarPlus className="h-4 w-4" />}
-          onClick={() => setOpen((v) => !v)}
-        >
-          Log meeting
-        </Button>
+        {canWrite && (
+          <Button
+            variant="secondary"
+            size="sm"
+            leftIcon={<CalendarPlus className="h-4 w-4" />}
+            onClick={() => setOpen((v) => !v)}
+          >
+            Log meeting
+          </Button>
+        )}
       </div>
 
-      {open && (
+      {canWrite && open && (
         <form onSubmit={submit} className="mt-4 space-y-3 rounded-[var(--radius-md)] border border-border-subtle bg-[#FAFAF8] p-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input label="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Intro call" />

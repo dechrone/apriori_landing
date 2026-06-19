@@ -57,6 +57,11 @@ export default function NewDealPage() {
           router.replace("/dealshare");
           return;
         }
+        if (s.status !== "active") {
+          showToast("warning", "Your scout account is paused — contact the Apriori team to resume.");
+          router.replace("/dealshare");
+          return;
+        }
       } catch (e) {
         showToast("error", e instanceof Error ? e.message : "Could not load your scout account.");
       } finally {
