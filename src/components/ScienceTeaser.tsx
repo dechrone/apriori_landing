@@ -4,15 +4,14 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-
-const GOLD = "#F5D76E";
+import { GOLD } from "@/components/science/tokens";
 
 export function ScienceTeaser() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section ref={ref} className="border-t py-20 md:py-28" style={{ borderColor: "#1F1A12" }}>
+    <section ref={ref} className="border-t py-20 md:py-28" style={{ borderColor: "var(--border-subtle)" }}>
       <div className="mx-auto max-w-[960px] px-6 md:px-16">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -41,7 +40,7 @@ export function ScienceTeaser() {
             <Link
               href="/research"
               className="group inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium"
-              style={{ backgroundColor: GOLD, color: "#0A0A0A" }}
+              style={{ backgroundColor: GOLD, color: "var(--text-inverse)" }}
             >
               Read the paper
               <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />

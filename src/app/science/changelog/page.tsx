@@ -1,12 +1,11 @@
 import { ScienceShell, PaperLinks } from "@/components/science/ScienceShell";
+import { GOLD } from "@/components/science/tokens";
 
 export const metadata = {
   title: "Model changelog | Apriori Science",
   description:
     "Version history of Apriori's persona-simulation model and the PiSAR benchmark — what changed and when.",
 };
-
-const GOLD = "#F5D76E";
 
 type Entry = { date: string; tag: string; title: string; body: React.ReactNode };
 

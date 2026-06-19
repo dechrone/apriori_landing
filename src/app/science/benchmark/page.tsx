@@ -1,12 +1,11 @@
 import { ScienceShell, SciSection, PaperLinks } from "@/components/science/ScienceShell";
+import { GOLD } from "@/components/science/tokens";
 
 export const metadata = {
   title: "PiSAR Benchmark | Apriori",
   description:
     "The PiSAR leaderboard for screen-conditioned action prediction. Apriori's fine-tuned Qwen3-VL-8B reaches 0.783 semantic similarity vs 0.482 (GPT-5.5) and 0.459 (Claude Opus 4.7) zero-shot. Run your model and we'll list it.",
 };
-
-const GOLD = "#F5D76E";
 
 type Row = {
   model: string;
@@ -39,10 +38,10 @@ export default function BenchmarkPage() {
       }
     >
       {/* Leaderboard */}
-      <div className="mb-4 overflow-hidden rounded-lg border" style={{ borderColor: "#1F1A12" }}>
+      <div className="mb-4 overflow-hidden rounded-lg border" style={{ borderColor: "var(--border-subtle)" }}>
         <table className="w-full text-left text-[14px]">
           <thead>
-            <tr className="text-text-tertiary" style={{ backgroundColor: "#0B0907" }}>
+            <tr className="text-text-tertiary" style={{ backgroundColor: "var(--bg-secondary)" }}>
               <th className="px-4 py-3 font-semibold">Model</th>
               <th className="px-4 py-3 font-semibold">Type</th>
               <th className="px-4 py-3 font-semibold">Semantic similarity</th>
@@ -55,15 +54,15 @@ export default function BenchmarkPage() {
                 key={r.model}
                 className="border-t"
                 style={{
-                  borderColor: "#1F1A12",
-                  backgroundColor: r.ours ? "rgba(245, 215, 110, 0.06)" : "transparent",
+                  borderColor: "var(--border-subtle)",
+                  backgroundColor: r.ours ? "var(--accent-amber-dim)" : "transparent",
                 }}
               >
-                <td className="px-4 py-3 font-medium" style={{ color: r.ours ? GOLD : "#D5D0C4" }}>
+                <td className="px-4 py-3 font-medium" style={{ color: r.ours ? GOLD : "var(--text-secondary)" }}>
                   {r.model}
                 </td>
                 <td className="px-4 py-3 text-text-secondary">{r.kind}</td>
-                <td className="px-4 py-3 font-semibold" style={{ color: r.ours ? GOLD : "#D5D0C4" }}>
+                <td className="px-4 py-3 font-semibold" style={{ color: r.ours ? GOLD : "var(--text-secondary)" }}>
                   {r.score}
                 </td>
                 <td className="px-4 py-3 text-text-secondary">{r.clears}</td>

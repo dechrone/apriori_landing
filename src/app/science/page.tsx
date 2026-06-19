@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { ScienceShell, PaperLinks } from "@/components/science/ScienceShell";
+import { GOLD } from "@/components/science/tokens";
 
 export const metadata = {
   title: "Science | Apriori",
   description:
     "The research behind Apriori: a published PiSAR benchmark where a fine-tuned 8B model reaches 0.783 semantic similarity on screen-conditioned action prediction, beating frontier zero-shot baselines (0.459 Claude Opus 4.7, 0.482 GPT-5.5).",
 };
-
-const GOLD = "#F5D76E";
 
 const STATS = [
   { value: "0.783", caption: "Semantic similarity, fine-tuned Qwen3-VL-8B — vs 0.459 (Claude Opus 4.7), 0.482 (GPT-5.5) zero-shot." },
@@ -40,7 +39,7 @@ export default function SciencePage() {
       {/* Headline stats */}
       <div className="mb-10 grid gap-4 sm:grid-cols-3">
         {STATS.map((s) => (
-          <div key={s.value} className="rounded-lg border p-5" style={{ borderColor: "#1F1A12", backgroundColor: "#0B0907" }}>
+          <div key={s.value} className="rounded-lg border p-5" style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-secondary)" }}>
             <div className="mb-2 text-[26px] font-bold" style={{ color: GOLD, letterSpacing: "-0.02em" }}>
               {s.value}
             </div>
@@ -60,7 +59,7 @@ export default function SciencePage() {
             key={c.href}
             href={c.href}
             className="group rounded-lg border p-6 transition-colors"
-            style={{ borderColor: "#1F1A12", backgroundColor: "#0B0907" }}
+            style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-secondary)" }}
           >
             <div className="mb-2 flex items-center justify-between">
               <h3 className="text-[17px] font-semibold text-text-primary">{c.title}</h3>

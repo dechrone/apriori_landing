@@ -1,4 +1,5 @@
 import { ScienceShell, SciSection, PaperLinks } from "@/components/science/ScienceShell";
+import { GOLD } from "@/components/science/tokens";
 
 export const metadata = {
   title: "How we measure accuracy | Apriori Science",
@@ -88,9 +89,9 @@ export default function MethodPage() {
           larger reasoning-tuned model (Gemma-4-26B-A4B-IT) scores below the
           zero-shot frontier. The recipe and the architecture have to match. We
           report that openly on the{" "}
-          <a href="/science/benchmark" style={{ color: "#F5D76E" }}>benchmark</a>{" "}
+          <a href="/science/benchmark" style={{ color: GOLD }}>benchmark</a>{" "}
           and discuss where it doesn&apos;t transfer in{" "}
-          <a href="/science/limits" style={{ color: "#F5D76E" }}>limits</a>.
+          <a href="/science/limits" style={{ color: GOLD }}>limits</a>.
         </p>
       </SciSection>
 
@@ -101,7 +102,7 @@ export default function MethodPage() {
           conversion. We treat simulations as directional evidence that finds
           where and why users hesitate, fast and cheaply, before you build. For
           how far that goes and where it stops, read{" "}
-          <a href="/science/limits" style={{ color: "#F5D76E" }}>the limits</a>.
+          <a href="/science/limits" style={{ color: GOLD }}>the limits</a>.
         </p>
       </SciSection>
 
